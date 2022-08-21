@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="item_spacing">32dp</dimen>
+    <dimen name="list_margin_start">60dp</dimen>
+    <dimen name="sub_position_0_offset">160dp</dimen>
+
+</resources>

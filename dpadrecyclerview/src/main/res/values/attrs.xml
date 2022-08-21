@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="dpadRecyclerViewStyle" format="reference" />
+
+    <declare-styleable name="DpadRecyclerView">
+        <attr name="dpadRecyclerViewReverseLayout" format="boolean" />
+        <attr name="dpadRecyclerViewOrientation" format="enum">
+            <enum name="horizontal" value="0" />
+            <enum name="vertical" value="1" />
+        </attr>
+        <attr name="dpadRecyclerViewSpanCount" format="integer" />
+        <attr name="dpadRecyclerViewCircularFocusEnabled" format="boolean" />
+        <attr name="dpadRecyclerViewFocusOutFront" format="boolean" />
+        <attr name="dpadRecyclerViewFocusOutBack" format="boolean" />
+        <attr name="dpadRecyclerViewFocusOutOppositeFront" format="boolean" />
+        <attr name="dpadRecyclerViewFocusOutOppositeBack" format="boolean" />
+    </declare-styleable>
+
+
+</resources>
