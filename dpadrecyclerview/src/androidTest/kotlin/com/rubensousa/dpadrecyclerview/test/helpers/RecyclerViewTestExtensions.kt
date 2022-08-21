@@ -106,3 +106,11 @@ fun updateChildAlignment(alignment: ChildAlignment, id: Int = R.id.recyclerView)
         UpdateChildAlignmentAction(alignment)
     )
 }
+
+fun waitForIdleScrollState(id: Int = R.id.recyclerView) {
+    Espresso.onView(ViewMatchers.withId(id)).perform(WaitForIdleScrollAction())
+}
+
+fun performDpadRecyclerViewAction(action: DpadRecyclerViewAction, id: Int = R.id.recyclerView) {
+    Espresso.onView(ViewMatchers.withId(id)).perform(action)
+}

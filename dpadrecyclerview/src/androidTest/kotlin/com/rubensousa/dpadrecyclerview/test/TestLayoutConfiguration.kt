@@ -2,6 +2,7 @@ package com.rubensousa.dpadrecyclerview.test
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.view.Gravity
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 
@@ -10,6 +11,7 @@ data class TestLayoutConfiguration(
     val orientation: Int,
     val parentAlignment: ParentAlignment,
     val childAlignment: ChildAlignment,
+    val gravity: Int = Gravity.START,
     val reverseLayout: Boolean = false,
 ) : Parcelable {
 
@@ -26,6 +28,7 @@ data class TestLayoutConfiguration(
                 ChildAlignment::class.java.classLoader, ChildAlignment::class.java
             )
         ),
+        parcel.readInt(),
         parcel.readByte() != 0.toByte()
     )
 
@@ -34,6 +37,7 @@ data class TestLayoutConfiguration(
         parcel.writeInt(orientation)
         parcel.writeParcelable(parentAlignment, flags)
         parcel.writeParcelable(childAlignment, flags)
+        parcel.writeInt(gravity)
         parcel.writeByte(if (reverseLayout) 1 else 0)
     }
 

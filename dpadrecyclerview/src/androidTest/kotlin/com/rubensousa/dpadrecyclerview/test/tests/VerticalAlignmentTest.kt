@@ -3,6 +3,7 @@ package com.rubensousa.dpadrecyclerview.test.tests
 import android.view.Gravity
 import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.UiController
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.test.helpers.*
@@ -10,6 +11,7 @@ import com.rubensousa.dpadrecyclerview.test.R
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.actions.DpadRecyclerViewAction
 import org.junit.Rule
 import org.junit.Test
 
@@ -264,13 +266,13 @@ class VerticalAlignmentTest : GridTest() {
     fun testGravityAffectsBoundsOfItems() {
         val parentAlignment = ParentAlignment(
             edge = Edge.NONE,
-            gravity = Gravity.CENTER,
             offset = 0,
             offsetPercent = 50f
         )
         val layoutConfig = TestLayoutConfiguration(
             spans = 1,
             orientation = RecyclerView.VERTICAL,
+            gravity = Gravity.CENTER,
             parentAlignment = parentAlignment,
             childAlignment = ChildAlignment(
                 offset = 0,
@@ -287,13 +289,23 @@ class VerticalAlignmentTest : GridTest() {
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
         assertThat(viewBounds.centerX()).isEqualTo(recyclerViewBounds.centerX())
 
-        updateParentAlignment(parentAlignment.copy(gravity = Gravity.END))
+        performDpadRecyclerViewAction(object :
+            DpadRecyclerViewAction("Changing gravity to END") {
+            override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
+                recyclerView.setGravity(Gravity.END)
+            }
+        })
 
         viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
         assertThat(viewBounds.right).isEqualTo(recyclerViewBounds.right)
 
-        updateParentAlignment(parentAlignment.copy(gravity = Gravity.START))
+        performDpadRecyclerViewAction(object :
+            DpadRecyclerViewAction("Changing gravity to START") {
+            override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
+                recyclerView.setGravity(Gravity.START)
+            }
+        })
 
         viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())

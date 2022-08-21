@@ -1,13 +1,16 @@
 package com.rubensousa.dpadrecyclerview.test.tests
 
-import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.helpers.FastUiAutomatorRule
+import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressDown
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,7 +38,7 @@ class SaveRestoreStateTest : GridTest() {
 
     @Test
     fun testSelectionStateIsSavedAndRestored() {
-        UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, 5)
+        pressDown(times = 5)
         assertFocusPosition(5)
 
         recreateFragment()

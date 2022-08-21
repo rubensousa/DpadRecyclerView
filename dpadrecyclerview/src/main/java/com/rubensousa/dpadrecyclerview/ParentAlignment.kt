@@ -10,7 +10,6 @@ import android.view.Gravity
 // TODO: Add more comments
 data class ParentAlignment(
     val edge: Edge,
-    val gravity: Int = Gravity.START,
     val offset: Int = 0,
     val offsetPercent: Float = 50f,
     /**
@@ -42,7 +41,6 @@ data class ParentAlignment(
     constructor(parcel: Parcel) : this(
         Edge.values()[parcel.readInt()],
         parcel.readInt(),
-        parcel.readInt(),
         parcel.readFloat(),
         parcel.readByte() != 0.toByte(),
         parcel.readByte() != 0.toByte(),
@@ -57,7 +55,6 @@ data class ParentAlignment(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(edge.ordinal)
-        parcel.writeInt(gravity)
         parcel.writeInt(offset)
         parcel.writeFloat(offsetPercent)
         parcel.writeByte(if (offsetPercentEnabled) 1 else 0)

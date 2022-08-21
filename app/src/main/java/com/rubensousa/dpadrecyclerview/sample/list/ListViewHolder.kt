@@ -61,6 +61,7 @@ class ListViewHolder(private val binding: AdapterListBinding) :
 
     private fun setupRecyclerView(recyclerView: DpadRecyclerView) {
         recyclerView.apply {
+            setGravity(Gravity.CENTER)
             addItemDecoration(
                 LinearMarginDecoration.createHorizontal(
                     horizontalMargin = binding.root.context.resources.getDimensionPixelOffset(
@@ -74,14 +75,11 @@ class ListViewHolder(private val binding: AdapterListBinding) :
                     offset = binding.root.resources.getDimensionPixelOffset(
                         R.dimen.list_margin_start
                     ),
-                    offsetPercentEnabled = false,
-                    gravity = Gravity.CENTER
+                    offsetPercentEnabled = false
                 )
             )
             setChildAlignment(
-                ChildAlignment(
-                    offset = 0, offsetPercent = 0f
-                )
+                ChildAlignment(offset = 0, offsetPercent = 0f)
             )
         }
     }

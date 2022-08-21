@@ -234,6 +234,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
         requireDpadGridLayoutManager().orientation = orientation
     }
 
+    fun setGravity(gravity: Int) {
+        requireDpadGridLayoutManager().setGravity(gravity)
+    }
+
     fun setSelectedPosition(position: Int, smooth: Boolean) {
         if (smooth) {
             smoothScrollToPosition(position)
@@ -250,7 +254,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     fun getSelectedSubPosition() = dpadLayout?.subSelectionPosition ?: NO_POSITION
 
-    fun getCurrentSubPositions() =  dpadLayout?.getCurrentSubSelectionCount() ?: 0
+    fun getCurrentSubPositions() = dpadLayout?.getCurrentSubSelectionCount() ?: 0
 
     fun setSelectedSubPosition(subPosition: Int, smooth: Boolean) {
         dpadLayout?.selectSubPosition(subPosition, smooth)
@@ -285,6 +289,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     fun setSmoothScrollBehavior(behavior: SmoothScrollByBehavior?) {
         smoothScrollByBehavior = behavior
+    }
+
+    fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
+        requireDpadGridLayoutManager().setAlignments(parent, child, smooth)
     }
 
     fun setParentAlignment(alignment: ParentAlignment) {

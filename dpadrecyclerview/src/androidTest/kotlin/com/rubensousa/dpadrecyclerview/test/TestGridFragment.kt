@@ -55,6 +55,7 @@ open class TestGridFragment : Fragment(R.layout.test_container) {
                 alignedEvents.add(TestSelectionEvent(position, subPosition))
             }
         })
+        recyclerView.setGravity(layoutConfig.gravity)
         recyclerView.setSpanCount(layoutConfig.spans)
         recyclerView.setOrientation(layoutConfig.orientation)
         recyclerView.setParentAlignment(layoutConfig.parentAlignment)

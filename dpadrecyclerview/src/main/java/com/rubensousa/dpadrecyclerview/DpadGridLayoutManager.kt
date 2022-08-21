@@ -301,6 +301,11 @@ class DpadGridLayoutManager : GridLayoutManager {
         return spanSizeLookup.getSpanGroupIndex(position, spanCount)
     }
 
+    fun setGravity(gravity: Int) {
+        delegate.gravity = gravity
+        requestLayout()
+    }
+
     fun findFirstAddedPosition(): Int {
         if (childCount == 0) {
             return RecyclerView.NO_POSITION
@@ -317,9 +322,18 @@ class DpadGridLayoutManager : GridLayoutManager {
         return getAdapterPositionOfView(child)
     }
 
+    fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
+        scrollAlignment.setParentAlignment(parent)
+        scrollAlignment.setChildAlignment(child)
+        if (smooth) {
+            scroller.scrollToFocusedPosition(requireNotNull(recyclerView), smooth)
+        } else {
+            requestLayout()
+        }
+    }
+
     fun setParentAlignment(alignment: ParentAlignment) {
         scrollAlignment.setParentAlignment(alignment)
-        delegate.gravity = alignment.gravity
         requestLayout()
     }
 

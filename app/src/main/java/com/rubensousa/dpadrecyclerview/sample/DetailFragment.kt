@@ -62,27 +62,23 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
             override fun onViewHolderClicked() {
                 centered = !centered
                 if (centered) {
-                    binding.recyclerView.setChildAlignment(
-                        ChildAlignment(offset = 0, offsetPercent = 50f)
-                    )
-                    binding.recyclerView.setParentAlignment(
-                        ParentAlignment(
+                    binding.recyclerView.setAlignments(
+                        parent = ParentAlignment(
                             edge = Edge.MIN_MAX,
                             offset = 0,
                             offsetPercent = 50f
-                        )
+                        ),
+                        child = ChildAlignment(offset = 0, offsetPercent = 50f),
+                        smooth = true
                     )
                 } else {
-                    binding.recyclerView.setParentAlignment(
-                        ParentAlignment(
+                    binding.recyclerView.setAlignments(
+                        parent = ParentAlignment(
                             edge = Edge.NONE,
-                            offsetPercent = 90f
-                        )
-                    )
-                    binding.recyclerView.setChildAlignment(
-                        ChildAlignment(
-                            offsetPercent = 100f
-                        )
+                            offsetPercent = 95f
+                        ),
+                        child = ChildAlignment(offsetPercent = 100f),
+                        smooth = true
                     )
                 }
             }
