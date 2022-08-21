@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.rubensousa.dpadrecyclerview.databinding.AdapterListBinding
-import com.rubensousa.tvfocus.recyclerview.item.ItemViewHolder
+import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 
 class NestedListAdapter(
     private val stateHolder: DpadStateHolder,

@@ -1,4 +1,4 @@
-package com.rubensousa.tvfocus.recyclerview.item
+package com.rubensousa.dpadrecyclerview.sample.item
 
 import android.view.View
 import android.widget.TextView

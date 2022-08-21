@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.databinding.AdapterNestedItemBinding
-import com.rubensousa.tvfocus.recyclerview.item.ItemViewHolder
 
 class ItemNestedAdapter : RecyclerView.Adapter<ItemViewHolder>() {
 

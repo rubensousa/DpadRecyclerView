@@ -15,7 +15,7 @@ import com.rubensousa.dpadrecyclerview.R
 import com.rubensousa.dpadrecyclerview.databinding.ScreenTvDetailBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.list.ListHeaderAdapter
-import com.rubensousa.tvfocus.recyclerview.item.ItemViewHolder
+import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.list.ListModel
 import timber.log.Timber
 
@@ -30,10 +30,27 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         _binding = ScreenTvDetailBinding.bind(view)
         setupAdapter()
         binding.up.setOnClickListener {
-            binding.recyclerView.getSelectedPosition()
+            val subPosition = binding.recyclerView.getSelectedSubPosition()
+            if (subPosition > 0) {
+                binding.recyclerView.setSelectedSubPosition(subPosition - 1, smooth = true)
+            } else {
+                binding.recyclerView.setSelectedPosition(
+                    binding.recyclerView.getSelectedPosition() - 1,
+                    smooth = true
+                )
+            }
         }
         binding.down.setOnClickListener {
-
+            val subPosition = binding.recyclerView.getSelectedSubPosition()
+            val subPositionCount = binding.recyclerView.getCurrentSubPositions()
+            if (subPosition < subPositionCount - 1) {
+                binding.recyclerView.setSelectedSubPosition(subPosition + 1, smooth = true)
+            } else {
+                binding.recyclerView.setSelectedPosition(
+                    binding.recyclerView.getSelectedPosition() + 1,
+                    smooth = true
+                )
+            }
         }
         binding.recyclerView.requestFocus()
     }
@@ -75,7 +92,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
             items.add(i)
         }
         itemAdapter.submitList(items)
-        headerAdapter.submitList(listOf("Header"))
+        headerAdapter.submitList(listOf("Header", "Header"))
         val list = ArrayList<ListModel>()
         for (i in 0 until 100) {
             list.add(generateList("List $i"))
@@ -84,7 +101,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         concatAdapter.addAdapter(itemAdapter)
         binding.recyclerView.setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                if (position == 0) {
+                if (position < headerAdapter.itemCount) {
                     return binding.recyclerView.getSpanCount()
                 } else {
                     return 1
@@ -96,7 +113,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         )
         binding.recyclerView.setParentAlignment(
             ParentAlignment(
-                edge = Edge.MIN_MAX,
+                edge = Edge.NONE,
                 offset = 0,
                 offsetPercent = 50f
             )

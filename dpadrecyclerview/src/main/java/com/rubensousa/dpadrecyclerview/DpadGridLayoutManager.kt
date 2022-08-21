@@ -24,7 +24,6 @@ class DpadGridLayoutManager : GridLayoutManager {
     val selectedPosition: Int
         get() = focusManager.position
 
-    // TODO
     val subSelectionPosition: Int
         get() = focusManager.subPosition
 
@@ -225,7 +224,7 @@ class DpadGridLayoutManager : GridLayoutManager {
 
     override fun scrollToPosition(position: Int) {
         recyclerView?.let { view ->
-            scroller.scrollToPosition(view, position, smooth = false)
+            scroller.scrollToPosition(view, position, subPosition = 0, smooth = false)
         }
     }
 
@@ -234,7 +233,7 @@ class DpadGridLayoutManager : GridLayoutManager {
         state: RecyclerView.State?,
         position: Int
     ) {
-        scroller.scrollToPosition(recyclerView, position, smooth = true)
+        scroller.scrollToPosition(recyclerView, position, subPosition = 0, smooth = true)
     }
 
     override fun startSmoothScroll(smoothScroller: RecyclerView.SmoothScroller) {
@@ -367,6 +366,22 @@ class DpadGridLayoutManager : GridLayoutManager {
 
     fun clearOnLayoutCompletedListeners() {
         layoutCompleteListeners.clear()
+    }
+
+    fun getCurrentSubSelectionCount(): Int {
+        return selectedViewHolder?.getAlignments()?.size ?: 0
+    }
+
+    fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {
+        scroller.scrollToPosition(
+            requireNotNull(recyclerView), position, subPosition, smooth
+        )
+    }
+
+    fun selectSubPosition(subPosition: Int, smooth: Boolean) {
+        scroller.scrollToPosition(
+            requireNotNull(recyclerView), focusManager.position, subPosition, smooth
+        )
     }
 
     internal fun scrollToView(

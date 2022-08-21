@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.rubensousa.dpadrecyclerview.databinding.AdapterItemBinding
-import com.rubensousa.tvfocus.recyclerview.item.ItemViewHolder
 
 class ItemGridAdapter(private val onItemClickListener: ItemViewHolder.ItemClickListener) :
     ListAdapter<Int, ItemViewHolder>(DIFF_CALLBACK) {

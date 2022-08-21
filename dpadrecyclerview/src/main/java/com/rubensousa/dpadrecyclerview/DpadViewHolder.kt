@@ -45,10 +45,4 @@ interface DpadViewHolder {
         return Collections.emptyList()
     }
 
-    /**
-     * @return true if this ViewHolder received a [onViewHolderSelected] and is now selected
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    fun isViewHolderSelected(): Boolean = false
-
 }

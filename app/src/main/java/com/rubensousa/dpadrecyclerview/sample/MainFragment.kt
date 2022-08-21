@@ -9,7 +9,7 @@ import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.databinding.ScreenTvNestedListsBinding
 import com.rubensousa.dpadrecyclerview.sample.list.DpadStateHolder
-import com.rubensousa.tvfocus.recyclerview.item.ItemViewHolder
+import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.list.ListModel
 import com.rubensousa.dpadrecyclerview.sample.list.NestedListAdapter
 import timber.log.Timber

@@ -16,6 +16,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.dpadRecyclerViewStyle
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
+    companion object {
+        const val TAG = "DpadRecyclerView"
+    }
+
     private var isRetainingFocus = false
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
     private var keyInterceptListener: OnKeyInterceptListener? = null
@@ -238,19 +242,19 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
     }
 
+    fun setSelectedPosition(position: Int, subPosition: Int, smooth: Boolean) {
+        dpadLayout?.selectPosition(position, subPosition, smooth)
+    }
+
     fun getSelectedPosition() = dpadLayout?.selectedPosition ?: NO_POSITION
 
     fun getSelectedSubPosition() = dpadLayout?.subSelectionPosition ?: NO_POSITION
 
-    // TODO
-    fun getSelectedSubPositionsCount() = 0
+    fun getCurrentSubPositions() =  dpadLayout?.getCurrentSubSelectionCount() ?: 0
 
-    // TODO
     fun setSelectedSubPosition(subPosition: Int, smooth: Boolean) {
-
+        dpadLayout?.selectSubPosition(subPosition, smooth)
     }
-
-
 
     /**
      * Sets whether focus can move out from the front and/or back of the grid view.

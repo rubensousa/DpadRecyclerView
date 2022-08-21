@@ -7,7 +7,7 @@ import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.databinding.AdapterListBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemNestedAdapter
-import com.rubensousa.tvfocus.recyclerview.item.ItemViewHolder
+import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 
 class ListViewHolder(private val binding: AdapterListBinding) :
     RecyclerView.ViewHolder(binding.root), DpadViewHolder {

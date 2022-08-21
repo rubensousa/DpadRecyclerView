@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:descendantFocusability="afterDescendants"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/subPosition0TextView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="top|start"
+        android:background="@drawable/test_item_background"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:text="Subposition 0"
+        android:textAllCaps="true"
+        android:textColor="@color/test_item_text"
+        android:textSize="35sp" />
+
+    <TextView
+        android:id="@+id/subPosition1TextView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="top|start"
+        android:background="@drawable/test_item_background"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:text="Subposition 1"
+        android:textAllCaps="true"
+        android:textColor="@color/test_item_text"
+        android:textSize="35sp" />
+
+
+    <TextView
+        android:id="@+id/subPosition2TextView"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="top|start"
+        android:background="@drawable/test_item_background"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:gravity="center"
+        android:text="Subposition 2"
+        android:textAllCaps="true"
+        android:textColor="@color/test_item_text"
+        android:textSize="35sp" />
+
+
+</LinearLayout>
