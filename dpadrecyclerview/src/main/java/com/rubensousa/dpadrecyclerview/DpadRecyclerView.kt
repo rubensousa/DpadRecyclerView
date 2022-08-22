@@ -295,12 +295,12 @@ open class DpadRecyclerView @JvmOverloads constructor(
         requireDpadGridLayoutManager().setAlignments(parent, child, smooth)
     }
 
-    fun setParentAlignment(alignment: ParentAlignment) {
-        requireDpadGridLayoutManager().setParentAlignment(alignment)
+    fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean = false) {
+        requireDpadGridLayoutManager().setParentAlignment(alignment, smooth)
     }
 
-    fun setChildAlignment(alignment: ChildAlignment) {
-        requireDpadGridLayoutManager().setChildAlignment(alignment)
+    fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean = false) {
+        requireDpadGridLayoutManager().setChildAlignment(alignment, smooth)
     }
 
     fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {

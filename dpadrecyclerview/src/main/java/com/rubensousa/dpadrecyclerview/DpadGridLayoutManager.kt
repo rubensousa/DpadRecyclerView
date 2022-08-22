@@ -326,20 +326,28 @@ class DpadGridLayoutManager : GridLayoutManager {
         scrollAlignment.setParentAlignment(parent)
         scrollAlignment.setChildAlignment(child)
         if (smooth) {
-            scroller.scrollToFocusedPosition(requireNotNull(recyclerView), smooth)
+            scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
         } else {
             requestLayout()
         }
     }
 
-    fun setParentAlignment(alignment: ParentAlignment) {
+    fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean) {
         scrollAlignment.setParentAlignment(alignment)
-        requestLayout()
+        if (smooth) {
+            scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
+        } else {
+            requestLayout()
+        }
     }
 
-    fun setChildAlignment(alignment: ChildAlignment) {
+    fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean) {
         scrollAlignment.setChildAlignment(alignment)
-        requestLayout()
+        if (smooth) {
+            scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
+        } else {
+            requestLayout()
+        }
     }
 
     fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {

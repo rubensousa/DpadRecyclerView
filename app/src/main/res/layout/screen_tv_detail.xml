@@ -9,6 +9,8 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:dpadRecyclerViewFocusOutOppositeBack="false"
+        app:dpadRecyclerViewFocusOutOppositeFront="false"
         app:dpadRecyclerViewCircularFocusEnabled="true"
         app:dpadRecyclerViewOrientation="vertical"
         app:dpadRecyclerViewSpanCount="5" />

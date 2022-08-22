@@ -23,7 +23,18 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
 
     private var _binding: ScreenTvDetailBinding? = null
     private val binding: ScreenTvDetailBinding get() = _binding!!
-    private var centered = true
+    private val topParentAlignment = ParentAlignment(
+        edge = Edge.NONE,
+        offset = 0,
+        offsetStartRatio = 0.05f
+    )
+    private val topChildAlignment = ChildAlignment(offset = 0, offsetStartRatio = 0f)
+    private val centerParentAlignment = ParentAlignment(
+        edge = Edge.NONE,
+        offset = 0,
+        offsetStartRatio = 0.5f
+    )
+    private val centerChildAlignment = ChildAlignment(offset = 0, offsetStartRatio = 0.5f)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,27 +71,6 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         val headerAdapter = ListHeaderAdapter()
         val itemAdapter = ItemGridAdapter(object : ItemViewHolder.ItemClickListener {
             override fun onViewHolderClicked() {
-                centered = !centered
-                if (centered) {
-                    binding.recyclerView.setAlignments(
-                        parent = ParentAlignment(
-                            edge = Edge.NONE,
-                            offset = 0,
-                            offsetStartRatio = 0.5f
-                        ),
-                        child = ChildAlignment(offset = 0, offsetStartRatio = 0.5f),
-                        smooth = true
-                    )
-                } else {
-                    binding.recyclerView.setAlignments(
-                        parent = ParentAlignment(
-                            edge = Edge.NONE,
-                            offsetStartRatio = 0.95f
-                        ),
-                        child = ChildAlignment(offsetStartRatio = 1f),
-                        smooth = true
-                    )
-                }
             }
         })
         val items = ArrayList<Int>()
@@ -104,16 +94,8 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                 }
             }
         })
-        binding.recyclerView.setChildAlignment(
-            ChildAlignment(offset = 0, offsetStartRatio = 0.5f)
-        )
-        binding.recyclerView.setParentAlignment(
-            ParentAlignment(
-                edge = Edge.NONE,
-                offset = 0,
-                offsetStartRatio = 0.5f
-            )
-        )
+        binding.recyclerView.setChildAlignment(topChildAlignment)
+        binding.recyclerView.setParentAlignment(topParentAlignment)
         binding.recyclerView.addItemDecoration(
             GridSpanMarginDecoration.create(
                 margin = binding.root.context.resources.getDimensionPixelOffset(
@@ -131,6 +113,19 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                 position: Int,
                 subPosition: Int
             ) {
+                if (position > 6) {
+                    binding.recyclerView.setAlignments(
+                        centerParentAlignment,
+                        centerChildAlignment,
+                        smooth = true
+                    )
+                } else {
+                    binding.recyclerView.setAlignments(
+                        topParentAlignment,
+                        topChildAlignment,
+                        smooth = true
+                    )
+                }
                 Timber.d("Selected: $position, $subPosition")
             }
 
