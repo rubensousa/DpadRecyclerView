@@ -54,12 +54,12 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
             ParentAlignment(
                 edge = ParentAlignment.Edge.MIN_MAX,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
 
         recyclerView.setChildAlignment(
-            ChildAlignment(offset = 0, offsetPercent = 50f)
+            ChildAlignment(offset = 0, offsetStartRatio = 0.5f)
         )
         recyclerView.addItemDecoration(
             LinearMarginDecoration.createVertical(

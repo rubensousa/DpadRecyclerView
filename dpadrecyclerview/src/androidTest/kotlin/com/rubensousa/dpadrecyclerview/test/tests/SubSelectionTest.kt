@@ -30,11 +30,11 @@ class SubSelectionTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.NONE,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
     }
@@ -152,7 +152,7 @@ class SubSelectionTest : GridTest() {
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetPercent = 50f,
+                        offsetStartRatio = 0.5f,
                         alignmentViewId = R.id.subPosition0TextView,
                         focusViewId = R.id.subPosition0TextView
                     )
@@ -160,7 +160,7 @@ class SubSelectionTest : GridTest() {
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetPercent = 50f,
+                        offsetStartRatio = 0.5f,
                         alignmentViewId = R.id.subPosition1TextView,
                         focusViewId = R.id.subPosition1TextView
                     )
@@ -168,7 +168,7 @@ class SubSelectionTest : GridTest() {
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetPercent = 50f,
+                        offsetStartRatio = 0.5f,
                         alignmentViewId = R.id.subPosition2TextView,
                         focusViewId = R.id.subPosition2TextView
                     )
@@ -191,8 +191,7 @@ class SubSelectionTest : GridTest() {
         class VH(
             view: View,
             private val alignments: List<ChildAlignment>
-        ) : TestViewHolder(view),
-            DpadViewHolder {
+        ) : TestViewHolder(view), DpadViewHolder {
 
             override fun getAlignments(): List<ChildAlignment> {
                 return alignments

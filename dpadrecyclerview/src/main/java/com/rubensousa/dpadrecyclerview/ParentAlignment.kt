@@ -2,7 +2,6 @@ package com.rubensousa.dpadrecyclerview
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.view.Gravity
 
 /**
  * Alignment configuration for aligning views in relation to the RecyclerView bounds
@@ -11,11 +10,11 @@ import android.view.Gravity
 data class ParentAlignment(
     val edge: Edge,
     val offset: Int = 0,
-    val offsetPercent: Float = 50f,
+    val offsetStartRatio: Float = 0.5f,
     /**
-     * true if [offsetPercent] should be used to position the item. Default is true
+     * true if [offsetStartRatio] should be used to position the item. Default is true
      */
-    val offsetPercentEnabled: Boolean = true,
+    val isOffsetRatioEnabled: Boolean = true,
     /**
      * When true, if there are very few items between min edge and keyline,
      * align the items to keyline instead of aligning them to the min edge
@@ -48,16 +47,16 @@ data class ParentAlignment(
     )
 
     init {
-        require(offsetPercent in 0f..100.0f) {
-            "offsetPercent must be a value between 0f and 100f"
+        require(offsetStartRatio in 0f..1f) {
+            "offsetStartRatio must be a value between 0f and 1f"
         }
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(edge.ordinal)
         parcel.writeInt(offset)
-        parcel.writeFloat(offsetPercent)
-        parcel.writeByte(if (offsetPercentEnabled) 1 else 0)
+        parcel.writeFloat(offsetStartRatio)
+        parcel.writeByte(if (isOffsetRatioEnabled) 1 else 0)
         parcel.writeByte(if (preferKeylineOverMinEdge) 1 else 0)
         parcel.writeByte(if (preferKeylineOverMaxEdge) 1 else 0)
     }

@@ -29,19 +29,19 @@ internal class ChildScrollAlignment {
                     alignmentView.width - offset
                 }
                 if (alignment.includePadding) {
-                    if (alignment.offsetPercent == 0f) {
+                    if (alignment.offsetStartRatio == 0f) {
                         offset -= alignmentView.paddingRight
-                    } else if (alignment.offsetPercent == 100f) {
+                    } else if (alignment.offsetStartRatio == 1f) {
                         offset += alignmentView.paddingLeft
                     }
                 }
-                if (alignment.isPercentAlignmentEnabled) {
+                if (alignment.isOffsetRatioEnabled) {
                     val width = if (alignmentView === itemView) {
                         layoutParams.getOpticalWidth(alignmentView)
                     } else {
                         alignmentView.width
                     }
-                    offset -= (width * alignment.offsetPercent / 100f).toInt()
+                    offset -= (width * alignment.offsetStartRatio).toInt()
                 }
                 if (itemView !== alignmentView) {
                     tmpRect.right = offset
@@ -50,19 +50,19 @@ internal class ChildScrollAlignment {
                 }
             } else {
                 if (alignment.includePadding) {
-                    if (alignment.offsetPercent == 0f) {
+                    if (alignment.offsetStartRatio == 0f) {
                         offset += alignmentView.paddingLeft
-                    } else if (alignment.offsetPercent == 100f) {
+                    } else if (alignment.offsetStartRatio == 1f) {
                         offset -= alignmentView.paddingRight
                     }
                 }
-                if (alignment.isPercentAlignmentEnabled) {
+                if (alignment.isOffsetRatioEnabled) {
                     val width = if (alignmentView === itemView) {
                         layoutParams.getOpticalWidth(alignmentView)
                     } else {
                         alignmentView.width
                     }
-                    offset += (width * alignment.offsetPercent / 100f).toInt()
+                    offset += (width * alignment.offsetStartRatio).toInt()
                 }
                 if (itemView !== alignmentView) {
                     tmpRect.left = offset
@@ -82,19 +82,19 @@ internal class ChildScrollAlignment {
         ): Int {
             var alignPos = -config.offset
             if (config.includePadding) {
-                if (config.offsetPercent == 0f) {
+                if (config.offsetStartRatio == 0f) {
                     alignPos += alignmentView.paddingTop
-                } else if (config.offsetPercent == 100f) {
+                } else if (config.offsetStartRatio == 1f) {
                     alignPos -= alignmentView.paddingBottom
                 }
             }
-            if (config.isPercentAlignmentEnabled) {
+            if (config.isOffsetRatioEnabled) {
                 val height = if (alignmentView === itemView) {
                     layoutParams.getOpticalHeight(alignmentView)
                 } else {
                     alignmentView.height
                 }
-                alignPos += (height * config.offsetPercent / 100f).toInt()
+                alignPos += (height * config.offsetStartRatio).toInt()
             }
             if (itemView !== alignmentView) {
                 tmpRect.top = alignPos

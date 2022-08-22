@@ -71,23 +71,23 @@ open class DpadGridLayoutParams : GridLayoutManager.LayoutParams {
         alignY = value
     }
 
-    fun calculateItemAlignments(
-        childAlignments: List<ChildAlignment>,
+    fun calculateViewHolderAlignment(
+        alignments: List<ChildAlignment>,
         orientation: Int,
         view: View
     ) {
-        if (childAlignments.isEmpty()) {
+        if (alignments.isEmpty()) {
             return
         }
-        val cache = if (alignmentCache == null || alignmentCache?.size != childAlignments.size) {
-            IntArray(childAlignments.size)
+        val cache = if (alignmentCache == null || alignmentCache?.size != alignments.size) {
+            IntArray(alignments.size)
         } else {
             alignmentCache!!
         }
         alignmentCache = cache
-        childAlignments.forEachIndexed { index, childAlignment ->
+        alignments.forEachIndexed { index, alignment ->
             cache[index] = ChildScrollAlignment.getAlignmentPosition(
-                view, childAlignment, orientation
+                view, alignment, orientation
             )
         }
         if (orientation == RecyclerView.HORIZONTAL) {

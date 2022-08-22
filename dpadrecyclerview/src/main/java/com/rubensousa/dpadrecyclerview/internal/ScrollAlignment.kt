@@ -35,7 +35,7 @@ internal class ScrollAlignment(
     }
 
     fun setParentAlignment(alignment: ParentAlignment) {
-        parentAlignment.alignment = alignment
+        parentAlignment.defaultAlignment = alignment
     }
 
     fun setChildAlignment(config: ChildAlignment) {
@@ -73,8 +73,9 @@ internal class ScrollAlignment(
         updateChildAlignments(recyclerView, view)
         var scrollOffset = calculateAlignedScrollDistance(view)
         if (childView != null) {
-            scrollOffset =
-                calculateAdjustedAlignedScrollDistance(recyclerView, scrollOffset, view, childView)
+            scrollOffset = calculateAdjustedAlignedScrollDistance(
+                recyclerView, scrollOffset, view, childView
+            )
         }
         return if (scrollOffset != 0) {
             scrollOffset
@@ -97,7 +98,7 @@ internal class ScrollAlignment(
             layoutParams.setAlignY(childAlignment.getVerticalAlignmentPosition(view))
         } else {
             // Calculate item alignments for each sub position
-            layoutParams.calculateItemAlignments(alignments, childAlignment.orientation, view)
+            layoutParams.calculateViewHolderAlignment(alignments, childAlignment.orientation, view)
             if (childAlignment.orientation == RecyclerView.HORIZONTAL) {
                 layoutParams.setAlignY(childAlignment.getVerticalAlignmentPosition(view))
             } else {
@@ -225,20 +226,29 @@ internal class ScrollAlignment(
      * Return the scroll delta required to make the view selected and aligned.
      * If the returned value is 0, there is no need to scroll.
      */
-    private fun calculateAlignedScrollDistance(view: View): Int {
-        return parentAlignment.calculateScrollDistance(getViewCenter(view))
+    private fun calculateAlignedScrollDistance(
+        view: View,
+        subPositionAlignment: ParentAlignment? = null
+    ): Int {
+        return parentAlignment.calculateScrollDistance(getViewCenter(view), subPositionAlignment)
     }
 
-    /**
-     * Get adjusted primary position for a given childView (if there is multiple ItemAlignment
-     * defined on the view).
-     */
     private fun calculateAdjustedAlignedScrollDistance(
         recyclerView: RecyclerView, offset: Int, view: View, childView: View
     ): Int {
         var scrollValue = offset
         val subPosition = findSubPositionOfChild(recyclerView, view, childView)
         if (subPosition != 0) {
+         /*
+         TODO investigate custom parent alignment
+         val viewHolder = recyclerView.getChildViewHolder(view)
+            if (viewHolder is DpadViewHolder) {
+                val alignments = viewHolder.getAlignments()
+                if (subPosition < alignments.size) {
+                    val alignment = alignments[subPosition]
+                    scrollValue = calculateAlignedScrollDistance(view, alignment)
+                }
+            }*/
             val layoutParams = view.layoutParams as DpadGridLayoutParams
             val alignments = layoutParams.getAlignments()
             if (alignments != null && alignments.isNotEmpty()) {

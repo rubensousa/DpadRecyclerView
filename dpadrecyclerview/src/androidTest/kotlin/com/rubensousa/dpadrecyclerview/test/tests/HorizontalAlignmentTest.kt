@@ -27,11 +27,11 @@ class HorizontalAlignmentTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
     }
@@ -119,7 +119,7 @@ class HorizontalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.MIN,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
 
@@ -130,7 +130,7 @@ class HorizontalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.MAX,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
 
@@ -141,7 +141,7 @@ class HorizontalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.NONE,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
 
@@ -162,7 +162,7 @@ class HorizontalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.NONE,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
 
@@ -173,7 +173,7 @@ class HorizontalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.MIN,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
 
@@ -184,7 +184,7 @@ class HorizontalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.MAX,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
 
@@ -199,11 +199,11 @@ class HorizontalAlignmentTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = offset,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetPercent = 0f
+                offsetStartRatio = 0f
             )
         )
         UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_RIGHT, times = 5)
@@ -224,11 +224,11 @@ class HorizontalAlignmentTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = containerOffset,
-                offsetPercent = 0f
+                offsetStartRatio = 0f
             ),
             childAlignment = ChildAlignment(
                 offset = itemOffset,
-                offsetPercent = 0f
+                offsetStartRatio = 0f
             )
         )
         UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_RIGHT, times = 5)
@@ -250,11 +250,11 @@ class HorizontalAlignmentTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = containerOffset,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = itemOffset,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
         UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_RIGHT, times = 5)
@@ -273,7 +273,7 @@ class HorizontalAlignmentTest : GridTest() {
         val parentAlignment = ParentAlignment(
             edge = Edge.NONE,
             offset = 0,
-            offsetPercent = 50f
+            offsetStartRatio = 0.5f
         )
         val layoutConfig = TestLayoutConfiguration(
             spans = 1,
@@ -281,7 +281,7 @@ class HorizontalAlignmentTest : GridTest() {
             parentAlignment = parentAlignment,
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             ),
             gravity = Gravity.CENTER
         )

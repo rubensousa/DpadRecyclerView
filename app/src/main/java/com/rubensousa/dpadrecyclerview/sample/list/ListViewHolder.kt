@@ -75,11 +75,11 @@ class ListViewHolder(private val binding: AdapterListBinding) :
                     offset = binding.root.resources.getDimensionPixelOffset(
                         R.dimen.list_margin_start
                     ),
-                    offsetPercentEnabled = false
+                    isOffsetRatioEnabled = false
                 )
             )
             setChildAlignment(
-                ChildAlignment(offset = 0, offsetPercent = 0f)
+                ChildAlignment(offset = 0, offsetStartRatio = 0f)
             )
         }
     }

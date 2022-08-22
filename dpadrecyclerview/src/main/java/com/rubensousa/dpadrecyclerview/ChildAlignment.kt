@@ -30,14 +30,14 @@ data class ChildAlignment(
      * Sets the offset percent for item alignment in addition to the [offset].
      * Example: 40f means 40% of the width/height from the start edge.
      * In RTL it's 40% of the width from the right edge
-     * Set [isPercentAlignmentEnabled] to false in case you want to disable this
+     * Set [isOffsetRatioEnabled] to false in case you want to disable this
      */
-    val offsetPercent: Float = 50f,
+    val offsetStartRatio: Float = 0.5f,
     /**
      * True if padding should be included for the alignment.
-     * Includes start/top padding if [offsetPercent] is 0.
-     * Includes end/bottom padding if [offsetPercent] is 100.
-     * If [offsetPercent] is not 0 or 100, padding isn't included
+     * Includes start/top padding if [offsetStartRatio] is 0.0.
+     * Includes end/bottom padding if [offsetStartRatio] is 1.0.
+     * If [offsetStartRatio] is not 0.0 or 1.0, padding isn't included
      */
     val includePadding: Boolean = false,
     /**
@@ -45,9 +45,9 @@ data class ChildAlignment(
      */
     val alignToBaseline: Boolean = false,
     /**
-     * When enabled, [offsetPercent] will be used for the item alignment
+     * When enabled, [offsetStartRatio] will be used for the item alignment
      */
-    val isPercentAlignmentEnabled: Boolean = true
+    val isOffsetRatioEnabled: Boolean = true
 ) : Parcelable {
 
     companion object CREATOR : Parcelable.Creator<ChildAlignment> {
@@ -57,6 +57,12 @@ data class ChildAlignment(
 
         override fun newArray(size: Int): Array<ChildAlignment?> {
             return arrayOfNulls(size)
+        }
+    }
+
+    init {
+        require(offsetStartRatio in 0f..1f) {
+            "offsetStartRatio must be a value between 0f and 100f"
         }
     }
 
@@ -74,10 +80,10 @@ data class ChildAlignment(
         parcel.writeInt(alignmentViewId)
         parcel.writeInt(focusViewId)
         parcel.writeInt(offset)
-        parcel.writeFloat(offsetPercent)
+        parcel.writeFloat(offsetStartRatio)
         parcel.writeByte(if (includePadding) 1 else 0)
         parcel.writeByte(if (alignToBaseline) 1 else 0)
-        parcel.writeByte(if (isPercentAlignmentEnabled) 1 else 0)
+        parcel.writeByte(if (isOffsetRatioEnabled) 1 else 0)
     }
 
     override fun describeContents(): Int {

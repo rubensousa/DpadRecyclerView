@@ -5,9 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadViewHolder
-import com.rubensousa.dpadrecyclerview.R
+import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.databinding.AdapterListHeaderBinding
 
 class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBACK) {
@@ -50,15 +48,15 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetPercent = 50f,
-                        alignmentViewId = R.id.subPosition0TextView,
+                        offsetStartRatio = 0.5f,
+                        alignmentViewId = R.id.subPosition1TextView,
                         focusViewId = R.id.subPosition0TextView
                     )
                 )
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetPercent = 50f,
+                        offsetStartRatio = 0.5f,
                         alignmentViewId = R.id.subPosition1TextView,
                         focusViewId = R.id.subPosition1TextView
                     )
@@ -66,8 +64,8 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetPercent = 50f,
-                        alignmentViewId = R.id.subPosition2TextView,
+                        offsetStartRatio = 0.5f,
+                        alignmentViewId = R.id.subPosition1TextView,
                         focusViewId = R.id.subPosition2TextView
                     )
                 )

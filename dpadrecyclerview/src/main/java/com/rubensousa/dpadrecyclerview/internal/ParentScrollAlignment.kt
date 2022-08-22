@@ -15,7 +15,7 @@ internal class ParentScrollAlignment {
     val isMaxUnknown: Boolean
         get() = maxEdge == Int.MAX_VALUE
 
-    var alignment = ParentAlignment(edge = Edge.MIN_MAX)
+    var defaultAlignment = ParentAlignment(edge = Edge.MIN_MAX)
     var orientation = RecyclerView.VERTICAL
 
     /**
@@ -98,14 +98,14 @@ internal class ParentScrollAlignment {
     ) {
         this.minEdge = minEdge
         this.maxEdge = maxEdge
-        val keyLine = calculateKeyline()
+        val keyLine = calculateKeyline(defaultAlignment)
         val isMinUnknown = isMinUnknown
         val isMaxUnknown = isMaxUnknown
         if (!isMinUnknown) {
             val alignToMinEdge = if (!reversedFlow) {
-                shouldAlignToMinEdge()
+                shouldAlignToMinEdge(defaultAlignment)
             } else {
-                shouldAlignToMaxEdge()
+                shouldAlignToMaxEdge(defaultAlignment)
             }
             if (alignToMinEdge) {
                 // calculate scroll distance to move current minEdge to padding at min edge
@@ -117,9 +117,9 @@ internal class ParentScrollAlignment {
         }
         if (!isMaxUnknown) {
             val alignToMaxEdge = if (!reversedFlow) {
-                shouldAlignToMaxEdge()
+                shouldAlignToMaxEdge(defaultAlignment)
             } else {
-                shouldAlignToMinEdge()
+                shouldAlignToMinEdge(defaultAlignment)
             }
             if (alignToMaxEdge) {
                 // calculate scroll distance to move current maxEdge to padding at max edge
@@ -131,8 +131,8 @@ internal class ParentScrollAlignment {
         }
         if (!isMaxUnknown && !isMinUnknown) {
             if (!reversedFlow) {
-                if (shouldAlignToMinEdge()) {
-                    if (alignment.preferKeylineOverMinEdge) {
+                if (shouldAlignToMinEdge(defaultAlignment)) {
+                    if (defaultAlignment.preferKeylineOverMinEdge) {
                         // if we prefer key line, might align max child to key line for minScroll
                         minScroll = min(
                             minScroll, calculateScrollToKeyLine(maxChildViewCenter, keyLine)
@@ -140,8 +140,8 @@ internal class ParentScrollAlignment {
                     }
                     // don't over scroll max
                     maxScroll = max(minScroll, maxScroll)
-                } else if (shouldAlignToMaxEdge()) {
-                    if (alignment.preferKeylineOverMaxEdge) {
+                } else if (shouldAlignToMaxEdge(defaultAlignment)) {
+                    if (defaultAlignment.preferKeylineOverMaxEdge) {
                         // if we prefer key line, might align min child to key line for maxScroll
                         maxScroll = max(
                             maxScroll, calculateScrollToKeyLine(minChildViewCenter, keyLine)
@@ -151,8 +151,8 @@ internal class ParentScrollAlignment {
                     minScroll = min(minScroll, maxScroll)
                 }
             } else {
-                if (shouldAlignToMinEdge()) {
-                    if (alignment.preferKeylineOverMinEdge) {
+                if (shouldAlignToMinEdge(defaultAlignment)) {
+                    if (defaultAlignment.preferKeylineOverMinEdge) {
                         // if we prefer key line, might align min child to key line for maxScroll
                         maxScroll = max(
                             maxScroll, calculateScrollToKeyLine(minChildViewCenter, keyLine)
@@ -160,8 +160,8 @@ internal class ParentScrollAlignment {
                     }
                     // don't over scroll min
                     minScroll = min(minScroll, maxScroll)
-                } else if (shouldAlignToMaxEdge()) {
-                    if (alignment.preferKeylineOverMaxEdge) {
+                } else if (shouldAlignToMaxEdge(defaultAlignment)) {
+                    if (defaultAlignment.preferKeylineOverMaxEdge) {
                         // if we prefer key line, might align max child to key line for
                         // minScroll
                         minScroll = min(
@@ -181,14 +181,15 @@ internal class ParentScrollAlignment {
      * according to the current [alignment].
      * The scroll distance will be capped by [minScroll] and [maxScroll]
      */
-    fun calculateScrollDistance(viewCenter: Int): Int {
-        val keyLine = calculateKeyline()
+    fun calculateScrollDistance(viewCenter: Int, subPositionAlignment: ParentAlignment?): Int {
+        val alignment = subPositionAlignment ?: defaultAlignment
+        val keyLine = calculateKeyline(alignment)
         if (!isMinUnknown) {
             val keyLineToMinEdge = keyLine - paddingMin
             val alignToMinEdge = if (!reversedFlow) {
-                shouldAlignToMinEdge()
+                shouldAlignToMinEdge(alignment)
             } else {
-                shouldAlignToMaxEdge()
+                shouldAlignToMaxEdge(alignment)
             }
             if (alignToMinEdge && viewCenter - minEdge <= keyLineToMinEdge) {
                 // view center is before key line: align the min edge (first child) to padding.
@@ -203,9 +204,9 @@ internal class ParentScrollAlignment {
         if (!isMaxUnknown) {
             val keyLineToMaxEdge = size - keyLine - paddingMax
             val alignToMaxEdge = if (!reversedFlow) {
-                shouldAlignToMaxEdge()
+                shouldAlignToMaxEdge(alignment)
             } else {
-                shouldAlignToMinEdge()
+                shouldAlignToMinEdge(alignment)
             }
             if (alignToMaxEdge && maxEdge - viewCenter <= keyLineToMaxEdge) {
                 // view center is after key line: align the max edge (last child) to padding.
@@ -226,16 +227,16 @@ internal class ParentScrollAlignment {
         maxEdge = Int.MAX_VALUE
     }
 
-    private fun calculateKeyline(): Int {
+    private fun calculateKeyline(alignment: ParentAlignment): Int {
         var keyLine = 0
         if (!reversedFlow) {
-            if (alignment.offsetPercentEnabled) {
-                keyLine += (size * alignment.offsetPercent / 100).toInt()
+            if (alignment.isOffsetRatioEnabled) {
+                keyLine += (size * alignment.offsetStartRatio).toInt()
             }
             keyLine += alignment.offset
         } else {
-            if (alignment.offsetPercentEnabled) {
-                keyLine -= (size * (100f - alignment.offsetPercent) / 100).toInt()
+            if (alignment.isOffsetRatioEnabled) {
+                keyLine -= (size * (1f - alignment.offsetStartRatio)).toInt()
             }
             keyLine -= alignment.offset
         }
@@ -249,11 +250,11 @@ internal class ParentScrollAlignment {
         return viewCenterPosition - keyLine
     }
 
-    private fun shouldAlignToMinEdge(): Boolean {
+    private fun shouldAlignToMinEdge(alignment: ParentAlignment): Boolean {
         return alignment.edge == Edge.MIN || alignment.edge == Edge.MIN_MAX
     }
 
-    private fun shouldAlignToMaxEdge(): Boolean {
+    private fun shouldAlignToMaxEdge(alignment: ParentAlignment): Boolean {
         return alignment.edge == Edge.MAX || alignment.edge == Edge.MIN_MAX
     }
 

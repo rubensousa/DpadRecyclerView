@@ -64,20 +64,20 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                 if (centered) {
                     binding.recyclerView.setAlignments(
                         parent = ParentAlignment(
-                            edge = Edge.MIN_MAX,
+                            edge = Edge.NONE,
                             offset = 0,
-                            offsetPercent = 50f
+                            offsetStartRatio = 0.5f
                         ),
-                        child = ChildAlignment(offset = 0, offsetPercent = 50f),
+                        child = ChildAlignment(offset = 0, offsetStartRatio = 0.5f),
                         smooth = true
                     )
                 } else {
                     binding.recyclerView.setAlignments(
                         parent = ParentAlignment(
                             edge = Edge.NONE,
-                            offsetPercent = 95f
+                            offsetStartRatio = 0.95f
                         ),
-                        child = ChildAlignment(offsetPercent = 100f),
+                        child = ChildAlignment(offsetStartRatio = 1f),
                         smooth = true
                     )
                 }
@@ -105,13 +105,13 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
             }
         })
         binding.recyclerView.setChildAlignment(
-            ChildAlignment(offset = 0, offsetPercent = 50f)
+            ChildAlignment(offset = 0, offsetStartRatio = 0.5f)
         )
         binding.recyclerView.setParentAlignment(
             ParentAlignment(
                 edge = Edge.NONE,
                 offset = 0,
-                offsetPercent = 50f
+                offsetStartRatio = 0.5f
             )
         )
         binding.recyclerView.addItemDecoration(
