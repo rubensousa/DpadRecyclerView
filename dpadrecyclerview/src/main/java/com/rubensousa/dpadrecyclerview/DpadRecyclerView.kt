@@ -25,6 +25,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var keyInterceptListener: OnKeyInterceptListener? = null
     private var unhandledKeyListener: OnUnhandledKeyListener? = null
     private var dpadLayout: DpadGridLayoutManager? = null
+    private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
 
     init {
         dpadLayout = createLayoutManager(context, attrs)
@@ -132,6 +133,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
         if (layout is DpadGridLayoutManager) {
             layout.setRecyclerView(this, isChildrenDrawingOrderEnabled)
+            layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             dpadLayout = layout
         }
     }
@@ -238,6 +240,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
         requireDpadGridLayoutManager().setGravity(gravity)
     }
 
+    fun setSelectedPosition(position: Int, smooth: Boolean, task: ViewHolderTask) {
+        viewHolderTaskExecutor.schedule(position, task)
+        setSelectedPosition(position, smooth)
+    }
+
     fun setSelectedPosition(position: Int, smooth: Boolean) {
         if (smooth) {
             smoothScrollToPosition(position)
@@ -339,6 +346,35 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     fun clearOnLayoutCompletedListeners() {
         dpadLayout?.clearOnLayoutCompletedListeners()
+    }
+
+    private class ViewHolderTaskExecutor : OnViewHolderSelectedListener {
+
+        private var targetPosition = NO_POSITION
+        private var pendingTask: ViewHolderTask? = null
+
+        fun schedule(position: Int, task: ViewHolderTask) {
+            targetPosition = position
+            pendingTask = task
+        }
+
+        override fun onViewHolderSelected(
+            parent: RecyclerView,
+            child: ViewHolder?,
+            position: Int,
+            subPosition: Int
+        ) {
+            if (position == targetPosition && child != null) {
+                executePendingTask(child)
+            }
+        }
+
+        private fun executePendingTask(viewHolder: ViewHolder) {
+            pendingTask?.run(viewHolder)
+            pendingTask = null
+            targetPosition = NO_POSITION
+        }
+
     }
 
     /**

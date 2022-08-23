@@ -28,7 +28,14 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
         setupAlignment(binding.recyclerView)
         binding.recyclerView.requestFocus()
         if (selectedPosition != RecyclerView.NO_POSITION) {
-            binding.recyclerView.setSelectedPosition(selectedPosition, false)
+            binding.recyclerView.setSelectedPosition(
+                selectedPosition,
+                smooth = false,
+                object : ViewHolderTask {
+                    override fun run(viewHolder: RecyclerView.ViewHolder) {
+                        Timber.d("Selection state restored")
+                    }
+                })
         }
     }
 
