@@ -26,7 +26,6 @@ class DpadRecyclerView @JvmOverloads constructor(
     init {
         // The LayoutManager will draw the focused view on top of all other views
         isChildrenDrawingOrderEnabled = true
-
         delegate.init(context, attrs)
     }
 
@@ -55,7 +54,7 @@ class DpadRecyclerView @JvmOverloads constructor(
 
     override fun onFocusChanged(gainFocus: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
-        delegate.layout?.onFocusChanged(gainFocus)
+        delegate.onFocusChanged(gainFocus)
     }
 
     override fun onRequestFocusInDescendants(
@@ -83,7 +82,7 @@ class DpadRecyclerView @JvmOverloads constructor(
 
     override fun onRtlPropertiesChanged(layoutDirection: Int) {
         super.onRtlPropertiesChanged(layoutDirection)
-        delegate.layout?.onRtlPropertiesChanged()
+        delegate.onRtlPropertiesChanged()
     }
 
     override fun smoothScrollBy(dx: Int, dy: Int) {
@@ -118,45 +117,58 @@ class DpadRecyclerView @JvmOverloads constructor(
         delegate.setSelectedPosition(position, subPosition, smooth)
     }
 
-    fun getSelectedPosition() = delegate.layout?.selectedPosition ?: NO_POSITION
+    fun getSelectedPosition() = delegate.getSelectedPosition()
 
-    fun getSelectedSubPosition() = delegate.layout?.subSelectionPosition ?: NO_POSITION
+    fun getSelectedSubPosition() = delegate.getSelectedSubPosition()
 
-    fun getCurrentSubPositions() = delegate.layout?.getCurrentSubSelectionCount() ?: 0
+    fun getCurrentSubPositions() = delegate.getCurrentSubPositions()
 
     fun setSelectedSubPosition(subPosition: Int, smooth: Boolean) {
         delegate.setSelectedSubPosition(subPosition, smooth)
     }
 
     /**
-     * Sets whether focus can move out from the front and/or back of the grid view.
+     * Sets whether focus can move out from the front and/or back of the RecyclerView.
      *
      * @param throughFront For the vertical orientation, this controls whether focus can move out
-     * from the top of the grid. For the horizontal orientation, this controls whether focus can
-     * move out the front side of the grid.
+     * from the top.
+     * For the horizontal orientation, this controls whether focus can
+     * move out the left or right (in RTL) side of the grid.
      *
      * @param throughBack For the vertical orientation, this controls whether focus can move out
-     * from the bottom of the grid. For the horizontal orientation, this controls whether focus can
-     * move out the back side of the grid.
+     * from the bottom.
+     * For the horizontal orientation, this controls whether focus can
+     * move out the right or left (in RTL) side of the grid.
      */
     fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
         delegate.setFocusOutAllowed(throughFront, throughBack)
     }
 
+    /**
+     * Sets whether focus can move out from the opposite front and/or back of the RecyclerView
+     *
+     * @param throughFront For the vertical orientation, this controls whether focus can move out
+     * from the left of the grid. For the horizontal orientation, this controls whether focus can
+     * move out the top side of the grid.
+     *
+     * @param throughBack For the vertical orientation, this controls whether focus can move out
+     * from the bottom of the grid. For the horizontal orientation, this controls whether focus can
+     * move out the back side of the grid.
+     */
     fun setFocusOppositeOutAllowed(throughFront: Boolean, throughBack: Boolean) {
         delegate.setFocusOppositeOutAllowed(throughFront, throughBack)
     }
 
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
-        delegate.layout?.addOnViewHolderSelectedListener(listener)
+        delegate.addOnViewHolderSelectedListener(listener)
     }
 
     fun removeOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
-        delegate.layout?.removeOnViewHolderSelectedListener(listener)
+        delegate.removeOnViewHolderSelectedListener(listener)
     }
 
-    fun clearOnChildViewHolderSelectedListeners() {
-        delegate.layout?.clearOnViewHolderSelectedListeners()
+    fun clearOnViewHolderSelectedListeners() {
+        delegate.clearOnViewHolderSelectedListeners()
     }
 
     fun setSmoothScrollBehavior(behavior: SmoothScrollByBehavior?) {
@@ -164,22 +176,22 @@ class DpadRecyclerView @JvmOverloads constructor(
     }
 
     fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
-        delegate.layout?.setAlignments(parent, child, smooth)
+        delegate.setAlignments(parent, child, smooth)
     }
 
     fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean = false) {
-        delegate.layout?.setParentAlignment(alignment, smooth)
+        delegate.setParentAlignment(alignment, smooth)
     }
 
     fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean = false) {
-        delegate.layout?.setChildAlignment(alignment, smooth)
+        delegate.setChildAlignment(alignment, smooth)
     }
 
     fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
-        delegate.layout?.spanSizeLookup = spanSizeLookup
+        delegate.setSpanSizeLookup(spanSizeLookup)
     }
 
-    fun getSpanCount(): Int = delegate.layout?.spanCount ?: 0
+    fun getSpanCount(): Int = delegate.getSpanCount()
 
     fun setOnUnhandledKeyListener(listener: OnUnhandledKeyListener?) {
         unhandledKeyListener = listener
@@ -192,7 +204,7 @@ class DpadRecyclerView @JvmOverloads constructor(
     }
 
     fun addOnLayoutCompletedListener(listener: OnLayoutCompletedListener) {
-        delegate.layout?.addOnLayoutCompletedListener(listener)
+        delegate.addOnLayoutCompletedListener(listener)
     }
 
     /**
@@ -200,15 +212,15 @@ class DpadRecyclerView @JvmOverloads constructor(
      * @param listener The listener to be invoked.
      */
     fun removeOnLayoutCompletedListener(listener: OnLayoutCompletedListener) {
-        delegate.layout?.removeOnLayoutCompletedListener(listener)
+       delegate.removeOnLayoutCompletedListener(listener)
     }
 
     fun clearOnLayoutCompletedListeners() {
-        delegate.layout?.clearOnLayoutCompletedListeners()
+        delegate.clearOnLayoutCompletedListeners()
     }
 
-    fun requireDpadGridLayoutManager() : DpadGridLayoutManager {
-        return requireNotNull(delegate.layout)
+    fun requireDpadGridLayoutManager(): DpadGridLayoutManager {
+        return delegate.requireLayout()
     }
 
     /**

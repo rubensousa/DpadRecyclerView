@@ -5,6 +5,7 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.Interpolator
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 
@@ -16,9 +17,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
     var smoothScrollByBehavior: DpadRecyclerView.SmoothScrollByBehavior? = null
 
-    var layout: DpadGridLayoutManager? = null
-        private set
-
+    private var layout: DpadGridLayoutManager? = null
     private var isRetainingFocus = false
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
 
@@ -122,6 +121,14 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         return layout?.onInterceptFocusSearch(focused, direction)
     }
 
+    fun onRtlPropertiesChanged() {
+        layout?.onRtlPropertiesChanged()
+    }
+
+    fun onFocusChanged(gainFocus: Boolean) {
+        layout?.onFocusChanged(gainFocus)
+    }
+
     fun focusSearch(direction: Int): View? {
         val currentLayout = layout
         if (recyclerView.isFocused && currentLayout != null) {
@@ -192,15 +199,15 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
     }
 
     fun setSpanCount(spans: Int) {
-        layout?.spanCount = spans
+        requireLayout().spanCount = spans
     }
 
     fun setOrientation(orientation: Int) {
-        layout?.orientation = orientation
+        requireLayout().orientation = orientation
     }
 
     fun setGravity(gravity: Int) {
-        layout?.setGravity(gravity)
+        requireLayout().setGravity(gravity)
     }
 
     fun setSelectedPosition(position: Int, smooth: Boolean, task: ViewHolderTask) {
@@ -217,7 +224,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
     }
 
     fun setSelectedPosition(position: Int, subPosition: Int, smooth: Boolean) {
-        layout?.selectPosition(position, subPosition, smooth)
+       requireLayout().selectPosition(position, subPosition, smooth)
     }
 
     fun getSelectedPosition() = layout?.selectedPosition ?: RecyclerView.NO_POSITION
@@ -227,27 +234,63 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
     fun getCurrentSubPositions() = layout?.getCurrentSubSelectionCount() ?: 0
 
     fun setSelectedSubPosition(subPosition: Int, smooth: Boolean) {
-        layout?.selectSubPosition(subPosition, smooth)
+        requireLayout().selectSubPosition(subPosition, smooth)
     }
 
     fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
-        layout?.setFocusOutAllowed(throughFront, throughBack)
+        requireLayout().setFocusOutAllowed(throughFront, throughBack)
     }
 
     fun setFocusOppositeOutAllowed(throughFront: Boolean, throughBack: Boolean) {
-        layout?.setFocusOppositeOutAllowed(throughFront, throughBack)
+        requireLayout().setFocusOppositeOutAllowed(throughFront, throughBack)
     }
 
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
-        layout?.addOnViewHolderSelectedListener(listener)
+        requireLayout().addOnViewHolderSelectedListener(listener)
     }
 
     fun removeOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
-        layout?.removeOnViewHolderSelectedListener(listener)
+        requireLayout().removeOnViewHolderSelectedListener(listener)
     }
 
-    fun clearOnChildViewHolderSelectedListeners() {
-        layout?.clearOnViewHolderSelectedListeners()
+    fun clearOnViewHolderSelectedListeners() {
+        requireLayout().clearOnViewHolderSelectedListeners()
+    }
+
+    fun getSpanCount(): Int = layout?.spanCount ?: 0
+
+    fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
+        requireLayout().setAlignments(parent, child, smooth)
+    }
+
+    fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean = false) {
+        requireLayout().setParentAlignment(alignment, smooth)
+    }
+
+    fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean = false) {
+        requireLayout().setChildAlignment(alignment, smooth)
+    }
+
+    fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
+        requireLayout().spanSizeLookup = spanSizeLookup
+    }
+
+    fun addOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
+        requireLayout().addOnLayoutCompletedListener(listener)
+    }
+
+    fun removeOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
+        requireLayout().removeOnLayoutCompletedListener(listener)
+    }
+
+    fun clearOnLayoutCompletedListeners() {
+        requireLayout().clearOnLayoutCompletedListeners()
+    }
+
+    fun requireLayout(): DpadGridLayoutManager {
+        return requireNotNull(layout) {
+            "LayoutManager is null. You need to call RecyclerView.setLayoutManager"
+        }
     }
 
     private class ViewHolderTaskExecutor : OnViewHolderSelectedListener {

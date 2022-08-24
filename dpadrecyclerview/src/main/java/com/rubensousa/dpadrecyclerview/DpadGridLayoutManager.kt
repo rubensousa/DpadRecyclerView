@@ -56,6 +56,8 @@ class DpadGridLayoutManager : GridLayoutManager {
         init()
     }
 
+    constructor(context: Context) : this(context, 1)
+
     constructor(context: Context, spanCount: Int) : this(
         context, spanCount, RecyclerView.VERTICAL, false
     )
