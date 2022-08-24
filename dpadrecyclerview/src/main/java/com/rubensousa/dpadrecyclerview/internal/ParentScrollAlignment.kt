@@ -132,42 +132,17 @@ internal class ParentScrollAlignment {
         if (!isMaxUnknown && !isMinUnknown) {
             if (!reversedFlow) {
                 if (shouldAlignToMinEdge(defaultAlignment)) {
-                    if (defaultAlignment.preferKeylineOverMinEdge) {
-                        // if we prefer key line, might align max child to key line for minScroll
-                        minScroll = min(
-                            minScroll, calculateScrollToKeyLine(maxChildViewCenter, keyLine)
-                        )
-                    }
                     // don't over scroll max
                     maxScroll = max(minScroll, maxScroll)
                 } else if (shouldAlignToMaxEdge(defaultAlignment)) {
-                    if (defaultAlignment.preferKeylineOverMaxEdge) {
-                        // if we prefer key line, might align min child to key line for maxScroll
-                        maxScroll = max(
-                            maxScroll, calculateScrollToKeyLine(minChildViewCenter, keyLine)
-                        )
-                    }
                     // don't over scroll min
                     minScroll = min(minScroll, maxScroll)
                 }
             } else {
                 if (shouldAlignToMinEdge(defaultAlignment)) {
-                    if (defaultAlignment.preferKeylineOverMinEdge) {
-                        // if we prefer key line, might align min child to key line for maxScroll
-                        maxScroll = max(
-                            maxScroll, calculateScrollToKeyLine(minChildViewCenter, keyLine)
-                        )
-                    }
                     // don't over scroll min
                     minScroll = min(minScroll, maxScroll)
                 } else if (shouldAlignToMaxEdge(defaultAlignment)) {
-                    if (defaultAlignment.preferKeylineOverMaxEdge) {
-                        // if we prefer key line, might align max child to key line for
-                        // minScroll
-                        minScroll = min(
-                            minScroll, calculateScrollToKeyLine(maxChildViewCenter, keyLine)
-                        )
-                    }
                     // don't over scroll max
                     maxScroll = max(minScroll, maxScroll)
                 }
@@ -231,12 +206,12 @@ internal class ParentScrollAlignment {
         var keyLine = 0
         if (!reversedFlow) {
             if (alignment.isOffsetRatioEnabled) {
-                keyLine += (size * alignment.offsetStartRatio).toInt()
+                keyLine += (size * alignment.offsetRatio).toInt()
             }
             keyLine += alignment.offset
         } else {
             if (alignment.isOffsetRatioEnabled) {
-                keyLine -= (size * (1f - alignment.offsetStartRatio)).toInt()
+                keyLine -= (size * (1f - alignment.offsetRatio)).toInt()
             }
             keyLine -= alignment.offset
         }

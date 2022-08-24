@@ -29,9 +29,9 @@ internal class ChildScrollAlignment {
                     alignmentView.width - offset
                 }
                 if (alignment.includePadding) {
-                    if (alignment.offsetStartRatio == 0f) {
+                    if (alignment.offsetRatio == 0f) {
                         offset -= alignmentView.paddingRight
-                    } else if (alignment.offsetStartRatio == 1f) {
+                    } else if (alignment.offsetRatio == 1f) {
                         offset += alignmentView.paddingLeft
                     }
                 }
@@ -41,7 +41,7 @@ internal class ChildScrollAlignment {
                     } else {
                         alignmentView.width
                     }
-                    offset -= (width * alignment.offsetStartRatio).toInt()
+                    offset -= (width * alignment.offsetRatio).toInt()
                 }
                 if (itemView !== alignmentView) {
                     tmpRect.right = offset
@@ -50,9 +50,9 @@ internal class ChildScrollAlignment {
                 }
             } else {
                 if (alignment.includePadding) {
-                    if (alignment.offsetStartRatio == 0f) {
+                    if (alignment.offsetRatio == 0f) {
                         offset += alignmentView.paddingLeft
-                    } else if (alignment.offsetStartRatio == 1f) {
+                    } else if (alignment.offsetRatio == 1f) {
                         offset -= alignmentView.paddingRight
                     }
                 }
@@ -62,7 +62,7 @@ internal class ChildScrollAlignment {
                     } else {
                         alignmentView.width
                     }
-                    offset += (width * alignment.offsetStartRatio).toInt()
+                    offset += (width * alignment.offsetRatio).toInt()
                 }
                 if (itemView !== alignmentView) {
                     tmpRect.left = offset
@@ -82,9 +82,9 @@ internal class ChildScrollAlignment {
         ): Int {
             var alignPos = -config.offset
             if (config.includePadding) {
-                if (config.offsetStartRatio == 0f) {
+                if (config.offsetRatio == 0f) {
                     alignPos += alignmentView.paddingTop
-                } else if (config.offsetStartRatio == 1f) {
+                } else if (config.offsetRatio == 1f) {
                     alignPos -= alignmentView.paddingBottom
                 }
             }
@@ -94,7 +94,7 @@ internal class ChildScrollAlignment {
                 } else {
                     alignmentView.height
                 }
-                alignPos += (height * config.offsetStartRatio).toInt()
+                alignPos += (height * config.offsetRatio).toInt()
             }
             if (itemView !== alignmentView) {
                 tmpRect.top = alignPos

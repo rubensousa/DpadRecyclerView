@@ -6,25 +6,34 @@ import android.os.Parcelable
 /**
  * Alignment configuration for aligning views in relation to the RecyclerView bounds
  */
-// TODO: Add more comments
 data class ParentAlignment(
-    val edge: Edge,
+    /**
+     * The specific alignment to a given edge that overrides the keyline alignment. See [Edge]
+     * Default: [Edge.MIN_MAX]
+     */
+    val edge: Edge = Edge.MIN_MAX,
+    /**
+     * The distance to the [offsetRatio] of the RecyclerView in pixels.
+     *
+     * E.g offsetRatio = 0.5f, offset = 100, RecyclerView's height = 500
+     *
+     * Keyline position = 500 * 0.5f + 100 = 350
+     */
     val offset: Int = 0,
-    val offsetStartRatio: Float = 0.5f,
     /**
-     * true if [offsetStartRatio] should be used to position the item. Default is true
+     * The keyline position for the alignment. Default: 0.5f (center)
+     *
+     * Set [isOffsetRatioEnabled] to false in case you want to disable this
      */
-    val isOffsetRatioEnabled: Boolean = true,
+    val offsetRatio: Float = 0.5f,
     /**
-     * When true, if there are very few items between min edge and keyline,
-     * align the items to keyline instead of aligning them to the min edge
+     * true if [offsetRatio] should be used to position the item.
+     *
+     * If false, only [offset] will be used for the keyline position
+     *
+     * Default is true.
      */
-    val preferKeylineOverMinEdge: Boolean = false,
-    /**
-     * When true, if there are very few items between max edge and keyline,
-     * align the items to keyline instead of aligning them to the max edge
-     */
-    val preferKeylineOverMaxEdge: Boolean = true
+    val isOffsetRatioEnabled: Boolean = true
 ) : Parcelable {
 
     companion object CREATOR : Parcelable.Creator<ParentAlignment> {
@@ -42,12 +51,10 @@ data class ParentAlignment(
         parcel.readInt(),
         parcel.readFloat(),
         parcel.readByte() != 0.toByte(),
-        parcel.readByte() != 0.toByte(),
-        parcel.readByte() != 0.toByte()
     )
 
     init {
-        require(offsetStartRatio in 0f..1f) {
+        require(offsetRatio in 0f..1f) {
             "offsetStartRatio must be a value between 0f and 1f"
         }
     }
@@ -55,16 +62,17 @@ data class ParentAlignment(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(edge.ordinal)
         parcel.writeInt(offset)
-        parcel.writeFloat(offsetStartRatio)
+        parcel.writeFloat(offsetRatio)
         parcel.writeByte(if (isOffsetRatioEnabled) 1 else 0)
-        parcel.writeByte(if (preferKeylineOverMinEdge) 1 else 0)
-        parcel.writeByte(if (preferKeylineOverMaxEdge) 1 else 0)
     }
 
     override fun describeContents(): Int {
         return 0
     }
 
+    /**
+     * Overrides the keyline alignment and instead aligns to a certain edge
+     */
     enum class Edge {
         /**
          * Items will always be aligned to the keyline position by default

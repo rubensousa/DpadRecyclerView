@@ -1,6 +1,7 @@
 package com.rubensousa.dpadrecyclerview.sample.item
 
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
@@ -11,6 +12,7 @@ class ItemViewHolder(
 ) : RecyclerView.ViewHolder(root), DpadViewHolder {
 
     private var clickListener: ItemClickListener? = null
+    private val interpolator = AccelerateDecelerateInterpolator()
 
     init {
         itemView.setOnClickListener {
@@ -34,12 +36,18 @@ class ItemViewHolder(
         clickListener = null
     }
 
-    private fun grow() {
-        itemView.animate().scaleX(1.1f).scaleY(1.1f)
+    fun grow() {
+        itemView.animate()
+            .scaleX(1.1f)
+            .scaleY(1.1f)
+            .setInterpolator(interpolator)
+            .duration = 500
     }
 
-    private fun shrink() {
-        itemView.animate().scaleX(1.0f).scaleY(1.0f)
+    fun shrink() {
+        itemView.animate().cancel()
+        itemView.scaleX = 1.0f
+        itemView.scaleY = 1.0f
     }
 
     interface ItemClickListener {

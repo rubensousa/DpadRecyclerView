@@ -48,7 +48,7 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetStartRatio = 0f,
+                        offsetRatio = 0f,
                         alignmentViewId = R.id.subPosition0TextView,
                         focusViewId = R.id.subPosition0TextView
                     )
@@ -56,7 +56,7 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetStartRatio = 0f,
+                        offsetRatio = 0f,
                         alignmentViewId = R.id.subPosition0TextView,
                         focusViewId = R.id.subPosition1TextView
                     )
@@ -64,7 +64,7 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
                 add(
                     ChildAlignment(
                         offset = 0,
-                        offsetStartRatio = 0f,
+                        offsetRatio = 0f,
                         alignmentViewId = R.id.subPosition0TextView,
                         focusViewId = R.id.subPosition2TextView
                     )

@@ -27,11 +27,11 @@ class VerticalAlignmentTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
     }
@@ -113,7 +113,7 @@ class VerticalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.MIN,
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
 
@@ -124,7 +124,7 @@ class VerticalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.MAX,
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
 
@@ -135,7 +135,7 @@ class VerticalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.NONE,
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
 
@@ -156,7 +156,7 @@ class VerticalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.NONE,
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
 
@@ -167,7 +167,7 @@ class VerticalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.MIN,
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
 
@@ -178,7 +178,7 @@ class VerticalAlignmentTest : GridTest() {
             ParentAlignment(
                 edge = Edge.MAX,
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
 
@@ -193,11 +193,11 @@ class VerticalAlignmentTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = offset,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetStartRatio = 0f
+                offsetRatio = 0f
             )
         )
         UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
@@ -218,11 +218,11 @@ class VerticalAlignmentTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = containerOffset,
-                offsetStartRatio = 0f
+                offsetRatio = 0f
             ),
             childAlignment = ChildAlignment(
                 offset = itemOffset,
-                offsetStartRatio = 0f
+                offsetRatio = 0f
             )
         )
         UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
@@ -244,11 +244,11 @@ class VerticalAlignmentTest : GridTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = containerOffset,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = itemOffset,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
         UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
@@ -267,7 +267,7 @@ class VerticalAlignmentTest : GridTest() {
         val parentAlignment = ParentAlignment(
             edge = Edge.NONE,
             offset = 0,
-            offsetStartRatio = 0.5f
+            offsetRatio = 0.5f
         )
         val layoutConfig = TestLayoutConfiguration(
             spans = 1,
@@ -276,7 +276,7 @@ class VerticalAlignmentTest : GridTest() {
             parentAlignment = parentAlignment,
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetStartRatio = 0.5f
+                offsetRatio = 0.5f
             )
         )
         val adapterConfig = TestAdapterConfiguration(

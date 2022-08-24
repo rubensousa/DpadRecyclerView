@@ -79,7 +79,7 @@ class ListViewHolder(private val binding: AdapterListBinding) :
                 )
             )
             setChildAlignment(
-                ChildAlignment(offset = 0, offsetStartRatio = 0f)
+                ChildAlignment(offset = 0, offsetRatio = 0f)
             )
         }
     }

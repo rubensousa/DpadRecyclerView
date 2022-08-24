@@ -26,15 +26,15 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
     private val topParentAlignment = ParentAlignment(
         edge = Edge.NONE,
         offset = 0,
-        offsetStartRatio = 0.05f
+        offsetRatio = 0.05f
     )
-    private val topChildAlignment = ChildAlignment(offset = 0, offsetStartRatio = 0f)
+    private val topChildAlignment = ChildAlignment(offset = 0, offsetRatio = 0f)
     private val centerParentAlignment = ParentAlignment(
         edge = Edge.NONE,
         offset = 0,
-        offsetStartRatio = 0.5f
+        offsetRatio = 0.5f
     )
-    private val centerChildAlignment = ChildAlignment(offset = 0, offsetStartRatio = 0.5f)
+    private val centerChildAlignment = ChildAlignment(offset = 0, offsetRatio = 0.5f)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
