@@ -29,6 +29,14 @@ class DpadRecyclerView @JvmOverloads constructor(
         delegate.init(context, attrs)
     }
 
+    override fun hasOverlappingRendering(): Boolean {
+        return delegate.hasOverlappingRendering()
+    }
+
+    fun setHasOverlappingRendering(enabled: Boolean) {
+        delegate.setHasOverlappingRendering(enabled)
+    }
+
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (keyInterceptListener?.onInterceptKeyEvent(event) == true) {
             return true
@@ -275,4 +283,12 @@ class DpadRecyclerView @JvmOverloads constructor(
         fun onLayoutCompleted(state: State)
     }
 
+}
+
+fun RecyclerView.canScrollHorizontally(): Boolean {
+    return layoutManager?.canScrollVertically() == true
+}
+
+fun RecyclerView.canScrollVertically(): Boolean {
+    return layoutManager?.canScrollVertically() == true
 }

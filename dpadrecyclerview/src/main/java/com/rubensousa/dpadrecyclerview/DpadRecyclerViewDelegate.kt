@@ -5,9 +5,9 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 import android.view.animation.Interpolator
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SimpleItemAnimator
 
 /**
  * Takes care of most of the functionality of [DpadRecyclerView].
@@ -19,6 +19,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
     private var layout: DpadGridLayoutManager? = null
     private var isRetainingFocus = false
+    private var hasOverlappingRendering = true
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
 
     fun init(context: Context, attrs: AttributeSet?) {
@@ -40,7 +41,8 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
              * The change animation will create a new temporary view and cause undesired
              * focus animation between the old view and new view.
              */
-            (itemAnimator as SimpleItemAnimator?)?.supportsChangeAnimations = false
+            val itemAnimator = itemAnimator as DefaultItemAnimator
+            itemAnimator.supportsChangeAnimations = false
 
             setWillNotDraw(true)
             overScrollMode = RecyclerView.OVER_SCROLL_NEVER
@@ -285,6 +287,12 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
     fun clearOnLayoutCompletedListeners() {
         requireLayout().clearOnLayoutCompletedListeners()
+    }
+
+    fun hasOverlappingRendering(): Boolean = hasOverlappingRendering
+
+    fun setHasOverlappingRendering(enabled: Boolean) {
+       this.hasOverlappingRendering = enabled
     }
 
     fun requireLayout(): DpadGridLayoutManager {
