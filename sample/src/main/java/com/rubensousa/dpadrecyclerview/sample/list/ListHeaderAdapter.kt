@@ -5,8 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.*
-import com.rubensousa.dpadrecyclerview.databinding.AdapterListHeaderBinding
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListHeaderBinding
 
 class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBACK) {
 

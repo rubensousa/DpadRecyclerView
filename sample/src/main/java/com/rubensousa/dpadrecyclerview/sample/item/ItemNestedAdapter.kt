@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.databinding.AdapterNestedItemBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterNestedItemBinding
 
 class ItemNestedAdapter : RecyclerView.Adapter<ItemViewHolder>() {
 

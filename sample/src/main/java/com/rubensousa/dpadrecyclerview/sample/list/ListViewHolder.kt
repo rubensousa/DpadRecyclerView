@@ -3,9 +3,13 @@ package com.rubensousa.dpadrecyclerview.sample.list
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
-import com.rubensousa.dpadrecyclerview.*
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.databinding.AdapterListBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemNestedAdapter
 import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 

@@ -2,7 +2,7 @@ package com.rubensousa.dpadrecyclerview.sample
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.rubensousa.dpadrecyclerview.R
+import com.rubensousa.dpadrecyclerview.sample.R
 
 class MainActivity : AppCompatActivity() {
 

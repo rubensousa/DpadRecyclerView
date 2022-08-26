@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.rubensousa.dpadrecyclerview.databinding.AdapterListBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 
 class NestedListAdapter(

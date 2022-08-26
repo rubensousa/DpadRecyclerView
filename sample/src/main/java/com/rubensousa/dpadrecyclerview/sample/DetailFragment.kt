@@ -11,8 +11,8 @@ import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.R
-import com.rubensousa.dpadrecyclerview.databinding.ScreenTvDetailBinding
+import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenTvDetailBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.list.ListHeaderAdapter
 import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
