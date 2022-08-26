@@ -1,24 +1,30 @@
-package com.rubensousa.dpadrecyclerview.sample
+package com.rubensousa.dpadrecyclerview.test
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rubensousa.dpadrecyclerview.sample.list.ListModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class PaginationViewModel : ViewModel() {
 
-    private val list = ArrayList<ListModel>()
-    private val listLiveData = MutableLiveData<List<ListModel>>()
+    private var loadOffset = 2
+    private val list = ArrayList<Int>()
+    private val listLiveData = MutableLiveData<List<Int>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
     val loadingState: LiveData<Boolean> = loadingStateLiveData
-    val listState: LiveData<List<ListModel>> = listLiveData
+    val listState: LiveData<List<Int>> = listLiveData
+    private var items = 0
 
-    init {
-        for (i in 0 until 3) {
-            list.add(generateList("List $i"))
+    fun setLoadOffset(offset: Int) {
+        loadOffset = offset
+    }
+
+    fun initialLoad(numberOfItems: Int) {
+        items = numberOfItems
+        repeat(numberOfItems) {
+            list.add(it)
         }
         listLiveData.postValue(ArrayList(list))
     }
@@ -28,28 +34,17 @@ class MainViewModel : ViewModel() {
             return
         }
         val diffToEnd = list.size - selectedPosition
-        if (diffToEnd >= 2) {
+        if (diffToEnd >= loadOffset) {
             return
         }
-
         loadingStateLiveData.postValue(true)
-        viewModelScope.launch(Dispatchers.Default) {
-            for (i in 0 until 2) {
-                list.add(generateList("List ${list.size}"))
+        viewModelScope.launch(Dispatchers.IO) {
+            repeat(items) {
+                list.add(list.size)
             }
-           // delay(2000L)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
 
     }
-
-    private fun generateList(title: String): ListModel {
-        val items = ArrayList<Int>()
-        repeat(100) {
-            items.add(it)
-        }
-        return ListModel(title, items)
-    }
-
 
 }

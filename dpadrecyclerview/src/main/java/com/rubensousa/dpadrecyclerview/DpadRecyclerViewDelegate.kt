@@ -17,7 +17,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
     var smoothScrollByBehavior: DpadRecyclerView.SmoothScrollByBehavior? = null
 
-    private var layout: DpadGridLayoutManager? = null
+    private var layout: DpadLayoutManager? = null
     private var isRetainingFocus = false
     private var hasOverlappingRendering = true
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
@@ -54,19 +54,19 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         layout?.setRecyclerView(null)
         layout = null
 
-        if (layoutManager != null && layoutManager !is DpadGridLayoutManager) {
+        if (layoutManager != null && layoutManager !is DpadLayoutManager) {
             throw IllegalArgumentException(
                 "Only DpadGridLayoutManager is supported, but got $layoutManager"
             )
         }
-        if (layoutManager is DpadGridLayoutManager) {
+        if (layoutManager is DpadLayoutManager) {
             layoutManager.setRecyclerView(recyclerView, true)
             layoutManager.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             layout = layoutManager
         }
     }
 
-    private fun createLayoutManager(context: Context, attrs: AttributeSet?): DpadGridLayoutManager {
+    private fun createLayoutManager(context: Context, attrs: AttributeSet?): DpadLayoutManager {
         val typedArray = context.obtainStyledAttributes(
             attrs,
             R.styleable.DpadRecyclerView,
@@ -81,7 +81,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
                 "Orientation must be either HORIZONTAL or VERTICAL"
             )
         }
-        val layout = DpadGridLayoutManager(
+        val layout = DpadLayoutManager(
             context,
             spanCount = typedArray.getInt(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewSpanCount, 1
@@ -295,7 +295,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
        this.hasOverlappingRendering = enabled
     }
 
-    fun requireLayout(): DpadGridLayoutManager {
+    fun requireLayout(): DpadLayoutManager {
         return requireNotNull(layout) {
             "LayoutManager is null. You need to call RecyclerView.setLayoutManager"
         }

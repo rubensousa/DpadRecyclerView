@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.*
 
 internal class ScrollAlignment(
-    private val layoutManager: DpadGridLayoutManager
+    private val layoutManager: DpadLayoutManager
 ) {
 
     private var orientationHelper = OrientationHelper.createOrientationHelper(
@@ -85,7 +85,7 @@ internal class ScrollAlignment(
     }
 
     private fun updateChildAlignments(recyclerView: RecyclerView, view: View) {
-        val layoutParams = view.layoutParams as DpadGridLayoutParams
+        val layoutParams = view.layoutParams as DpadLayoutParams
         val viewHolder = recyclerView.getChildViewHolder(view) ?: return
         val alignments = if (viewHolder is DpadViewHolder) {
             viewHolder.getAlignments()
@@ -108,7 +108,7 @@ internal class ScrollAlignment(
     }
 
     // This can only be called after all views are in their final positions
-    fun updateScrollLimits(layoutManager: DpadGridLayoutManager) {
+    fun updateScrollLimits(layoutManager: DpadLayoutManager) {
         val itemCount = layoutManager.itemCount
         if (itemCount == 0) {
             return
@@ -146,7 +146,7 @@ internal class ScrollAlignment(
             maxEdge = getMaxEdge(maxAddedPosition) ?: Int.MAX_VALUE
             layoutManager.findViewByPosition(maxAddedPosition)?.let { maxChild ->
                 maxViewCenter = getViewCenter(maxChild)
-                val layoutParams = maxChild.layoutParams as DpadGridLayoutParams
+                val layoutParams = maxChild.layoutParams as DpadLayoutParams
                 val multipleAlignments = layoutParams.getAlignments()
                 if (multipleAlignments != null && multipleAlignments.isNotEmpty()) {
                     maxViewCenter += multipleAlignments.last() - multipleAlignments.first()
@@ -213,12 +213,12 @@ internal class ScrollAlignment(
     }
 
     private fun getViewCenterX(view: View): Int {
-        val layoutParams = view.layoutParams as DpadGridLayoutParams
+        val layoutParams = view.layoutParams as DpadLayoutParams
         return layoutParams.getOpticalLeft(view) + layoutParams.alignX
     }
 
     private fun getViewCenterY(view: View): Int {
-        val layoutParams = view.layoutParams as DpadGridLayoutParams
+        val layoutParams = view.layoutParams as DpadLayoutParams
         return layoutParams.getOpticalTop(view) + layoutParams.alignY
     }
 
@@ -249,7 +249,7 @@ internal class ScrollAlignment(
                     scrollValue = calculateAlignedScrollDistance(view, alignment)
                 }
             }*/
-            val layoutParams = view.layoutParams as DpadGridLayoutParams
+            val layoutParams = view.layoutParams as DpadLayoutParams
             val alignments = layoutParams.getAlignments()
             if (alignments != null && alignments.isNotEmpty()) {
                 scrollValue += alignments[subPosition] - alignments[0]

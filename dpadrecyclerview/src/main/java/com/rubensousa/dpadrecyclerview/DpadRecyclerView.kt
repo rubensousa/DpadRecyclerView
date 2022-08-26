@@ -227,7 +227,7 @@ class DpadRecyclerView @JvmOverloads constructor(
         delegate.clearOnLayoutCompletedListeners()
     }
 
-    fun requireDpadGridLayoutManager(): DpadGridLayoutManager {
+    fun requireDpadLayoutManager(): DpadLayoutManager {
         return delegate.requireLayout()
     }
 

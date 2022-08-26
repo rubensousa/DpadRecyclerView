@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.internal.ChildScrollAlignment
 
-open class DpadGridLayoutParams : GridLayoutManager.LayoutParams {
+open class DpadLayoutParams : GridLayoutManager.LayoutParams {
 
     // For placement
     var leftInset = 0
@@ -33,7 +33,7 @@ open class DpadGridLayoutParams : GridLayoutManager.LayoutParams {
     constructor(source: ViewGroup.MarginLayoutParams) : super(source)
     constructor(source: ViewGroup.LayoutParams) : super(source)
     constructor(source: RecyclerView.LayoutParams) : super(source)
-    constructor(source: DpadGridLayoutParams) : super(source)
+    constructor(source: DpadLayoutParams) : super(source)
 
     fun getOpticalLeft(view: View): Int {
         return view.left + leftInset

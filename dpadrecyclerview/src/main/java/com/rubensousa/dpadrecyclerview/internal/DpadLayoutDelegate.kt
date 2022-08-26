@@ -7,39 +7,39 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadGridLayoutParams
+import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 
-internal class DpadGridLayoutDelegate {
+internal class DpadLayoutDelegate {
 
     var gravity = Gravity.TOP
     var orientation = RecyclerView.VERTICAL
     var spanCount = 1
 
     fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
-        return layoutParams is DpadGridLayoutParams
+        return layoutParams is DpadLayoutParams
     }
 
     fun generateLayoutParams(context: Context, attrs: AttributeSet): RecyclerView.LayoutParams {
-        return DpadGridLayoutParams(context, attrs)
+        return DpadLayoutParams(context, attrs)
     }
 
     fun generateLayoutParams(layoutParams: ViewGroup.LayoutParams): RecyclerView.LayoutParams {
         return when (layoutParams) {
-            is DpadGridLayoutParams -> DpadGridLayoutParams(layoutParams)
-            is RecyclerView.LayoutParams -> DpadGridLayoutParams(layoutParams)
-            is ViewGroup.MarginLayoutParams -> DpadGridLayoutParams(layoutParams)
-            else -> DpadGridLayoutParams(layoutParams)
+            is DpadLayoutParams -> DpadLayoutParams(layoutParams)
+            is RecyclerView.LayoutParams -> DpadLayoutParams(layoutParams)
+            is ViewGroup.MarginLayoutParams -> DpadLayoutParams(layoutParams)
+            else -> DpadLayoutParams(layoutParams)
         }
     }
 
     fun generateDefaultLayoutParams(orientation: Int): RecyclerView.LayoutParams {
         return if (orientation == RecyclerView.HORIZONTAL) {
-            DpadGridLayoutParams(
+            DpadLayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         } else {
-            DpadGridLayoutParams(
+            DpadLayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
@@ -104,8 +104,8 @@ internal class DpadGridLayoutDelegate {
     fun isHorizontal() = orientation == RecyclerView.HORIZONTAL
     fun isVertical() = orientation == RecyclerView.VERTICAL
 
-    fun getLayoutParams(child: View): DpadGridLayoutParams {
-        return child.layoutParams as DpadGridLayoutParams
+    fun getLayoutParams(child: View): DpadLayoutParams {
+        return child.layoutParams as DpadLayoutParams
     }
 
 

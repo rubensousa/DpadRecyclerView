@@ -5,11 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadGridLayoutManager
+import com.rubensousa.dpadrecyclerview.DpadLayoutManager
 import timber.log.Timber
 
 internal class DpadFocusManager(
-    private val layout: DpadGridLayoutManager
+    private val layout: DpadLayoutManager
 ) {
 
     /**
@@ -150,14 +150,14 @@ internal class DpadFocusManager(
     ): Boolean {
         val adapterPosition = layout.getAdapterPositionOfView(child)
         if (adapterPosition == RecyclerView.NO_POSITION) {
-            // This is could be the last view in DISAPPEARING animation
+            // This could be the last view in DISAPPEARING animation
             return true
         }
         if (!layout.isInLayoutStage() && !layout.isSelectionInProgress()) {
             saveSpanFocus(adapterPosition)
             layout.scrollToView(parent, child, focused, smooth = true)
         } else {
-            Timber.d("Skipping scrollToView since selection is already in process")
+            Timber.d("Skipping scrolling to $adapterPosition since selection is already in process")
         }
         return true
     }

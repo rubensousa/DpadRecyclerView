@@ -1,11 +1,10 @@
 package com.rubensousa.dpadrecyclerview
 
 import android.view.View
-import androidx.annotation.VisibleForTesting
 import java.util.*
 
 /**
- * A ViewHolder managed by [DpadGridLayoutManager].
+ * A ViewHolder managed by [DpadLayoutManager].
  *
  * Implement this in case you're interested in receiving selection changes or customising alignment
  *
@@ -21,7 +20,7 @@ interface DpadViewHolder {
      * To observe focus changes,
      * you need to use the focus listener set via [View.setOnFocusChangeListener]
      *
-     * This is called automatically by [DpadGridLayoutManager] on selection changes.
+     * This is called automatically by [DpadLayoutManager] on selection changes.
      */
     fun onViewHolderSelected() {}
 
@@ -33,7 +32,7 @@ interface DpadViewHolder {
      * To observe focus changes,
      * you need to use the focus listener set via [View.setOnFocusChangeListener]
      *
-     * This is called automatically by [DpadGridLayoutManager] on selection changes.
+     * This is called automatically by [DpadLayoutManager] on selection changes.
      */
     fun onViewHolderDeselected() {}
 

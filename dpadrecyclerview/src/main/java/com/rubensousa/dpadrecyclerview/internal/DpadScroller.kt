@@ -6,15 +6,14 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadGridLayoutManager
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.*
+import timber.log.Timber
 import kotlin.math.sqrt
 
 internal class DpadScroller(
     private val scrollAlignment: ScrollAlignment,
     private val focusManager: DpadFocusManager,
-    private val layout: DpadGridLayoutManager
+    private val layout: DpadLayoutManager
 ) {
 
     var smoothScrollSpeedFactor = 1f
@@ -27,11 +26,13 @@ internal class DpadScroller(
     var pendingSelectionUpdate = false
     private var currentSmoothScroller: GridLinearSmoothScroller? = null
 
-    fun onLayoutChildren(recyclerView: RecyclerView?) {
+    fun onLayoutChildren(recyclerView: RecyclerView?, isAlignmentPending: Boolean) {
         // Consume pending focus changes due to adapter changes or save/restore state
         // This is usually true unless in smoothScrolling
         focusManager.consumePendingFocusChanges()
-        recyclerView?.let { scrollToFocusedPosition(it, smooth = false) }
+        if (recyclerView != null && isAlignmentPending) {
+            scrollToFocusedPosition(recyclerView, smooth = false)
+        }
     }
 
     fun onLayoutCompleted(recyclerView: RecyclerView?) {
@@ -47,7 +48,6 @@ internal class DpadScroller(
             layout.dispatchViewHolderSelectedAndAligned()
         }
     }
-
 
     fun scrollToFocusedPosition(recyclerView: RecyclerView, smooth: Boolean) {
         val previousFocusPosition = focusManager.position
@@ -115,7 +115,7 @@ internal class DpadScroller(
                 focusManager.position = position
                 focusManager.subPosition = subPosition
                 focusManager.positionOffset = Int.MIN_VALUE
-                if (!layout.hasFinishedFirstLayout()) {
+                if (!layout.isAlignmentPending()) {
                     return
                 }
                 startPositionSmoothScroller(recyclerView, position)
@@ -186,9 +186,9 @@ internal class DpadScroller(
         val newSubFocusPosition = scrollAlignment.findSubPositionOfChild(
             recyclerView, viewHolderView, subPositionView
         )
-        if (newFocusPosition != focusManager.position
-            || newSubFocusPosition != focusManager.subPosition
-        ) {
+        val focusChanged = newFocusPosition != focusManager.position
+                || newSubFocusPosition != focusManager.subPosition
+        if (focusChanged) {
             focusManager.position = newFocusPosition
             focusManager.subPosition = newSubFocusPosition
             if (!layout.isInLayoutStage()) {
@@ -211,11 +211,7 @@ internal class DpadScroller(
 
         scrollAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
             ?.let { scrollOffset ->
-                scroll(
-                    recyclerView,
-                    scrollOffset,
-                    smooth
-                )
+                scroll(recyclerView, scrollOffset, smooth)
             }
     }
 

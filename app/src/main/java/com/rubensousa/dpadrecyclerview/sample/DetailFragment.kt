@@ -101,7 +101,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                 margin = binding.root.context.resources.getDimensionPixelOffset(
                     R.dimen.item_spacing
                 ),
-                binding.recyclerView.requireDpadGridLayoutManager()
+                binding.recyclerView.requireDpadLayoutManager()
             )
         )
         binding.recyclerView.adapter = concatAdapter

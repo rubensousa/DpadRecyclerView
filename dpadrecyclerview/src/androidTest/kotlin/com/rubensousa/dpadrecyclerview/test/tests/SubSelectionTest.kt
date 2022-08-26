@@ -46,6 +46,11 @@ class SubSelectionTest : GridTest() {
 
     private lateinit var fragmentScenario: FragmentScenario<TestSubPositionFragment>
 
+    @After
+    override fun destroy() {
+        fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
+    }
+
     @Test
     fun testSubPositionsAreFocused() {
         launchSubPositionFragment()
@@ -82,11 +87,6 @@ class SubSelectionTest : GridTest() {
         selectPosition(position = 5, subPosition = 1, smooth = true)
 
         assertSelectedPosition(5, subPosition = 1)
-    }
-
-    @After
-    override fun destroy() {
-        fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
     }
 
     private fun launchSubPositionFragment() {

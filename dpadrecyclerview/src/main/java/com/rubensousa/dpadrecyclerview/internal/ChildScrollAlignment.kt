@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadGridLayoutParams
+import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 
 // TODO: Add unit tests
 internal class ChildScrollAlignment {
@@ -17,7 +17,7 @@ internal class ChildScrollAlignment {
         @JvmStatic
         fun getHorizontalAlignment(
             itemView: View,
-            layoutParams: DpadGridLayoutParams,
+            layoutParams: DpadLayoutParams,
             alignmentView: View,
             alignment: ChildAlignment
         ): Int {
@@ -76,7 +76,7 @@ internal class ChildScrollAlignment {
         @JvmStatic
         fun getVerticalAlignment(
             itemView: View,
-            layoutParams: DpadGridLayoutParams,
+            layoutParams: DpadLayoutParams,
             alignmentView: View,
             config: ChildAlignment,
         ): Int {
@@ -114,7 +114,7 @@ internal class ChildScrollAlignment {
         fun getAlignmentPosition(
             itemView: View, alignment: ChildAlignment, orientation: Int
         ): Int {
-            val layoutParams = itemView.layoutParams as DpadGridLayoutParams
+            val layoutParams = itemView.layoutParams as DpadLayoutParams
             val alignmentView = getAlignmentView(itemView, alignment)
             return if (orientation == RecyclerView.HORIZONTAL) {
                 getHorizontalAlignment(itemView, layoutParams, alignmentView, alignment)

@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 
-open class TestGridFragment : Fragment(R.layout.test_container) {
+open class TestGridFragment : Fragment(R.layout.test_container), OnViewHolderSelectedListener {
 
     companion object {
 
@@ -34,27 +34,7 @@ open class TestGridFragment : Fragment(R.layout.test_container) {
         val layoutConfig = args.getParcelable<TestLayoutConfiguration>(ARG_LAYOUT_CONFIG)!!
         val adapterConfig = args.getParcelable<TestAdapterConfiguration>(ARG_ADAPTER_CONFIG)!!
         val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
-        recyclerView.addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
-            override fun onViewHolderSelected(
-                parent: RecyclerView,
-                child: RecyclerView.ViewHolder?,
-                position: Int,
-                subPosition: Int
-            ) {
-                super.onViewHolderSelected(parent, child, position, subPosition)
-                selectionEvents.add(TestSelectionEvent(position, subPosition))
-            }
-
-            override fun onViewHolderSelectedAndAligned(
-                parent: RecyclerView,
-                child: RecyclerView.ViewHolder?,
-                position: Int,
-                subPosition: Int
-            ) {
-                super.onViewHolderSelectedAndAligned(parent, child, position, subPosition)
-                alignedEvents.add(TestSelectionEvent(position, subPosition))
-            }
-        })
+        recyclerView.addOnViewHolderSelectedListener(this)
         recyclerView.setGravity(layoutConfig.gravity)
         recyclerView.setSpanCount(layoutConfig.spans)
         recyclerView.setOrientation(layoutConfig.orientation)
@@ -63,7 +43,6 @@ open class TestGridFragment : Fragment(R.layout.test_container) {
         recyclerView.adapter = createAdapter(recyclerView, adapterConfig)
         recyclerView.requestFocus()
     }
-
 
     open fun createAdapter(
         recyclerView: DpadRecyclerView,
@@ -76,6 +55,26 @@ open class TestGridFragment : Fragment(R.layout.test_container) {
             }
         })
         return adapter
+    }
+
+    override fun onViewHolderSelected(
+        parent: RecyclerView,
+        child: RecyclerView.ViewHolder?,
+        position: Int,
+        subPosition: Int
+    ) {
+        super.onViewHolderSelected(parent, child, position, subPosition)
+        selectionEvents.add(TestSelectionEvent(position, subPosition))
+    }
+
+    override fun onViewHolderSelectedAndAligned(
+        parent: RecyclerView,
+        child: RecyclerView.ViewHolder?,
+        position: Int,
+        subPosition: Int
+    ) {
+        super.onViewHolderSelectedAndAligned(parent, child, position, subPosition)
+        alignedEvents.add(TestSelectionEvent(position, subPosition))
     }
 
     fun getSelectionEvents(): List<TestSelectionEvent> {
