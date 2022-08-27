@@ -7,6 +7,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.decorator.DecorationLookup
 import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenTvNestedListsBinding
@@ -111,7 +112,12 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
             LinearMarginDecoration.createVertical(
                 verticalMargin = resources.getDimensionPixelOffset(
                     R.dimen.item_spacing
-                )
+                ),
+                decorationLookup = object : DecorationLookup {
+                    override fun shouldApplyDecoration(position: Int, itemCount: Int): Boolean {
+                        return position != itemCount - 1 || !loadingAdapter.isShowing()
+                    }
+                }
             )
         )
     }

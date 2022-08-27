@@ -94,17 +94,11 @@ internal class DpadLayoutDelegate {
         return decoratedBottom - getLayoutParams(child).bottomInset
     }
 
-    /* TODO Figure out optical insets
-    override fun getDecoratedBoundsWithMargins(view: View, outBounds: Rect) {
-        super.getDecoratedBoundsWithMargins(view, outBounds)
-        val layoutParams = view.layoutParams as DpadGridLayoutParams
-        scrollAlignment?.updateOpticalInsets(view, layoutParams, outBounds)
-    }*/
-
     fun isHorizontal() = orientation == RecyclerView.HORIZONTAL
+
     fun isVertical() = orientation == RecyclerView.VERTICAL
 
-    fun getLayoutParams(child: View): DpadLayoutParams {
+    private fun getLayoutParams(child: View): DpadLayoutParams {
         return child.layoutParams as DpadLayoutParams
     }
 

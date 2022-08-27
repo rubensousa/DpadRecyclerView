@@ -143,9 +143,9 @@ class DpadLayoutManager : GridLayoutManager {
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State) {
         isInLayoutStage = true
         super.onLayoutChildren(recycler, state)
-    /*    if (state.didStructureChange()) {
+        if (state.didStructureChange()) {
             scrollAlignment.reset()
-        }*/
+        }
         scrollAlignment.updateLayoutState(
             width, height,
             reverseLayout,

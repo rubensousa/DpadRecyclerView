@@ -23,9 +23,16 @@ class ListPlaceholderAdapter : RecyclerView.Adapter<ListPlaceholderAdapter.VH>()
     }
 
     fun show(enabled: Boolean) {
+        val wasShowing = show
         show = enabled
-        notifyItemChanged(0)
+        if (!wasShowing && show) {
+            notifyItemInserted(0)
+        } else if(wasShowing && !show) {
+            notifyItemRemoved(0)
+        }
     }
+
+    fun isShowing() = show
 
     override fun getItemCount(): Int {
         return if (show) {

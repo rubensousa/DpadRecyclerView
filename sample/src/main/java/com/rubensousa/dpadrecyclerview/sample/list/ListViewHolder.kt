@@ -25,8 +25,8 @@ class ListViewHolder(private val binding: AdapterListBinding) :
                 binding.recyclerView.requestFocus()
             }
         }
-        itemView.alpha = 0.5f
         setupRecyclerView(binding.recyclerView)
+        onViewHolderDeselected()
     }
 
     fun bind(
@@ -51,12 +51,14 @@ class ListViewHolder(private val binding: AdapterListBinding) :
 
     override fun onViewHolderSelected() {
         super.onViewHolderSelected()
-        itemView.alpha = 1.0f
+        binding.recyclerView.alpha = 1.0f
+        binding.textView.alpha = 1.0f
     }
 
     override fun onViewHolderDeselected() {
         super.onViewHolderDeselected()
-        itemView.alpha = 0.3f
+        binding.recyclerView.alpha = 0.5f
+        binding.textView.alpha = 0.5f
     }
 
     fun onAttachedToWindow() {}

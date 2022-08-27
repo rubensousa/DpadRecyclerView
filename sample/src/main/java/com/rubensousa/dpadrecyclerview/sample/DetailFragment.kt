@@ -7,15 +7,14 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.GridSpanMarginDecoration
+import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenTvDetailBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemGridAdapter
-import com.rubensousa.dpadrecyclerview.sample.list.ListHeaderAdapter
 import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
+import com.rubensousa.dpadrecyclerview.sample.list.ListHeaderAdapter
 import com.rubensousa.dpadrecyclerview.sample.list.ListModel
 import timber.log.Timber
 

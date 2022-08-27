@@ -188,11 +188,12 @@ internal class DpadScroller(
         )
         val focusChanged = newFocusPosition != focusManager.position
                 || newSubFocusPosition != focusManager.subPosition
+        var selectViewHolder = false
         if (focusChanged) {
             focusManager.position = newFocusPosition
             focusManager.subPosition = newSubFocusPosition
             if (!layout.isInLayoutStage()) {
-                layout.dispatchViewHolderSelected()
+                selectViewHolder = true
             } else {
                 pendingSelectionUpdate = true
             }
@@ -213,6 +214,10 @@ internal class DpadScroller(
             ?.let { scrollOffset ->
                 scroll(recyclerView, scrollOffset, smooth)
             }
+
+        if (selectViewHolder) {
+            layout.dispatchViewHolderSelected()
+        }
     }
 
     private fun scroll(
