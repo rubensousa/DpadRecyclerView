@@ -304,7 +304,7 @@ class DpadLayoutManager : GridLayoutManager {
     override fun onRestoreInstanceState(state: Parcelable?) {
         if (state is SavedState) {
             focusManager.position = state.selectedPosition
-            scroller.pendingSelectionUpdate = true
+            scroller.pendingSelectionUpdate = state.selectedPosition != RecyclerView.NO_POSITION
         }
     }
 

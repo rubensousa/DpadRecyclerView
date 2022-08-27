@@ -6,8 +6,9 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.*
-import timber.log.Timber
+import com.rubensousa.dpadrecyclerview.DpadLayoutManager
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import kotlin.math.sqrt
 
 internal class DpadScroller(

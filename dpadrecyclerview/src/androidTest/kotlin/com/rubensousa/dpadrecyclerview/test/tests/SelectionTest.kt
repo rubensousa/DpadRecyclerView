@@ -39,6 +39,14 @@ class SelectionTest : GridTest() {
 
         assertThat(getSelectionEvents()).isEmpty()
         assertThat(getSelectionAndPositionedEvents()).isEmpty()
+
+        recreateFragment()
+
+        assertSelectedPosition(position = RecyclerView.NO_POSITION)
+        assertFocusPosition(position = RecyclerView.NO_POSITION)
+
+        assertThat(getSelectionEvents()).isEmpty()
+        assertThat(getSelectionAndPositionedEvents()).isEmpty()
     }
 
     @Test
