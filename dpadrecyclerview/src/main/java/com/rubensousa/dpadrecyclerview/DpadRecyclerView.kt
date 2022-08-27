@@ -1,9 +1,11 @@
 package com.rubensousa.dpadrecyclerview
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,6 +29,15 @@ class DpadRecyclerView @JvmOverloads constructor(
         // The LayoutManager will draw the focused view on top of all other views
         isChildrenDrawingOrderEnabled = true
         delegate.init(context, attrs)
+    }
+
+    override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
+        return false
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(e: MotionEvent?): Boolean {
+        return false
     }
 
     override fun hasOverlappingRendering(): Boolean {
