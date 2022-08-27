@@ -1,12 +1,13 @@
 package com.rubensousa.dpadrecyclerview.internal
 
+import android.util.Log
 import android.view.FocusFinder
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLayoutManager
-import timber.log.Timber
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
 internal class DpadFocusManager(
     private val layout: DpadLayoutManager
@@ -157,7 +158,10 @@ internal class DpadFocusManager(
             saveSpanFocus(adapterPosition)
             layout.scrollToView(parent, child, focused, smooth = true)
         } else {
-            Timber.d("Skipping scrolling to $adapterPosition since selection is already in process")
+            Log.d(
+                DpadRecyclerView.TAG,
+                "Skipping scrolling to $adapterPosition since selection is already in process"
+            )
         }
         return true
     }

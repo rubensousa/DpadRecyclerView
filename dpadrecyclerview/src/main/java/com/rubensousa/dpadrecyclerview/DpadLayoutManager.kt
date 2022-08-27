@@ -188,6 +188,15 @@ class DpadLayoutManager : GridLayoutManager {
 
     // We already align Views during scrolling events, so there's no need to do this
     override fun requestChildRectangleOnScreen(
+        parent: RecyclerView,
+        child: View,
+        rect: Rect,
+        immediate: Boolean,
+        focusedChildVisible: Boolean
+    ): Boolean = false
+
+    // We already align Views during scrolling events, so there's no need to do this
+    override fun requestChildRectangleOnScreen(
         parent: RecyclerView, child: View, rect: Rect, immediate: Boolean
     ): Boolean = false
 

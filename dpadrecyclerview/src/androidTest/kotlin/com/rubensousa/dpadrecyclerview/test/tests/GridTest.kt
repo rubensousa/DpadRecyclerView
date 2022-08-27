@@ -3,17 +3,12 @@ package com.rubensousa.dpadrecyclerview.test.tests
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
-import com.rubensousa.dpadrecyclerview.*
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.*
-import com.rubensousa.dpadrecyclerview.test.R
-import com.rubensousa.dpadrecyclerview.test.helpers.TimberRule
 import org.junit.After
-import org.junit.Rule
 
 abstract class GridTest {
-
-    @get:Rule
-    val timberRule = TimberRule()
 
     abstract fun getDefaultLayoutConfiguration(): TestLayoutConfiguration
 
@@ -79,10 +74,10 @@ abstract class GridTest {
         return events
     }
 
-    fun getSelectionAndPositionedEvents(): List<TestSelectionEvent> {
+    fun getSelectionAndAlignedEvents(): List<TestSelectionEvent> {
         var events = listOf<TestSelectionEvent>()
         fragmentScenario.onFragment { fragment ->
-            events = fragment.getSelectedAndPositionedEvents()
+            events = fragment.getSelectedAndAlignedEvents()
         }
         return events
     }
