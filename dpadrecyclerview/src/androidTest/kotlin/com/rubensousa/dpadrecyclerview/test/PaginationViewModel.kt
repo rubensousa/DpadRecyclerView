@@ -5,11 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class PaginationViewModel : ViewModel() {
 
     private var loadOffset = 2
+    private var loadDelay = 0L
     private val list = ArrayList<Int>()
     private val listLiveData = MutableLiveData<List<Int>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
@@ -17,8 +19,8 @@ class PaginationViewModel : ViewModel() {
     val listState: LiveData<List<Int>> = listLiveData
     private var items = 0
 
-    fun setLoadOffset(offset: Int) {
-        loadOffset = offset
+    fun setLoadDelay(delay: Long) {
+        loadDelay = delay
     }
 
     fun initialLoad(numberOfItems: Int) {
@@ -42,6 +44,7 @@ class PaginationViewModel : ViewModel() {
             repeat(items) {
                 list.add(list.size)
             }
+            delay(loadDelay)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
 

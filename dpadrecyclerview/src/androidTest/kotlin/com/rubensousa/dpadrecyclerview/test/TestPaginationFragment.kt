@@ -1,5 +1,6 @@
 package com.rubensousa.dpadrecyclerview.test
 
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +11,32 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
 class TestPaginationFragment : TestGridFragment() {
 
+    companion object {
+
+        const val ARG_LOAD_DELAY = "arg_load_delay"
+
+        fun getArgs(
+            loadDelay: Long = 0L,
+            layoutConfig: TestLayoutConfiguration,
+            adapterConfig: TestAdapterConfiguration
+        ): Bundle {
+            val args = getArgs(layoutConfig, adapterConfig)
+            args.putLong(ARG_LOAD_DELAY, loadDelay)
+            return args
+        }
+    }
+
     private val concatAdapter = ConcatAdapter(
         ConcatAdapter.Config.Builder()
             .setIsolateViewTypes(true)
             .build()
     )
     private val viewModel by viewModels<PaginationViewModel>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.setLoadDelay(requireArguments().getLong(ARG_LOAD_DELAY))
+    }
 
     override fun createAdapter(
         recyclerView: DpadRecyclerView,

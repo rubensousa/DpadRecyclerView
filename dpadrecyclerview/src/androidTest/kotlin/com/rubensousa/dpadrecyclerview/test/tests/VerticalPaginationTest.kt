@@ -7,7 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.test.*
+import com.rubensousa.dpadrecyclerview.test.R
+import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
+import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.TestPaginationFragment
 import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressDown
 import org.junit.After
@@ -47,7 +50,7 @@ class VerticalPaginationTest : GridTest() {
     }
 
     @Test
-    fun testLastSelectedViewStaysAlignedWhenAdapterInsertsNewViews() {
+    fun testLastSelectedViewStaysAlignedWhenAdapterInsertsNewViewsDuringScroll() {
         launchPaginationFragment()
         repeat(19) {
             pressDown()
@@ -64,19 +67,42 @@ class VerticalPaginationTest : GridTest() {
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
     }
 
-    private fun launchPaginationFragment() {
+    @Test
+    fun testLastSelectedViewStaysAlignedWhenAdapterInsertsNewViewsWhenIdle() {
+        val delay = 1000L
+        launchPaginationFragment(loadDelay = delay)
+        repeat(19) {
+            pressDown()
+        }
+        assertSelectedPosition(position = 19)
+
+        var viewBounds = getItemViewBounds(position = 19)
+        val recyclerViewBounds = getRecyclerViewBounds()
+        assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
+
+        waitForIdleScrollState()
+        Thread.sleep(delay)
+
+        viewBounds = getItemViewBounds(position = 19)
+        assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
+    }
+
+    private fun launchPaginationFragment(loadDelay: Long = 0L) {
         launchPaginationFragment(
+            loadDelay,
             getDefaultLayoutConfiguration(),
             getDefaultAdapterConfiguration()
         )
     }
 
     private fun launchPaginationFragment(
+        loadDelay: Long,
         layoutConfiguration: TestLayoutConfiguration,
         adapterConfiguration: TestAdapterConfiguration
     ): FragmentScenario<TestPaginationFragment> {
         return launchFragmentInContainer<TestPaginationFragment>(
-            fragmentArgs = TestGridFragment.getArgs(
+            fragmentArgs = TestPaginationFragment.getArgs(
+                loadDelay,
                 layoutConfiguration,
                 adapterConfiguration
             ),
