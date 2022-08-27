@@ -81,7 +81,7 @@ open class TestGridFragment : Fragment(R.layout.test_container), OnViewHolderSel
         return selectionEvents
     }
 
-    fun getSelectedAndPositionedEvents(): List<TestSelectionEvent> {
+    fun getSelectedAndAlignedEvents(): List<TestSelectionEvent> {
         return alignedEvents
     }
 

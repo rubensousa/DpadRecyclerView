@@ -211,13 +211,16 @@ internal class DpadScroller(
             viewHolderView.requestFocus()
         }
 
-        scrollAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
+       val scrolled = scrollAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
             ?.let { scrollOffset ->
                 scroll(recyclerView, scrollOffset, smooth)
-            }
+            } != null
 
         if (selectViewHolder) {
             layout.dispatchViewHolderSelected()
+            if (!scrolled) {
+                layout.dispatchViewHolderSelectedAndAligned()
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestSelectionEvent
 import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressRight
 import org.junit.Rule
 import org.junit.Test
 
@@ -38,7 +39,7 @@ class SelectionTest : GridTest() {
         assertFocusPosition(position = RecyclerView.NO_POSITION)
 
         assertThat(getSelectionEvents()).isEmpty()
-        assertThat(getSelectionAndPositionedEvents()).isEmpty()
+        assertThat(getSelectionAndAlignedEvents()).isEmpty()
 
         recreateFragment()
 
@@ -46,7 +47,7 @@ class SelectionTest : GridTest() {
         assertFocusPosition(position = RecyclerView.NO_POSITION)
 
         assertThat(getSelectionEvents()).isEmpty()
-        assertThat(getSelectionAndPositionedEvents()).isEmpty()
+        assertThat(getSelectionAndAlignedEvents()).isEmpty()
     }
 
     @Test
@@ -64,7 +65,7 @@ class SelectionTest : GridTest() {
                 )
             )
         )
-        assertThat(getSelectionAndPositionedEvents()).isEqualTo(
+        assertThat(getSelectionAndAlignedEvents()).isEqualTo(
             listOf(
                 TestSelectionEvent(
                     position = 0,
@@ -94,7 +95,7 @@ class SelectionTest : GridTest() {
                 )
             )
         )
-        assertThat(getSelectionAndPositionedEvents()).isEqualTo(
+        assertThat(getSelectionAndAlignedEvents()).isEqualTo(
             listOf(
                 TestSelectionEvent(
                     position = 0,
@@ -118,6 +119,23 @@ class SelectionTest : GridTest() {
             assertViewHolderSelected(position = index + 1, isSelected = true)
         }
 
+    }
+
+    @Test
+    fun testViewHoldersAlreadyAlignedStillDispatchAlignedEvent() {
+        launchFragment(getDefaultLayoutConfiguration().copy(spans = 5))
+
+        val expectedEvents = ArrayList<TestSelectionEvent>()
+        expectedEvents.add(TestSelectionEvent(position = 0))
+
+        repeat(4) { iteration ->
+            pressRight()
+            assertSelectedPosition(position = iteration + 1)
+            assertFocusPosition(position = iteration + 1)
+            expectedEvents.add(TestSelectionEvent(position = iteration + 1))
+        }
+
+        assertThat(getSelectionAndAlignedEvents()).isEqualTo(expectedEvents)
     }
 
 }
