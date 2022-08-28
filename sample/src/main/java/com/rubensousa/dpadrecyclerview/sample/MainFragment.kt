@@ -13,8 +13,8 @@ import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenTvNestedListsBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.list.DpadStateHolder
-import com.rubensousa.dpadrecyclerview.sample.list.NestedListAdapter
 import com.rubensousa.dpadrecyclerview.sample.list.ListPlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.sample.list.NestedListAdapter
 import timber.log.Timber
 
 class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
@@ -38,7 +38,9 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
         setupAlignment(binding.recyclerView)
         setupPagination(binding.recyclerView)
         viewModel.listState.observe(viewLifecycleOwner) { list ->
-            nestedListAdapter.submitList(list)
+            nestedListAdapter.submitList(list) {
+                binding.recyclerView.invalidateItemDecorations()
+            }
         }
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             loadingAdapter.show(isLoading)
