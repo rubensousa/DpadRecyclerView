@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rubensousa.dpadrecyclerview.sample.list.ListModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
@@ -37,6 +38,7 @@ class MainViewModel : ViewModel() {
             for (i in 0 until 2) {
                 list.add(generateList("List ${list.size}"))
             }
+            delay(500L)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
 
