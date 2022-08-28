@@ -292,23 +292,18 @@ class HorizontalAlignmentTest : GridTest() {
         assertThat(viewBounds.centerX()).isEqualTo(recyclerViewBounds.centerX())
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
 
-        performDpadRecyclerViewAction(object :
-            DpadRecyclerViewAction("Changing gravity to BOTTOM") {
-            override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
-                recyclerView.setGravity(Gravity.BOTTOM)
-            }
-        })
+        onRecyclerView("Changing gravity to BOTTOM") { recyclerView ->
+            recyclerView.setGravity(Gravity.BOTTOM)
+        }
 
         viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.centerX()).isEqualTo(recyclerViewBounds.centerX())
         assertThat(viewBounds.bottom).isEqualTo(recyclerViewBounds.bottom)
 
-        performDpadRecyclerViewAction(object :
-            DpadRecyclerViewAction("Changing gravity to TOP") {
-            override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
-                recyclerView.setGravity(Gravity.TOP)
-            }
-        })
+        onRecyclerView("Changing gravity to TOP") { recyclerView ->
+            recyclerView.setGravity(Gravity.TOP)
+        }
+
         viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.centerX()).isEqualTo(recyclerViewBounds.centerX())
         assertThat(viewBounds.top).isEqualTo(recyclerViewBounds.top)

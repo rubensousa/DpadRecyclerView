@@ -80,11 +80,15 @@ class VerticalPaginationTest : GridTest() {
         val recyclerViewBounds = getRecyclerViewBounds()
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
 
+        waitForAdapterUpdate()
         waitForIdleScrollState()
-        Thread.sleep(delay)
 
+        onRecyclerView("Checking Adapter Item count") { recyclerView ->
+            assertThat(recyclerView.adapter?.itemCount).isGreaterThan(20)
+        }
         viewBounds = getItemViewBounds(position = 19)
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
+
     }
 
     private fun launchPaginationFragment(loadDelay: Long = 0L) {

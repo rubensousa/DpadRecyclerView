@@ -289,23 +289,17 @@ class VerticalAlignmentTest : GridTest() {
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
         assertThat(viewBounds.centerX()).isEqualTo(recyclerViewBounds.centerX())
 
-        performDpadRecyclerViewAction(object :
-            DpadRecyclerViewAction("Changing gravity to END") {
-            override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
-                recyclerView.setGravity(Gravity.END)
-            }
-        })
+        onRecyclerView("Changing gravity to END") { recyclerView ->
+            recyclerView.setGravity(Gravity.END)
+        }
 
         viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
         assertThat(viewBounds.right).isEqualTo(recyclerViewBounds.right)
 
-        performDpadRecyclerViewAction(object :
-            DpadRecyclerViewAction("Changing gravity to START") {
-            override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
-                recyclerView.setGravity(Gravity.START)
-            }
-        })
+        onRecyclerView("Changing gravity to START") { recyclerView ->
+            recyclerView.setGravity(Gravity.START)
+        }
 
         viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())

@@ -3,10 +3,12 @@ package com.rubensousa.dpadrecyclerview.test.helpers
 import android.graphics.Rect
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.UiController
 import androidx.test.espresso.matcher.ViewMatchers
 import com.rubensousa.dpadrecyclerview.test.actions.*
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.test.assertions.FocusAssertion
 import com.rubensousa.dpadrecyclerview.test.assertions.SelectionAssertion
 import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderSelectedAssertion
@@ -109,6 +111,25 @@ fun updateChildAlignment(alignment: ChildAlignment, id: Int = R.id.recyclerView)
 
 fun waitForIdleScrollState(id: Int = R.id.recyclerView) {
     Espresso.onView(ViewMatchers.withId(id)).perform(WaitForIdleScrollAction())
+}
+
+fun waitForAdapterUpdate(id: Int = R.id.recyclerView) {
+    Espresso.onView(ViewMatchers.withId(id)).perform(WaitForAdapterUpdateAction())
+}
+
+fun onRecyclerView(
+    label: String,
+    id: Int = R.id.recyclerView,
+    waitForIdle: Boolean = true,
+    action: (recyclerView: DpadRecyclerView) -> Unit
+) {
+    Espresso.onView(ViewMatchers.withId(id)).perform(object : DpadRecyclerViewAction(
+        label, waitForIdle
+    ) {
+        override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
+            action(recyclerView)
+        }
+    })
 }
 
 fun performDpadRecyclerViewAction(action: DpadRecyclerViewAction, id: Int = R.id.recyclerView) {
