@@ -23,6 +23,11 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        app:dpadRecyclerViewOrientation="horizontal" />
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
+        app:dpadRecyclerViewParentAlignmentEdge="max"
+        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
+        app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false" />
 
 </LinearLayout>

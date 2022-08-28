@@ -1,14 +1,10 @@
 package com.rubensousa.dpadrecyclerview.sample.list
 
-import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
-import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
-import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
-import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemNestedAdapter
 import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
@@ -67,25 +63,12 @@ class ListViewHolder(private val binding: AdapterListBinding) :
 
     private fun setupRecyclerView(recyclerView: DpadRecyclerView) {
         recyclerView.apply {
-            setGravity(Gravity.CENTER)
             addItemDecoration(
                 LinearMarginDecoration.createHorizontal(
                     horizontalMargin = binding.root.context.resources.getDimensionPixelOffset(
                         R.dimen.item_spacing
                     ) / 2
                 )
-            )
-            setParentAlignment(
-                ParentAlignment(
-                    edge = Edge.MAX,
-                    offset = binding.root.resources.getDimensionPixelOffset(
-                        R.dimen.list_margin_start
-                    ),
-                    isOffsetRatioEnabled = false
-                )
-            )
-            setChildAlignment(
-                ChildAlignment(offset = 0, offsetRatio = 0f)
             )
         }
     }

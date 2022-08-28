@@ -4,17 +4,28 @@
     <attr name="dpadRecyclerViewStyle" format="reference" />
 
     <declare-styleable name="DpadRecyclerView">
-        <attr name="dpadRecyclerViewReverseLayout" format="boolean" />
-        <attr name="dpadRecyclerViewOrientation" format="enum">
-            <enum name="horizontal" value="0" />
-            <enum name="vertical" value="1" />
-        </attr>
-        <attr name="dpadRecyclerViewSpanCount" format="integer" />
         <attr name="dpadRecyclerViewCircularFocusEnabled" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutFront" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutBack" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutOppositeFront" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutOppositeBack" format="boolean" />
+        <attr name="dpadRecyclerViewChildAlignmentOffset" format="dimension" />
+        <attr name="dpadRecyclerViewChildAlignmentOffsetRatio" format="float" />
+        <attr name="dpadRecyclerViewChildAlignmentOffsetRatioEnabled" format="boolean" />
+        <attr name="dpadRecyclerViewParentAlignmentEdge" format="enum">
+            <enum name="none" value="0" />
+            <enum name="min" value="1" />
+            <enum name="max" value="2" />
+            <enum name="min_max" value="3" />
+        </attr>
+        <attr name="dpadRecyclerViewParentAlignmentOffset" format="dimension" />
+        <attr name="dpadRecyclerViewParentAlignmentOffsetRatio" format="float" />
+        <attr name="dpadRecyclerViewParentAlignmentOffsetRatioEnabled" format="boolean" />
+
+        <attr name="spanCount" />
+        <attr name="reverseLayout" />
+        <attr name="android:gravity" />
+        <attr name="android:orientation" />
     </declare-styleable>
 
 

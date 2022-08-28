@@ -3,6 +3,7 @@ package com.rubensousa.dpadrecyclerview
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -73,7 +74,10 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
             R.attr.dpadRecyclerViewStyle, 0
         )
         val orientation = when (
-            typedArray.getInt(R.styleable.DpadRecyclerView_dpadRecyclerViewOrientation, 1)
+            typedArray.getInt(
+                R.styleable.DpadRecyclerView_android_orientation,
+                RecyclerView.VERTICAL
+            )
         ) {
             0 -> RecyclerView.HORIZONTAL
             1 -> RecyclerView.VERTICAL
@@ -84,11 +88,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         val layout = DpadLayoutManager(
             context,
             spanCount = typedArray.getInt(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewSpanCount, 1
+                R.styleable.DpadRecyclerView_spanCount, 1
             ),
             orientation = orientation,
             reverseLayout = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewReverseLayout, false
+                R.styleable.DpadRecyclerView_reverseLayout, false
             ),
         )
         layout.setFocusOutAllowed(
@@ -112,6 +116,44 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
                 R.styleable.DpadRecyclerView_dpadRecyclerViewCircularFocusEnabled, false
             )
         )
+        if (typedArray.hasValue(R.styleable.DpadRecyclerView_android_gravity)) {
+            layout.setGravity(
+                typedArray.getInt(R.styleable.DpadRecyclerView_android_gravity, Gravity.NO_GRAVITY)
+            )
+        }
+        val parentAlignment = ParentAlignment(
+            edge = ParentAlignment.Edge.values()[typedArray.getInt(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,
+                ParentAlignment.DEFAULT_EDGE.ordinal
+            )],
+            offset = typedArray.getDimensionPixelSize(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffset,
+                ChildAlignment.DEFAULT_OFFSET
+            ),
+            offsetRatio = typedArray.getFloat(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffsetRatio,
+                ChildAlignment.DEFAULT_OFFSET_RATIO
+            ),
+            isOffsetRatioEnabled = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffsetRatioEnabled,
+                true
+            )
+        )
+        val childAlignment = ChildAlignment(
+            offset = typedArray.getDimensionPixelSize(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffset,
+                ChildAlignment.DEFAULT_OFFSET
+            ),
+            offsetRatio = typedArray.getFloat(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffsetRatio,
+                ChildAlignment.DEFAULT_OFFSET_RATIO
+            ),
+            isOffsetRatioEnabled = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffsetRatioEnabled,
+                true
+            )
+        )
+        layout.setAlignments(parentAlignment, childAlignment, smooth = false)
         typedArray.recycle()
         return layout
     }

@@ -11,7 +11,7 @@ data class ParentAlignment(
      * The specific alignment to a given edge that overrides the keyline alignment. See [Edge]
      * Default: [Edge.MIN_MAX]
      */
-    val edge: Edge = Edge.MIN_MAX,
+    val edge: Edge = DEFAULT_EDGE,
     /**
      * The distance to the [offsetRatio] of the RecyclerView in pixels.
      *
@@ -19,13 +19,13 @@ data class ParentAlignment(
      *
      * Keyline position = 500 * 0.5f + 100 = 350
      */
-    val offset: Int = 0,
+    val offset: Int = DEFAULT_OFFSET,
     /**
      * The keyline position for the alignment. Default: 0.5f (center)
      *
      * Set [isOffsetRatioEnabled] to false in case you want to disable this
      */
-    val offsetRatio: Float = 0.5f,
+    val offsetRatio: Float = DEFAULT_OFFSET_RATIO,
     /**
      * true if [offsetRatio] should be used to position the item.
      *
@@ -37,6 +37,11 @@ data class ParentAlignment(
 ) : Parcelable {
 
     companion object CREATOR : Parcelable.Creator<ParentAlignment> {
+
+        val DEFAULT_EDGE = Edge.MIN_MAX
+        const val DEFAULT_OFFSET = 0
+        const val DEFAULT_OFFSET_RATIO = 0.5f
+
         override fun createFromParcel(parcel: Parcel): ParentAlignment {
             return ParentAlignment(parcel)
         }

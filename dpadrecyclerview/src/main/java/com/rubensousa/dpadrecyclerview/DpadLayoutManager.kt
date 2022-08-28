@@ -330,6 +330,9 @@ class DpadLayoutManager : GridLayoutManager {
 
     fun setGravity(gravity: Int) {
         delegate.gravity = gravity
+        if (recyclerView == null) {
+            return
+        }
         isAlignmentPending = true
         requestLayout()
     }
@@ -353,6 +356,9 @@ class DpadLayoutManager : GridLayoutManager {
     fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
         scrollAlignment.setParentAlignment(parent)
         scrollAlignment.setChildAlignment(child)
+        if (recyclerView == null) {
+            return
+        }
         isAlignmentPending = true
         if (smooth) {
             scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
@@ -363,6 +369,9 @@ class DpadLayoutManager : GridLayoutManager {
 
     fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean) {
         scrollAlignment.setParentAlignment(alignment)
+        if (recyclerView == null) {
+            return
+        }
         isAlignmentPending = true
         if (smooth) {
             scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
@@ -373,6 +382,9 @@ class DpadLayoutManager : GridLayoutManager {
 
     fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean) {
         scrollAlignment.setChildAlignment(alignment)
+        if (recyclerView == null) {
+            return
+        }
         isAlignmentPending = true
         if (smooth) {
             scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)

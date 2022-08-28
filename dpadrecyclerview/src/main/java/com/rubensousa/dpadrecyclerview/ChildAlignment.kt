@@ -26,13 +26,13 @@ data class ChildAlignment(
      *
      * Keyline position = 500 * 0.5f + 100 = 350
      */
-    val offset: Int = 0,
+    val offset: Int = DEFAULT_OFFSET,
     /**
      * The keyline position for the alignment. Default: 0.5f (center)
      *
      * Set [isOffsetRatioEnabled] to false in case you want to disable this
      */
-    val offsetRatio: Float = 0.5f,
+    val offsetRatio: Float = DEFAULT_OFFSET_RATIO,
     /**
      * When enabled, [offsetRatio] will be used for the alignment.
      * Otherwise, only [offset] will be used.
@@ -52,6 +52,10 @@ data class ChildAlignment(
 ) : Parcelable {
 
     companion object CREATOR : Parcelable.Creator<ChildAlignment> {
+
+        const val DEFAULT_OFFSET = 0
+        const val DEFAULT_OFFSET_RATIO = 0.5f
+
         override fun createFromParcel(parcel: Parcel): ChildAlignment {
             return ChildAlignment(parcel)
         }

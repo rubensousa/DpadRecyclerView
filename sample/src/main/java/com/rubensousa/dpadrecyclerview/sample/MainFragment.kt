@@ -97,17 +97,6 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
     }
 
     private fun setupAlignment(recyclerView: DpadRecyclerView) {
-        recyclerView.setParentAlignment(
-            ParentAlignment(
-                edge = ParentAlignment.Edge.MIN,
-                offset = 0,
-                offsetRatio = 0.5f
-            )
-        )
-
-        recyclerView.setChildAlignment(
-            ChildAlignment(offset = 0, offsetRatio = 0.5f)
-        )
         recyclerView.addItemDecoration(
             LinearMarginDecoration.createVertical(
                 verticalMargin = resources.getDimensionPixelOffset(
