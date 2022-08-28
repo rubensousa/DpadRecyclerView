@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.ViewHolderTask
 
 open class TestGridFragment : Fragment(R.layout.test_container), OnViewHolderSelectedListener {
 
@@ -25,8 +26,9 @@ open class TestGridFragment : Fragment(R.layout.test_container), OnViewHolderSel
         }
     }
 
-    private val selectionEvents = ArrayList<TestSelectionEvent>()
-    private val alignedEvents = ArrayList<TestSelectionEvent>()
+    private val selectionEvents = ArrayList<TestPosition>()
+    private val tasks = ArrayList<TestPosition>()
+    private val alignedEvents = ArrayList<TestPosition>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -64,7 +66,7 @@ open class TestGridFragment : Fragment(R.layout.test_container), OnViewHolderSel
         subPosition: Int
     ) {
         super.onViewHolderSelected(parent, child, position, subPosition)
-        selectionEvents.add(TestSelectionEvent(position, subPosition))
+        selectionEvents.add(TestPosition(position, subPosition))
     }
 
     override fun onViewHolderSelectedAndAligned(
@@ -74,15 +76,23 @@ open class TestGridFragment : Fragment(R.layout.test_container), OnViewHolderSel
         subPosition: Int
     ) {
         super.onViewHolderSelectedAndAligned(parent, child, position, subPosition)
-        alignedEvents.add(TestSelectionEvent(position, subPosition))
+        alignedEvents.add(TestPosition(position, subPosition))
     }
 
-    fun getSelectionEvents(): List<TestSelectionEvent> {
-        return selectionEvents
+    fun selectWithTask(position: Int, smooth: Boolean, executeWhenAligned: Boolean = false) {
+        val recyclerView = requireView().findViewById<DpadRecyclerView>(R.id.recyclerView)
+        recyclerView.setSelectedPosition(position, smooth,
+            object : ViewHolderTask(executeWhenAligned) {
+                override fun execute(viewHolder: RecyclerView.ViewHolder) {
+                    tasks.add(TestPosition(position = position))
+                }
+            })
     }
 
-    fun getSelectedAndAlignedEvents(): List<TestSelectionEvent> {
-        return alignedEvents
-    }
+    fun getTasksExecuted(): List<TestPosition> = tasks
+
+    fun getSelectionEvents(): List<TestPosition> = selectionEvents
+
+    fun getSelectedAndAlignedEvents(): List<TestPosition> = alignedEvents
 
 }

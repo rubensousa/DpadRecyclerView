@@ -66,20 +66,34 @@ abstract class GridTest {
         return launchFragment(getDefaultLayoutConfiguration(), adapterConfiguration)
     }
 
-    fun getSelectionEvents(): List<TestSelectionEvent> {
-        var events = listOf<TestSelectionEvent>()
+    fun getSelectionEvents(): List<TestPosition> {
+        var events = listOf<TestPosition>()
         fragmentScenario.onFragment { fragment ->
             events = fragment.getSelectionEvents()
         }
         return events
     }
 
-    fun getSelectionAndAlignedEvents(): List<TestSelectionEvent> {
-        var events = listOf<TestSelectionEvent>()
+    fun getSelectionAndAlignedEvents(): List<TestPosition> {
+        var events = listOf<TestPosition>()
         fragmentScenario.onFragment { fragment ->
             events = fragment.getSelectedAndAlignedEvents()
         }
         return events
+    }
+
+    fun getTasksExecuted(): List<TestPosition> {
+        var events = listOf<TestPosition>()
+        fragmentScenario.onFragment { fragment ->
+            events = fragment.getTasksExecuted()
+        }
+        return events
+    }
+
+    fun selectWithTask(position: Int, smooth: Boolean, executeWhenAligned: Boolean) {
+        fragmentScenario.onFragment { fragment ->
+           fragment.selectWithTask(position, smooth, executeWhenAligned)
+        }
     }
 
     @After

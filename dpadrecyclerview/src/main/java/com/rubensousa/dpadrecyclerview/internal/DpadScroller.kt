@@ -116,7 +116,11 @@ internal class DpadScroller(
                 focusManager.position = position
                 focusManager.subPosition = subPosition
                 focusManager.positionOffset = Int.MIN_VALUE
-                if (!layout.isAlignmentPending()) {
+                if (!layout.hasFinishedFirstLayout()) {
+                    Log.w(
+                        DpadRecyclerView.TAG,
+                        "setSelection with smooth scrolling can't be called before the first layout"
+                    )
                     return
                 }
                 startPositionSmoothScroller(recyclerView, position)
@@ -211,7 +215,7 @@ internal class DpadScroller(
             viewHolderView.requestFocus()
         }
 
-       val scrolled = scrollAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
+        val scrolled = scrollAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
             ?.let { scrollOffset ->
                 scroll(recyclerView, scrollOffset, smooth)
             } != null

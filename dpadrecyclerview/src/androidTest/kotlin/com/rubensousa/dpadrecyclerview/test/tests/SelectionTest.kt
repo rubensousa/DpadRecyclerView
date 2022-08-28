@@ -7,7 +7,7 @@ import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.TestSelectionEvent
+import com.rubensousa.dpadrecyclerview.test.TestPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressRight
 import org.junit.Rule
@@ -58,20 +58,10 @@ class SelectionTest : GridTest() {
         assertFocusPosition(position = 0)
 
         assertThat(getSelectionEvents()).isEqualTo(
-            listOf(
-                TestSelectionEvent(
-                    position = 0,
-                    subPosition = 0
-                )
-            )
+            listOf(TestPosition(position = 0))
         )
         assertThat(getSelectionAndAlignedEvents()).isEqualTo(
-            listOf(
-                TestSelectionEvent(
-                    position = 0,
-                    subPosition = 0
-                )
-            )
+            listOf(TestPosition(position = 0))
         )
     }
 
@@ -88,20 +78,10 @@ class SelectionTest : GridTest() {
         assertFocusPosition(position = 0)
 
         assertThat(getSelectionEvents()).isEqualTo(
-            listOf(
-                TestSelectionEvent(
-                    position = 0,
-                    subPosition = 0
-                )
-            )
+            listOf(TestPosition(position = 0))
         )
         assertThat(getSelectionAndAlignedEvents()).isEqualTo(
-            listOf(
-                TestSelectionEvent(
-                    position = 0,
-                    subPosition = 0
-                )
-            )
+            listOf(TestPosition(position = 0))
         )
     }
 
@@ -125,17 +105,45 @@ class SelectionTest : GridTest() {
     fun testViewHoldersAlreadyAlignedStillDispatchAlignedEvent() {
         launchFragment(getDefaultLayoutConfiguration().copy(spans = 5))
 
-        val expectedEvents = ArrayList<TestSelectionEvent>()
-        expectedEvents.add(TestSelectionEvent(position = 0))
+        val expectedEvents = ArrayList<TestPosition>()
+        expectedEvents.add(TestPosition(position = 0))
 
         repeat(4) { iteration ->
             pressRight()
             assertSelectedPosition(position = iteration + 1)
             assertFocusPosition(position = iteration + 1)
-            expectedEvents.add(TestSelectionEvent(position = iteration + 1))
+            expectedEvents.add(TestPosition(position = iteration + 1))
         }
 
         assertThat(getSelectionAndAlignedEvents()).isEqualTo(expectedEvents)
+    }
+
+    @Test
+    fun testTaskIsExecutedAfterViewHolderIsSelected() {
+        launchFragment()
+
+        selectWithTask(position = 1, smooth = true, executeWhenAligned = false)
+
+        assertThat(getTasksExecuted()).isEqualTo(listOf(TestPosition(position = 1)))
+        assertSelectedPosition(position = 1)
+        assertFocusPosition(position = 1)
+    }
+
+    @Test
+    fun testTaskIsExecutedAfterViewHolderIsSelectedAndAligned() {
+        launchFragment()
+
+        selectWithTask(position = 10, smooth = true, executeWhenAligned = true)
+
+        // Still not executed
+        assertThat(getTasksExecuted()).isEqualTo(listOf<TestPosition>())
+
+        assertSelectedPosition(position = 10)
+        assertFocusPosition(position = 10)
+
+        waitForIdleScrollState()
+
+        assertThat(getTasksExecuted()).isEqualTo(listOf(TestPosition(position = 10)))
     }
 
 }

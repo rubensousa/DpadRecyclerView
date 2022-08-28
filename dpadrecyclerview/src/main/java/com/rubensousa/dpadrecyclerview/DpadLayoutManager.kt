@@ -37,6 +37,7 @@ class DpadLayoutManager : GridLayoutManager {
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
     private var isAlignmentPending = true
+    private var hasFinishedFirstLayout = false
     private var isInLayoutStage = false
     private var extraLayoutSpaceFactor = 0.5f
     private var recyclerView: RecyclerView? = null
@@ -157,6 +158,7 @@ class DpadLayoutManager : GridLayoutManager {
     override fun onLayoutCompleted(state: RecyclerView.State) {
         super.onLayoutCompleted(state)
         isInLayoutStage = false
+        hasFinishedFirstLayout = true
         isAlignmentPending = false
         scroller.onLayoutCompleted(recyclerView)
         layoutCompleteListeners.forEach { listener ->
@@ -241,6 +243,7 @@ class DpadLayoutManager : GridLayoutManager {
         selectedViewHolder = null
         focusManager.onAdapterChanged(oldAdapter)
         if (oldAdapter != null) {
+            hasFinishedFirstLayout = false
             isAlignmentPending = true
             isInLayoutStage = false
         }
@@ -575,6 +578,7 @@ class DpadLayoutManager : GridLayoutManager {
         }
         if (recyclerView == null) {
             selectedViewHolder = null
+            hasFinishedFirstLayout = false
             isAlignmentPending = true
         }
         this.recyclerView?.removeOnScrollListener(idleScrollListener)
@@ -641,7 +645,7 @@ class DpadLayoutManager : GridLayoutManager {
 
     internal fun isInLayoutStage() = isInLayoutStage
 
-    internal fun isAlignmentPending() = isAlignmentPending
+    internal fun hasFinishedFirstLayout() = hasFinishedFirstLayout
 
     internal fun getAdapterPositionOfView(view: View): Int {
         val params = view.layoutParams as DpadLayoutParams?

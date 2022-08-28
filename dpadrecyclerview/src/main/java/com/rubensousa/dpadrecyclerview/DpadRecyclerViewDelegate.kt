@@ -218,15 +218,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
     }
 
     fun setSelectedPosition(position: Int, smooth: Boolean) {
-        if (smooth) {
-            recyclerView.smoothScrollToPosition(position)
-        } else {
-            recyclerView.scrollToPosition(position)
-        }
+        requireLayout().selectPosition(position, subPosition = 0, smooth)
     }
 
     fun setSelectedPosition(position: Int, subPosition: Int, smooth: Boolean) {
-       requireLayout().selectPosition(position, subPosition, smooth)
+        requireLayout().selectPosition(position, subPosition, smooth)
     }
 
     fun getSelectedPosition() = layout?.selectedPosition ?: RecyclerView.NO_POSITION
@@ -292,7 +288,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
     fun hasOverlappingRendering(): Boolean = hasOverlappingRendering
 
     fun setHasOverlappingRendering(enabled: Boolean) {
-       this.hasOverlappingRendering = enabled
+        this.hasOverlappingRendering = enabled
     }
 
     fun requireLayout(): DpadLayoutManager {
@@ -317,13 +313,30 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
             position: Int,
             subPosition: Int
         ) {
-            if (position == targetPosition && child != null) {
+            if (position == targetPosition
+                && child != null
+                && pendingTask?.executeWhenAligned == false
+            ) {
+                executePendingTask(child)
+            }
+        }
+
+        override fun onViewHolderSelectedAndAligned(
+            parent: RecyclerView,
+            child: RecyclerView.ViewHolder?,
+            position: Int,
+            subPosition: Int
+        ) {
+            if (position == targetPosition
+                && child != null
+                && pendingTask?.executeWhenAligned == true
+            ) {
                 executePendingTask(child)
             }
         }
 
         private fun executePendingTask(viewHolder: RecyclerView.ViewHolder) {
-            pendingTask?.run(viewHolder)
+            pendingTask?.execute(viewHolder)
             pendingTask = null
             targetPosition = RecyclerView.NO_POSITION
         }
