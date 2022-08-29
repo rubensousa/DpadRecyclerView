@@ -1,0 +1,123 @@
+package com.rubensousa.dpadrecyclerview.internal
+
+import android.graphics.Rect
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadLayoutParams
+import com.rubensousa.dpadrecyclerview.ViewAlignment
+
+// TODO Add unit tests
+internal object ViewAlignmentHelper {
+
+    private val tmpRect = Rect()
+
+    @JvmStatic
+    fun getAlignmentPosition(
+        itemView: View,
+        alignmentView: View,
+        layoutParams: DpadLayoutParams,
+        alignment: ViewAlignment,
+        orientation: Int
+    ): Int {
+        return if (orientation == RecyclerView.HORIZONTAL) {
+            getHorizontalAlignment(itemView, layoutParams, alignmentView, alignment)
+        } else {
+            getVerticalAlignment(itemView, layoutParams, alignmentView, alignment)
+        }
+    }
+
+    @JvmStatic
+    private fun getVerticalAlignment(
+        itemView: View,
+        layoutParams: DpadLayoutParams,
+        alignmentView: View,
+        config: ViewAlignment,
+    ): Int {
+        var alignPos = -config.offset
+        if (config.includePadding) {
+            if (config.offsetRatio == 0f) {
+                alignPos += alignmentView.paddingTop
+            } else if (config.offsetRatio == 1f) {
+                alignPos -= alignmentView.paddingBottom
+            }
+        }
+        if (config.isOffsetRatioEnabled) {
+            val height = if (alignmentView === itemView) {
+                layoutParams.getOpticalHeight(alignmentView)
+            } else {
+                alignmentView.height
+            }
+            alignPos += (height * config.offsetRatio).toInt()
+        }
+        if (itemView !== alignmentView) {
+            tmpRect.top = alignPos
+            (itemView as ViewGroup).offsetDescendantRectToMyCoords(alignmentView, tmpRect)
+            alignPos = tmpRect.top - layoutParams.topInset
+        }
+        if (config.alignToBaseline) {
+            alignPos += alignmentView.baseline
+        }
+        return alignPos
+    }
+
+    @JvmStatic
+    private fun getHorizontalAlignment(
+        itemView: View,
+        layoutParams: DpadLayoutParams,
+        alignmentView: View,
+        alignment: ViewAlignment
+    ): Int {
+        var offset = -alignment.offset
+        if (itemView.layoutDirection == View.LAYOUT_DIRECTION_RTL) {
+            offset = if (alignmentView === itemView) {
+                layoutParams.getOpticalWidth(alignmentView) - offset
+            } else {
+                alignmentView.width - offset
+            }
+            if (alignment.includePadding) {
+                if (alignment.offsetRatio == 0f) {
+                    offset -= alignmentView.paddingRight
+                } else if (alignment.offsetRatio == 1f) {
+                    offset += alignmentView.paddingLeft
+                }
+            }
+            if (alignment.isOffsetRatioEnabled) {
+                val width = if (alignmentView === itemView) {
+                    layoutParams.getOpticalWidth(alignmentView)
+                } else {
+                    alignmentView.width
+                }
+                offset -= (width * alignment.offsetRatio).toInt()
+            }
+            if (itemView !== alignmentView) {
+                tmpRect.right = offset
+                (itemView as ViewGroup).offsetDescendantRectToMyCoords(alignmentView, tmpRect)
+                offset = tmpRect.right + layoutParams.rightInset
+            }
+        } else {
+            if (alignment.includePadding) {
+                if (alignment.offsetRatio == 0f) {
+                    offset += alignmentView.paddingLeft
+                } else if (alignment.offsetRatio == 1f) {
+                    offset -= alignmentView.paddingRight
+                }
+            }
+            if (alignment.isOffsetRatioEnabled) {
+                val width = if (alignmentView === itemView) {
+                    layoutParams.getOpticalWidth(alignmentView)
+                } else {
+                    alignmentView.width
+                }
+                offset += (width * alignment.offsetRatio).toInt()
+            }
+            if (itemView !== alignmentView) {
+                tmpRect.left = offset
+                (itemView as ViewGroup).offsetDescendantRectToMyCoords(alignmentView, tmpRect)
+                offset = tmpRect.left - layoutParams.leftInset
+            }
+        }
+        return offset
+    }
+
+}

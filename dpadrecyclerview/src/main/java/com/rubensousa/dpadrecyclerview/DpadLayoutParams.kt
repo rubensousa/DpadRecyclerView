@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.internal.ChildScrollAlignment
 
 open class DpadLayoutParams : GridLayoutManager.LayoutParams {
 
@@ -26,7 +25,7 @@ open class DpadLayoutParams : GridLayoutManager.LayoutParams {
     var alignY = 0
         private set
 
-    private var alignmentCache: IntArray? = null
+    private var alignmentPositions: IntArray? = null
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(width: Int, height: Int) : super(width, height)
@@ -59,8 +58,8 @@ open class DpadLayoutParams : GridLayoutManager.LayoutParams {
         return view.height - topInset - bottomInset
     }
 
-    fun getAlignments(): IntArray? {
-        return alignmentCache
+    fun getAlignmentPositions(): IntArray? {
+        return alignmentPositions
     }
 
     fun setAlignX(value: Int) {
@@ -71,29 +70,17 @@ open class DpadLayoutParams : GridLayoutManager.LayoutParams {
         alignY = value
     }
 
-    fun calculateViewHolderAlignment(
-        alignments: List<ChildAlignment>,
-        orientation: Int,
-        view: View
-    ) {
-        if (alignments.isEmpty()) {
+    fun setAlignments(newAlignments: IntArray?, orientation: Int) {
+        alignmentPositions = newAlignments
+        if (newAlignments == null) {
+            alignX = 0
+            alignY = 0
             return
         }
-        val cache = if (alignmentCache == null || alignmentCache?.size != alignments.size) {
-            IntArray(alignments.size)
-        } else {
-            alignmentCache!!
-        }
-        alignmentCache = cache
-        alignments.forEachIndexed { index, alignment ->
-            cache[index] = ChildScrollAlignment.getAlignmentPosition(
-                view, alignment, orientation
-            )
-        }
         if (orientation == RecyclerView.HORIZONTAL) {
-            alignX = cache[0]
+            alignX = newAlignments[0]
         } else {
-            alignY = cache[0]
+            alignY = newAlignments[0]
         }
     }
 

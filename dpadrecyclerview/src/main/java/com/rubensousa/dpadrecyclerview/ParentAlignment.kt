@@ -51,18 +51,18 @@ data class ParentAlignment(
         }
     }
 
+    init {
+        require(offsetRatio in 0f..1f) {
+            "offsetStartRatio must be a value between 0f and 1f"
+        }
+    }
+
     constructor(parcel: Parcel) : this(
         Edge.values()[parcel.readInt()],
         parcel.readInt(),
         parcel.readFloat(),
         parcel.readByte() != 0.toByte(),
     )
-
-    init {
-        require(offsetRatio in 0f..1f) {
-            "offsetStartRatio must be a value between 0f and 1f"
-        }
-    }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(edge.ordinal)

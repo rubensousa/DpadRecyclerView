@@ -68,7 +68,7 @@ internal class ParentScrollAlignment {
         maxScroll = Int.MAX_VALUE
     }
 
-    fun setSize(width: Int, height: Int) {
+    fun setSize(width: Int, height: Int, orientation: Int) {
         if (orientation == RecyclerView.HORIZONTAL) {
             size = width
         } else {
@@ -76,16 +76,13 @@ internal class ParentScrollAlignment {
         }
     }
 
-    fun setPadding(
-        paddingLeft: Int, paddingRight: Int,
-        paddingTop: Int, paddingBottom: Int
-    ) {
+    fun setPadding(left: Int, right: Int, top: Int, bottom: Int, orientation: Int) {
         if (orientation == RecyclerView.HORIZONTAL) {
-            paddingMin = paddingLeft
-            paddingMax = paddingRight
+            paddingMin = left
+            paddingMax = right
         } else {
-            paddingMin = paddingTop
-            paddingMax = paddingBottom
+            paddingMin = top
+            paddingMax = bottom
         }
     }
 

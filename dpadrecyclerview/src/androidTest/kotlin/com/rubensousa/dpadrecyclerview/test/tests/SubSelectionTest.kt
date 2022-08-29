@@ -145,12 +145,12 @@ class SubSelectionTest : GridTest() {
 
         }
 
-        private val viewHolderAlignments = ArrayList<ChildAlignment>()
+        private val viewHolderAlignments = ArrayList<ViewHolderAlignment>()
 
         init {
             viewHolderAlignments.apply {
                 add(
-                    ChildAlignment(
+                    ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition0TextView,
@@ -158,7 +158,7 @@ class SubSelectionTest : GridTest() {
                     )
                 )
                 add(
-                    ChildAlignment(
+                    ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition1TextView,
@@ -166,7 +166,7 @@ class SubSelectionTest : GridTest() {
                     )
                 )
                 add(
-                    ChildAlignment(
+                    ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition2TextView,
@@ -190,10 +190,10 @@ class SubSelectionTest : GridTest() {
 
         class VH(
             view: View,
-            private val alignments: List<ChildAlignment>
+            private val alignments: List<ViewHolderAlignment>
         ) : TestViewHolder(view), DpadViewHolder {
 
-            override fun getAlignments(): List<ChildAlignment> {
+            override fun getAlignments(): List<ViewHolderAlignment> {
                 return alignments
             }
 

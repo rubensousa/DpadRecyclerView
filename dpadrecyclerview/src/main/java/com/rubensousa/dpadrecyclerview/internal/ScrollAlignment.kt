@@ -12,16 +12,21 @@ internal class ScrollAlignment(
     private var orientationHelper = OrientationHelper.createOrientationHelper(
         layoutManager, layoutManager.orientation
     )
+    private var orientation: Int = layoutManager.orientation
     private val parentAlignment = ParentScrollAlignment()
     private val childAlignment = ChildScrollAlignment()
+    private val viewHolderAlignment = ViewHolderScrollAlignment()
 
     fun setOrientation(orientation: Int) {
         orientationHelper = OrientationHelper.createOrientationHelper(
             layoutManager,
             orientation
         )
-        parentAlignment.orientation = orientation
-        childAlignment.setOrientation(orientation)
+        this.orientation = orientation
+    }
+
+    fun reset() {
+        parentAlignment.reset()
     }
 
     fun updateLayoutState(
@@ -29,9 +34,15 @@ internal class ScrollAlignment(
         paddingLeft: Int, paddingRight: Int,
         paddingTop: Int, paddingBottom: Int
     ) {
-        parentAlignment.setSize(width, height)
+        parentAlignment.setSize(width, height, orientation)
         parentAlignment.reversedFlow = reversedFlow
-        parentAlignment.setPadding(paddingLeft, paddingRight, paddingTop, paddingBottom)
+        parentAlignment.setPadding(
+            paddingLeft,
+            paddingRight,
+            paddingTop,
+            paddingBottom,
+            orientation
+        )
     }
 
     fun setParentAlignment(alignment: ParentAlignment) {
@@ -39,10 +50,39 @@ internal class ScrollAlignment(
     }
 
     fun setChildAlignment(config: ChildAlignment) {
-        childAlignment.config = config
+        childAlignment.setAlignmentConfiguration(config)
     }
 
-    fun getContainerSize(): Int = parentAlignment.size
+    fun findSubPositionOfChild(
+        recyclerView: RecyclerView, view: View?, childView: View?
+    ): Int {
+        if (view == null || childView == null) {
+            return 0
+        }
+        val viewHolder = recyclerView.getChildViewHolder(view)
+        if (viewHolder !is DpadViewHolder) {
+            return 0
+        }
+        val alignments = viewHolder.getAlignments()
+        if (alignments.isEmpty()) {
+            return 0
+        }
+        var currentChildView = childView
+        while (currentChildView !== view && currentChildView != null) {
+            if (currentChildView.id != View.NO_ID) {
+                alignments.forEachIndexed { index, alignment ->
+                    val id = currentChildView?.id
+                    if (id != null && id != View.NO_ID) {
+                        if (alignment.getFocusViewId() == id) {
+                            return index
+                        }
+                    }
+                }
+            }
+            currentChildView = currentChildView.parent as? View?
+        }
+        return 0
+    }
 
     fun getCappedScroll(offset: Int): Int {
         var scrollOffset = offset
@@ -93,22 +133,16 @@ internal class ScrollAlignment(
             null
         }
         if (alignments == null || alignments.isEmpty()) {
-            // Fallback to global alignment strategy
-            layoutParams.setAlignX(childAlignment.getHorizontalAlignmentPosition(view))
-            layoutParams.setAlignY(childAlignment.getVerticalAlignmentPosition(view))
+            // Use the default child alignment strategy
+            // if this ViewHolder didn't request a custom alignment strategy
+            childAlignment.updateAlignments(view, layoutParams, orientation)
         } else {
-            // Calculate item alignments for each sub position
-            layoutParams.calculateViewHolderAlignment(alignments, childAlignment.orientation, view)
-            if (childAlignment.orientation == RecyclerView.HORIZONTAL) {
-                layoutParams.setAlignY(childAlignment.getVerticalAlignmentPosition(view))
-            } else {
-                layoutParams.setAlignX(childAlignment.getHorizontalAlignmentPosition(view))
-            }
+            viewHolderAlignment.updateAlignments(view, layoutParams, alignments, orientation)
         }
     }
 
     // This can only be called after all views are in their final positions
-    fun updateScrollLimits(layoutManager: DpadLayoutManager) {
+    private fun updateScrollLimits(layoutManager: DpadLayoutManager) {
         val itemCount = layoutManager.itemCount
         if (itemCount == 0) {
             return
@@ -147,7 +181,7 @@ internal class ScrollAlignment(
             layoutManager.findViewByPosition(maxAddedPosition)?.let { maxChild ->
                 maxViewCenter = getViewCenter(maxChild)
                 val layoutParams = maxChild.layoutParams as DpadLayoutParams
-                val multipleAlignments = layoutParams.getAlignments()
+                val multipleAlignments = layoutParams.getAlignmentPositions()
                 if (multipleAlignments != null && multipleAlignments.isNotEmpty()) {
                     maxViewCenter += multipleAlignments.last() - multipleAlignments.first()
                 }
@@ -168,10 +202,6 @@ internal class ScrollAlignment(
             minViewCenter = Int.MIN_VALUE
         }
         parentAlignment.updateMinMax(minEdge, maxEdge, minViewCenter, maxViewCenter)
-    }
-
-    fun reset() {
-        parentAlignment.reset()
     }
 
     private fun getMaxEdge(index: Int): Int? {
@@ -205,7 +235,7 @@ internal class ScrollAlignment(
     }
 
     private fun getViewCenter(view: View): Int {
-        return if (parentAlignment.orientation == RecyclerView.HORIZONTAL) {
+        return if (orientation == RecyclerView.HORIZONTAL) {
             getViewCenterX(view)
         } else {
             getViewCenterY(view)
@@ -239,18 +269,8 @@ internal class ScrollAlignment(
         var scrollValue = offset
         val subPosition = findSubPositionOfChild(recyclerView, view, childView)
         if (subPosition != 0) {
-         /*
-         TODO investigate custom parent alignment
-         val viewHolder = recyclerView.getChildViewHolder(view)
-            if (viewHolder is DpadViewHolder) {
-                val alignments = viewHolder.getAlignments()
-                if (subPosition < alignments.size) {
-                    val alignment = alignments[subPosition]
-                    scrollValue = calculateAlignedScrollDistance(view, alignment)
-                }
-            }*/
             val layoutParams = view.layoutParams as DpadLayoutParams
-            val alignments = layoutParams.getAlignments()
+            val alignments = layoutParams.getAlignmentPositions()
             if (alignments != null && alignments.isNotEmpty()) {
                 scrollValue += alignments[subPosition] - alignments[0]
             }
@@ -258,34 +278,4 @@ internal class ScrollAlignment(
         return scrollValue
     }
 
-    fun findSubPositionOfChild(
-        recyclerView: RecyclerView, view: View?, childView: View?
-    ): Int {
-        if (view == null || childView == null) {
-            return 0
-        }
-        val viewHolder = recyclerView.getChildViewHolder(view)
-        if (viewHolder !is DpadViewHolder) {
-            return 0
-        }
-        val alignments = viewHolder.getAlignments()
-        if (alignments.isEmpty()) {
-            return 0
-        }
-        var currentChildView = childView
-        while (currentChildView !== view && currentChildView != null) {
-            if (currentChildView.id != View.NO_ID) {
-                alignments.forEachIndexed { index, childAlignment ->
-                    val id = currentChildView?.id
-                    if (id != null && id != View.NO_ID) {
-                        if (childAlignment.getFocusViewId() == id) {
-                            return index
-                        }
-                    }
-                }
-            }
-            currentChildView = currentChildView.parent as? View?
-        }
-        return 0
-    }
 }

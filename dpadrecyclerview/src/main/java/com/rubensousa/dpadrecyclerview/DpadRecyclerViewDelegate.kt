@@ -128,11 +128,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
             )],
             offset = typedArray.getDimensionPixelSize(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffset,
-                ChildAlignment.DEFAULT_OFFSET
+                ViewAlignment.DEFAULT_OFFSET
             ),
             offsetRatio = typedArray.getFloat(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffsetRatio,
-                ChildAlignment.DEFAULT_OFFSET_RATIO
+                ViewAlignment.DEFAULT_OFFSET_RATIO
             ),
             isOffsetRatioEnabled = typedArray.getBoolean(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffsetRatioEnabled,
@@ -142,11 +142,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         val childAlignment = ChildAlignment(
             offset = typedArray.getDimensionPixelSize(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffset,
-                ChildAlignment.DEFAULT_OFFSET
+                ViewAlignment.DEFAULT_OFFSET
             ),
             offsetRatio = typedArray.getFloat(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffsetRatio,
-                ChildAlignment.DEFAULT_OFFSET_RATIO
+                ViewAlignment.DEFAULT_OFFSET_RATIO
             ),
             isOffsetRatioEnabled = typedArray.getBoolean(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffsetRatioEnabled,
