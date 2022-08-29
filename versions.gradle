@@ -1,0 +1,3 @@
+def versions = [:]
+versions.jacoco = '0.8.8'
+ext.versions = versions

@@ -1,6 +1,11 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id  'jacoco'
+}
+
+jacoco {
+    toolVersion = versions.jacoco
 }
 
 android {
@@ -9,17 +14,26 @@ android {
     defaultConfig {
         minSdk 21
         targetSdk 33
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+      //  testInstrumentationRunnerArguments clearPackageData: 'true'
+      //  testInstrumentationRunnerArguments useTestStorageService: 'true'
     }
 
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    buildFeatures {
+        buildConfig false
+    }
+
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
@@ -29,6 +43,13 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    tasks.withType(Test).configureEach {
+        jacoco {
+            includeNoLocationClasses = true
+            excludes = ['jdk.internal.*']
+        }
     }
 }
 
@@ -49,4 +70,47 @@ dependencies {
     androidTestImplementation "androidx.test.uiautomator:uiautomator:2.2.0"
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestUtil 'androidx.test:orchestrator:1.4.1'
+}
+
+def projectSrcDirs = ["src/main/java", "src/main/kotlin"]
+
+task createJacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugAndroidTestCoverageReport']) {
+
+    reports {
+        html.destination file("../test_coverage")
+    }
+
+    def exclusions = [
+            '**/*_Impl*',
+            '**/*_Impl*.class'
+    ]
+
+    def kotlinTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: exclusions)
+    classDirectories.setFrom(files([kotlinTree]))
+    sourceDirectories.setFrom(files(projectSrcDirs))
+    executionData.setFrom(fileTree(
+            dir: "$project.buildDir", includes: [
+            "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+            "outputs/code_coverage/debugAndroidTest/connected/*/*.ec"
+    ]))
+}
+
+task createJacocoTestReportNew(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+
+    reports {
+        html.destination file("../test_coverage")
+    }
+
+    def exclusions = [
+            '**/*_Impl*',
+            '**/*_Impl*.class'
+    ]
+
+    def kotlinTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: exclusions)
+    classDirectories.setFrom(files([kotlinTree]))
+    sourceDirectories.setFrom(files(projectSrcDirs))
+    executionData.setFrom(fileTree(
+            dir: "$project.buildDir", includes: [
+            "outputs/code_coverage/debugAndroidTest/connected/*/*.ec"
+    ]))
 }
