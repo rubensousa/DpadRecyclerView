@@ -57,13 +57,10 @@ class VerticalPaginationTest : GridTest() {
         }
         assertSelectedPosition(position = 19)
 
-        var viewBounds = getItemViewBounds(position = 19)
-        val recyclerViewBounds = getRecyclerViewBounds()
-        assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
-
         waitForIdleScrollState()
 
-        viewBounds = getItemViewBounds(position = 19)
+        val viewBounds = getItemViewBounds(position = 19)
+        val recyclerViewBounds = getRecyclerViewBounds()
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
     }
 
