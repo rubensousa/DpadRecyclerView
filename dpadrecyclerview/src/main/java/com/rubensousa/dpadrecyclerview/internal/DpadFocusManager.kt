@@ -154,7 +154,8 @@ internal class DpadFocusManager(
             // This could be the last view in DISAPPEARING animation
             return true
         }
-        if (!layout.isInLayoutStage() && !layout.isSelectionInProgress()) {
+        val canScrollToView = !layout.isInLayoutStage() && !layout.isSelectionInProgress()
+        if (layout.isAlignmentPending() || canScrollToView) {
             saveSpanFocus(adapterPosition)
             layout.scrollToView(parent, child, focused, smooth = true)
         } else {

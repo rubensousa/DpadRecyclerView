@@ -5,6 +5,7 @@ import android.graphics.Rect
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
@@ -36,7 +37,7 @@ class DpadLayoutManager : GridLayoutManager {
     }
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
-    private var isAlignmentPending = true
+    private var pendingAlignments = 1
     private var hasFinishedFirstLayout = false
     private var isInLayoutStage = false
     private var extraLayoutSpaceFactor = 0.5f
@@ -152,14 +153,14 @@ class DpadLayoutManager : GridLayoutManager {
             reverseLayout,
             paddingLeft, paddingRight, paddingTop, paddingBottom
         )
-        scroller.onLayoutChildren(recyclerView, isAlignmentPending)
+        scroller.onLayoutChildren(recyclerView, isAlignmentPending())
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
         super.onLayoutCompleted(state)
         isInLayoutStage = false
         hasFinishedFirstLayout = true
-        isAlignmentPending = false
+        decreasePendingAlignments()
         scroller.onLayoutCompleted(recyclerView)
         layoutCompleteListeners.forEach { listener ->
             listener.onLayoutCompleted(state)
@@ -170,7 +171,7 @@ class DpadLayoutManager : GridLayoutManager {
         super.onDetachedFromWindow(view, recycler)
         // Reset this here since we might need to realign views
         // after we're attached to the window again
-        isAlignmentPending = true
+        increasePendingAlignments()
     }
 
     override fun layoutDecoratedWithMargins(
@@ -214,24 +215,31 @@ class DpadLayoutManager : GridLayoutManager {
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
         super.onItemsAdded(recyclerView, positionStart, itemCount)
-        isAlignmentPending = !isRecyclerViewScrolling()
+        if (!isRecyclerViewScrolling()) {
+            increasePendingAlignments()
+        }
         focusManager.onItemsAdded(positionStart, itemCount, findFirstVisibleItemPosition())
     }
 
     override fun onItemsChanged(recyclerView: RecyclerView) {
         super.onItemsChanged(recyclerView)
+        increasePendingAlignments()
         focusManager.onItemsChanged()
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
         super.onItemsRemoved(recyclerView, positionStart, itemCount)
-        isAlignmentPending = !isRecyclerViewScrolling()
+        if (!isRecyclerViewScrolling()) {
+            increasePendingAlignments()
+        }
         focusManager.onItemsRemoved(positionStart, itemCount, findFirstVisibleItemPosition())
     }
 
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
         super.onItemsMoved(recyclerView, from, to, itemCount)
-        isAlignmentPending = !isRecyclerViewScrolling()
+        if (!isRecyclerViewScrolling()) {
+            increasePendingAlignments()
+        }
         focusManager.onItemsMoved(from, to, itemCount)
     }
 
@@ -244,7 +252,7 @@ class DpadLayoutManager : GridLayoutManager {
         focusManager.onAdapterChanged(oldAdapter)
         if (oldAdapter != null) {
             hasFinishedFirstLayout = false
-            isAlignmentPending = true
+            increasePendingAlignments()
             isInLayoutStage = false
         }
     }
@@ -289,7 +297,6 @@ class DpadLayoutManager : GridLayoutManager {
         val remainingScroll = dy - scrolled
         if (isVertical() && remainingScroll != 0 && currentRecyclerView != null) {
             scroller.scroll(currentRecyclerView, remainingScroll)
-            return dy
         }
         return scrolled
     }
@@ -304,7 +311,6 @@ class DpadLayoutManager : GridLayoutManager {
         val remainingScroll = dx - scrolled
         if (isHorizontal() && remainingScroll != 0 && currentRecyclerView != null) {
             scroller.scroll(currentRecyclerView, remainingScroll)
-            return dx
         }
         return scrolled
     }
@@ -333,7 +339,7 @@ class DpadLayoutManager : GridLayoutManager {
         if (recyclerView == null) {
             return
         }
-        isAlignmentPending = true
+        increasePendingAlignments()
         requestLayout()
     }
 
@@ -359,7 +365,7 @@ class DpadLayoutManager : GridLayoutManager {
         if (recyclerView == null) {
             return
         }
-        isAlignmentPending = true
+        increasePendingAlignments()
         if (smooth) {
             scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
         } else {
@@ -372,7 +378,7 @@ class DpadLayoutManager : GridLayoutManager {
         if (recyclerView == null) {
             return
         }
-        isAlignmentPending = true
+        increasePendingAlignments()
         if (smooth) {
             scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
         } else {
@@ -385,7 +391,7 @@ class DpadLayoutManager : GridLayoutManager {
         if (recyclerView == null) {
             return
         }
-        isAlignmentPending = true
+        increasePendingAlignments()
         if (smooth) {
             scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
         } else {
@@ -456,6 +462,8 @@ class DpadLayoutManager : GridLayoutManager {
     }
 
     internal fun isSelectionInProgress() = scroller.isSelectionInProgress
+
+    internal fun isAlignmentPending() = pendingAlignments > 0
 
     internal fun findImmediateChildIndex(view: View): Int {
         var currentView: View? = view
@@ -591,7 +599,7 @@ class DpadLayoutManager : GridLayoutManager {
         if (recyclerView == null) {
             selectedViewHolder = null
             hasFinishedFirstLayout = false
-            isAlignmentPending = true
+            increasePendingAlignments()
         }
         this.recyclerView?.removeOnScrollListener(idleScrollListener)
         this.recyclerView = recyclerView
@@ -672,6 +680,18 @@ class DpadLayoutManager : GridLayoutManager {
     internal fun getAdapterPositionOfChildAt(index: Int): Int {
         val child = getChildAt(index) ?: return RecyclerView.NO_POSITION
         return getAdapterPositionOfView(child)
+    }
+
+    private fun increasePendingAlignments() {
+        pendingAlignments++
+        Log.i(DpadRecyclerView.TAG, "Increased pending alignments: $pendingAlignments")
+    }
+
+    private fun decreasePendingAlignments() {
+        if (pendingAlignments > 0) {
+            pendingAlignments--
+            Log.i(DpadRecyclerView.TAG, "Decreased pending alignments: $pendingAlignments")
+        }
     }
 
     private fun hasSelectionListeners(): Boolean {
