@@ -140,11 +140,11 @@ class SelectionTest : GridTest() {
         assertThat(getTasksExecuted()).isEqualTo(listOf<TestPosition>())
 
         assertSelectedPosition(position = targetPosition)
-        assertFocusPosition(position = targetPosition)
 
         waitForIdleScrollState()
 
         assertThat(getTasksExecuted()).isEqualTo(listOf(TestPosition(position = targetPosition)))
+        assertFocusPosition(position = targetPosition)
     }
 
 }
