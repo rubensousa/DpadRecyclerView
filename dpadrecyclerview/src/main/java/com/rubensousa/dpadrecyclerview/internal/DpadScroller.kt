@@ -19,18 +19,18 @@ internal class DpadScroller(
 
     var smoothScrollSpeedFactor = 1f
     var childDrawingOrderEnabled = false
+    var pendingSelectionUpdate = false
 
     var isSelectionInProgress = false
         private set
 
     private var isAligningFocusedPosition = false
-    var pendingSelectionUpdate = false
     private var currentSmoothScroller: GridLinearSmoothScroller? = null
 
     fun onLayoutChildren(recyclerView: RecyclerView?, isAlignmentPending: Boolean) {
         // Consume pending focus changes due to adapter changes or save/restore state
-        // This is usually true unless in smoothScrolling
         focusManager.consumePendingFocusChanges()
+        // If there's a pending alignment, scroll to the focused position with the new alignment
         if (recyclerView != null && isAlignmentPending) {
             scrollToFocusedPosition(recyclerView, smooth = false)
         }
@@ -38,11 +38,16 @@ internal class DpadScroller(
 
     fun onLayoutCompleted(recyclerView: RecyclerView?) {
         recyclerView?.let { view ->
+            /**
+             * If there's a pending alignment to a view that didn't exist before,
+             * scroll immediately to its final aligned position
+             */
             if (isAligningFocusedPosition) {
                 isAligningFocusedPosition = false
                 scrollToFocusedPosition(view, smooth = false)
             }
         }
+        // Consume any pending selection update
         if (pendingSelectionUpdate) {
             pendingSelectionUpdate = false
             layout.dispatchViewHolderSelected()
@@ -50,18 +55,21 @@ internal class DpadScroller(
         }
     }
 
+    /**
+     * Scrolls to the current focused position.
+     * If the adapter is now empty, the position marked as focused
+     */
     fun scrollToFocusedPosition(recyclerView: RecyclerView, smooth: Boolean) {
-        val previousFocusPosition = focusManager.position
-        val newItemCount = layout.itemCount
-        var newFocusPosition = previousFocusPosition
-        if (newItemCount == 0) {
-            newFocusPosition = 0
-        } else if (newFocusPosition >= newItemCount) {
-            newFocusPosition = newItemCount - 1
-        } else if (newFocusPosition == RecyclerView.NO_POSITION && newItemCount > 0) {
-            newFocusPosition = 0
+        val itemCount = layout.itemCount
+        var targetPosition = focusManager.position
+        if (itemCount == 0) {
+            targetPosition = 0
+        } else if (targetPosition >= itemCount) {
+            targetPosition = itemCount - 1
+        } else if (targetPosition == RecyclerView.NO_POSITION && itemCount > 0) {
+            targetPosition = 0
         }
-        scrollToView(recyclerView, layout.findViewByPosition(newFocusPosition), smooth)
+        scrollToView(recyclerView, layout.findViewByPosition(targetPosition), smooth)
     }
 
     fun setSmoothScroller(smoothScroller: RecyclerView.SmoothScroller) {
@@ -315,7 +323,7 @@ internal class DpadScroller(
         }
     }
 
-    abstract inner class GridLinearSmoothScroller(private val recyclerView: RecyclerView) :
+    private abstract inner class GridLinearSmoothScroller(private val recyclerView: RecyclerView) :
         LinearSmoothScroller(recyclerView.context) {
 
         var skipOnStopInternal = false

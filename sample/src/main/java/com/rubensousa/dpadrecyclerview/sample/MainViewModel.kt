@@ -38,7 +38,7 @@ class MainViewModel : ViewModel() {
             for (i in 0 until 2) {
                 list.add(generateList("List ${list.size}"))
             }
-            delay(500L)
+            delay(100L)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
 

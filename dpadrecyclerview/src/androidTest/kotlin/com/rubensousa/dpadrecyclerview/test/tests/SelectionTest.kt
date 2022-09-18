@@ -132,18 +132,19 @@ class SelectionTest : GridTest() {
     @Test
     fun testTaskIsExecutedAfterViewHolderIsSelectedAndAligned() {
         launchFragment()
+        val targetPosition = 40
 
-        selectWithTask(position = 10, smooth = true, executeWhenAligned = true)
+        selectWithTask(position = targetPosition, smooth = true, executeWhenAligned = true)
 
         // Still not executed
         assertThat(getTasksExecuted()).isEqualTo(listOf<TestPosition>())
 
-        assertSelectedPosition(position = 10)
-        assertFocusPosition(position = 10)
+        assertSelectedPosition(position = targetPosition)
+        assertFocusPosition(position = targetPosition)
 
         waitForIdleScrollState()
 
-        assertThat(getTasksExecuted()).isEqualTo(listOf(TestPosition(position = 10)))
+        assertThat(getTasksExecuted()).isEqualTo(listOf(TestPosition(position = targetPosition)))
     }
 
 }
