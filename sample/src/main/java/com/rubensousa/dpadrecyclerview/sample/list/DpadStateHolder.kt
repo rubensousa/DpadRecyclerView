@@ -3,7 +3,6 @@ package com.rubensousa.dpadrecyclerview.sample.list
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
-import timber.log.Timber
 
 class DpadStateHolder {
 
@@ -12,7 +11,6 @@ class DpadStateHolder {
 
     fun register(recyclerView: DpadRecyclerView, key: String) {
         val restoredPosition = positions[key] ?: 0
-        Timber.d("Restoring position of $key to $restoredPosition")
         recyclerView.setSelectedPosition(restoredPosition, false)
         val listener = object : OnViewHolderSelectedListener {
             override fun onViewHolderSelected(
@@ -22,7 +20,6 @@ class DpadStateHolder {
                 subPosition: Int
             ) {
                 super.onViewHolderSelected(parent, child, position, subPosition)
-                Timber.d("Scrolled: $key -> $position")
                 positions[key] = position
             }
         }
