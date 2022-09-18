@@ -53,7 +53,7 @@ class VerticalPaginationTest : GridTest() {
     fun testLastSelectedViewStaysAlignedWhenAdapterInsertsNewViewsDuringScroll() {
         launchPaginationFragment()
         repeat(19) {
-            pressDown(delay = 200L)
+            pressDown()
         }
         assertSelectedPosition(position = 19)
 
@@ -69,7 +69,7 @@ class VerticalPaginationTest : GridTest() {
         val delay = 1000L
         launchPaginationFragment(loadDelay = delay)
         repeat(19) {
-            pressDown(delay = 200L)
+            pressDown()
         }
         assertSelectedPosition(position = 19)
 

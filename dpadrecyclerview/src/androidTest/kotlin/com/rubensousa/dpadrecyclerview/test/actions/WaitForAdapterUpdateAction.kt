@@ -3,11 +3,18 @@ package com.rubensousa.dpadrecyclerview.test.actions
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.*
-import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.espresso.util.HumanReadables
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
-class WaitForAdapterUpdateAction : ViewAction {
+class WaitForAdapterUpdateAction(
+    timeout: Long = 5,
+    timeoutUnit: TimeUnit = TimeUnit.SECONDS
+) : ViewAction {
+
+    private val waiter = ActionWaiter(timeout, timeoutUnit)
 
     override fun getConstraints(): Matcher<View> {
         return Matchers.isA(RecyclerView::class.java)
@@ -20,11 +27,14 @@ class WaitForAdapterUpdateAction : ViewAction {
     override fun perform(uiController: UiController, view: View) {
         val recyclerView = view as RecyclerView
         val idlingResource = AdapterUpdateIdlingResource(recyclerView)
-        IdlingRegistry.getInstance().register(idlingResource)
-        InstrumentationRegistry.getInstrumentation().waitForIdle {
-            IdlingRegistry.getInstance().unregister(idlingResource)
+        val isIdleNow = waiter.waitFor(idlingResource, uiController)
+        if (!isIdleNow) {
+            throw PerformException.Builder()
+                .withActionDescription(description)
+                .withCause(TimeoutException("Waited ${waiter.getTimeoutMillis()} milliseconds"))
+                .withViewDescription(HumanReadables.describe(view))
+                .build()
         }
-        uiController.loopMainThreadUntilIdle()
     }
 
     class AdapterUpdateIdlingResource(
