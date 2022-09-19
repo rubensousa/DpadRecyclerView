@@ -62,14 +62,22 @@ internal class DpadScroller(
     fun scrollToFocusedPosition(recyclerView: RecyclerView, smooth: Boolean) {
         val itemCount = layout.itemCount
         var targetPosition = focusManager.position
+        var targetSubPosition = focusManager.subPosition
         if (itemCount == 0) {
             targetPosition = 0
+            targetSubPosition = 0
         } else if (targetPosition >= itemCount) {
             targetPosition = itemCount - 1
-        } else if (targetPosition == RecyclerView.NO_POSITION && itemCount > 0) {
+            targetSubPosition = 0
+        } else if (targetPosition == RecyclerView.NO_POSITION) {
             targetPosition = 0
+            targetSubPosition = 0
         }
-        scrollToView(recyclerView, layout.findViewByPosition(targetPosition), smooth)
+        if (targetSubPosition != 0) {
+            scrollToPosition(recyclerView, targetPosition, targetSubPosition, smooth)
+        } else {
+            scrollToView(recyclerView, layout.findViewByPosition(targetPosition), smooth)
+        }
     }
 
     fun setSmoothScroller(smoothScroller: RecyclerView.SmoothScroller) {
