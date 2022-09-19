@@ -81,8 +81,15 @@ class TestPaginationFragment : TestGridFragment() {
         }
 
         fun show(enabled: Boolean) {
+            if (enabled == show) {
+                return
+            }
             show = enabled
-            notifyItemChanged(0)
+            if (show) {
+                notifyItemInserted(0)
+            } else {
+                notifyItemRemoved(0)
+            }
         }
 
         override fun getItemCount(): Int {

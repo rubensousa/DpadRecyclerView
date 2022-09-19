@@ -30,6 +30,7 @@ class WaitForIdleScrollAction(
     override fun perform(uiController: UiController, view: View) {
         val recyclerView = view as RecyclerView
         val idlingResource = ScrollingIdlingResource(recyclerView)
+        uiController.loopMainThreadForAtLeast(300L)
         val isIdleNow = waiter.waitFor(idlingResource, uiController)
         if (!isIdleNow) {
             throw PerformException.Builder()

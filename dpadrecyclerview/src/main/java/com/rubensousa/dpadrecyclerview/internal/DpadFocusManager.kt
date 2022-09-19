@@ -155,7 +155,7 @@ internal class DpadFocusManager(
             return true
         }
         val canScrollToView = !layout.isInLayoutStage() && !layout.isSelectionInProgress()
-        if (layout.isAlignmentPending() || canScrollToView) {
+        if (canScrollToView) {
             saveSpanFocus(adapterPosition)
             layout.scrollToView(parent, child, focused, smooth = true)
         } else {
@@ -163,6 +163,7 @@ internal class DpadFocusManager(
                 DpadRecyclerView.TAG,
                 "Skipping scrolling to $adapterPosition since selection is already in process"
             )
+            layout.scheduleAlignmentIfPending()
         }
         return true
     }

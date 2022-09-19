@@ -86,7 +86,7 @@ class SubSelectionTest : GridTest() {
 
         selectPosition(position = 5, subPosition = 1, smooth = true)
 
-        assertSelectedPosition(5, subPosition = 1)
+        assertSelectedPosition(position = 5, subPosition = 1)
     }
 
     private fun launchSubPositionFragment() {
