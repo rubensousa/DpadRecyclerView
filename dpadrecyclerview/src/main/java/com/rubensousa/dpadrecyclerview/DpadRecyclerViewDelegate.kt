@@ -31,8 +31,6 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
             // Focus a ViewHolder's view first by default if one exists
             descendantFocusability = RecyclerView.FOCUS_AFTER_DESCENDANTS
-            isFocusable = true
-            isFocusableInTouchMode = true
 
             // Typically all RecyclerViews have a fixed size, so this is a safe default
             setHasFixedSize(true)
@@ -335,6 +333,19 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
     fun setHasOverlappingRendering(enabled: Boolean) {
         this.hasOverlappingRendering = enabled
+    }
+
+    fun setFocusSearchDisabled(disabled: Boolean) {
+        recyclerView.descendantFocusability = if (disabled) {
+            RecyclerView.FOCUS_BLOCK_DESCENDANTS
+        } else {
+            RecyclerView.FOCUS_AFTER_DESCENDANTS
+        }
+        requireLayout().setFocusSearchDisabled(disabled)
+    }
+
+    fun isFocusSearchDisabled(): Boolean {
+        return requireLayout().isFocusSearchDisabled()
     }
 
     fun requireLayout(): DpadLayoutManager {

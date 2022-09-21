@@ -157,6 +157,21 @@ class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Disables or enables focus search.
+     * @param disabled True to disable focus search, false to enable.
+     */
+    fun setFocusSearchDisabled(disabled: Boolean) {
+        delegate.setFocusSearchDisabled(disabled)
+    }
+
+    /**
+     * @return True if focus search is disabled.
+     */
+    fun isFocusSearchDisabled(): Boolean {
+        return delegate.isFocusSearchDisabled()
+    }
+
+    /**
      * Updates the [GridLayoutManager.SpanSizeLookup] used by the [DpadLayoutManager]
      * of this RecyclerView
      * @param spanSizeLookup the new span configuration

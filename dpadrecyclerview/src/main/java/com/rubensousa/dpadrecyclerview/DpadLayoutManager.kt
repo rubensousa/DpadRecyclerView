@@ -185,7 +185,7 @@ class DpadLayoutManager : GridLayoutManager {
     override fun onRequestChildFocus(
         parent: RecyclerView, state: RecyclerView.State, child: View, focused: View?
     ): Boolean {
-        return focusManager.onRequestChildFocus(parent, state, child, focused)
+        return focusManager.onRequestChildFocus(parent, child, focused)
     }
 
     // We already align Views during scrolling events, so there's no need to do this
@@ -416,8 +416,14 @@ class DpadLayoutManager : GridLayoutManager {
         focusManager.focusOutSideBack = throughBack
     }
 
+    fun setFocusSearchDisabled(disabled: Boolean) {
+        focusManager.isFocusSearchDisabled = disabled
+    }
+
+    fun isFocusSearchDisabled() = focusManager.isFocusSearchDisabled
+
     fun setCircularFocusEnabled(enable: Boolean) {
-        focusManager.circularFocusEnabled = enable
+        focusManager.isCircularFocusEnabled = enable
     }
 
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {

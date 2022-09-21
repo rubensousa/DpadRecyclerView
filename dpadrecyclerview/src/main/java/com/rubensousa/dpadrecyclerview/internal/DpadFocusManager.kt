@@ -49,7 +49,12 @@ internal class DpadFocusManager(
      * If true, when focus is at a given edge of the grid,
      * it will be redirected to the opposite edge
      */
-    var circularFocusEnabled = false
+    var isCircularFocusEnabled = false
+
+    /**
+     * If true, focus search won't work and there won't be selection changes from any key event
+     */
+    var isFocusSearchDisabled = false
 
     var position = RecyclerView.NO_POSITION
     var subPosition = 0
@@ -63,7 +68,10 @@ internal class DpadFocusManager(
     // key - row / value - previous focused span
     private val focusedSpans = LinkedHashMap<Int, Int>()
 
-    fun onInterceptFocusSearch(recyclerView: RecyclerView, focused: View, direction: Int): View? {
+    fun onInterceptFocusSearch(recyclerView: RecyclerView, focused: View?, direction: Int): View? {
+        if (isFocusSearchDisabled) {
+            return focused
+        }
         val focusFinder = FocusFinder.getInstance()
         var result: View? = null
         val movement: ScrollMovement? = calculateMovement(
@@ -89,7 +97,7 @@ internal class DpadFocusManager(
                 result = focusFinder.findNextFocus(recyclerView, focused, absDir)
             }
         } else {
-            if (circularFocusEnabled && movement != null) {
+            if (isCircularFocusEnabled && movement != null) {
                 result = focusCircular(movement)
             }
             if (result == null) {
@@ -141,12 +149,10 @@ internal class DpadFocusManager(
         return result ?: focused
     }
 
-    fun onRequestChildFocus(
-        parent: RecyclerView,
-        state: RecyclerView.State,
-        child: View,
-        focused: View?
-    ): Boolean {
+    fun onRequestChildFocus(parent: RecyclerView, child: View, focused: View?): Boolean {
+        if (isFocusSearchDisabled) {
+            return true
+        }
         val adapterPosition = layout.getAdapterPositionOfView(child)
         if (adapterPosition == RecyclerView.NO_POSITION) {
             // This could be the last view in DISAPPEARING animation
@@ -186,6 +192,9 @@ internal class DpadFocusManager(
         direction: Int,
         focusableMode: Int
     ): Boolean {
+        if (isFocusSearchDisabled) {
+            return true
+        }
         if (recyclerView.hasFocus()) {
             addFocusablesWhenRecyclerHasFocus(recyclerView, views, direction, focusableMode)
             return true
