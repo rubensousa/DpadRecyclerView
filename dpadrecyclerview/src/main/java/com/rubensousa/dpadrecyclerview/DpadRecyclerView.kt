@@ -139,6 +139,24 @@ class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Enables or disables the default rule of drawing the selected view after all other views.
+     * Default is true
+     *
+     * @param enabled True to draw the selected child at last, false otherwise.
+     */
+    fun setFocusDrawingOrderEnabled(enabled: Boolean) {
+        super.setChildrenDrawingOrderEnabled(enabled)
+    }
+
+    /**
+     * See [setFocusDrawingOrderEnabled]
+     * @return true if the selected child view is drawn at last, false otherwise
+     */
+    fun isFocusDrawingOrderEnabled(): Boolean {
+        return super.isChildrenDrawingOrderEnabled()
+    }
+
+    /**
      * Updates the [GridLayoutManager.SpanSizeLookup] used by the [DpadLayoutManager]
      * of this RecyclerView
      * @param spanSizeLookup the new span configuration
