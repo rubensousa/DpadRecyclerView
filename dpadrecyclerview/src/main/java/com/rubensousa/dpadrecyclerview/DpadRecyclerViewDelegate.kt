@@ -50,6 +50,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
     }
 
     fun setLayoutManager(layoutManager: RecyclerView.LayoutManager?) {
+        layout?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
         layout?.setRecyclerView(null)
         layout = null
 
