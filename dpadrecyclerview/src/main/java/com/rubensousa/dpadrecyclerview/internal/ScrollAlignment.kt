@@ -49,9 +49,13 @@ internal class ScrollAlignment(
         parentAlignment.defaultAlignment = alignment
     }
 
+    fun getParentAlignment() = parentAlignment.defaultAlignment
+
     fun setChildAlignment(config: ChildAlignment) {
-        childAlignment.setAlignmentConfiguration(config)
+        childAlignment.setAlignment(config)
     }
+
+    fun getChildAlignment() = childAlignment.getAlignment()
 
     fun findSubPositionOfChild(
         recyclerView: RecyclerView, view: View?, childView: View?

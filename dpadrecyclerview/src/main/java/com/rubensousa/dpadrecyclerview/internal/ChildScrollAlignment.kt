@@ -11,17 +11,19 @@ import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 @MainThread
 internal class ChildScrollAlignment {
 
-    private var config = ChildAlignment(offset = 0)
+    private var alignment = ChildAlignment(offset = 0)
 
-    fun setAlignmentConfiguration(alignmentConfig: ChildAlignment) {
-        config = alignmentConfig
+    fun setAlignment(alignmentConfig: ChildAlignment) {
+        alignment = alignmentConfig
     }
+
+    fun getAlignment() = alignment
 
     fun updateAlignments(view: View, layoutParams: DpadLayoutParams, orientation: Int) {
         val alignmentPosition = ViewAlignmentHelper.getAlignmentPosition(
             itemView = view,
             alignmentView = view,
-            layoutParams, config, orientation
+            layoutParams, alignment, orientation
         )
         if (orientation == RecyclerView.HORIZONTAL) {
             layoutParams.setAlignX(alignmentPosition)

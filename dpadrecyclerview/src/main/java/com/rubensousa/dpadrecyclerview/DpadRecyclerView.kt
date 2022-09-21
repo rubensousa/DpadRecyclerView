@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
@@ -11,6 +12,19 @@ import android.view.animation.Interpolator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
+/**
+ * A [RecyclerView] that scrolls to items on DPAD key events instead of swipe/touch gestures.
+ *
+ * Items are aligned based on the following configurations:
+ * * [ParentAlignment] aligns items in relation to this RecyclerView's dimensions
+ * * [ChildAlignment] aligns items in relation to their View's dimensions
+ * * Individual ViewHolder configurations returned by [DpadViewHolder.getAlignments]
+ *
+ * This [DpadRecyclerView] will only scroll automatically when it has focus
+ * and receives DPAD key events.
+ * To scroll manually to any given item,
+ * check [setSelectedPosition], [setSelectedPositionSmooth] and other related methods.
+ */
 class DpadRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -24,6 +38,7 @@ class DpadRecyclerView @JvmOverloads constructor(
     private val delegate = DpadRecyclerViewDelegate(this)
     private var keyInterceptListener: OnKeyInterceptListener? = null
     private var unhandledKeyListener: OnUnhandledKeyListener? = null
+    private var motionInterceptListener: OnMotionInterceptListener? = null
 
     init {
         // The LayoutManager will draw the focused view on top of all other views
@@ -44,10 +59,6 @@ class DpadRecyclerView @JvmOverloads constructor(
         return delegate.hasOverlappingRendering()
     }
 
-    fun setHasOverlappingRendering(enabled: Boolean) {
-        delegate.setHasOverlappingRendering(enabled)
-    }
-
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (keyInterceptListener?.onInterceptKeyEvent(event) == true) {
             return true
@@ -56,6 +67,13 @@ class DpadRecyclerView @JvmOverloads constructor(
             return true
         }
         return unhandledKeyListener?.onUnhandledKey(event) == true
+    }
+
+    override fun dispatchGenericFocusedEvent(event: MotionEvent): Boolean {
+        if (motionInterceptListener?.onInterceptMotionEvent(event) == true) {
+            return true
+        }
+        return super.dispatchGenericFocusedEvent(event)
     }
 
     override fun setLayoutManager(layout: LayoutManager?) {
@@ -112,38 +130,92 @@ class DpadRecyclerView @JvmOverloads constructor(
         delegate.smoothScrollBy(dx, dy, interpolator)
     }
 
+    /**
+     * Controls the return value of [View.hasOverlappingRendering].
+     * @param enabled true if overlapping rendering is enabled. Default is true
+     */
+    fun setHasOverlappingRendering(enabled: Boolean) {
+        delegate.setHasOverlappingRendering(enabled)
+    }
+
+    /**
+     * Updates the [GridLayoutManager.SpanSizeLookup] used by the [DpadLayoutManager]
+     * of this RecyclerView
+     * @param spanSizeLookup the new span configuration
+     */
+    fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
+        delegate.setSpanSizeLookup(spanSizeLookup)
+    }
+
+    /**
+     * Updates the number of spans of the [DpadLayoutManager] used by this RecyclerView.
+     * @param spans number of columns in vertical orientation,
+     * or number of rows in horizontal orientation. Must be greater than 0
+     */
     fun setSpanCount(spans: Int) {
         delegate.setSpanCount(spans)
     }
 
+    /**
+     * See [setSpanCount]
+     */
+    fun getSpanCount(): Int = delegate.getSpanCount()
+
+    /**
+     * Updates the orientation the [DpadLayoutManager] used by this RecyclerView
+     * @param orientation either [RecyclerView.VERTICAL] or [RecyclerView.HORIZONTAL]
+     */
     fun setOrientation(orientation: Int) {
         delegate.setOrientation(orientation)
     }
 
+    /**
+     * Sets the gravity used for child view positioning.
+     * Defaults to [Gravity.TOP] for horizontal orientation
+     * and [Gravity.START] for vertical orientation.
+     *
+     * @param gravity See [Gravity]
+     */
     fun setGravity(gravity: Int) {
         delegate.setGravity(gravity)
     }
 
-    fun setSelectedPosition(position: Int, smooth: Boolean, task: ViewHolderTask) {
-        delegate.setSelectedPosition(position, smooth, task)
+    /**
+     * Updates the parent alignment configuration for child views of this RecyclerView
+     * @param alignment the parent alignment configuration
+     * @param smooth true if the alignment change should be animated
+     */
+    fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean = false) {
+        delegate.setParentAlignment(alignment, smooth)
     }
 
-    fun setSelectedPosition(position: Int, smooth: Boolean) {
-        delegate.setSelectedPosition(position, smooth)
+    /**
+     * @return the current parent alignment configuration
+     */
+    fun getParentAlignment() = delegate.getParentAlignment()
+
+    /**
+     * Updates the child alignment configuration for child views of this RecyclerView
+     * @param alignment the child alignment configuration
+     * @param smooth true if the alignment change should be animated
+     */
+    fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean = false) {
+        delegate.setChildAlignment(alignment, smooth)
     }
 
-    fun setSelectedPosition(position: Int, subPosition: Int, smooth: Boolean) {
-        delegate.setSelectedPosition(position, subPosition, smooth)
-    }
+    /**
+     * @return the current child alignment configuration
+     */
+    fun getChildAlignment() = delegate.getChildAlignment()
 
-    fun getSelectedPosition() = delegate.getSelectedPosition()
-
-    fun getSelectedSubPosition() = delegate.getSelectedSubPosition()
-
-    fun getCurrentSubPositions() = delegate.getCurrentSubPositions()
-
-    fun setSelectedSubPosition(subPosition: Int, smooth: Boolean) {
-        delegate.setSelectedSubPosition(subPosition, smooth)
+    /**
+     * Updates both parent and child alignments
+     * @param parent the parent alignment configuration
+     * @param child the child alignment configuration
+     * @param smooth true if the alignment change should be animated
+     */
+    fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
+        delegate.setAlignments(parent, child, smooth)
     }
 
     /**
@@ -171,83 +243,209 @@ class DpadRecyclerView @JvmOverloads constructor(
      * move out the top side of the grid.
      *
      * @param throughBack For the vertical orientation, this controls whether focus can move out
-     * from the bottom of the grid. For the horizontal orientation, this controls whether focus can
-     * move out the back side of the grid.
+     * from the right of the grid. For the horizontal orientation, this controls whether focus can
+     * move out the bottom side of the grid.
      */
-    fun setFocusOppositeOutAllowed(throughFront: Boolean, throughBack: Boolean) {
-        delegate.setFocusOppositeOutAllowed(throughFront, throughBack)
+    fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
+        delegate.setFocusOutSideAllowed(throughFront, throughBack)
     }
 
+    /**
+     * Changes the selected item immediately without any scroll animation.
+     * @param position adapter position of the item to select
+     */
+    fun setSelectedPosition(position: Int) {
+        delegate.setSelectedPosition(position, smooth = false)
+    }
+
+    /**
+     * Performs a task on a ViewHolder at a given position after scrolling to it.
+     *
+     * @param position Adapter position of the item to select
+     * @param task     Task to executed on the ViewHolder at the given position
+     */
+    fun setSelectedPosition(position: Int, task: ViewHolderTask) {
+        delegate.setSelectedPosition(position, task, smooth = false)
+    }
+
+    /**
+     * Changes the selected item and runs an animation to scroll to the target position.
+     * @param position Adapter position of the item to select
+     */
+    fun setSelectedPositionSmooth(position: Int) {
+        delegate.setSelectedPosition(position, smooth = true)
+    }
+
+    /**
+     * Performs a task on a ViewHolder at a given position after scrolling to it.
+     *
+     * @param position Adapter position of the item to select
+     * @param task     Task to executed on the ViewHolder at the given position
+     */
+    fun setSelectedPositionSmooth(position: Int, task: ViewHolderTask) {
+        delegate.setSelectedPosition(position, task, smooth = true)
+    }
+
+    /**
+     * Changes the main selection and sub selected view immediately without any scroll animation.
+     * @param position Adapter position of the item to select
+     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     */
+    fun setSelectedSubPosition(position: Int, subPosition: Int) {
+        delegate.setSelectedSubPosition(position, subPosition, smooth = false)
+    }
+
+    /**
+     * Changes the sub selected view immediately without any scroll animation.
+     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     */
+    fun setSelectedSubPosition(subPosition: Int) {
+        delegate.setSelectedSubPosition(subPosition, smooth = false)
+    }
+
+    /**
+     * Changes the sub selected view and runs and animation to scroll to it.
+     * @param position Adapter position of the item to select
+     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     */
+    fun setSelectedSubPositionSmooth(position: Int, subPosition: Int) {
+        delegate.setSelectedSubPosition(position, subPosition, smooth = true)
+    }
+
+    /**
+     * Changes the sub selected view and runs and animation to scroll to it.
+     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     */
+    fun setSelectedSubPositionSmooth(subPosition: Int) {
+        delegate.setSelectedSubPosition(subPosition, smooth = true)
+    }
+
+    /**
+     * @return the current selected position or [RecyclerView.NO_POSITION] if there's none
+     */
+    fun getSelectedPosition() = delegate.getSelectedPosition()
+
+    /**
+     * @return the current selected sub position or 0 if there's none
+     */
+    fun getSelectedSubPosition() = delegate.getSelectedSubPosition()
+
+    /**
+     * @return the number of available sub positions for the current selected item
+     * or 0 if there's none. See [DpadViewHolder.getAlignments]
+     */
+    fun getCurrentSubPositions() = delegate.getCurrentSubPositions()
+
+    /**
+     * Registers a callback to be invoked when an item has been selected
+     * @param listener The listener to be invoked.
+     */
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
         delegate.addOnViewHolderSelectedListener(listener)
     }
 
+    /**
+     * Removes a listener added by [addOnViewHolderSelectedListener]
+     * @param listener The listener to be removed.
+     */
     fun removeOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
         delegate.removeOnViewHolderSelectedListener(listener)
     }
 
+    /**
+     * Clears all existing listeners added by [addOnViewHolderSelectedListener]
+     */
     fun clearOnViewHolderSelectedListeners() {
         delegate.clearOnViewHolderSelectedListeners()
     }
 
+    /**
+     * Set a custom behavior for [smoothScrollBy]
+     * @param behavior Custom behavior or null for the default behavior.
+     */
     fun setSmoothScrollBehavior(behavior: SmoothScrollByBehavior?) {
         delegate.smoothScrollByBehavior = behavior
     }
 
-    fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
-        delegate.setAlignments(parent, child, smooth)
-    }
-
-    fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean = false) {
-        delegate.setParentAlignment(alignment, smooth)
-    }
-
-    fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean = false) {
-        delegate.setChildAlignment(alignment, smooth)
-    }
-
-    fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
-        delegate.setSpanSizeLookup(spanSizeLookup)
-    }
-
-    fun getSpanCount(): Int = delegate.getSpanCount()
-
+    /**
+     * Set a listener that intercepts unhandled key events from [dispatchKeyEvent]
+     *
+     * @param listener The unhandled key intercept listener.
+     */
     fun setOnUnhandledKeyListener(listener: OnUnhandledKeyListener?) {
         unhandledKeyListener = listener
     }
 
+    /**
+     * @return the listener set by [setOnUnhandledKeyListener]
+     */
     fun getOnUnhandledKeyListener(): OnUnhandledKeyListener? = unhandledKeyListener
 
+    /**
+     * Set a listener that intercepts key events received in [dispatchKeyEvent]
+     *
+     * @param listener The key intercept listener.
+     */
     fun setOnKeyInterceptListener(listener: OnKeyInterceptListener?) {
         keyInterceptListener = listener
     }
 
+    /**
+     * @return the listener set by [setOnKeyInterceptListener]
+     */
+    fun getOnKeyInterceptListener(): OnKeyInterceptListener? = keyInterceptListener
+
+    /**
+     * Registers a callback to be invoked when this RecyclerView completes a layout pass.
+     *
+     * @param listener The listener to be invoked.
+     */
     fun addOnLayoutCompletedListener(listener: OnLayoutCompletedListener) {
         delegate.addOnLayoutCompletedListener(listener)
     }
 
     /**
-     * Removes a callback to be invoked when the RecyclerView completes a full layout calculation.
-     * @param listener The listener to be invoked.
+     * Removes a listener added by [addOnLayoutCompletedListener]
+     * @param listener The listener to be removed.
      */
     fun removeOnLayoutCompletedListener(listener: OnLayoutCompletedListener) {
-       delegate.removeOnLayoutCompletedListener(listener)
+        delegate.removeOnLayoutCompletedListener(listener)
     }
 
+    /**
+     * Clears all listeners added by [addOnLayoutCompletedListener]
+     */
     fun clearOnLayoutCompletedListeners() {
         delegate.clearOnLayoutCompletedListeners()
     }
 
-    fun requireDpadLayoutManager(): DpadLayoutManager {
+    /**
+     * Sets the generic motion intercept listener.
+     *
+     * @param listener The motion intercept listener.
+     */
+    fun setOnMotionInterceptListener(listener: OnMotionInterceptListener?) {
+        motionInterceptListener = listener
+    }
+
+    /**
+     * @return the listener set by [setOnMotionInterceptListener]
+     */
+    fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
+
+    /**
+     * @return the [DpadLayoutManager] used by this RecyclerView
+     */
+    fun getDpadLayoutManager(): DpadLayoutManager {
         return delegate.requireLayout()
     }
 
     /**
-     * Defines behavior of duration and interpolator for smoothScrollBy().
+     * Defines behavior of duration and interpolator for [smoothScrollBy].
      */
     interface SmoothScrollByBehavior {
         /**
-         * Defines duration in milliseconds of smoothScrollBy().
+         * Defines duration in milliseconds of [smoothScrollBy].
          *
          * @param dx x distance in pixels.
          * @param dy y distance in pixels.
@@ -256,7 +454,7 @@ class DpadRecyclerView @JvmOverloads constructor(
         fun configSmoothScrollByDuration(dx: Int, dy: Int): Int
 
         /**
-         * Defines interpolator of smoothScrollBy().
+         * Defines interpolator of [smoothScrollBy].
          *
          * @param dx x distance in pixels.
          * @param dy y distance in pixels.
@@ -265,9 +463,12 @@ class DpadRecyclerView @JvmOverloads constructor(
         fun configSmoothScrollByInterpolator(dx: Int, dy: Int): Interpolator?
     }
 
+    /**
+     * Listener for intercepting key dispatch events.
+     */
     interface OnKeyInterceptListener {
         /**
-         * Returns true if the key dispatch event should be consumed.
+         * @return true if the key dispatch event should be consumed.
          */
         fun onInterceptKeyEvent(event: KeyEvent): Boolean
     }
@@ -277,21 +478,31 @@ class DpadRecyclerView @JvmOverloads constructor(
      */
     interface OnUnhandledKeyListener {
         /**
-         * Returns true if the key event should be consumed.
+         * @return true if the key event should be consumed.
          */
         fun onUnhandledKey(event: KeyEvent): Boolean
     }
 
     /**
-     * Interface for receiving notification when this DpadRecyclerView
-     * has completed a full layout calculation
+     * Listener for receiving notifications of a completed layout pass
+     * by the LayoutManager of this RecyclerView ([DpadLayoutManager.onLayoutCompleted])
      */
     interface OnLayoutCompletedListener {
         /**
-         * Called after a full layout calculation is finished.
+         * Called after a full layout calculation has finished.
          * @param state Transient state of RecyclerView
          */
         fun onLayoutCompleted(state: State)
+    }
+
+    /**
+     * Listener for intercepting generic motion dispatch events.
+     */
+    interface OnMotionInterceptListener {
+        /**
+         * @return true if the motion event should be consumed.
+         */
+        fun onInterceptMotionEvent(event: MotionEvent): Boolean
     }
 
 }

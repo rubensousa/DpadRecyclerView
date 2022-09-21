@@ -11,7 +11,7 @@ class DpadStateHolder {
 
     fun register(recyclerView: DpadRecyclerView, key: String) {
         val restoredPosition = positions[key] ?: 0
-        recyclerView.setSelectedPosition(restoredPosition, false)
+        recyclerView.setSelectedPosition(restoredPosition)
         val listener = object : OnViewHolderSelectedListener {
             override fun onViewHolderSelected(
                 parent: RecyclerView,
@@ -30,7 +30,7 @@ class DpadStateHolder {
     fun unregister(recyclerView: DpadRecyclerView, key: String) {
         listeners.remove(key)?.let { listener ->
             recyclerView.removeOnViewHolderSelectedListener(listener)
-            recyclerView.setSelectedPosition(position = 0, smooth = false)
+            recyclerView.setSelectedPosition(position = 0)
         }
     }
 

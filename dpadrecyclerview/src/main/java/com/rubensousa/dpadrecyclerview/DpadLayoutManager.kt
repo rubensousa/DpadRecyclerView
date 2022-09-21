@@ -362,20 +362,6 @@ class DpadLayoutManager : GridLayoutManager {
         return getAdapterPositionOfView(child)
     }
 
-    fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
-        scrollAlignment.setParentAlignment(parent)
-        scrollAlignment.setChildAlignment(child)
-        if (recyclerView == null) {
-            return
-        }
-        isAlignmentPending = true
-        if (smooth) {
-            scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
-        } else {
-            requestLayout()
-        }
-    }
-
     fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean) {
         scrollAlignment.setParentAlignment(alignment)
         if (recyclerView == null) {
@@ -389,8 +375,26 @@ class DpadLayoutManager : GridLayoutManager {
         }
     }
 
+    fun getParentAlignment(): ParentAlignment = scrollAlignment.getParentAlignment()
+
     fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean) {
         scrollAlignment.setChildAlignment(alignment)
+        if (recyclerView == null) {
+            return
+        }
+        isAlignmentPending = true
+        if (smooth) {
+            scroller.scrollToFocusedPosition(requireNotNull(recyclerView), true)
+        } else {
+            requestLayout()
+        }
+    }
+
+    fun getChildAlignment() = scrollAlignment.getChildAlignment()
+
+    fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
+        scrollAlignment.setParentAlignment(parent)
+        scrollAlignment.setChildAlignment(child)
         if (recyclerView == null) {
             return
         }
@@ -407,9 +411,9 @@ class DpadLayoutManager : GridLayoutManager {
         focusManager.focusOutBack = throughBack
     }
 
-    fun setFocusOppositeOutAllowed(throughFront: Boolean, throughBack: Boolean) {
-        focusManager.focusOutOppositeFront = throughFront
-        focusManager.focusOutOppositeBack = throughBack
+    fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
+        focusManager.focusOutSideFront = throughFront
+        focusManager.focusOutSideBack = throughBack
     }
 
     fun setCircularFocusEnabled(enable: Boolean) {

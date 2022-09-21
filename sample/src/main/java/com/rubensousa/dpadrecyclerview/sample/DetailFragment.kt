@@ -42,11 +42,10 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         binding.up.setOnClickListener {
             val subPosition = binding.recyclerView.getSelectedSubPosition()
             if (subPosition > 0) {
-                binding.recyclerView.setSelectedSubPosition(subPosition - 1, smooth = true)
+                binding.recyclerView.setSelectedSubPositionSmooth(subPosition - 1)
             } else {
-                binding.recyclerView.setSelectedPosition(
-                    binding.recyclerView.getSelectedPosition() - 1,
-                    smooth = true
+                binding.recyclerView.setSelectedPositionSmooth(
+                    binding.recyclerView.getSelectedPosition() - 1
                 )
             }
         }
@@ -54,11 +53,10 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
             val subPosition = binding.recyclerView.getSelectedSubPosition()
             val subPositionCount = binding.recyclerView.getCurrentSubPositions()
             if (subPosition < subPositionCount - 1) {
-                binding.recyclerView.setSelectedSubPosition(subPosition + 1, smooth = true)
+                binding.recyclerView.setSelectedSubPositionSmooth(subPosition + 1)
             } else {
-                binding.recyclerView.setSelectedPosition(
-                    binding.recyclerView.getSelectedPosition() + 1,
-                    smooth = true
+                binding.recyclerView.setSelectedPositionSmooth(
+                    binding.recyclerView.getSelectedPosition() + 1
                 )
             }
         }
@@ -100,7 +98,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                 margin = binding.root.context.resources.getDimensionPixelOffset(
                     R.dimen.item_spacing
                 ),
-                binding.recyclerView.requireDpadLayoutManager()
+                binding.recyclerView.getDpadLayoutManager()
             )
         )
         binding.recyclerView.adapter = concatAdapter

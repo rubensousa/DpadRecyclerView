@@ -7,8 +7,8 @@
         <attr name="dpadRecyclerViewCircularFocusEnabled" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutFront" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutBack" format="boolean" />
-        <attr name="dpadRecyclerViewFocusOutOppositeFront" format="boolean" />
-        <attr name="dpadRecyclerViewFocusOutOppositeBack" format="boolean" />
+        <attr name="dpadRecyclerViewFocusOutSideFront" format="boolean" />
+        <attr name="dpadRecyclerViewFocusOutSideBack" format="boolean" />
         <attr name="dpadRecyclerViewChildAlignmentOffset" format="dimension" />
         <attr name="dpadRecyclerViewChildAlignmentOffsetRatio" format="float" />
         <attr name="dpadRecyclerViewChildAlignmentOffsetRatioEnabled" format="boolean" />

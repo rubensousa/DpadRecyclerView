@@ -35,7 +35,7 @@ internal class DpadFocusManager(
      * For horizontal orientation, this means navigating out from the top of the last view
      * For vertical orientation, this means navigation out from the start of the last view
      */
-    var focusOutOppositeFront = true
+    var focusOutSideFront = true
 
     /**
      * Allow dpad events to navigate outside the View at the last position
@@ -43,7 +43,7 @@ internal class DpadFocusManager(
      * For horizontal orientation, this means navigating out from the bottom of the last view
      * For vertical orientation, this means navigation out from the end of the last view
      */
-    var focusOutOppositeBack = true
+    var focusOutSideBack = true
 
     /**
      * If true, when focus is at a given edge of the grid,
@@ -57,8 +57,6 @@ internal class DpadFocusManager(
     /**
      * The offset to be applied to [position], due to adapter change, on the next layout pass.
      * Set to Int.MIN_VALUE means we should stop adding delta to [position] until next layout cycle.
-     * TODO:  This is somewhat duplication of RecyclerView getOldPosition() which is
-     * unfortunately cleared after prelayout.
      */
     var positionOffset = 0
 
@@ -125,12 +123,12 @@ internal class DpadFocusManager(
                 }
             }
             ScrollMovement.NEXT_COLUMN -> {
-                if (isScrolling || !focusOutOppositeBack) {
+                if (isScrolling || !focusOutSideBack) {
                     result = focused
                 }
             }
             ScrollMovement.PREVIOUS_COLUMN -> {
-                if (isScrolling || !focusOutOppositeFront) {
+                if (isScrolling || !focusOutSideFront) {
                     result = focused
                 }
             }

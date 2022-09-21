@@ -11,8 +11,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:dpadRecyclerViewCircularFocusEnabled="true"
-        app:dpadRecyclerViewFocusOutOppositeBack="false"
-        app:dpadRecyclerViewFocusOutOppositeFront="false"
+        app:dpadRecyclerViewFocusOutSideBack="false"
+        app:dpadRecyclerViewFocusOutSideFront="false"
         app:spanCount="5" />
 
     <LinearLayout

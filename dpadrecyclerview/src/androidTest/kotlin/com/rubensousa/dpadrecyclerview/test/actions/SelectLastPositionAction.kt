@@ -11,7 +11,11 @@ class SelectLastPositionAction(
     override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
         val itemCount = recyclerView.adapter?.itemCount ?: return
         val lastPosition = itemCount - 1
-        recyclerView.setSelectedPosition(lastPosition, smooth)
+        if (smooth) {
+            recyclerView.setSelectedPositionSmooth(lastPosition)
+        } else {
+            recyclerView.setSelectedPosition(lastPosition)
+        }
         onPositionSelected(lastPosition)
     }
 }

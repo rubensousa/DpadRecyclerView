@@ -81,12 +81,16 @@ open class TestGridFragment : Fragment(R.layout.test_container), OnViewHolderSel
 
     fun selectWithTask(position: Int, smooth: Boolean, executeWhenAligned: Boolean = false) {
         val recyclerView = requireView().findViewById<DpadRecyclerView>(R.id.recyclerView)
-        recyclerView.setSelectedPosition(position, smooth,
-            object : ViewHolderTask(executeWhenAligned) {
-                override fun execute(viewHolder: RecyclerView.ViewHolder) {
-                    tasks.add(TestPosition(position = position))
-                }
-            })
+        val task = object : ViewHolderTask(executeWhenAligned) {
+            override fun execute(viewHolder: RecyclerView.ViewHolder) {
+                tasks.add(TestPosition(position = position))
+            }
+        }
+        if (smooth) {
+            recyclerView.setSelectedPositionSmooth(position, task)
+        } else {
+            recyclerView.setSelectedPosition(position, task)
+        }
     }
 
     fun getTasksExecuted(): List<TestPosition> = tasks

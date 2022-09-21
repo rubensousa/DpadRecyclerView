@@ -23,6 +23,18 @@ class SelectPositionsAction(
 
     override fun perform(uiController: UiController, view: View) {
         val recyclerView = view as DpadRecyclerView
-        recyclerView.setSelectedPosition(position, subPosition, smooth)
+        if (smooth) {
+            if (subPosition > 0) {
+                recyclerView.setSelectedSubPositionSmooth(position, subPosition)
+            } else {
+                recyclerView.setSelectedPositionSmooth(position)
+            }
+        } else {
+            if (subPosition > 0) {
+                recyclerView.setSelectedSubPosition(position, subPosition)
+            } else {
+                recyclerView.setSelectedPosition(position)
+            }
+        }
     }
 }

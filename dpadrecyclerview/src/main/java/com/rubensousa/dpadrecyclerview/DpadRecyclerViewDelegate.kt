@@ -103,12 +103,12 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
                 R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutBack, true
             )
         )
-        layout.setFocusOppositeOutAllowed(
+        layout.setFocusOutSideAllowed(
             throughFront = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutOppositeFront, true
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideFront, true
             ),
             throughBack = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutOppositeBack, true
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideBack, true
             )
         )
         layout.setCircularFocusEnabled(
@@ -254,16 +254,16 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         requireLayout().setGravity(gravity)
     }
 
-    fun setSelectedPosition(position: Int, smooth: Boolean, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, task)
-        setSelectedPosition(position, smooth)
-    }
-
     fun setSelectedPosition(position: Int, smooth: Boolean) {
         requireLayout().selectPosition(position, subPosition = 0, smooth)
     }
 
-    fun setSelectedPosition(position: Int, subPosition: Int, smooth: Boolean) {
+    fun setSelectedPosition(position: Int, task: ViewHolderTask, smooth: Boolean) {
+        viewHolderTaskExecutor.schedule(position, task)
+        setSelectedPosition(position, smooth)
+    }
+
+    fun setSelectedSubPosition(position: Int, subPosition: Int, smooth: Boolean) {
         requireLayout().selectPosition(position, subPosition, smooth)
     }
 
@@ -281,8 +281,8 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         requireLayout().setFocusOutAllowed(throughFront, throughBack)
     }
 
-    fun setFocusOppositeOutAllowed(throughFront: Boolean, throughBack: Boolean) {
-        requireLayout().setFocusOppositeOutAllowed(throughFront, throughBack)
+    fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
+        requireLayout().setFocusOutSideAllowed(throughFront, throughBack)
     }
 
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
@@ -307,9 +307,13 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         requireLayout().setParentAlignment(alignment, smooth)
     }
 
+    fun getParentAlignment() = requireLayout().getParentAlignment()
+
     fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean = false) {
         requireLayout().setChildAlignment(alignment, smooth)
     }
+
+    fun getChildAlignment() = requireLayout().getChildAlignment()
 
     fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
         requireLayout().spanSizeLookup = spanSizeLookup
