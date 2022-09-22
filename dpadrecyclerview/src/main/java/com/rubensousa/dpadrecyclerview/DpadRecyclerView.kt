@@ -131,6 +131,27 @@ class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Sets the factor used for laying out extra space
+     * on the invisible portion of this RecyclerView when scrolling.
+     *
+     * Default is 1.0f, which means a full invisible page is rendered on the scroll direction.
+     *
+     * If this is set to 0.0f, it means no extra space will be laid out.
+     *
+     * @param factor Must be equal to or greater than 0
+     */
+    fun setExtraLayoutSpaceFactor(factor: Float) {
+        delegate.setExtraLayoutSpaceFactor(factor)
+    }
+
+    /**
+     * @return custom extra layout space factor set by [setExtraLayoutSpaceFactor]
+     */
+    fun getExtraLayoutSpaceFactor(): Float {
+        return delegate.getExtraLayoutSpaceFactor()
+    }
+
+    /**
      * Controls the return value of [View.hasOverlappingRendering].
      * @param enabled true if overlapping rendering is enabled. Default is true
      */

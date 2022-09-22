@@ -277,13 +277,18 @@ class DpadLayoutManager : GridLayoutManager {
     }
 
     override fun calculateExtraLayoutSpace(state: RecyclerView.State, extraLayoutSpace: IntArray) {
-        if (isHorizontal()) {
-            extraLayoutSpace[0] = (width * extraLayoutSpaceFactor).toInt()
-            extraLayoutSpace[1] = (width * extraLayoutSpaceFactor).toInt()
-        } else {
-            extraLayoutSpace[0] = (height * extraLayoutSpaceFactor).toInt()
-            extraLayoutSpace[1] = (height * extraLayoutSpaceFactor).toInt()
+        var extraLayoutSpaceStart = 0
+        var extraLayoutSpaceEnd = 0
+        if (scroller.scrollDirection != DpadScroller.SCROLL_NONE) {
+            val extraScrollSpace = scrollAlignment.getTotalSpace()
+            if (scroller.scrollDirection == DpadScroller.SCROLL_START) {
+                extraLayoutSpaceStart = extraScrollSpace
+            } else {
+                extraLayoutSpaceEnd = extraScrollSpace
+            }
         }
+        extraLayoutSpace[0] = (extraLayoutSpaceStart * extraLayoutSpaceFactor).toInt()
+        extraLayoutSpace[1] = (extraLayoutSpaceEnd * extraLayoutSpaceFactor).toInt()
     }
 
     override fun scrollVerticallyBy(
@@ -291,6 +296,7 @@ class DpadLayoutManager : GridLayoutManager {
         recycler: RecyclerView.Recycler?,
         state: RecyclerView.State?
     ): Int {
+        scroller.updateScrollDirection(dy)
         val scrolled = super.scrollVerticallyBy(dy, recycler, state)
         val currentRecyclerView = recyclerView
         val remainingScroll = dy - scrolled
@@ -307,6 +313,7 @@ class DpadLayoutManager : GridLayoutManager {
         recycler: RecyclerView.Recycler?,
         state: RecyclerView.State?
     ): Int {
+        scroller.updateScrollDirection(dx)
         val scrolled = super.scrollHorizontallyBy(dx, recycler, state)
         val currentRecyclerView = recyclerView
         val remainingScroll = dx - scrolled
@@ -336,6 +343,13 @@ class DpadLayoutManager : GridLayoutManager {
     fun getRowIndex(position: Int): Int {
         return spanSizeLookup.getSpanGroupIndex(position, spanCount)
     }
+
+    fun setExtraLayoutSpaceFactor(factor: Float) {
+        extraLayoutSpaceFactor = factor
+        requestLayout()
+    }
+
+    fun getExtraLayoutSpaceFactor() = extraLayoutSpaceFactor
 
     fun setGravity(gravity: Int) {
         delegate.gravity = gravity
@@ -747,6 +761,7 @@ class DpadLayoutManager : GridLayoutManager {
                 dispatchViewHolderSelectedAndAligned()
                 previousSelectedPosition = RecyclerView.NO_POSITION
             }
+            scroller.setIdle()
         }
     }
 

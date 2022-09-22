@@ -17,11 +17,20 @@ internal class DpadScroller(
     private val layout: DpadLayoutManager
 ) {
 
+    companion object {
+        const val SCROLL_NONE = 0
+        const val SCROLL_START = -1
+        const val SCROLL_END = 1
+    }
+
     var smoothScrollSpeedFactor = 1f
     var childDrawingOrderEnabled = false
     var pendingSelectionUpdate = false
 
     var isSelectionInProgress = false
+        private set
+
+    var scrollDirection = SCROLL_NONE
         private set
 
     private var isAligningFocusedPosition = false
@@ -287,6 +296,34 @@ internal class DpadScroller(
         offsetChildren(-offset)
         recyclerView.invalidate()
         return offset
+    }
+
+    fun updateScrollDirection(scrollDx: Int) {
+        if (scrollDx == 0) {
+            scrollDirection = SCROLL_NONE
+            return
+        }
+        scrollDirection = if (scrollDx < 0) {
+            if (layout.isVertical()) {
+                SCROLL_START
+            } else if (layout.isRTL()) {
+                SCROLL_END
+            } else {
+                SCROLL_START
+            }
+        } else {
+            if (layout.isVertical()) {
+                SCROLL_END
+            } else if (layout.isRTL()) {
+                SCROLL_START
+            } else {
+                SCROLL_END
+            }
+        }
+    }
+
+    fun setIdle() {
+        scrollDirection = SCROLL_NONE
     }
 
     private fun startPositionSmoothScroller(recyclerView: RecyclerView, position: Int) {

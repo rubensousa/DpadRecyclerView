@@ -17,6 +17,8 @@ internal class ScrollAlignment(
     private val childAlignment = ChildScrollAlignment()
     private val viewHolderAlignment = ViewHolderScrollAlignment()
 
+    fun getTotalSpace() = orientationHelper.totalSpace
+
     fun setOrientation(orientation: Int) {
         orientationHelper = OrientationHelper.createOrientationHelper(
             layoutManager,
