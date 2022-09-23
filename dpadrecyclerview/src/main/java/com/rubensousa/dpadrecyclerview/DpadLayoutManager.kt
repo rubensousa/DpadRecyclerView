@@ -39,7 +39,7 @@ class DpadLayoutManager : GridLayoutManager {
     private var isAlignmentPending = true
     private var hasFinishedFirstLayout = false
     private var isInLayoutStage = false
-    private var extraLayoutSpaceFactor = 0.5f
+    private var extraLayoutSpace = 0
     private var recyclerView: RecyclerView? = null
 
     // Since the super constructor calls setOrientation internally,
@@ -276,19 +276,23 @@ class DpadLayoutManager : GridLayoutManager {
         scroller.setSmoothScroller(smoothScroller)
     }
 
-    override fun calculateExtraLayoutSpace(state: RecyclerView.State, extraLayoutSpace: IntArray) {
-        var extraLayoutSpaceStart = 0
-        var extraLayoutSpaceEnd = 0
+    override fun calculateExtraLayoutSpace(state: RecyclerView.State, out: IntArray) {
+        val totalSpace = scrollAlignment.getTotalSpace()
+
+        // Default extra space must always be the size of the container
+        var extraLayoutSpaceStart = totalSpace
+        var extraLayoutSpaceEnd = totalSpace
+
+        // Add the extraLayoutSpace defined by the user to the scrolling direction
         if (scroller.scrollDirection != DpadScroller.SCROLL_NONE) {
-            val extraScrollSpace = scrollAlignment.getTotalSpace()
             if (scroller.scrollDirection == DpadScroller.SCROLL_START) {
-                extraLayoutSpaceStart = extraScrollSpace
+                extraLayoutSpaceStart = totalSpace + extraLayoutSpace
             } else {
-                extraLayoutSpaceEnd = extraScrollSpace
+                extraLayoutSpaceEnd = totalSpace + extraLayoutSpace
             }
         }
-        extraLayoutSpace[0] = (extraLayoutSpaceStart * extraLayoutSpaceFactor).toInt()
-        extraLayoutSpace[1] = (extraLayoutSpaceEnd * extraLayoutSpaceFactor).toInt()
+        out[0] = extraLayoutSpaceStart
+        out[1] = extraLayoutSpaceEnd
     }
 
     override fun scrollVerticallyBy(
@@ -344,12 +348,12 @@ class DpadLayoutManager : GridLayoutManager {
         return spanSizeLookup.getSpanGroupIndex(position, spanCount)
     }
 
-    fun setExtraLayoutSpaceFactor(factor: Float) {
-        extraLayoutSpaceFactor = factor
+    fun setExtraLayoutSpace(value: Int) {
+        extraLayoutSpace = value
         requestLayout()
     }
 
-    fun getExtraLayoutSpaceFactor() = extraLayoutSpaceFactor
+    fun getExtraLayoutSpace() = extraLayoutSpace
 
     fun setGravity(gravity: Int) {
         delegate.gravity = gravity

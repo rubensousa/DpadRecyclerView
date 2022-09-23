@@ -330,11 +330,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         requireLayout().clearOnLayoutCompletedListeners()
     }
 
-    fun setExtraLayoutSpaceFactor(factor: Float) {
-        requireLayout().setExtraLayoutSpaceFactor(factor)
+    fun setExtraLayoutSpace(value: Int) {
+        requireLayout().setExtraLayoutSpace(value)
     }
 
-    fun getExtraLayoutSpaceFactor() = requireLayout().getExtraLayoutSpaceFactor()
+    fun getExtraLayoutSpace() = requireLayout().getExtraLayoutSpace()
 
     fun hasOverlappingRendering(): Boolean = hasOverlappingRendering
 
