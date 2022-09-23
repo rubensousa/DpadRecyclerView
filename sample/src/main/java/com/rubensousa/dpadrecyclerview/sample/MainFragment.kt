@@ -24,11 +24,6 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
     private var selectedPosition = RecyclerView.NO_POSITION
     private val scrollStateHolder = DpadStateHolder()
     private val viewModel by viewModels<MainViewModel>()
-    private val concatAdapter = ConcatAdapter(
-        ConcatAdapter.Config.Builder()
-            .setIsolateViewTypes(true)
-            .build()
-    )
     private val loadingAdapter = ListPlaceholderAdapter()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,6 +53,11 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
     }
 
     private fun setupAdapter(): NestedListAdapter {
+        val concatAdapter = ConcatAdapter(
+            ConcatAdapter.Config.Builder()
+                .setIsolateViewTypes(true)
+                .build()
+        )
         val nestedListAdapter = NestedListAdapter(scrollStateHolder,
             object : ItemViewHolder.ItemClickListener {
                 override fun onViewHolderClicked() {
@@ -114,7 +114,6 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding.recyclerView.adapter = null
         _binding = null
     }
 
