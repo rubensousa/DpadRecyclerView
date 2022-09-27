@@ -2,7 +2,7 @@ buildscript {
     apply from: 'versions.gradle'
 
     dependencies {
-        classpath "org.jacoco:org.jacoco.core:$versions.jacoco"
+        classpath "org.jacoco:org.jacoco.core:$testVersions.jacoco"
     }
 }
 
