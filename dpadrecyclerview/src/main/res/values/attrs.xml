@@ -4,6 +4,7 @@
     <attr name="dpadRecyclerViewStyle" format="reference" />
 
     <declare-styleable name="DpadRecyclerView">
+        <attr name="dpadRecyclerViewSmoothFocusChangesEnabled" format="boolean" />
         <attr name="dpadRecyclerViewCircularFocusEnabled" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutFront" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutBack" format="boolean" />

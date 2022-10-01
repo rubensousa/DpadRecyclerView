@@ -131,6 +131,17 @@ class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Enable or disable smooth scrolling to new focused position. By default, this is set to true.
+     * When set to false, RecyclerView will scroll immediately to the focused view
+     * without any animation.
+     *
+     * @param enabled true to smooth scroll to the new focused position, false to scroll immediately
+     */
+    fun setSmoothFocusChangesEnabled(enabled: Boolean){
+        delegate.setSmoothFocusChangesEnabled(enabled)
+    }
+
+    /**
      * Sets the amount of pixels to be used for laying out extra space
      * on the invisible portion of this RecyclerView when scrolling in a given direction.
      *

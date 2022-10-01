@@ -41,6 +41,7 @@ class DpadLayoutManager : GridLayoutManager {
     private var isInLayoutStage = false
     private var extraLayoutSpace = 0
     private var recyclerView: RecyclerView? = null
+    private var isSmoothFocusChangesEnabled = true
 
     // Since the super constructor calls setOrientation internally,
     // we need this to avoid trying to access calls not initialized
@@ -486,6 +487,10 @@ class DpadLayoutManager : GridLayoutManager {
         )
     }
 
+    fun setSmoothFocusChangesEnabled(enabled: Boolean) {
+        isSmoothFocusChangesEnabled = enabled
+    }
+
     internal fun scrollToView(
         recyclerView: RecyclerView, child: View, focused: View?, smooth: Boolean
     ) {
@@ -500,7 +505,7 @@ class DpadLayoutManager : GridLayoutManager {
         }
         recyclerView?.let { view ->
             view.post {
-                scroller.scrollToFocusedPosition(view, true)
+                scroller.scrollToFocusedPosition(view, isSmoothFocusChangesEnabled)
             }
         }
     }
@@ -720,6 +725,10 @@ class DpadLayoutManager : GridLayoutManager {
     internal fun getAdapterPositionOfChildAt(index: Int): Int {
         val child = getChildAt(index) ?: return RecyclerView.NO_POSITION
         return getAdapterPositionOfView(child)
+    }
+
+    internal fun isSmoothScrollEnabled(): Boolean {
+        return isSmoothFocusChangesEnabled
     }
 
     private fun hasSelectionListeners(): Boolean {

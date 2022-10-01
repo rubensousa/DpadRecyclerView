@@ -161,7 +161,7 @@ internal class DpadFocusManager(
         val canScrollToView = !layout.isInLayoutStage() && !layout.isSelectionInProgress()
         if (canScrollToView) {
             saveSpanFocus(adapterPosition)
-            layout.scrollToView(parent, child, focused, smooth = true)
+            layout.scrollToView(parent, child, focused, smooth = layout.isSmoothScrollEnabled())
         } else {
             Log.d(
                 DpadRecyclerView.TAG,

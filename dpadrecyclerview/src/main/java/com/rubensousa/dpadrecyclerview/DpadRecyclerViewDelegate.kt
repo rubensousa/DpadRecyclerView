@@ -115,6 +115,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
                 R.styleable.DpadRecyclerView_dpadRecyclerViewCircularFocusEnabled, false
             )
         )
+        layout.setSmoothFocusChangesEnabled(
+            typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewSmoothFocusChangesEnabled, true
+            )
+        )
         if (typedArray.hasValue(R.styleable.DpadRecyclerView_android_gravity)) {
             layout.setGravity(
                 typedArray.getInt(R.styleable.DpadRecyclerView_android_gravity, Gravity.NO_GRAVITY)
@@ -239,6 +244,10 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
                 behavior.configSmoothScrollByDuration(dx, dy)
             )
         } ?: recyclerView.smoothScrollBy(dx, dy, interpolator, RecyclerView.UNDEFINED_DURATION)
+    }
+
+    fun setSmoothFocusChangesEnabled(enabled: Boolean) {
+        requireLayout().setSmoothFocusChangesEnabled(enabled)
     }
 
     fun setSpanCount(spans: Int) {
