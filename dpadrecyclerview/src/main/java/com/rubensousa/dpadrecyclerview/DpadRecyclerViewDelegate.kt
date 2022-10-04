@@ -202,6 +202,10 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         }
     }
 
+    fun setCircularFocusEnabled(enabled: Boolean) {
+        requireLayout().setCircularFocusEnabled(enabled)
+    }
+
     fun getChildDrawingOrder(childCount: Int, i: Int): Int {
         return layout?.getChildDrawingOrder(childCount, i) ?: i
     }

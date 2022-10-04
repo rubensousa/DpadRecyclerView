@@ -142,6 +142,18 @@ class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * When this is enabled, RecyclerView will focus the item in the first column
+     * when attempting to focus forward from the last column,
+     * or focus the last column when focusing back from the first column.
+     * By default, this is set to false.
+     *
+     * @param enabled true to enable circular focus, false to disable
+     */
+    fun setCircularFocusEnabled(enabled: Boolean) {
+        delegate.setCircularFocusEnabled(enabled)
+    }
+
+    /**
      * Sets the amount of pixels to be used for laying out extra space
      * on the invisible portion of this RecyclerView when scrolling in a given direction.
      *
