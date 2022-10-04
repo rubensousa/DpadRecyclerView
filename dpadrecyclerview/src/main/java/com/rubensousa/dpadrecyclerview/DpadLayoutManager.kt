@@ -345,6 +345,10 @@ class DpadLayoutManager : GridLayoutManager {
         return spanSizeLookup.getSpanIndex(position, spanCount)
     }
 
+    fun getEndColumnIndex(position: Int): Int {
+        return getColumnIndex(position) + spanSizeLookup.getSpanSize(position) - 1
+    }
+
     fun getRowIndex(position: Int): Int {
         return spanSizeLookup.getSpanGroupIndex(position, spanCount)
     }
@@ -441,9 +445,11 @@ class DpadLayoutManager : GridLayoutManager {
 
     fun isFocusSearchDisabled() = focusManager.isFocusSearchDisabled
 
-    fun setCircularFocusEnabled(enable: Boolean) {
-        focusManager.isCircularFocusEnabled = enable
+    fun setFocusableDirection(direction: FocusableDirection) {
+        focusManager.focusableDirection = direction
     }
+
+    fun getFocusableDirection() = focusManager.focusableDirection
 
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
         selectionListeners.add(listener)

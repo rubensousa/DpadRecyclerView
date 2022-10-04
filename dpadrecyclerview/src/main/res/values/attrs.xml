@@ -5,7 +5,6 @@
 
     <declare-styleable name="DpadRecyclerView">
         <attr name="dpadRecyclerViewSmoothFocusChangesEnabled" format="boolean" />
-        <attr name="dpadRecyclerViewCircularFocusEnabled" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutFront" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutBack" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutSideFront" format="boolean" />
@@ -22,6 +21,11 @@
         <attr name="dpadRecyclerViewParentAlignmentOffset" format="dimension" />
         <attr name="dpadRecyclerViewParentAlignmentOffsetRatio" format="float" />
         <attr name="dpadRecyclerViewParentAlignmentOffsetRatioEnabled" format="boolean" />
+        <attr name="dpadRecyclerViewFocusableDirection" format="enum">
+            <enum name="standard" value="0" />
+            <enum name="circular" value="1" />
+            <enum name="continuous" value="2" />
+        </attr>
 
         <attr name="spanCount" />
         <attr name="reverseLayout" />

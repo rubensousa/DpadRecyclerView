@@ -110,10 +110,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
                 R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideBack, true
             )
         )
-        layout.setCircularFocusEnabled(
-            typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewCircularFocusEnabled, false
-            )
+        layout.setFocusableDirection(
+            FocusableDirection.values()[typedArray.getInt(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusableDirection,
+                FocusableDirection.STANDARD.ordinal
+            )]
         )
         layout.setSmoothFocusChangesEnabled(
             typedArray.getBoolean(
@@ -202,9 +203,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         }
     }
 
-    fun setCircularFocusEnabled(enabled: Boolean) {
-        requireLayout().setCircularFocusEnabled(enabled)
+    fun setFocusableDirection(direction: FocusableDirection) {
+        requireLayout().setFocusableDirection(direction)
     }
+
+    fun getFocusableDirection() = requireLayout().getFocusableDirection()
 
     fun getChildDrawingOrder(childCount: Int, i: Int): Int {
         return layout?.getChildDrawingOrder(childCount, i) ?: i

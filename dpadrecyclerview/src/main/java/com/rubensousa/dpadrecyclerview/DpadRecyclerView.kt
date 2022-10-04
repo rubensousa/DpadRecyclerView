@@ -137,40 +137,23 @@ class DpadRecyclerView @JvmOverloads constructor(
      *
      * @param enabled true to smooth scroll to the new focused position, false to scroll immediately
      */
-    fun setSmoothFocusChangesEnabled(enabled: Boolean){
+    fun setSmoothFocusChangesEnabled(enabled: Boolean) {
         delegate.setSmoothFocusChangesEnabled(enabled)
     }
 
     /**
-     * When this is enabled, RecyclerView will focus the item in the first column
-     * when attempting to focus forward from the last column,
-     * or focus the last column when focusing back from the first column.
-     * By default, this is set to false.
-     *
-     * Enabling this will reset the state set by [setContinuousFocusEnabled]
-     *
-     * @param enabled true to enable circular focus, false to disable
+     * Changes how RecyclerView will find the next focusable view.
+     * Check [FocusableDirection] for all supported directions. Default is [FocusableDirection.STANDARD]
      */
-    fun setCircularFocusEnabled(enabled: Boolean) {
-        delegate.setCircularFocusEnabled(enabled)
+    fun setFocusableDirection(direction: FocusableDirection) {
+        delegate.setFocusableDirection(direction)
     }
 
     /**
-     * When this is enabled, RecyclerView will focus an item in a different row depending
-     * on the direction of the focus request.
-     *
-     * If focusing forward (e.g Dpad right on a vertical grid) on the last column,
-     * the next focused item will be the item in the first column of the next row.
-     *
-     * If focusing backwards (e.g Dpad left on a vertical grid) on the first column,
-     * the next focused item will be the item in the last column of the previous row.
-     *
-     * Enabling this will reset the state set by [setCircularFocusEnabled]
-     *
-     * @param enabled true to enable directional focus, false to disable
+     * @return the current [FocusableDirection]. Default is [FocusableDirection.STANDARD]
      */
-    fun setContinuousFocusEnabled(enabled: Boolean) {
-       // delegate.setDirectionalFocusEnabled(enabled)
+    fun getFocusableDirection(): FocusableDirection {
+        return delegate.getFocusableDirection()
     }
 
     /**

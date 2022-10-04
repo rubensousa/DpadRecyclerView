@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:dpadRecyclerViewCircularFocusEnabled="true"
+        app:dpadRecyclerViewFocusableDirection="continuous"
         app:dpadRecyclerViewFocusOutSideBack="false"
         app:dpadRecyclerViewFocusOutSideFront="false"
         app:spanCount="5" />

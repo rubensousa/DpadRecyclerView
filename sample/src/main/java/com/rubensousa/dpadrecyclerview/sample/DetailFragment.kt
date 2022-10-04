@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.GridSpanMarginDecoration
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
@@ -38,32 +39,33 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = ScreenTvDetailBinding.bind(view)
-        setupAdapter()
+        val recyclerView = binding.recyclerView
+        setupAdapter(recyclerView)
         binding.up.setOnClickListener {
-            val subPosition = binding.recyclerView.getSelectedSubPosition()
+            val subPosition = recyclerView.getSelectedSubPosition()
             if (subPosition > 0) {
-                binding.recyclerView.setSelectedSubPositionSmooth(subPosition - 1)
+                recyclerView.setSelectedSubPositionSmooth(subPosition - 1)
             } else {
-                binding.recyclerView.setSelectedPositionSmooth(
-                    binding.recyclerView.getSelectedPosition() - 1
+                recyclerView.setSelectedPositionSmooth(
+                    recyclerView.getSelectedPosition() - 1
                 )
             }
         }
         binding.down.setOnClickListener {
-            val subPosition = binding.recyclerView.getSelectedSubPosition()
-            val subPositionCount = binding.recyclerView.getCurrentSubPositions()
+            val subPosition = recyclerView.getSelectedSubPosition()
+            val subPositionCount = recyclerView.getCurrentSubPositions()
             if (subPosition < subPositionCount - 1) {
-                binding.recyclerView.setSelectedSubPositionSmooth(subPosition + 1)
+                recyclerView.setSelectedSubPositionSmooth(subPosition + 1)
             } else {
-                binding.recyclerView.setSelectedPositionSmooth(
-                    binding.recyclerView.getSelectedPosition() + 1
+                recyclerView.setSelectedPositionSmooth(
+                    recyclerView.getSelectedPosition() + 1
                 )
             }
         }
-        binding.recyclerView.requestFocus()
+        recyclerView.requestFocus()
     }
 
-    private fun setupAdapter() {
+    private fun setupAdapter(recyclerView: DpadRecyclerView) {
         val concatAdapter = ConcatAdapter()
         val headerAdapter = ListHeaderAdapter()
         val itemAdapter = ItemGridAdapter(object : ItemViewHolder.ItemClickListener {
@@ -82,27 +84,27 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         }
         concatAdapter.addAdapter(headerAdapter)
         concatAdapter.addAdapter(itemAdapter)
-        binding.recyclerView.setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
+        recyclerView.setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 if (position < headerAdapter.itemCount) {
-                    return binding.recyclerView.getSpanCount()
+                    return recyclerView.getSpanCount()
                 } else {
                     return 1
                 }
             }
         })
-        binding.recyclerView.setChildAlignment(topChildAlignment)
-        binding.recyclerView.setParentAlignment(topParentAlignment)
-        binding.recyclerView.addItemDecoration(
+        recyclerView.setChildAlignment(topChildAlignment)
+        recyclerView.setParentAlignment(topParentAlignment)
+        recyclerView.addItemDecoration(
             GridSpanMarginDecoration.create(
                 margin = binding.root.context.resources.getDimensionPixelOffset(
                     R.dimen.item_spacing
                 ),
-                binding.recyclerView.getDpadLayoutManager()
+                recyclerView.getDpadLayoutManager()
             )
         )
-        binding.recyclerView.adapter = concatAdapter
-        binding.recyclerView.addOnViewHolderSelectedListener(object :
+        recyclerView.adapter = concatAdapter
+        recyclerView.addOnViewHolderSelectedListener(object :
             OnViewHolderSelectedListener {
             override fun onViewHolderSelected(
                 parent: RecyclerView,
@@ -111,13 +113,13 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                 subPosition: Int
             ) {
                 if (position > 6) {
-                    binding.recyclerView.setAlignments(
+                    recyclerView.setAlignments(
                         centerParentAlignment,
                         centerChildAlignment,
                         smooth = true
                     )
                 } else {
-                    binding.recyclerView.setAlignments(
+                    recyclerView.setAlignments(
                         topParentAlignment,
                         topChildAlignment,
                         smooth = true

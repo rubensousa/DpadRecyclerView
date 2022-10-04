@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLayoutManager
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.FocusableDirection
 
 internal class DpadFocusManager(
     private val layout: DpadLayoutManager
@@ -45,11 +46,7 @@ internal class DpadFocusManager(
      */
     var focusOutSideBack = true
 
-    /**
-     * If true, when focus is at a given edge of the grid,
-     * it will be redirected to the opposite edge
-     */
-    var isCircularFocusEnabled = false
+    var focusableDirection = FocusableDirection.STANDARD
 
     /**
      * If true, focus search won't work and there won't be selection changes from any key event
@@ -97,8 +94,18 @@ internal class DpadFocusManager(
                 result = focusFinder.findNextFocus(recyclerView, focused, absDir)
             }
         } else {
-            if (isCircularFocusEnabled && movement != null) {
-                result = focusCircular(movement)
+            if (movement != null) {
+                when (focusableDirection) {
+                    FocusableDirection.CIRCULAR -> {
+                        result = focusCircular(movement)
+                    }
+                    FocusableDirection.CONTINUOUS -> {
+                        result = focusContinuous(movement)
+                    }
+                    else -> {
+                        // Do nothing
+                    }
+                }
             }
             if (result == null) {
                 result = focusFinder.findNextFocus(recyclerView, focused, direction)
@@ -368,42 +375,122 @@ internal class DpadFocusManager(
             return null
         }
         val firstColumnIndex = layout.getColumnIndex(position)
-        var lastColumnIndex = firstColumnIndex + layout.spanSizeLookup.getSpanSize(position) - 1
-        // Do nothing for the middle columns or for items that take the entire span count
-        if (layout.spanSizeLookup.getSpanSize(position) == layout.spanCount
-            || (firstColumnIndex > 0 && lastColumnIndex < layout.spanCount - 1)
-        ) {
+
+        // Do nothing for the items that take the entire span count
+        if (layout.spanSizeLookup.getSpanSize(position) == layout.spanCount) {
             return null
         }
 
+        val startRow = layout.getRowIndex(position)
+
+        var currentPosition = if (movement == ScrollMovement.NEXT_COLUMN) {
+            position + 1
+        } else {
+            position - 1
+        }
+
+        var currentRow = layout.getRowIndex(currentPosition)
+        val lastColumnIndex = layout.getEndColumnIndex(position)
+
+        // If we still have focusable views in the movement direction, bail out
+        while (currentRow == startRow) {
+            val currentView = layout.findViewByPosition(currentPosition)
+            if (currentView != null && currentView.isFocusable) {
+                return null
+            }
+            if (movement == ScrollMovement.NEXT_COLUMN) {
+                currentPosition++
+            } else {
+                currentPosition--
+            }
+            currentRow = layout.getRowIndex(currentPosition)
+        }
+
         var circularPosition: Int
-        if (movement == ScrollMovement.NEXT_COLUMN && lastColumnIndex == layout.spanCount - 1) {
-            val row = layout.getRowIndex(position)
+        if (movement == ScrollMovement.NEXT_COLUMN) {
             circularPosition = position - layout.spanCount + 1
             while (circularPosition <= position - 1) {
-                val currentRow = layout.getRowIndex(circularPosition)
+                currentRow = layout.getRowIndex(circularPosition)
                 val currentColumn = layout.getColumnIndex(circularPosition)
-                if (currentRow == row && currentColumn == 0) {
+                val view = layout.findViewByPosition(circularPosition)
+                if (currentRow == startRow
+                    && currentColumn != firstColumnIndex
+                    && view != null
+                    && view.isFocusable
+                ) {
                     break
                 }
                 circularPosition++
             }
-        } else if (movement == ScrollMovement.PREVIOUS_COLUMN && firstColumnIndex == 0) {
-            val row = layout.getRowIndex(position)
+        } else {
             circularPosition = position + layout.spanCount - 1
             while (circularPosition >= position + 1) {
-                lastColumnIndex = layout.getColumnIndex(circularPosition) +
-                        layout.spanSizeLookup.getSpanSize(circularPosition) - 1
-                val currentRow = layout.getRowIndex(circularPosition)
-                if (currentRow == row && lastColumnIndex == layout.spanCount - 1) {
+                val lastColumn = layout.getEndColumnIndex(circularPosition)
+                currentRow = layout.getRowIndex(circularPosition)
+                val view = layout.findViewByPosition(circularPosition)
+                if (currentRow == startRow
+                    && lastColumn != lastColumnIndex
+                    && view != null
+                    && view.isFocusable
+                ) {
                     break
                 }
                 circularPosition--
             }
-        } else {
+        }
+        val view = layout.findViewByPosition(circularPosition)
+        if (view != null && !view.isFocusable) {
             return null
         }
-        return layout.findViewByPosition(circularPosition)
+        return view
+    }
+
+    private fun focusContinuous(movement: ScrollMovement): View? {
+        if (movement != ScrollMovement.PREVIOUS_COLUMN && movement != ScrollMovement.NEXT_COLUMN) {
+            return null
+        }
+        val startRow = layout.getRowIndex(position)
+        var currentPosition = if (movement == ScrollMovement.NEXT_COLUMN) {
+            position + 1
+        } else {
+            position - 1
+        }
+        var currentRow = layout.getRowIndex(currentPosition)
+
+        // If we still have focusable views in the movement direction, bail out
+        while (currentRow == startRow) {
+            val currentView = layout.findViewByPosition(currentPosition)
+            if (currentView != null && currentView.isFocusable) {
+                return null
+            }
+            if (movement == ScrollMovement.NEXT_COLUMN) {
+                currentPosition++
+            } else {
+                currentPosition--
+            }
+            currentRow = layout.getRowIndex(currentPosition)
+        }
+
+        if (currentRow == 0) {
+            return null
+        }
+
+        var targetView = layout.findViewByPosition(currentPosition)
+
+        // Now check if we still need to go deeper to find a focusable view
+        while (targetView != null && !targetView.isFocusable) {
+            if (movement == ScrollMovement.NEXT_COLUMN) {
+                currentPosition++
+            } else {
+                currentPosition--
+            }
+            targetView = layout.findViewByPosition(currentPosition)
+        }
+
+        if (targetView != null && !targetView.isFocusable) {
+            return null
+        }
+        return targetView
     }
 
     fun onItemsAdded(positionStart: Int, itemCount: Int, firstVisiblePosition: Int) {
