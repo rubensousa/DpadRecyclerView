@@ -3,6 +3,7 @@ package com.rubensousa.dpadrecyclerview.sample
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +17,7 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenTvDetailBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.list.ListHeaderAdapter
-import com.rubensousa.dpadrecyclerview.sample.list.ListModel
+import com.rubensousa.dpadrecyclerview.sample.list.ListPlaceholderAdapter
 import timber.log.Timber
 
 class DetailFragment : Fragment(R.layout.screen_tv_detail) {
@@ -35,6 +36,15 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         offsetRatio = 0.5f
     )
     private val centerChildAlignment = ChildAlignment(offset = 0, offsetRatio = 0.5f)
+    private val viewModel by viewModels<DetailViewModel>()
+    private val loadingAdapter = ListPlaceholderAdapter(
+        items = 5,
+        focusPlaceholders = true
+    )
+    private val itemAdapter = ItemGridAdapter(object : ItemViewHolder.ItemClickListener {
+        override fun onViewHolderClicked() {
+        }
+    })
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,28 +72,29 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                 )
             }
         }
+        viewModel.listState.observe(viewLifecycleOwner) { list ->
+            itemAdapter.submitList(list) {
+                recyclerView.invalidateItemDecorations()
+            }
+        }
+        viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
+            loadingAdapter.show(isLoading)
+            recyclerView.invalidateItemDecorations()
+        }
         recyclerView.requestFocus()
     }
 
     private fun setupAdapter(recyclerView: DpadRecyclerView) {
-        val concatAdapter = ConcatAdapter()
+        val concatAdapter = ConcatAdapter(
+            ConcatAdapter.Config.Builder()
+                .setIsolateViewTypes(true)
+                .build()
+        )
         val headerAdapter = ListHeaderAdapter()
-        val itemAdapter = ItemGridAdapter(object : ItemViewHolder.ItemClickListener {
-            override fun onViewHolderClicked() {
-            }
-        })
-        val items = ArrayList<Int>()
-        for (i in 0 until 10000) {
-            items.add(i)
-        }
-        itemAdapter.submitList(items)
         headerAdapter.submitList(listOf("Header", "Header"))
-        val list = ArrayList<ListModel>()
-        for (i in 0 until 100) {
-            list.add(generateList("List $i"))
-        }
         concatAdapter.addAdapter(headerAdapter)
         concatAdapter.addAdapter(itemAdapter)
+        concatAdapter.addAdapter(loadingAdapter)
         recyclerView.setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 if (position < headerAdapter.itemCount) {
@@ -126,6 +137,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                     )
                 }
                 Timber.d("Selected: $position, $subPosition")
+                viewModel.loadMore(position)
             }
 
             override fun onViewHolderSelectedAndAligned(
@@ -139,16 +151,9 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         })
     }
 
-    private fun generateList(title: String): ListModel {
-        val items = ArrayList<Int>()
-        repeat(100) {
-            items.add(it)
-        }
-        return ListModel(title, items)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.recyclerView.adapter = null
         _binding = null
     }
 

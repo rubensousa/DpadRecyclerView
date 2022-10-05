@@ -4,18 +4,23 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListPlaceholderBinding
+import com.rubensousa.dpadrecyclerview.sample.R
 
-class ListPlaceholderAdapter : RecyclerView.Adapter<ListPlaceholderAdapter.VH>() {
+class ListPlaceholderAdapter(
+    private val items: Int = 1,
+    private val layoutId: Int = R.layout.adapter_list_placeholder,
+    private val focusPlaceholders: Boolean = false
+) : RecyclerView.Adapter<ListPlaceholderAdapter.VH>() {
 
     private var show = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        return VH(
-            AdapterListPlaceholderBinding.inflate(
-                LayoutInflater.from(parent.context), parent, false
-            ).root
+        val view = LayoutInflater.from(parent.context).inflate(
+            layoutId, parent, false
         )
+        view.isFocusableInTouchMode = focusPlaceholders
+        view.isFocusable = focusPlaceholders
+        return VH(view)
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
@@ -26,9 +31,9 @@ class ListPlaceholderAdapter : RecyclerView.Adapter<ListPlaceholderAdapter.VH>()
         val wasShowing = show
         show = enabled
         if (!wasShowing && show) {
-            notifyItemInserted(0)
-        } else if(wasShowing && !show) {
-            notifyItemRemoved(0)
+            notifyItemRangeInserted(0, items)
+        } else if (wasShowing && !show) {
+            notifyItemRangeRemoved(0, items)
         }
     }
 
@@ -36,7 +41,7 @@ class ListPlaceholderAdapter : RecyclerView.Adapter<ListPlaceholderAdapter.VH>()
 
     override fun getItemCount(): Int {
         return if (show) {
-            1
+            items
         } else {
             0
         }

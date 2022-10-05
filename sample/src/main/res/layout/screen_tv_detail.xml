@@ -10,9 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:dpadRecyclerViewFocusableDirection="continuous"
+        app:dpadRecyclerViewFocusOutBack="false"
         app:dpadRecyclerViewFocusOutSideBack="false"
         app:dpadRecyclerViewFocusOutSideFront="false"
+        app:dpadRecyclerViewFocusableDirection="continuous"
         app:spanCount="5" />
 
     <LinearLayout

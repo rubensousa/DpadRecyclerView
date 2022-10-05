@@ -213,6 +213,9 @@ internal class DpadScroller(
         } else {
             layout.getAdapterPositionOfView(viewHolderView)
         }
+        if (newFocusPosition == RecyclerView.NO_POSITION) {
+            return
+        }
         val newSubFocusPosition = scrollAlignment.findSubPositionOfChild(
             recyclerView, viewHolderView, subPositionView
         )
