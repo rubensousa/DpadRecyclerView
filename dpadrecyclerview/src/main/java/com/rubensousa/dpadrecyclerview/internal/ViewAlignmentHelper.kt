@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.ViewAlignment
 
-// TODO Add unit tests
 internal object ViewAlignmentHelper {
 
     private val tmpRect = Rect()

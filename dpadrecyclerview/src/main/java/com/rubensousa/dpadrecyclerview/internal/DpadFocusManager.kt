@@ -170,7 +170,7 @@ internal class DpadFocusManager(
             saveSpanFocus(adapterPosition)
             layout.scrollToView(parent, child, focused, smooth = layout.isSmoothScrollEnabled())
         } else {
-            Log.d(
+            Log.w(
                 DpadRecyclerView.TAG,
                 "Skipping scrolling to $adapterPosition since selection is already in process"
             )

@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 
-// TODO: Add unit tests
 @MainThread
 internal class ChildScrollAlignment {
 

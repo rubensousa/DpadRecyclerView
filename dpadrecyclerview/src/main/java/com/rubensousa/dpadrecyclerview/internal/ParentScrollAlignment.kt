@@ -1,12 +1,12 @@
 package com.rubensousa.dpadrecyclerview.internal
 
+import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import kotlin.math.max
 import kotlin.math.min
 
-// TODO: Add unit tests
 internal class ParentScrollAlignment {
 
     val isMinUnknown: Boolean
@@ -69,10 +69,10 @@ internal class ParentScrollAlignment {
     }
 
     fun setSize(width: Int, height: Int, orientation: Int) {
-        if (orientation == RecyclerView.HORIZONTAL) {
-            size = width
+        size = if (orientation == RecyclerView.HORIZONTAL) {
+            width
         } else {
-            size = height
+            height
         }
     }
 
@@ -86,9 +86,6 @@ internal class ParentScrollAlignment {
         }
     }
 
-    /**
-     * Update [.getMinScroll] and [.getMaxScroll]
-     */
     fun updateMinMax(
         minEdge: Int, maxEdge: Int,
         minChildViewCenter: Int, maxChildViewCenter: Int
@@ -150,10 +147,11 @@ internal class ParentScrollAlignment {
     /**
      * Get scroll distance to align an item centered around [viewCenter].
      * Item will either be aligned to the keyline position or to either min or max edges
-     * according to the current [alignment].
+     * according to the current [defaultAlignment].
      * The scroll distance will be capped by [minScroll] and [maxScroll]
      */
-    fun calculateScrollDistance(viewCenter: Int, subPositionAlignment: ParentAlignment?): Int {
+    fun calculateScrollDistance(viewCenter: Int, subPositionAlignment: ParentAlignment? = null)
+            : Int {
         val alignment = subPositionAlignment ?: defaultAlignment
         val keyLine = calculateKeyline(alignment)
         if (!isMinUnknown) {
@@ -199,7 +197,8 @@ internal class ParentScrollAlignment {
         maxEdge = Int.MAX_VALUE
     }
 
-    private fun calculateKeyline(alignment: ParentAlignment): Int {
+    @VisibleForTesting
+    fun calculateKeyline(alignment: ParentAlignment): Int {
         var keyLine = 0
         if (!reversedFlow) {
             if (alignment.isOffsetRatioEnabled) {
