@@ -27,6 +27,9 @@ jobs:
 
   ui_test:
     runs-on: macos-latest
+    strategy:
+      matrix:
+        api-level: [ 23, 25, 29 ]
     steps:
       - name: checkout
         uses: actions/checkout@v3
