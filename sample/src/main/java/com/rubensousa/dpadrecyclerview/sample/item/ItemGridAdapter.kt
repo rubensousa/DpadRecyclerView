@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemBinding
+import com.rubensousa.dpadrecyclerview.sample.list.ListTypes
 
 class ItemGridAdapter(private val onItemClickListener: ItemViewHolder.ItemClickListener) :
     ListAdapter<Int, ItemViewHolder>(DIFF_CALLBACK) {
@@ -35,4 +36,7 @@ class ItemGridAdapter(private val onItemClickListener: ItemViewHolder.ItemClickL
         holder.recycle()
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return ListTypes.ITEM
+    }
 }

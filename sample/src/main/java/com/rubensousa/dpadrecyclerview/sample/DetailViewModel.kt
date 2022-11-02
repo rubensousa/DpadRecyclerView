@@ -18,8 +18,8 @@ class DetailViewModel : ViewModel() {
     val listState: LiveData<List<Int>> = listLiveData
 
     init {
-        for (i in 0 until pageSize) {
-            list.add(i)
+        repeat(pageSize) {
+            list.add(list.size)
         }
         listLiveData.postValue(ArrayList(list))
     }
@@ -35,7 +35,7 @@ class DetailViewModel : ViewModel() {
 
         loadingStateLiveData.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
-            for (i in 0 until pageSize) {
+            repeat(pageSize) {
                 list.add(list.size)
             }
             delay(1000L)

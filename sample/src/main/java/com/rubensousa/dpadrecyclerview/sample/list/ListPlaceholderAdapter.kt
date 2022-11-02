@@ -47,6 +47,10 @@ class ListPlaceholderAdapter(
         }
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return ListTypes.LOADING
+    }
+
     class VH(view: View) : RecyclerView.ViewHolder(view)
 
 }

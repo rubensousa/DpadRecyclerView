@@ -39,6 +39,10 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
 
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return ListTypes.HEADER
+    }
+
     class VH(
         binding: AdapterListHeaderBinding
     ) : RecyclerView.ViewHolder(binding.root), DpadViewHolder {

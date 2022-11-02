@@ -73,13 +73,10 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
             }
         }
         viewModel.listState.observe(viewLifecycleOwner) { list ->
-            itemAdapter.submitList(list) {
-                recyclerView.invalidateItemDecorations()
-            }
+            itemAdapter.submitList(list)
         }
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             loadingAdapter.show(isLoading)
-            recyclerView.invalidateItemDecorations()
         }
         recyclerView.requestFocus()
     }
@@ -97,10 +94,10 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         concatAdapter.addAdapter(loadingAdapter)
         recyclerView.setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
-                if (position < headerAdapter.itemCount) {
-                    return recyclerView.getSpanCount()
+                return if (position < headerAdapter.itemCount) {
+                    recyclerView.getSpanCount()
                 } else {
-                    return 1
+                    1
                 }
             }
         })
