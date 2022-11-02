@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew assembleRelease
 
   ui_test:
-    runs-on: macos-latest
+    runs-on: macos-12
     strategy:
       fail-fast: false
       matrix:
@@ -45,6 +45,9 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '11'
+
+      - name: Install Haxm
+        run: brew install --cask intel-haxm
 
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
@@ -59,7 +62,7 @@ jobs:
           key: avd-${{ matrix.api-level }}
 
       - name: create AVD and generate snapshot for caching
-       # if: steps.avd-cache.outputs.cache-hit != 'true'
+        if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
