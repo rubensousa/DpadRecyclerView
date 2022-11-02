@@ -44,9 +44,8 @@ jobs:
 
       - uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
+          distribution: temurin
           java-version: '11'
-          cache: 'maven'
 
       - name: Install Haxm
         run: brew install --cask intel-haxm
@@ -55,6 +54,9 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           cache-read-only: false
+
+      - name: Build
+        run: ./gradlew assembleDebug
 
       - name: AVD cache
         uses: actions/cache@v3
@@ -74,6 +76,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
+          avd-name: avd-${{ matrix.api-level }}
           script: echo "Generated AVD snapshot for caching."
 
       - name: run tests
