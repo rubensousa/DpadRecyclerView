@@ -3,15 +3,14 @@ package com.rubensousa.dpadrecyclerview.test.tests
 import android.view.Gravity
 import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.UiController
 import com.google.common.truth.Truth.assertThat
-import com.rubensousa.dpadrecyclerview.*
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.actions.DpadRecyclerViewAction
+import com.rubensousa.dpadrecyclerview.test.helpers.*
 import org.junit.Rule
 import org.junit.Test
 
@@ -54,6 +53,7 @@ class HorizontalAlignmentTest : GridTest() {
             assertThat(viewBounds.centerX()).isEqualTo(recyclerViewBounds.centerX())
             UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_RIGHT)
             position++
+            waitForIdleScrollState()
         }
 
         updateParentAlignment(
@@ -265,6 +265,7 @@ class HorizontalAlignmentTest : GridTest() {
             assertThat(viewBounds.centerX())
                 .isEqualTo(recyclerViewBounds.centerX() + containerOffset + itemOffset)
             UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_RIGHT)
+            waitForIdleScrollState()
         }
     }
 
