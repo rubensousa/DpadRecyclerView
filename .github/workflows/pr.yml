@@ -18,6 +18,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '11'
+          cache: 'maven'
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
@@ -45,6 +46,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '11'
+          cache: 'maven'
 
       - name: Install Haxm
         run: brew install --cask intel-haxm
