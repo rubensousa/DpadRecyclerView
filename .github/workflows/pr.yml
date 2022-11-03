@@ -81,9 +81,9 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          avd-name: api_29_tv
+          avd-name: api-29-android-tv
           script: |
-            emulator_config=~/.android/avd/api_29_tv.avd/config.ini
+            emulator_config=~/.android/avd/api-29-android-tv.avd/config.ini
             # The following madness is to support empty OR populated config.ini files,
             # the state of which is dependant on the version of the emulator used (which we don't control),
             # so let's be defensive to be safe.
