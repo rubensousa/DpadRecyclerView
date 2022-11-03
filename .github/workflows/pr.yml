@@ -32,7 +32,7 @@ jobs:
         run: ./gradlew assembleRelease
 
   ui_test:
-    runs-on: macos-12
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
@@ -83,11 +83,6 @@ jobs:
           disable-animations: false
           avd-name: api_29_tv
           script: |
-            echo 'create emulator and alter config.ini settings for caching'
-            # Create emulator
-            $ANDROID_HOME/emulator/emulator -list-avds
-            $ANDROID_HOME/emulator/emulator -accel-check
-            if false; then
             emulator_config=~/.android/avd/api_29_tv.avd/config.ini
             # The following madness is to support empty OR populated config.ini files,
             # the state of which is dependant on the version of the emulator used (which we don't control),
@@ -112,7 +107,7 @@ jobs:
 
       - name: record session
         run: |
-          ffmpeg -f avfoundation -i 0 recording.mp4 &
+          ffmpeg -f avfoundation -i 0 recording.mp4
 
       - name: UI tests
         uses: reactivecircus/android-emulator-runner@v2
