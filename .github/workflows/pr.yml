@@ -32,10 +32,11 @@ jobs:
         run: ./gradlew assembleRelease
 
   ui_test:
-    runs-on: macos-12
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
+        target: [ android-tv ]
         api-level: [29]
     steps:
       - name: checkout
@@ -64,26 +65,25 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}
+          key: avd-${{ matrix.api-level }}-${{ matrix.target }}
 
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
-          target: android-tv
+          target: ${{ matrix.target }}
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          avd-name: avd-${{ matrix.api-level }}
           script: echo "Generated AVD snapshot for caching."
 
-      - name: run tests
+      - name: UI tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
+          target: ${{ matrix.target }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          avd-name: avd-${{ matrix.api-level }}
           script: ./gradlew connectedCheck --info
