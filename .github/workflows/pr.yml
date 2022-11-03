@@ -38,7 +38,7 @@ jobs:
       matrix:
         arch: [ x86 ]
         target: [ android-tv ]
-        api-level: [29]
+        api-level: [27]
         profile: [tv_1080p]
     steps:
       - name: checkout
@@ -83,7 +83,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          avd-name: api-29-android-tv
+          avd-name: api-27-android-tv
           script: echo "Generated AVD snapshot for caching."
 
       - name: record session
