@@ -84,6 +84,7 @@ jobs:
           emulator-options: -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           avd-name: api-29-android-tv
+          script: echo "Generated AVD snapshot for caching."
 
       - name: record session
         run: |
