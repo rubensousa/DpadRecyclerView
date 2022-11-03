@@ -39,6 +39,7 @@ jobs:
         arch: [ x86 ]
         target: [ android-tv ]
         api-level: [29]
+        profile: tv_1080p
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -78,24 +79,11 @@ jobs:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
           arch: ${{ matrix.arch }}
+          profile: ${{ matrix.profile }}
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           avd-name: api-29-android-tv
-          script: |
-            emulator_config=~/.android/avd/api-29-android-tv.avd/config.ini
-            if ! grep -q "hw.lcd.density" "$emulator_config"; then
-            echo "hw.lcd.density=420" >> "$emulator_config"
-            fi
-            if ! grep -q "hw.lcd.height" "$emulator_config"; then
-            echo "hw.lcd.height=1080" >> "$emulator_config"
-            fi
-            if ! grep -q "hw.lcd.width" "$emulator_config"; then
-            echo "hw.lcd.width=1920" >> "$emulator_config"
-            fi
-            echo "Emulator settings ($emulator_config)"
-            cat "$emulator_config"
-            fi
 
       - name: record session
         run: |
@@ -107,8 +95,9 @@ jobs:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
           arch: ${{ matrix.arch }}
+          profile: ${{ matrix.profile }}
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: ./gradlew connectedCheck --info
 
