@@ -86,7 +86,6 @@ jobs:
             echo 'create emulator and alter config.ini settings for caching'
             # Create emulator
             $ANDROID_HOME/emulator/emulator -list-avds
-            $ANDROID_HOME/emulator/emulator -accel-check 2>&1 | tee "$GITHUB_WORKSPACE"/haxm-check-"$GITHUB_RUN_NUMBER".txt
             if false; then
             emulator_config=~/.android/avd/api_29_tv.avd/config.ini
             # The following madness is to support empty OR populated config.ini files,
