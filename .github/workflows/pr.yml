@@ -79,7 +79,7 @@ jobs:
           profile: ${{ matrix.profile }}
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
+          disable-animations: true
           avd-name: api-27-android-tv
           script: echo "Generated AVD snapshot for caching."
 
@@ -92,7 +92,7 @@ jobs:
           profile: ${{ matrix.profile }}
           force-avd-creation: false
           emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
+          disable-animations: true
           script: ./gradlew connectedCheck --info
 
       - name: Upload results
