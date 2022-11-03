@@ -36,6 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        arch: [ x86 ]
         target: [ android-tv ]
         api-level: [29]
     steps:
@@ -49,6 +50,9 @@ jobs:
 
       - name: Install Haxm
         run: brew install --cask intel-haxm
+
+      - name: install ffmpeg session
+        run: brew install ffmpeg
 
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
@@ -73,19 +77,63 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
-          arch: x86
+          arch: ${{ matrix.arch }}
           force-avd-creation: false
           emulator-options: -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
-          script: echo "Generated AVD snapshot for caching."
+          avd-name: api_29_tv
+          script: |
+            echo 'create emulator and alter config.ini settings for caching'
+            # Create emulator
+            $ANDROID_HOME/emulator/emulator -list-avds
+            $ANDROID_HOME/emulator/emulator -accel-check 2>&1 | tee "$GITHUB_WORKSPACE"/haxm-check-"$GITHUB_RUN_NUMBER".txt
+            if false; then
+            emulator_config=~/.android/avd/api_29_tv.avd/config.ini
+            # The following madness is to support empty OR populated config.ini files,
+            # the state of which is dependant on the version of the emulator used (which we don't control),
+            # so let's be defensive to be safe.
+            # Replace existing config (NOTE we're on MacOS so sed works differently!)
+            sed -i .bak 's/hw.lcd.density=.*/hw.lcd.density=420/' "$emulator_config"
+            sed -i .bak 's/hw.lcd.height=.*/hw.lcd.height=1080/' "$emulator_config"
+            sed -i .bak 's/hw.lcd.width=.*/hw.lcd.width=1920/' "$emulator_config"
+            # Or, add new config
+            if ! grep -q "hw.lcd.density" "$emulator_config"; then
+            echo "hw.lcd.density=420" >> "$emulator_config"
+            fi
+            if ! grep -q "hw.lcd.height" "$emulator_config"; then
+            echo "hw.lcd.height=1080" >> "$emulator_config"
+            fi
+            if ! grep -q "hw.lcd.width" "$emulator_config"; then
+            echo "hw.lcd.width=1920" >> "$emulator_config"
+            fi
+            echo "Emulator settings ($emulator_config)"
+            cat "$emulator_config"
+            fi
+
+      - name: record session
+        run: |
+          ffmpeg -f avfoundation -i 0 recording.mp4 &
 
       - name: UI tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
           target: ${{ matrix.target }}
-          arch: x86
+          arch: ${{ matrix.arch }}
           force-avd-creation: false
           emulator-options: -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: ./gradlew connectedCheck --info
+
+      - name: upload video
+        uses: actions/upload-artifact@v3
+        with:
+          name: recording
+          path: recording.mp4
+
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.api-level }}-${{ matrix.arch }}-instrumentation-test-results
+          path: |
+            ./**/build/reports/androidTests/connected/**
