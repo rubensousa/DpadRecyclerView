@@ -39,7 +39,7 @@ jobs:
         arch: [ x86 ]
         target: [ android-tv ]
         api-level: [29]
-        profile: tv_1080p
+        profile: [tv_1080p]
     steps:
       - name: checkout
         uses: actions/checkout@v3
