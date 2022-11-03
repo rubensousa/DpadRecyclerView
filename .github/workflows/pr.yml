@@ -52,9 +52,6 @@ jobs:
       - name: Install Haxm
         run: brew install --cask intel-haxm
 
-      - name: install ffmpeg session
-        run: brew install ffmpeg
-
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
         with:
@@ -81,14 +78,10 @@ jobs:
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
           force-avd-creation: false
-          emulator-options: -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           avd-name: api-27-android-tv
           script: echo "Generated AVD snapshot for caching."
-
-      - name: record session
-        run: |
-          ffmpeg -f avfoundation -i 0 -t 120 recording.mp4
 
       - name: UI tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -98,15 +91,9 @@ jobs:
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
           force-avd-creation: false
-          emulator-options: -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
           script: ./gradlew connectedCheck --info
-
-      - name: upload video
-        uses: actions/upload-artifact@v3
-        with:
-          name: recording
-          path: recording.mp4
 
       - name: Upload results
         uses: actions/upload-artifact@v3
