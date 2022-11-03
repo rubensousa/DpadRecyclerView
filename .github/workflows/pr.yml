@@ -88,7 +88,7 @@ jobs:
 
       - name: record session
         run: |
-          ffmpeg -f avfoundation -i 0 recording.mp4
+          ffmpeg -f avfoundation -i 0 -t 120 recording.mp4
 
       - name: UI tests
         uses: reactivecircus/android-emulator-runner@v2
@@ -114,3 +114,4 @@ jobs:
           name: ${{ matrix.api-level }}-${{ matrix.arch }}-instrumentation-test-results
           path: |
             ./**/build/reports/androidTests/connected/**
+        if: always()
