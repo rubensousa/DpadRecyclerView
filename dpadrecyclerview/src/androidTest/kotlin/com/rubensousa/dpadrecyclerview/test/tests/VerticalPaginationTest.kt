@@ -80,6 +80,7 @@ class VerticalPaginationTest : GridTest() {
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
 
         waitForAdapterUpdate()
+        waitForIdleScrollState()
 
         onRecyclerView("Checking Adapter Item count") { recyclerView ->
             assertThat(recyclerView.adapter?.itemCount).isGreaterThan(20)
