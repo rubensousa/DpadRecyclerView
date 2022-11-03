@@ -84,14 +84,6 @@ jobs:
           avd-name: api-29-android-tv
           script: |
             emulator_config=~/.android/avd/api-29-android-tv.avd/config.ini
-            # The following madness is to support empty OR populated config.ini files,
-            # the state of which is dependant on the version of the emulator used (which we don't control),
-            # so let's be defensive to be safe.
-            # Replace existing config (NOTE we're on MacOS so sed works differently!)
-            sed -i .bak 's/hw.lcd.density=.*/hw.lcd.density=420/' "$emulator_config"
-            sed -i .bak 's/hw.lcd.height=.*/hw.lcd.height=1080/' "$emulator_config"
-            sed -i .bak 's/hw.lcd.width=.*/hw.lcd.width=1920/' "$emulator_config"
-            # Or, add new config
             if ! grep -q "hw.lcd.density" "$emulator_config"; then
             echo "hw.lcd.density=420" >> "$emulator_config"
             fi
