@@ -10,7 +10,7 @@ object UiAutomatorHelper {
     private val device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
 
     @JvmStatic
-    fun pressKey(key: Int, times: Int = 1, delay: Long = 0) {
+    fun pressKey(key: Int, times: Int = 1, delay: Long = 50) {
         repeat(times) {
             device.pressKeyCode(key)
             if (delay > 0) {

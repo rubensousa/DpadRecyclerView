@@ -55,18 +55,18 @@ class SingleSpanHorizontalTest : GridTest() {
 
     @Test
     fun testContinuousScrollRight() {
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 100)
+        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
-        assertFocusPosition(position = 100)
+        assertFocusPosition(position = 50)
     }
 
     @Test
     fun testContinuousScrollLeft() {
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 100)
+        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
-        assertFocusPosition(position = 100)
+        assertFocusPosition(position = 50)
 
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 100)
+        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
