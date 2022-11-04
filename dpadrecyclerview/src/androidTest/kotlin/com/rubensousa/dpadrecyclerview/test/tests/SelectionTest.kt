@@ -3,7 +3,8 @@ package com.rubensousa.dpadrecyclerview.test.tests
 import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
-import com.rubensousa.dpadrecyclerview.*
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
@@ -135,9 +136,6 @@ class SelectionTest : GridTest() {
         val targetPosition = 40
 
         selectWithTask(position = targetPosition, smooth = true, executeWhenAligned = true)
-
-        // Still not executed
-        assertThat(getTasksExecuted()).isEqualTo(listOf<TestPosition>())
 
         assertSelectedPosition(position = targetPosition)
 
