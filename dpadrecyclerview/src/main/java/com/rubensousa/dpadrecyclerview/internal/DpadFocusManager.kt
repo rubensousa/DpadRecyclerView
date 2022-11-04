@@ -1,13 +1,11 @@
 package com.rubensousa.dpadrecyclerview.internal
 
-import android.util.Log
 import android.view.FocusFinder
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLayoutManager
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 
 internal class DpadFocusManager(
@@ -170,10 +168,6 @@ internal class DpadFocusManager(
             saveSpanFocus(adapterPosition)
             layout.scrollToView(parent, child, focused, smooth = layout.isSmoothScrollEnabled())
         } else {
-            Log.w(
-                DpadRecyclerView.TAG,
-                "Skipping scrolling to $adapterPosition since selection is already in process"
-            )
             layout.scheduleAlignmentIfPending()
         }
         return true

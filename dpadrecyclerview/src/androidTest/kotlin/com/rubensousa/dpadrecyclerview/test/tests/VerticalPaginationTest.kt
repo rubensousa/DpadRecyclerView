@@ -66,14 +66,11 @@ class VerticalPaginationTest : GridTest() {
 
     @Test
     fun testLastSelectedViewStaysAlignedWhenAdapterInsertsNewViewsWhenIdle() {
-        val delay = 3500L
+        val delay = 2500L
         launchPaginationFragment(loadDelay = delay)
-        repeat(19) {
-            pressDown()
-        }
-        assertSelectedPosition(position = 19)
 
-        waitForIdleScrollState()
+        selectLastPosition(smooth = false)
+        assertSelectedPosition(position = 19)
 
         var viewBounds = getItemViewBounds(position = 19)
         val recyclerViewBounds = getRecyclerViewBounds()

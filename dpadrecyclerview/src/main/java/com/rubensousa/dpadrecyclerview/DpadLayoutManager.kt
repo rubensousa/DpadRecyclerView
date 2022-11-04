@@ -160,7 +160,7 @@ class DpadLayoutManager : GridLayoutManager {
         super.onLayoutCompleted(state)
         isInLayoutStage = false
         hasFinishedFirstLayout = true
-        isAlignmentPending = false
+        isAlignmentPending = scroller.pendingSelectionUpdate
         scroller.onLayoutCompleted(recyclerView)
         layoutCompleteListeners.forEach { listener ->
             listener.onLayoutCompleted(state)
