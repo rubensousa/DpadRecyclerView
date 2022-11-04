@@ -5,14 +5,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.UiController
 import androidx.test.espresso.matcher.ViewMatchers
-import com.rubensousa.dpadrecyclerview.test.actions.*
-import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.test.R
+import com.rubensousa.dpadrecyclerview.test.actions.*
 import com.rubensousa.dpadrecyclerview.test.assertions.FocusAssertion
 import com.rubensousa.dpadrecyclerview.test.assertions.SelectionAssertion
 import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderSelectedAssertion
-import com.rubensousa.dpadrecyclerview.test.R
 
 fun selectLastPosition(smooth: Boolean = false, id: Int = R.id.recyclerView): Int {
     var selectedPosition: Int = RecyclerView.NO_POSITION
@@ -98,14 +98,16 @@ fun getRecyclerViewBounds(id: Int = R.id.recyclerView): Rect {
 fun updateParentAlignment(alignment: ParentAlignment, id: Int = R.id.recyclerView) {
     Espresso.onView(ViewMatchers.withId(id)).perform(
         WaitForIdleScrollAction(),
-        UpdateParentAlignmentAction(alignment)
+        UpdateParentAlignmentAction(alignment),
+        WaitForIdleScrollAction()
     )
 }
 
 fun updateChildAlignment(alignment: ChildAlignment, id: Int = R.id.recyclerView) {
     Espresso.onView(ViewMatchers.withId(id)).perform(
         WaitForIdleScrollAction(),
-        UpdateChildAlignmentAction(alignment)
+        UpdateChildAlignmentAction(alignment),
+        WaitForIdleScrollAction()
     )
 }
 

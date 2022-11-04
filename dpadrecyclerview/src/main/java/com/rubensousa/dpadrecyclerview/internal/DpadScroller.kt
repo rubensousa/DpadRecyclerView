@@ -178,6 +178,7 @@ internal class DpadScroller(
                     focusManager.subPosition = subPosition
                     focusManager.positionOffset = Int.MIN_VALUE
                     isAligningFocusedPosition = true
+                    pendingSelectionUpdate = true
                     layout.scrollToPositionWithOffset(position, 0)
                 }
             }
