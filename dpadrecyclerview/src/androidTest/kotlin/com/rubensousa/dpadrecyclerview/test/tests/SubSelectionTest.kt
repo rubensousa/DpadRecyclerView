@@ -52,7 +52,7 @@ class SubSelectionTest : GridTest() {
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration()
-            .copy(itemLayoutId = com.rubensousa.dpadrecyclerview.test.R.layout.test_subposition_block)
+            .copy(itemLayoutId = R.layout.dpadrecyclerview_test_item_subposition)
     }
 
     private lateinit var fragmentScenario: FragmentScenario<TestSubPositionFragment>
@@ -164,24 +164,24 @@ class SubSelectionTest : GridTest() {
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition0TextView,
-                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition0TextView
+                        alignmentViewId = R.id.subPosition0TextView,
+                        focusViewId = R.id.subPosition0TextView
                     )
                 )
                 add(
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition1TextView,
-                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition1TextView
+                        alignmentViewId = R.id.subPosition1TextView,
+                        focusViewId = R.id.subPosition1TextView
                     )
                 )
                 add(
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition2TextView,
-                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition2TextView
+                        alignmentViewId = R.id.subPosition2TextView,
+                        focusViewId = R.id.subPosition2TextView
                     )
                 )
             }

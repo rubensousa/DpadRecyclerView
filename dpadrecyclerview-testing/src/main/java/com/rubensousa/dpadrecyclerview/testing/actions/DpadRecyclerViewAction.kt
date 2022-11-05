@@ -7,9 +7,9 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 
-abstract class DpadRvAction(
+internal abstract class DpadRecyclerViewAction(
     private val label: String,
-    private val waitForIdle: Boolean = true
+    private val loopMainThreadUntilIdle: Boolean = true
 ) : ViewAction {
 
     override fun getConstraints(): Matcher<View> {
@@ -20,7 +20,7 @@ abstract class DpadRvAction(
 
     override fun perform(uiController: UiController, view: View) {
         perform(uiController, view as DpadRecyclerView)
-        if (waitForIdle) {
+        if (loopMainThreadUntilIdle) {
             uiController.loopMainThreadUntilIdle()
         }
     }

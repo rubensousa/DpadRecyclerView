@@ -3,12 +3,14 @@ package com.rubensousa.dpadrecyclerview.testing
 import android.graphics.Rect
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
-class DpadRecyclerViewActionsTest : DpadFragmentTest() {
+class DpadRecyclerViewActionsTest : RecyclerViewTest() {
 
     @get:Rule
     val disableIdleTimeoutRule = DisableIdleTimeoutRule()
@@ -17,6 +19,7 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
 
     @Test
     fun testChangingSelectionSmooth() {
+        launchGridFragment()
         val targetPosition = 20
         performActions(
             DpadRecyclerViewActions.selectPosition(
@@ -25,13 +28,18 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
             )
         )
 
-        val selectionEvents = getSelectionEvents()
-        assertThat(selectionEvents.size).isEqualTo(2)
-        assertThat(selectionEvents.last()).isEqualTo(DpadSelectionEvent(targetPosition))
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
+        var currentPosition = 0
+        performActions(DpadRecyclerViewActions.execute("Retrieving current position") { recyclerView ->
+            currentPosition = recyclerView.getSelectedPosition()
+        })
+        assertThat(currentPosition).isEqualTo(targetPosition)
     }
 
     @Test
     fun testChangingSelectionImmediate() {
+        launchGridFragment()
         val targetPosition = 20
         performActions(
             DpadRecyclerViewActions.selectPosition(
@@ -39,13 +47,16 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
             )
         )
 
-        val selectionEvents = getSelectionEvents()
-        assertThat(selectionEvents.size).isEqualTo(2)
-        assertThat(selectionEvents.last()).isEqualTo(DpadSelectionEvent(targetPosition))
+        var currentPosition = 0
+        performActions(DpadRecyclerViewActions.execute("Retrieving current position") { recyclerView ->
+            currentPosition = recyclerView.getSelectedPosition()
+        })
+        assertThat(currentPosition).isEqualTo(targetPosition)
     }
 
     @Test
     fun testChangingToLastPosition() {
+        launchGridFragment()
         var targetPosition = 0
         performActions(DpadRecyclerViewActions.execute("Getting adapter item count") { recyclerView ->
             targetPosition = recyclerView.adapter!!.itemCount - 1
@@ -60,28 +71,98 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
             )
         )
 
-        val selectionEvents = getSelectionEvents()
-        assertThat(selectionEvents.size).isEqualTo(2)
-        assertThat(selectionEvents.last()).isEqualTo(DpadSelectionEvent(targetPosition))
-
         assertThat(retrievedPosition).isEqualTo(targetPosition)
     }
 
     @Test
-    fun testRetrievingViewBounds() {
-        val expectedRect = Rect()
-        performActions(DpadRecyclerViewActions.execute("Getting view bounds") { recyclerView ->
-            recyclerView.getGlobalVisibleRect(expectedRect)
+    fun testChangingSubSelectionSmooth() {
+        launchSubPositionFragment()
+        val targetSubPosition = 1
+        performActions(
+            DpadRecyclerViewActions.selectSubPosition(
+                subPosition = targetSubPosition
+            )
+        )
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
+        var currentSubPosition = 0
+        performActions(DpadRecyclerViewActions.execute("Retrieving current position") { recyclerView ->
+            currentSubPosition = recyclerView.getSelectedSubPosition()
         })
+        assertThat(currentSubPosition).isEqualTo(targetSubPosition)
+    }
 
-        val actualRect = Rect()
-        performActions(DpadRecyclerViewActions.getViewBounds(actualRect))
+    @Test
+    fun testChangingSubSelectionImmediate() {
+        launchSubPositionFragment()
+        val targetSubPosition = 1
+        performActions(
+            DpadRecyclerViewActions.selectSubPosition(
+                subPosition = targetSubPosition,
+                smooth = false
+            )
+        )
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
 
-        assertThat(actualRect).isEqualTo(expectedRect)
+        var currentSubPosition = 0
+        performActions(DpadRecyclerViewActions.execute("Retrieving current position") { recyclerView ->
+            currentSubPosition = recyclerView.getSelectedSubPosition()
+        })
+        assertThat(currentSubPosition).isEqualTo(targetSubPosition)
+    }
+
+    @Test
+    fun testChangingPositionWithSubSelectionSmooth() {
+        launchSubPositionFragment()
+        val targetPosition = 20
+        val targetSubPosition = 2
+        performActions(
+            DpadRecyclerViewActions.selectPosition(
+                position = targetPosition,
+                subPosition = targetSubPosition,
+                smooth = true
+            )
+        )
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
+        var currentSubPosition = 0
+        var currentPosition = 0
+
+        performActions(DpadRecyclerViewActions.execute("Retrieving current position") { recyclerView ->
+            currentPosition = recyclerView.getSelectedPosition()
+            currentSubPosition = recyclerView.getSelectedSubPosition()
+        })
+        assertThat(currentPosition).isEqualTo(targetPosition)
+        assertThat(currentSubPosition).isEqualTo(targetSubPosition)
+    }
+
+    @Test
+    fun testChangingPositionWithSubSelectionImmediate() {
+        launchSubPositionFragment()
+        val targetPosition = 20
+        val targetSubPosition = 2
+        performActions(
+            DpadRecyclerViewActions.selectPosition(
+                position = targetPosition,
+                subPosition = targetSubPosition,
+                smooth = false
+            )
+        )
+
+        var currentSubPosition = 0
+        var currentPosition = 0
+
+        performActions(DpadRecyclerViewActions.execute("Retrieving current position") { recyclerView ->
+            currentPosition = recyclerView.getSelectedPosition()
+            currentSubPosition = recyclerView.getSelectedSubPosition()
+        })
+        assertThat(currentPosition).isEqualTo(targetPosition)
+        assertThat(currentSubPosition).isEqualTo(targetSubPosition)
     }
 
     @Test
     fun testRetrievingItemViewBounds() {
+        launchGridFragment()
         val expectedRect = Rect()
         val targetPosition = 15
         performActions(
@@ -100,6 +181,7 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
 
     @Test
     fun testWaitingForIdleScroll() {
+        launchGridFragment()
         val expectedScrollState = RecyclerView.SCROLL_STATE_IDLE
         repeat(15) {
             KeyEvents.pressDown()
@@ -117,33 +199,47 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
 
     @Test
     fun testWaitingForAdapterInsertion() {
+        launchGridFragment()
         var currentSize = defaultSize
-        onFragment { fragment ->
+        onGridFragment { fragment ->
             fragment.insertItem()
         }
         currentSize++
         performActions(DpadRecyclerViewActions.selectLastPosition(smooth = false))
         performActions(DpadRecyclerViewActions.waitForAdapterUpdate())
 
-        assertAdapterCount(currentSize)
+        assertGridAdapterCount(currentSize)
     }
 
     @Test
     fun testWaitingForAdapterRemoval() {
+        launchGridFragment()
         var currentSize = defaultSize
-        onFragment { fragment ->
+        onGridFragment { fragment ->
             fragment.removeItem()
         }
         currentSize--
         performActions(DpadRecyclerViewActions.selectLastPosition(smooth = false))
         performActions(DpadRecyclerViewActions.waitForAdapterUpdate())
 
-        assertAdapterCount(currentSize)
+        assertGridAdapterCount(currentSize)
+    }
+
+    @Test
+    fun testWaitingForCompleteAdapterRemoval() {
+        launchGridFragment()
+        onGridFragment { fragment ->
+            fragment.clearItems()
+        }
+        performActions(DpadRecyclerViewActions.waitForAdapterUpdate())
+
+        assertGridAdapterCount(0)
     }
 
     @Test
     fun testWaitingForAdapterMove() {
-        onFragment { fragment ->
+        launchGridFragment()
+        onGridFragment { fragment ->
             fragment.moveLastItem()
         }
         performActions(DpadRecyclerViewActions.selectLastPosition(smooth = false))
@@ -157,7 +253,8 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
 
     @Test
     fun testWaitingForAdapterChange() {
-        onFragment { fragment ->
+        launchGridFragment()
+        onGridFragment { fragment ->
             fragment.changeLastItem()
         }
         performActions(DpadRecyclerViewActions.selectLastPosition(smooth = false))
@@ -171,10 +268,11 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
 
     @Test
     fun testWaitingForMultipleAdapterUpdates() {
-        onFragment { fragment ->
+        launchGridFragment()
+        onGridFragment { fragment ->
             fragment.changeLastItem()
         }
-        onFragment { fragment ->
+        onGridFragment { fragment ->
             fragment.insertItem()
         }
         performActions(
@@ -195,5 +293,44 @@ class DpadRecyclerViewActionsTest : DpadFragmentTest() {
         })
     }
 
+    @Test
+    fun testChangingChildAlignment() {
+        launchGridFragment()
+
+        val newChildAlignment = ChildAlignment(
+            offset = 40,
+            offsetRatio = 0.0f
+        )
+
+        performActions(DpadRecyclerViewActions.updateChildAlignment(newChildAlignment))
+
+        var childAlignment: ChildAlignment? = null
+        performActions(DpadRecyclerViewActions.execute("Get current child alignment")
+        { recyclerView ->
+            childAlignment = recyclerView.getChildAlignment()
+        })
+
+        assertThat(childAlignment).isEqualTo(newChildAlignment)
+    }
+
+    @Test
+    fun testChangingParentAlignment() {
+        launchGridFragment()
+
+        val newParentAlignment = ParentAlignment(
+            offset = 0,
+            offsetRatio = 0.0f
+        )
+
+        performActions(DpadRecyclerViewActions.updateParentAlignment(newParentAlignment))
+
+        var parentAlignment: ParentAlignment? = null
+        performActions(DpadRecyclerViewActions.execute("Get current child alignment")
+        { recyclerView ->
+            parentAlignment = recyclerView.getParentAlignment()
+        })
+
+        assertThat(parentAlignment).isEqualTo(newParentAlignment)
+    }
 
 }

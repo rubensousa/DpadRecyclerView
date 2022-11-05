@@ -282,10 +282,6 @@ internal class DpadScroller(
 
     private fun calculateScrollAmount(offset: Int): Int {
         var scrollOffset = offset
-        // We apply the cap of maxScroll/minScroll to the delta, except for one case:
-        // 1. During onLayoutChildren(), it may compensate the remaining scroll delta,
-        //    we should honor the request regardless if it goes over minScroll / maxScroll.
-        //    (see b/64931938 testScrollAndRemove and testScrollAndRemoveSample1)
         if (!layout.isInLayoutStage()) {
             scrollOffset = scrollAlignment.getCappedScroll(scrollOffset)
         }
@@ -399,7 +395,6 @@ internal class DpadScroller(
                 return
             }
             if (focusManager.position != targetPosition) {
-                // This should not happen since we cropped value in startPositionSmoothScroller()
                 focusManager.position = targetPosition
             }
             if (layout.hasFocus()) {

@@ -8,6 +8,11 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 object DpadRecyclerViewAssertions {
 
     @JvmStatic
+    fun isNotFocused(): ViewAssertion {
+        return isFocused(position = RecyclerView.NO_POSITION)
+    }
+
+    @JvmStatic
     fun isFocused(position: Int): ViewAssertion {
         return FocusAssertion(position)
     }

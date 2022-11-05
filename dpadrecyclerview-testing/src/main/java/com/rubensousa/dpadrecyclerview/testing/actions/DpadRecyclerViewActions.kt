@@ -15,7 +15,9 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 import java.util.concurrent.TimeUnit
 
-
+/**
+ * Useful [ViewAction]s for [DpadRecyclerView]. For other [ViewAction], check [DpadViewActions]
+ */
 object DpadRecyclerViewActions {
 
     @JvmStatic
@@ -44,13 +46,8 @@ object DpadRecyclerViewActions {
     }
 
     @JvmStatic
-    fun getViewBounds(rect: Rect): ViewAction {
-        return GetViewBoundsAction(rect)
-    }
-
-    @JvmStatic
     fun getItemViewBounds(position: Int, rect: Rect): ViewAction {
-        return executeForViewHolderItemViewAt(position, GetViewBoundsAction(rect))
+        return executeForViewHolderItemViewAt(position, DpadViewActions.getViewBounds(rect))
     }
 
     @JvmStatic
@@ -87,34 +84,18 @@ object DpadRecyclerViewActions {
 
     @JvmStatic
     fun execute(label: String, action: (recyclerView: DpadRecyclerView) -> Unit): ViewAction {
-        return object : DpadRvAction(label) {
+        return object : DpadRecyclerViewAction(label) {
             override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
                 action(recyclerView)
             }
         }
     }
 
-    private class GetViewBoundsAction(private val rect: Rect) : ViewAction {
-
-        override fun getConstraints(): Matcher<View> {
-            return Matchers.isA(View::class.java)
-        }
-
-        override fun getDescription(): String {
-            return "Retrieving view bounds"
-        }
-
-        override fun perform(uiController: UiController, view: View) {
-            view.getGlobalVisibleRect(rect)
-        }
-
-    }
-
     private class SelectPositionAction(
         private val position: Int,
         private val subPosition: Int,
         private val smooth: Boolean
-    ) : DpadRvAction("Selecting position $position with smoothScrolling: $smooth") {
+    ) : DpadRecyclerViewAction("Selecting position $position with smoothScrolling: $smooth") {
 
         override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
             if (smooth) {
@@ -136,7 +117,7 @@ object DpadRecyclerViewActions {
     private class SelectLastPositionAction(
         private val smooth: Boolean,
         private val onPositionSelected: (position: Int) -> Unit = {}
-    ) : DpadRvAction("Selecting last position") {
+    ) : DpadRecyclerViewAction("Selecting last position") {
 
         override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
             val itemCount = recyclerView.adapter?.itemCount ?: return
@@ -153,7 +134,7 @@ object DpadRecyclerViewActions {
     private class SelectSubPositionAction(
         private val subPosition: Int,
         private val smooth: Boolean
-    ) : DpadRvAction("Selecting subPosition $subPosition with smoothScrolling: $smooth") {
+    ) : DpadRecyclerViewAction("Selecting subPosition $subPosition with smoothScrolling: $smooth") {
 
         override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
             if (smooth) {
@@ -168,7 +149,7 @@ object DpadRecyclerViewActions {
     private class UpdateChildAlignmentAction(
         private val alignment: ChildAlignment,
         private val smooth: Boolean = false
-    ) : DpadRvAction("Updating child alignment to: $alignment with smoothScrolling: $smooth") {
+    ) : DpadRecyclerViewAction("Updating child alignment to: $alignment with smoothScrolling: $smooth") {
 
         override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
             recyclerView.setChildAlignment(alignment, smooth)
@@ -179,7 +160,7 @@ object DpadRecyclerViewActions {
     private class UpdateParentAlignmentAction(
         private val alignment: ParentAlignment,
         private val smooth: Boolean = false
-    ) : DpadRvAction("Updating parent alignment to: $alignment with smoothScrolling: $smooth") {
+    ) : DpadRecyclerViewAction("Updating parent alignment to: $alignment with smoothScrolling: $smooth") {
 
         override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
             recyclerView.setParentAlignment(alignment, smooth)
@@ -194,8 +175,7 @@ object DpadRecyclerViewActions {
 
         override fun getConstraints(): Matcher<View> {
             return Matchers.allOf(
-                ViewMatchers.isAssignableFrom(RecyclerView::class.java),
-                ViewMatchers.isDisplayed()
+                ViewMatchers.isAssignableFrom(RecyclerView::class.java)
             )
         }
 
