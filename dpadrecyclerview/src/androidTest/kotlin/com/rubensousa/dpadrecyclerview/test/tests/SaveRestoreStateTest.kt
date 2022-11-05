@@ -6,8 +6,8 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.FastUiAutomatorRule
-import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressDown
+import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
+import com.rubensousa.dpadrecyclerview.test.KeyPresser.pressDown
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
@@ -18,7 +18,7 @@ import org.junit.Test
 class SaveRestoreStateTest : GridTest() {
 
     @get:Rule
-    val fastUiAutomatorRule = FastUiAutomatorRule()
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(

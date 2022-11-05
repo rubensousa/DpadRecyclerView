@@ -5,10 +5,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
+import com.rubensousa.dpadrecyclerview.test.KeyPresser
 import com.rubensousa.dpadrecyclerview.test.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -16,7 +18,7 @@ import org.junit.Test
 class SingleSpanHorizontalTest : GridTest() {
 
     @get:Rule
-    val fastUiAutomatorRule = FastUiAutomatorRule()
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
@@ -41,59 +43,59 @@ class SingleSpanHorizontalTest : GridTest() {
 
     @Test
     fun testFocusStaysAtLeftEdgePosition() {
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 5)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 5)
         assertFocusPosition(position = 0)
     }
 
     @Test
     fun testFocusStaysAtRightEdgePosition() {
         val lastPosition = selectLastPosition(smooth = false)
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 5)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 5)
         waitForIdleScrollState()
         assertFocusPosition(position = lastPosition)
     }
 
     @Test
     fun testContinuousScrollRight() {
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 50)
     }
 
     @Test
     fun testContinuousScrollLeft() {
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 50)
 
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
 
     @Test
     fun testScrollWithShortBreaks() {
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 50)
 
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 100)
 
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 50)
 
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
 
     @Test
     fun testMultiStepScroll() {
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
-        UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
@@ -101,8 +103,8 @@ class SingleSpanHorizontalTest : GridTest() {
     @Test
     fun testContinuousScrollThatSettlesInSamePosition() {
         repeat(5) {
-            UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 10)
-            UiAutomatorHelper.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 10)
+            KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 10)
+            KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 10)
         }
         waitForIdleScrollState()
         assertFocusPosition(position = 0)

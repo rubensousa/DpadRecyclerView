@@ -6,18 +6,20 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
+import com.rubensousa.dpadrecyclerview.test.KeyPresser
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressRight
+import com.rubensousa.dpadrecyclerview.test.KeyPresser.pressRight
+import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
 class SelectionTest : GridTest() {
 
     @get:Rule
-    val fastUiAutomatorRule = FastUiAutomatorRule()
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     private val defaultConfig = TestLayoutConfiguration(
         spans = 1,
@@ -94,7 +96,7 @@ class SelectionTest : GridTest() {
         assertViewHolderSelected(position = 0, isSelected = true)
 
         repeat(10) { index ->
-            UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
             assertViewHolderSelected(position = index, isSelected = false)
             assertSelectedPosition(position = index + 1)
             assertViewHolderSelected(position = index + 1, isSelected = true)

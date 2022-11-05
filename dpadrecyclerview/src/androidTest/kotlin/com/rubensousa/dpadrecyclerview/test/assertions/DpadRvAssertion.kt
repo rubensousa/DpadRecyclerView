@@ -6,17 +6,16 @@ import androidx.test.espresso.ViewAssertion
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
-class SelectionAssertion(
-    private val position: Int,
-    private val subPosition: Int
-) : ViewAssertion {
+abstract class DpadRvAssertion : ViewAssertion {
 
     override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
-        if (view !is DpadRecyclerView) {
-            return
+        if (noViewFoundException != null) {
+            throw noViewFoundException
         }
-        assertThat(view.getSelectedPosition()).isEqualTo(position)
-        assertThat(view.getSelectedSubPosition()).isEqualTo(subPosition)
-
+        assertThat(view).isInstanceOf(DpadRecyclerView::class.java)
+        check(view as DpadRecyclerView)
     }
+
+    abstract fun check(view: DpadRecyclerView)
+
 }

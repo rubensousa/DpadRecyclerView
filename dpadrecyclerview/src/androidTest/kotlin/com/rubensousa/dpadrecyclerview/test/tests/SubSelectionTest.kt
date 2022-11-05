@@ -13,7 +13,8 @@ import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.test.*
 import com.rubensousa.dpadrecyclerview.test.R
 import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressDown
+import com.rubensousa.dpadrecyclerview.test.KeyPresser.pressDown
+import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -21,7 +22,7 @@ import org.junit.Test
 class SubSelectionTest : GridTest() {
 
     @get:Rule
-    val fastUiAutomatorRule = FastUiAutomatorRule()
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(

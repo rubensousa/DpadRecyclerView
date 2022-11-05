@@ -1,11 +1,11 @@
-package com.rubensousa.dpadrecyclerview.test.helpers
+package com.rubensousa.dpadrecyclerview.testing
 
 import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 
-object UiAutomatorHelper {
+object KeyPresser {
 
     private const val DEFAULT_KEY_PRESS_DELAY = 50L
 

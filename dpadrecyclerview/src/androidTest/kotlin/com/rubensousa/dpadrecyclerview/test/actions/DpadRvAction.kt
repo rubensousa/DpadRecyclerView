@@ -7,25 +7,24 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 
-class SelectSubPositionAction(
-    private val subPosition: Int,
-    private val smooth: Boolean
+abstract class DpadRvAction(
+    private val label: String,
+    private val waitForIdle: Boolean = true
 ) : ViewAction {
 
     override fun getConstraints(): Matcher<View> {
         return Matchers.isA(DpadRecyclerView::class.java)
     }
 
-    override fun getDescription(): String {
-        return "Selecting subposition $subPosition"
-    }
+    override fun getDescription(): String = label
 
     override fun perform(uiController: UiController, view: View) {
-        val recyclerView = view as DpadRecyclerView
-        if (smooth) {
-            recyclerView.setSelectedSubPositionSmooth(subPosition)
-        } else {
-            recyclerView.setSelectedSubPosition(subPosition)
+        perform(uiController, view as DpadRecyclerView)
+        if (waitForIdle) {
+            uiController.loopMainThreadUntilIdle()
         }
     }
+
+    abstract fun perform(uiController: UiController, recyclerView: DpadRecyclerView)
+
 }

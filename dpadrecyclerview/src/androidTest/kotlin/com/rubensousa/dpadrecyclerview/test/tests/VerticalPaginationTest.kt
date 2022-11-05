@@ -12,7 +12,8 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestPaginationFragment
 import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressDown
+import com.rubensousa.dpadrecyclerview.test.KeyPresser.pressDown
+import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -20,7 +21,7 @@ import org.junit.Test
 class VerticalPaginationTest : GridTest() {
 
     @get:Rule
-    val fastUiAutomatorRule = FastUiAutomatorRule()
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
