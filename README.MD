@@ -13,19 +13,19 @@ androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 
 ## Feature comparison with Leanback's BaseGridView
 
-| Feature                       | Leanback's BaseGridView | DpadRecyclerView |
-|-------------------------------|-------------------------|------------------|
-| View alignment                | Supported               | Supported        |
-| Sub position focus            | Supported               | Supported        |
-| Smooth view alignment changes | Not Supported           | Supported        |
-| Multiple span sizes           | Not Supported           | Supported        |
-| Change orientation at runtime | Not Supported           | Supported        |
-| Disabling smooth scrolling    | Not Supported           | Supported        |
-| Circular focus                | Not supported           | Supported        |
-| Continuous focus              | Not supported           | Supported        |
-| setLayoutEnabled              | Supported               | Not Supported    |
-| setScrollEnabled              | Supported               | Not Supported    |
-| Scroll in secondary direction | Supported               | Not Supported    |
+| Feature                       | BaseGridView | DpadRecyclerView |
+|-------------------------------|--------------|------------------|
+| Customize View alignment      | ✅            | ✅                |
+| Sub position focus            | ✅            | ✅                |
+| Smooth view alignment changes | ❌            | ✅                |
+| Multiple span sizes           | ❌            | ✅                |
+| Change orientation at runtime | ❌            | ✅                |
+| Disabling smooth scrolling    | ❌            | ✅                |
+| Circular grid focus           | ❌            | ✅                |
+| Continuous grid focus         | ❌            | ✅                |
+| setLayoutEnabled              | ✅            | ❌                |
+| setScrollEnabled              | ✅            | ❌                |
+| Scroll in secondary direction | ✅            | ❌                |
 
 Features still planned:
 
@@ -36,7 +36,8 @@ Features still planned:
 
 ## Migrating from Leanback
 
-See: https://github.com/rubensousa/DpadRecyclerView/wiki/Migrating-from-Leanback
+I tried to keep the public API of `DpadRecyclerView` really similar to the one of `BaseGridView`. The migration should be pretty straightforward
+See this for more details: https://github.com/rubensousa/DpadRecyclerView/wiki/Migrating-from-Leanback
 
 ## XML Attributes
 
@@ -56,7 +57,7 @@ See: https://github.com/rubensousa/DpadRecyclerView/wiki/Testing
 
 ## Sample app
 
-Check the sample app for a complete example of integration of the library.
+Check the sample app for a complete example of integration of this library.
 
 ## License
 
