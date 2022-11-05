@@ -444,41 +444,41 @@ internal class DpadFocusManager(
             return null
         }
         val startRow = layout.getRowIndex(position)
-        var currentPosition = if (movement == ScrollMovement.NEXT_COLUMN) {
+        var nextPosition = if (movement == ScrollMovement.NEXT_COLUMN) {
             position + 1
         } else {
             position - 1
         }
-        var currentRow = layout.getRowIndex(currentPosition)
+        var nextRow = layout.getRowIndex(nextPosition)
 
         // If we still have focusable views in the movement direction, bail out
-        while (currentRow == startRow) {
-            val currentView = layout.findViewByPosition(currentPosition)
-            if (currentView != null && currentView.isFocusable) {
+        while (nextRow == startRow && nextPosition >= 0) {
+            val nextView = layout.findViewByPosition(nextPosition)
+            if (nextView != null && nextView.isFocusable) {
                 return null
             }
             if (movement == ScrollMovement.NEXT_COLUMN) {
-                currentPosition++
+                nextPosition++
             } else {
-                currentPosition--
+                nextPosition--
             }
-            currentRow = layout.getRowIndex(currentPosition)
+            nextRow = layout.getRowIndex(nextPosition)
         }
 
-        if (currentRow == 0) {
+        if (nextRow == 0 && startRow == 0) {
             return null
         }
 
-        var targetView = layout.findViewByPosition(currentPosition)
+        var targetView = layout.findViewByPosition(nextPosition)
 
         // Now check if we still need to go deeper to find a focusable view
         while (targetView != null && !targetView.isFocusable) {
             if (movement == ScrollMovement.NEXT_COLUMN) {
-                currentPosition++
+                nextPosition++
             } else {
-                currentPosition--
+                nextPosition--
             }
-            targetView = layout.findViewByPosition(currentPosition)
+            targetView = layout.findViewByPosition(nextPosition)
         }
 
         if (targetView != null && !targetView.isFocusable) {
