@@ -6,9 +6,9 @@ A RecyclerView built for Android TV as a replacement for Leanback's BaseGridView
 
 ```groovy
  implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:1.0.0-alpha01'
- 
- // Optional Espresso test extensions
- androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:1.0.0-alpha01'
+
+// Optional Espresso test extensions
+androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:1.0.0-alpha01'
 ```
 
 ## Feature comparison with Leanback's BaseGridView
@@ -41,13 +41,17 @@ See: https://github.com/rubensousa/DpadRecyclerView/wiki/Migrating-from-Leanback
 
 See: https://github.com/rubensousa/DpadRecyclerView/wiki/XML-Attributes
 
-## View Alignment 
+## View Alignment
 
 See: https://github.com/rubensousa/DpadRecyclerView/wiki/Customize-View-Alignment
 
 ## Compose Interoperability
 
 See: https://github.com/rubensousa/DpadRecyclerView/wiki/Compose-Interoperability
+
+## Testing
+
+See: https://github.com/rubensousa/DpadRecyclerView/wiki/Testing
 
 ## Sample app
 
