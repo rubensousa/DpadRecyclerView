@@ -13,19 +13,22 @@ androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 
 ## Feature comparison with Leanback's BaseGridView
 
-| Feature                       | BaseGridView | DpadRecyclerView |
-|-------------------------------|--------------|------------------|
-| Customize View alignment      | ✅            | ✅                |
-| Sub position focus            | ✅            | ✅                |
-| Smooth view alignment changes | ❌            | ✅                |
-| Multiple span sizes           | ❌            | ✅                |
-| Change orientation at runtime | ❌            | ✅                |
-| Disabling smooth scrolling    | ❌            | ✅                |
-| Circular grid focus           | ❌            | ✅                |
-| Continuous grid focus         | ❌            | ✅                |
-| setLayoutEnabled              | ✅            | ❌                |
-| setScrollEnabled              | ✅            | ❌                |
-| Scroll in secondary direction | ✅            | ❌                |
+| Feature                           | BaseGridView | DpadRecyclerView |
+|-----------------------------------|--------------|------------------|
+| Customize View alignment          | ✅            | ✅                |
+| Sub position focus                | ✅            | ✅                |
+| Smooth view alignment changes     | ❌            | ✅                |
+| Multiple span sizes               | ❌            | ✅                |
+| Change orientation at runtime     | ❌            | ✅                |
+| Disabling smooth scrolling        | ❌            | ✅                |
+| Circular grid focus               | ❌            | ✅                |
+| Continuous grid focus             | ❌            | ✅                |
+| XML attributes for configuration  | ❌            | ✅                |
+| Touch event scrolling             | ✅            | ❌                |
+| Save children state automatically | ✅            | ❌                |
+| setLayoutEnabled                  | ✅            | ❌                |
+| setScrollEnabled                  | ✅            | ❌                |
+| Scroll in secondary direction     | ✅            | ❌                |
 
 Features still planned:
 
