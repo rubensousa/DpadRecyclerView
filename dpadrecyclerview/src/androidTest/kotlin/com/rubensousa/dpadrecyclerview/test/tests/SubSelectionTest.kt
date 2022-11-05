@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Rúben Sousa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.rubensousa.dpadrecyclerview.test.tests
 
 import android.view.LayoutInflater
@@ -52,7 +68,7 @@ class SubSelectionTest : GridTest() {
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration()
-            .copy(itemLayoutId = com.rubensousa.dpadrecyclerview.test.R.layout.test_subposition_block)
+            .copy(itemLayoutId = R.layout.dpadrecyclerview_test_item_subposition)
     }
 
     private lateinit var fragmentScenario: FragmentScenario<TestSubPositionFragment>
@@ -164,24 +180,24 @@ class SubSelectionTest : GridTest() {
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition0TextView,
-                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition0TextView
+                        alignmentViewId = R.id.subPosition0TextView,
+                        focusViewId = R.id.subPosition0TextView
                     )
                 )
                 add(
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition1TextView,
-                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition1TextView
+                        alignmentViewId = R.id.subPosition1TextView,
+                        focusViewId = R.id.subPosition1TextView
                     )
                 )
                 add(
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition2TextView,
-                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition2TextView
+                        alignmentViewId = R.id.subPosition2TextView,
+                        focusViewId = R.id.subPosition2TextView
                     )
                 )
             }

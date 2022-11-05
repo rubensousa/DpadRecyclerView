@@ -16,6 +16,7 @@ androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 | Feature                       | Leanback's BaseGridView | DpadRecyclerView |
 |-------------------------------|-------------------------|------------------|
 | View alignment                | Supported               | Supported        |
+| Sub position focus            | Supported               | Supported        |
 | Smooth view alignment changes | Not Supported           | Supported        |
 | Multiple span sizes           | Not Supported           | Supported        |
 | Change orientation at runtime | Not Supported           | Supported        |

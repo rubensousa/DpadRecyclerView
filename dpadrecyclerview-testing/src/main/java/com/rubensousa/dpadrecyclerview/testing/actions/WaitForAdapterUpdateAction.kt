@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Rúben Sousa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.rubensousa.dpadrecyclerview.testing.actions
 
 import android.view.View
@@ -13,6 +29,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 internal class WaitForAdapterUpdateAction(
+    private val updates: Int,
     timeout: Long = 5,
     timeoutUnit: TimeUnit = TimeUnit.SECONDS
 ) : ViewAction {
@@ -29,7 +46,7 @@ internal class WaitForAdapterUpdateAction(
 
     override fun perform(uiController: UiController, view: View) {
         val recyclerView = view as RecyclerView
-        val idlingResource = AdapterUpdateIdlingResource(recyclerView)
+        val idlingResource = AdapterUpdateIdlingResource(updates, recyclerView)
         val isIdleNow = waiter.waitFor(idlingResource, uiController)
         if (!isIdleNow) {
             throw PerformException.Builder()
@@ -38,20 +55,22 @@ internal class WaitForAdapterUpdateAction(
                 .withViewDescription(HumanReadables.describe(view))
                 .build()
         }
+        uiController.loopMainThreadForAtLeast(300)
     }
 
     class AdapterUpdateIdlingResource(
+        updates: Int,
         recyclerView: RecyclerView,
         private var callback: IdlingResource.ResourceCallback? = null
     ) : IdlingResource {
 
-        private var isUpdated = false
+        private var remainingUpdates = updates
 
         init {
             recyclerView.adapter?.registerAdapterDataObserver(
                 object : RecyclerView.AdapterDataObserver() {
                     override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
-                        setIdle()
+                        refreshRemainingUpdates()
                     }
 
                     override fun onItemRangeChanged(
@@ -59,19 +78,19 @@ internal class WaitForAdapterUpdateAction(
                         itemCount: Int,
                         payload: Any?
                     ) {
-                        setIdle()
+                        refreshRemainingUpdates()
                     }
 
                     override fun onChanged() {
-                        setIdle()
+                        refreshRemainingUpdates()
                     }
 
                     override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
-                        setIdle()
+                        refreshRemainingUpdates()
                     }
 
                     override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
-                        setIdle()
+                        refreshRemainingUpdates()
                     }
 
                     override fun onItemRangeMoved(
@@ -79,7 +98,7 @@ internal class WaitForAdapterUpdateAction(
                         toPosition: Int,
                         itemCount: Int
                     ) {
-                        setIdle()
+                        refreshRemainingUpdates()
                     }
                 })
         }
@@ -87,16 +106,20 @@ internal class WaitForAdapterUpdateAction(
         override fun getName(): String = this::class.simpleName ?: ""
 
         override fun isIdleNow(): Boolean {
-            return isUpdated
+            return remainingUpdates == 0
         }
 
         override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
             this.callback = callback
         }
 
-        private fun setIdle() {
-            isUpdated = true
-            callback?.onTransitionToIdle()
+        private fun refreshRemainingUpdates() {
+            if (remainingUpdates > 0) {
+                remainingUpdates--
+            }
+            if (remainingUpdates == 0) {
+                callback?.onTransitionToIdle()
+            }
         }
 
     }

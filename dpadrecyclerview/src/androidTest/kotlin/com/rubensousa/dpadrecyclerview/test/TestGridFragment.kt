@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Rúben Sousa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.rubensousa.dpadrecyclerview.test
 
 import android.os.Bundle
@@ -7,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
+import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 
 open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
@@ -28,9 +45,9 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         }
     }
 
-    private val selectionEvents = ArrayList<TestPosition>()
-    private val tasks = ArrayList<TestPosition>()
-    private val alignedEvents = ArrayList<TestPosition>()
+    private val selectionEvents = ArrayList<DpadSelectionEvent>()
+    private val tasks = ArrayList<DpadSelectionEvent>()
+    private val alignedEvents = ArrayList<DpadSelectionEvent>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,6 +56,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         val adapterConfig = args.getParcelable<TestAdapterConfiguration>(ARG_ADAPTER_CONFIG)!!
         val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
         recyclerView.addOnViewHolderSelectedListener(this)
+        recyclerView.setFocusableDirection(layoutConfig.focusableDirection)
         recyclerView.setGravity(layoutConfig.gravity)
         recyclerView.setSpanCount(layoutConfig.spans)
         recyclerView.setOrientation(layoutConfig.orientation)
@@ -68,7 +86,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         subPosition: Int
     ) {
         super.onViewHolderSelected(parent, child, position, subPosition)
-        selectionEvents.add(TestPosition(position, subPosition))
+        selectionEvents.add(DpadSelectionEvent(position, subPosition))
     }
 
     override fun onViewHolderSelectedAndAligned(
@@ -78,14 +96,14 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         subPosition: Int
     ) {
         super.onViewHolderSelectedAndAligned(parent, child, position, subPosition)
-        alignedEvents.add(TestPosition(position, subPosition))
+        alignedEvents.add(DpadSelectionEvent(position, subPosition))
     }
 
     fun selectWithTask(position: Int, smooth: Boolean, executeWhenAligned: Boolean = false) {
         val recyclerView = requireView().findViewById<DpadRecyclerView>(R.id.recyclerView)
         val task = object : ViewHolderTask(executeWhenAligned) {
             override fun execute(viewHolder: RecyclerView.ViewHolder) {
-                tasks.add(TestPosition(position = position))
+                tasks.add(DpadSelectionEvent(position = position))
             }
         }
         if (smooth) {
@@ -95,10 +113,10 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         }
     }
 
-    fun getTasksExecuted(): List<TestPosition> = tasks
+    fun getTasksExecuted(): List<DpadSelectionEvent> = tasks
 
-    fun getSelectionEvents(): List<TestPosition> = selectionEvents
+    fun getSelectionEvents(): List<DpadSelectionEvent> = selectionEvents
 
-    fun getSelectedAndAlignedEvents(): List<TestPosition> = alignedEvents
+    fun getSelectedAndAlignedEvents(): List<DpadSelectionEvent> = alignedEvents
 
 }

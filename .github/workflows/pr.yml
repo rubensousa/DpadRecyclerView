@@ -90,7 +90,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedCheck --info
+          script: ./gradlew connectedCheck
 
       - name: Upload results
         uses: actions/upload-artifact@v3

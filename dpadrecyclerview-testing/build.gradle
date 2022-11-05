@@ -52,6 +52,7 @@ android {
 
 dependencies {
     implementation project (':dpadrecyclerview')
+    debugImplementation "androidx.fragment:fragment-testing:$testVersions.fragment"
     api "androidx.recyclerview:recyclerview:$versions.recyclerview"
     api "androidx.test.ext:truth:$testVersions.testCore"
     api "androidx.test.ext:junit-ktx:$testVersions.espressoJunit"

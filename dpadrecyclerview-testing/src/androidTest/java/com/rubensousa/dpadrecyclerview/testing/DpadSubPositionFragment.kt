@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.testing.assertions
+package com.rubensousa.dpadrecyclerview.testing
 
+import android.os.Bundle
 import android.view.View
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.ViewAssertion
-import com.google.common.truth.Truth.assertThat
+import androidx.fragment.app.Fragment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
-abstract class DpadRvAssertion : ViewAssertion {
+class DpadSubPositionFragment : Fragment(R.layout.dpadrecyclerview_test_container) {
 
-    override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
-        if (noViewFoundException != null) {
-            throw noViewFoundException
-        }
-        assertThat(view).isInstanceOf(DpadRecyclerView::class.java)
-        check(view as DpadRecyclerView)
+    private val adapter = DpadTestAdapter(showSubPositions = true)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
+        recyclerView.requestFocus()
+        recyclerView.adapter = adapter
     }
-
-    abstract fun check(view: DpadRecyclerView)
 
 }

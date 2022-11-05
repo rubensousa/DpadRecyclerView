@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Rúben Sousa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.rubensousa.dpadrecyclerview.internal
 
 import android.graphics.PointF
@@ -282,10 +298,6 @@ internal class DpadScroller(
 
     private fun calculateScrollAmount(offset: Int): Int {
         var scrollOffset = offset
-        // We apply the cap of maxScroll/minScroll to the delta, except for one case:
-        // 1. During onLayoutChildren(), it may compensate the remaining scroll delta,
-        //    we should honor the request regardless if it goes over minScroll / maxScroll.
-        //    (see b/64931938 testScrollAndRemove and testScrollAndRemoveSample1)
         if (!layout.isInLayoutStage()) {
             scrollOffset = scrollAlignment.getCappedScroll(scrollOffset)
         }
@@ -399,7 +411,6 @@ internal class DpadScroller(
                 return
             }
             if (focusManager.position != targetPosition) {
-                // This should not happen since we cropped value in startPositionSmoothScroller()
                 focusManager.position = targetPosition
             }
             if (layout.hasFocus()) {
