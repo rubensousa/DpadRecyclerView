@@ -24,6 +24,7 @@ androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 | Circular grid focus               | ❌            | ✅                |
 | Continuous grid focus             | ❌            | ✅                |
 | XML attributes for configuration  | ❌            | ✅                |
+| Touch event scrolling             | ✅            | ❌                |
 | Save children state automatically | ✅            | ❌                |
 | setLayoutEnabled                  | ✅            | ❌                |
 | setScrollEnabled                  | ✅            | ❌                |
