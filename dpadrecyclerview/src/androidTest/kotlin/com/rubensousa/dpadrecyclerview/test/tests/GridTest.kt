@@ -5,7 +5,11 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.test.*
+import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
+import com.rubensousa.dpadrecyclerview.test.TestGridFragment
+import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.TestPosition
+import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.After
 
 abstract class GridTest {
@@ -14,7 +18,7 @@ abstract class GridTest {
 
     open fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return TestAdapterConfiguration(
-            itemLayoutId = R.layout.test_item_grid,
+            itemLayoutId = R.layout.dpadrecyclerview_test_item_grid,
             numberOfItems = 200
         )
     }
@@ -55,7 +59,7 @@ abstract class GridTest {
                 layoutConfiguration,
                 adapterConfiguration
             ),
-            themeResId = R.style.TestTheme
+            themeResId = R.style.DpadRecyclerViewTestTheme
         ).also {
             fragmentScenario = it
         }
@@ -92,7 +96,7 @@ abstract class GridTest {
 
     fun selectWithTask(position: Int, smooth: Boolean, executeWhenAligned: Boolean) {
         fragmentScenario.onFragment { fragment ->
-           fragment.selectWithTask(position, smooth, executeWhenAligned)
+            fragment.selectWithTask(position, smooth, executeWhenAligned)
         }
     }
 

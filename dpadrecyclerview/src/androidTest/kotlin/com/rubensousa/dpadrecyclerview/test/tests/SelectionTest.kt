@@ -1,6 +1,5 @@
 package com.rubensousa.dpadrecyclerview.test.tests
 
-import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
@@ -9,15 +8,19 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.helpers.UiAutomatorHelper.pressRight
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.assertViewHolderSelected
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
 class SelectionTest : GridTest() {
 
     @get:Rule
-    val fastUiAutomatorRule = FastUiAutomatorRule()
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     private val defaultConfig = TestLayoutConfiguration(
         spans = 1,
@@ -94,7 +97,7 @@ class SelectionTest : GridTest() {
         assertViewHolderSelected(position = 0, isSelected = true)
 
         repeat(10) { index ->
-            UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
             assertViewHolderSelected(position = index, isSelected = false)
             assertSelectedPosition(position = index + 1)
             assertViewHolderSelected(position = index + 1, isSelected = true)
@@ -110,7 +113,7 @@ class SelectionTest : GridTest() {
         expectedEvents.add(TestPosition(position = 0))
 
         repeat(4) { iteration ->
-            pressRight()
+            KeyEvents.pressRight()
             assertSelectedPosition(position = iteration + 1)
             assertFocusPosition(position = iteration + 1)
             expectedEvents.add(TestPosition(position = iteration + 1))

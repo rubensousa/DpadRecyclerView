@@ -1,4 +1,4 @@
-package com.rubensousa.dpadrecyclerview.test.actions
+package com.rubensousa.dpadrecyclerview.testing.actions
 
 import android.view.View
 import androidx.test.espresso.UiController
@@ -7,7 +7,7 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
 
-abstract class DpadRecyclerViewAction(
+abstract class DpadRvAction(
     private val label: String,
     private val waitForIdle: Boolean = true
 ) : ViewAction {

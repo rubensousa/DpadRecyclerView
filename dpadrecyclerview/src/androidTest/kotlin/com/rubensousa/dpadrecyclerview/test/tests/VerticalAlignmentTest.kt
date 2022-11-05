@@ -1,24 +1,24 @@
 package com.rubensousa.dpadrecyclerview.test.tests
 
 import android.view.Gravity
-import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.UiController
 import com.google.common.truth.Truth.assertThat
-import com.rubensousa.dpadrecyclerview.*
-import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.R
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.actions.DpadRecyclerViewAction
+import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
 class VerticalAlignmentTest : GridTest() {
 
     @get:Rule
-    val fastUiAutomatorRule = FastUiAutomatorRule()
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
@@ -39,14 +39,14 @@ class VerticalAlignmentTest : GridTest() {
     @Test
     fun testMiddleItemsAreAlignedToContainerOffsets() {
         launchFragment()
-        UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
 
         val recyclerViewBounds = getRecyclerViewBounds()
         var position = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = position)
             assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
-            UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
             position++
         }
 
@@ -78,14 +78,14 @@ class VerticalAlignmentTest : GridTest() {
     @Test
     fun testMiddleItemsAreAlignedToItemOffsets() {
         launchFragment()
-        UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
 
         val recyclerViewBounds = getRecyclerViewBounds()
         var position = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = position)
             assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
-            UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
             position++
         }
 
@@ -200,13 +200,13 @@ class VerticalAlignmentTest : GridTest() {
                 offsetRatio = 0f
             )
         )
-        UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
         val recyclerViewBounds = getRecyclerViewBounds()
         val startPosition = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.top).isEqualTo(recyclerViewBounds.centerY() + offset)
-            UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
         }
     }
 
@@ -225,14 +225,14 @@ class VerticalAlignmentTest : GridTest() {
                 offsetRatio = 0f
             )
         )
-        UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
         val recyclerViewBounds = getRecyclerViewBounds()
         val startPosition = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.top)
                 .isEqualTo(recyclerViewBounds.top + containerOffset + itemOffset)
-            UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
         }
     }
 
@@ -251,14 +251,14 @@ class VerticalAlignmentTest : GridTest() {
                 offsetRatio = 0.5f
             )
         )
-        UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
         val recyclerViewBounds = getRecyclerViewBounds()
         val startPosition = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.centerY())
                 .isEqualTo(recyclerViewBounds.centerY() + containerOffset + itemOffset)
-            UiAutomatorHelper.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
         }
     }
 
@@ -280,7 +280,7 @@ class VerticalAlignmentTest : GridTest() {
             )
         )
         val adapterConfig = TestAdapterConfiguration(
-            itemLayoutId = R.layout.test_item_horizontal
+            itemLayoutId = R.layout.dpadrecyclerview_test_item_horizontal
         )
         launchFragment(layoutConfig, adapterConfig)
 

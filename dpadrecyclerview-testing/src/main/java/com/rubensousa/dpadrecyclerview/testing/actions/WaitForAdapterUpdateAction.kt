@@ -1,4 +1,4 @@
-package com.rubensousa.dpadrecyclerview.test.actions
+package com.rubensousa.dpadrecyclerview.testing.actions
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +12,7 @@ import org.hamcrest.Matchers
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
-class WaitForIdleScrollAction(
+internal class WaitForAdapterUpdateAction(
     timeout: Long = 5,
     timeoutUnit: TimeUnit = TimeUnit.SECONDS
 ) : ViewAction {
@@ -24,13 +24,12 @@ class WaitForIdleScrollAction(
     }
 
     override fun getDescription(): String {
-        return "Waiting for idle scroll state"
+        return "Waiting for adapter change"
     }
 
     override fun perform(uiController: UiController, view: View) {
         val recyclerView = view as RecyclerView
-        val idlingResource = ScrollingIdlingResource(recyclerView)
-        uiController.loopMainThreadForAtLeast(300L)
+        val idlingResource = AdapterUpdateIdlingResource(recyclerView)
         val isIdleNow = waiter.waitFor(idlingResource, uiController)
         if (!isIdleNow) {
             throw PerformException.Builder()
@@ -41,36 +40,64 @@ class WaitForIdleScrollAction(
         }
     }
 
-    class ScrollingIdlingResource(
+    class AdapterUpdateIdlingResource(
         recyclerView: RecyclerView,
         private var callback: IdlingResource.ResourceCallback? = null
     ) : IdlingResource {
 
-        private var isScrolling = recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
-        private val scrollListener = object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                isScrolling = newState != RecyclerView.SCROLL_STATE_IDLE
-                if (!isScrolling) {
-                    callback?.onTransitionToIdle()
-                }
-            }
-        }
+        private var isUpdated = false
 
         init {
-            recyclerView.addOnScrollListener(scrollListener)
+            recyclerView.adapter?.registerAdapterDataObserver(
+                object : RecyclerView.AdapterDataObserver() {
+                    override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+                        setIdle()
+                    }
+
+                    override fun onItemRangeChanged(
+                        positionStart: Int,
+                        itemCount: Int,
+                        payload: Any?
+                    ) {
+                        setIdle()
+                    }
+
+                    override fun onChanged() {
+                        setIdle()
+                    }
+
+                    override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                        setIdle()
+                    }
+
+                    override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                        setIdle()
+                    }
+
+                    override fun onItemRangeMoved(
+                        fromPosition: Int,
+                        toPosition: Int,
+                        itemCount: Int
+                    ) {
+                        setIdle()
+                    }
+                })
         }
 
         override fun getName(): String = this::class.simpleName ?: ""
 
         override fun isIdleNow(): Boolean {
-            return !isScrolling
+            return isUpdated
         }
 
         override fun registerIdleTransitionCallback(callback: IdlingResource.ResourceCallback?) {
             this.callback = callback
         }
 
-    }
+        private fun setIdle() {
+            isUpdated = true
+            callback?.onTransitionToIdle()
+        }
 
+    }
 }

@@ -2,9 +2,10 @@ package com.rubensousa.dpadrecyclerview.test
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.rubensousa.dpadrecyclerview.testing.R
 
 data class TestAdapterConfiguration(
-    val itemLayoutId: Int = R.layout.test_item_grid,
+    val itemLayoutId: Int = R.layout.dpadrecyclerview_test_item_grid,
     val numberOfItems: Int = 200,
     val alternateFocus: Boolean = false
 ) : Parcelable {

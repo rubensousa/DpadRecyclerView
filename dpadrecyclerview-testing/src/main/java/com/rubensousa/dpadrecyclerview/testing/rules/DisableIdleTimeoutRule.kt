@@ -1,11 +1,14 @@
-package com.rubensousa.dpadrecyclerview.test.helpers
+package com.rubensousa.dpadrecyclerview.testing.rules
 
 import androidx.test.uiautomator.Configurator
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
-class FastUiAutomatorRule : TestRule {
+/**
+ * Disables the default idle timeout of UiAutomator to speed up key events
+ */
+class DisableIdleTimeoutRule : TestRule {
 
     override fun apply(base: Statement, description: Description): Statement {
         return object : Statement() {

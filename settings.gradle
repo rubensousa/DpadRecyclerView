@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "DpadRecyclerView"
 include ':sample'
 include ':dpadrecyclerview'
+include ':dpadrecyclerview-testing'
