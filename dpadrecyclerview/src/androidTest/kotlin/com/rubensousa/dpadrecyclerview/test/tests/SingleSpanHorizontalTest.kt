@@ -5,12 +5,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.test.KeyPresser
 import com.rubensousa.dpadrecyclerview.test.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -43,59 +45,59 @@ class SingleSpanHorizontalTest : GridTest() {
 
     @Test
     fun testFocusStaysAtLeftEdgePosition() {
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 5)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 5)
         assertFocusPosition(position = 0)
     }
 
     @Test
     fun testFocusStaysAtRightEdgePosition() {
         val lastPosition = selectLastPosition(smooth = false)
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 5)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 5)
         waitForIdleScrollState()
         assertFocusPosition(position = lastPosition)
     }
 
     @Test
     fun testContinuousScrollRight() {
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 50)
     }
 
     @Test
     fun testContinuousScrollLeft() {
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 50)
 
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
 
     @Test
     fun testScrollWithShortBreaks() {
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 50)
 
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 100)
 
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 50)
 
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
 
     @Test
     fun testMultiStepScroll() {
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
-        KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
@@ -103,8 +105,8 @@ class SingleSpanHorizontalTest : GridTest() {
     @Test
     fun testContinuousScrollThatSettlesInSamePosition() {
         repeat(5) {
-            KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 10)
-            KeyPresser.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 10)
+            KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 10)
+            KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 10)
         }
         waitForIdleScrollState()
         assertFocusPosition(position = 0)

@@ -17,7 +17,7 @@ testVersions.testCore = '1.4.0'
 testVersions.orchestrator = '1.4.1'
 testVersions.uiautomator = '2.2.0'
 testVersions.espresso = '3.4.0'
-testVersions.fragment = '1.5.3'
+testVersions.fragment = '1.5.4'
 
 ext.testVersions = testVersions
 ext.versions = versions

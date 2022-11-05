@@ -12,9 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.*
 import com.rubensousa.dpadrecyclerview.test.*
 import com.rubensousa.dpadrecyclerview.test.R
-import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.KeyPresser.pressDown
-import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
+import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectSubPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -59,15 +62,15 @@ class SubSelectionTest : GridTest() {
         repeat(5) { index ->
             assertSelectedPosition(position = index, subPosition = 0)
 
-            pressDown(times = 1)
+            KeyEvents.pressDown(times = 1)
 
             assertSelectedPosition(position = index, subPosition = 1)
 
-            pressDown(times = 1)
+            KeyEvents.pressDown(times = 1)
 
             assertSelectedPosition(position = index, subPosition = 2)
 
-            pressDown(times = 1)
+            KeyEvents.pressDown(times = 1)
             waitForIdleScrollState()
         }
 

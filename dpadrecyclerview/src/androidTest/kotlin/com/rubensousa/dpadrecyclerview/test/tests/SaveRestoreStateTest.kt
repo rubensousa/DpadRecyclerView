@@ -6,11 +6,11 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
-import com.rubensousa.dpadrecyclerview.test.KeyPresser.pressDown
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,7 +38,7 @@ class SaveRestoreStateTest : GridTest() {
 
     @Test
     fun testSelectionStateIsSavedAndRestored() {
-        pressDown(times = 5)
+        KeyEvents.pressDown(times = 5)
         assertFocusPosition(5)
 
         recreateFragment()

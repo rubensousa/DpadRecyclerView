@@ -5,7 +5,7 @@ import android.view.KeyEvent
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
 
-object KeyPresser {
+object KeyEvents {
 
     private const val DEFAULT_KEY_PRESS_DELAY = 50L
 

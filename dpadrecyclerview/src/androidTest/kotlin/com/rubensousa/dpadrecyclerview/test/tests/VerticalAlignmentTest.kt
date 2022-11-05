@@ -1,18 +1,17 @@
 package com.rubensousa.dpadrecyclerview.test.tests
 
 import android.view.Gravity
-import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.test.KeyPresser
 import com.rubensousa.dpadrecyclerview.test.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.rules.DisableIdleTimeoutRule
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
@@ -40,14 +39,14 @@ class VerticalAlignmentTest : GridTest() {
     @Test
     fun testMiddleItemsAreAlignedToContainerOffsets() {
         launchFragment()
-        KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
 
         val recyclerViewBounds = getRecyclerViewBounds()
         var position = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = position)
             assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
-            KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
             position++
         }
 
@@ -79,14 +78,14 @@ class VerticalAlignmentTest : GridTest() {
     @Test
     fun testMiddleItemsAreAlignedToItemOffsets() {
         launchFragment()
-        KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
 
         val recyclerViewBounds = getRecyclerViewBounds()
         var position = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = position)
             assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
-            KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
             position++
         }
 
@@ -201,13 +200,13 @@ class VerticalAlignmentTest : GridTest() {
                 offsetRatio = 0f
             )
         )
-        KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
         val recyclerViewBounds = getRecyclerViewBounds()
         val startPosition = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.top).isEqualTo(recyclerViewBounds.centerY() + offset)
-            KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
         }
     }
 
@@ -226,14 +225,14 @@ class VerticalAlignmentTest : GridTest() {
                 offsetRatio = 0f
             )
         )
-        KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
         val recyclerViewBounds = getRecyclerViewBounds()
         val startPosition = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.top)
                 .isEqualTo(recyclerViewBounds.top + containerOffset + itemOffset)
-            KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
         }
     }
 
@@ -252,14 +251,14 @@ class VerticalAlignmentTest : GridTest() {
                 offsetRatio = 0.5f
             )
         )
-        KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressDown(times = 5)
         val recyclerViewBounds = getRecyclerViewBounds()
         val startPosition = 5
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.centerY())
                 .isEqualTo(recyclerViewBounds.centerY() + containerOffset + itemOffset)
-            KeyPresser.pressKey(KeyEvent.KEYCODE_DPAD_DOWN)
+            KeyEvents.pressDown()
         }
     }
 
