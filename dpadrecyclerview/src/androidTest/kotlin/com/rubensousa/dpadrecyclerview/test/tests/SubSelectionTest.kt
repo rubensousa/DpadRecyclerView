@@ -9,14 +9,21 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.*
-import com.rubensousa.dpadrecyclerview.test.*
-import com.rubensousa.dpadrecyclerview.test.R
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.ViewHolderAlignment
+import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
+import com.rubensousa.dpadrecyclerview.test.TestGridFragment
+import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.TestViewHolder
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectSubPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.After
 import org.junit.Rule
@@ -45,7 +52,7 @@ class SubSelectionTest : GridTest() {
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration()
-            .copy(itemLayoutId = R.layout.test_subposition_block)
+            .copy(itemLayoutId = com.rubensousa.dpadrecyclerview.test.R.layout.test_subposition_block)
     }
 
     private lateinit var fragmentScenario: FragmentScenario<TestSubPositionFragment>
@@ -109,7 +116,7 @@ class SubSelectionTest : GridTest() {
                 layoutConfiguration,
                 adapterConfiguration
             ),
-            themeResId = R.style.TestTheme
+            themeResId = R.style.DpadRecyclerViewTestTheme
         ).also {
             fragmentScenario = it
         }
@@ -157,24 +164,24 @@ class SubSelectionTest : GridTest() {
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = R.id.subPosition0TextView,
-                        focusViewId = R.id.subPosition0TextView
+                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition0TextView,
+                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition0TextView
                     )
                 )
                 add(
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = R.id.subPosition1TextView,
-                        focusViewId = R.id.subPosition1TextView
+                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition1TextView,
+                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition1TextView
                     )
                 )
                 add(
                     ViewHolderAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
-                        alignmentViewId = R.id.subPosition2TextView,
-                        focusViewId = R.id.subPosition2TextView
+                        alignmentViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition2TextView,
+                        focusViewId = com.rubensousa.dpadrecyclerview.test.R.id.subPosition2TextView
                     )
                 )
             }

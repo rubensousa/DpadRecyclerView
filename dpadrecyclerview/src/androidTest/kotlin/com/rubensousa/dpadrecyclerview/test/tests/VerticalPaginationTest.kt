@@ -7,12 +7,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.test.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestPaginationFragment
-import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForAdapterUpdate
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.After
 import org.junit.Rule
@@ -106,7 +112,7 @@ class VerticalPaginationTest : GridTest() {
                 layoutConfiguration,
                 adapterConfiguration
             ),
-            themeResId = R.style.TestTheme
+            themeResId = R.style.DpadRecyclerViewTestTheme
         ).also {
             fragmentScenario = it
         }

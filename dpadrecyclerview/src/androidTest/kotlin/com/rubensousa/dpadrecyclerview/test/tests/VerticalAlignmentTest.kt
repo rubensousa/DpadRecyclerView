@@ -6,7 +6,7 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.test.R
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.*
@@ -280,7 +280,7 @@ class VerticalAlignmentTest : GridTest() {
             )
         )
         val adapterConfig = TestAdapterConfiguration(
-            itemLayoutId = R.layout.test_item_horizontal
+            itemLayoutId = R.layout.dpadrecyclerview_test_item_horizontal
         )
         launchFragment(layoutConfig, adapterConfig)
 

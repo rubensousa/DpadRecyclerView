@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.test.R
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
@@ -35,7 +35,7 @@ class SingleSpanHorizontalTest : GridTest() {
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration()
-            .copy(itemLayoutId = R.layout.test_item_horizontal)
+            .copy(itemLayoutId = R.layout.dpadrecyclerview_test_item_horizontal)
     }
 
     @Before

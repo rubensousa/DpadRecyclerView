@@ -7,8 +7,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
+import com.rubensousa.dpadrecyclerview.testing.R
 
-open class TestGridFragment : Fragment(R.layout.test_container), OnViewHolderSelectedListener {
+open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
+    OnViewHolderSelectedListener {
 
     companion object {
 
