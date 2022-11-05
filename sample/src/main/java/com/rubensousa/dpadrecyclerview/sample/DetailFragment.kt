@@ -5,11 +5,11 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.GridSpanMarginDecoration
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
@@ -27,9 +27,9 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
     private val topParentAlignment = ParentAlignment(
         edge = Edge.NONE,
         offset = 0,
-        offsetRatio = 0.5f
+        offsetRatio = 0.05f
     )
-    private val topChildAlignment = ChildAlignment(offset = 0, offsetRatio = 0.5f)
+    private val topChildAlignment = ChildAlignment(offset = 0, offsetRatio = 0f)
     private val centerParentAlignment = ParentAlignment(
         edge = Edge.NONE,
         offset = 0,
@@ -89,11 +89,10 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         )
         val headerAdapter = ListHeaderAdapter()
         headerAdapter.submitList(listOf("Header", "Header"))
-     //   concatAdapter.addAdapter(headerAdapter)
+        concatAdapter.addAdapter(headerAdapter)
         concatAdapter.addAdapter(itemAdapter)
         concatAdapter.addAdapter(loadingAdapter)
-        recyclerView.setFocusableDirection(FocusableDirection.CONTINUOUS)
-       /* recyclerView.setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
+        recyclerView.setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 return if (position < headerAdapter.itemCount) {
                     recyclerView.getSpanCount()
@@ -101,7 +100,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                     1
                 }
             }
-        })*/
+        })
         recyclerView.setChildAlignment(topChildAlignment)
         recyclerView.setParentAlignment(topParentAlignment)
         recyclerView.addItemDecoration(
@@ -121,7 +120,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                 position: Int,
                 subPosition: Int
             ) {
-            /*    if (position > 6) {
+                if (position > 6) {
                     recyclerView.setAlignments(
                         centerParentAlignment,
                         centerChildAlignment,
@@ -133,7 +132,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
                         topChildAlignment,
                         smooth = true
                     )
-                }*/
+                }
                 Timber.d("Selected: $position, $subPosition")
                 viewModel.loadMore(position)
             }
