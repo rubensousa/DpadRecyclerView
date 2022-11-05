@@ -8,7 +8,7 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.TestPosition
+import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.After
 
@@ -70,24 +70,24 @@ abstract class GridTest {
         return launchFragment(getDefaultLayoutConfiguration(), adapterConfiguration)
     }
 
-    fun getSelectionEvents(): List<TestPosition> {
-        var events = listOf<TestPosition>()
+    fun getSelectionEvents(): List<DpadSelectionEvent> {
+        var events = listOf<DpadSelectionEvent>()
         fragmentScenario.onFragment { fragment ->
             events = fragment.getSelectionEvents()
         }
         return events
     }
 
-    fun getSelectionAndAlignedEvents(): List<TestPosition> {
-        var events = listOf<TestPosition>()
+    fun getSelectionAndAlignedEvents(): List<DpadSelectionEvent> {
+        var events = listOf<DpadSelectionEvent>()
         fragmentScenario.onFragment { fragment ->
             events = fragment.getSelectedAndAlignedEvents()
         }
         return events
     }
 
-    fun getTasksExecuted(): List<TestPosition> {
-        var events = listOf<TestPosition>()
+    fun getTasksExecuted(): List<DpadSelectionEvent> {
+        var events = listOf<DpadSelectionEvent>()
         fragmentScenario.onFragment { fragment ->
             events = fragment.getTasksExecuted()
         }

@@ -28,7 +28,6 @@ object DpadRecyclerViewAssertions {
         }
     }
 
-
     private class FocusAssertion(private val focusedPosition: Int) : DpadRvAssertion() {
 
         override fun check(view: DpadRecyclerView) {

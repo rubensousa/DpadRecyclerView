@@ -70,10 +70,11 @@ object DpadRecyclerViewActions {
 
     @JvmStatic
     fun waitForAdapterUpdate(
+        updates: Int = 1,
         timeout: Long = 5,
         timeoutUnit: TimeUnit = TimeUnit.SECONDS
     ): ViewAction {
-        return WaitForAdapterUpdateAction(timeout, timeoutUnit)
+        return WaitForAdapterUpdateAction(updates, timeout, timeoutUnit)
     }
 
     @JvmStatic

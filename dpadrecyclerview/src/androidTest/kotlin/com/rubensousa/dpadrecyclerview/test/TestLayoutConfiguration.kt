@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.view.Gravity
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 
 data class TestLayoutConfiguration(
@@ -13,6 +14,7 @@ data class TestLayoutConfiguration(
     val childAlignment: ChildAlignment,
     val gravity: Int = Gravity.START,
     val reverseLayout: Boolean = false,
+    val focusableDirection: FocusableDirection = FocusableDirection.STANDARD
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -29,7 +31,8 @@ data class TestLayoutConfiguration(
             )
         ),
         parcel.readInt(),
-        parcel.readByte() != 0.toByte()
+        parcel.readByte() != 0.toByte(),
+        FocusableDirection.values()[parcel.readInt()]
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -39,6 +42,7 @@ data class TestLayoutConfiguration(
         parcel.writeParcelable(childAlignment, flags)
         parcel.writeInt(gravity)
         parcel.writeByte(if (reverseLayout) 1 else 0)
+        parcel.writeInt(focusableDirection.ordinal)
     }
 
     override fun describeContents(): Int {
