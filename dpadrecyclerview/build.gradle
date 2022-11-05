@@ -4,6 +4,8 @@ plugins {
     id  'jacoco'
 }
 
+apply from: "$rootProject.projectDir/gradle/publish.gradle"
+
 jacoco {
     toolVersion = testVersions.jacoco
 }
@@ -41,6 +43,13 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
     }
 
     tasks.withType(Test).configureEach {

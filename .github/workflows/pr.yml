@@ -8,6 +8,10 @@ on:
     branches:
       - 'master'
 
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -49,16 +53,10 @@ jobs:
           distribution: temurin
           java-version: '11'
 
-      - name: Install Haxm
-        run: brew install --cask intel-haxm
-
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
         with:
           cache-read-only: false
-
-      - name: Build
-        run: ./gradlew assembleDebug
 
       - name: AVD cache
         uses: actions/cache@v3
@@ -67,7 +65,7 @@ jobs:
           path: |
             ~/.android/avd/*
             ~/.android/adb*
-          key: avd-${{ matrix.api-level }}-${{ matrix.target }}
+          key: avd-${{ matrix.api-level }}
 
       - name: create AVD and generate snapshot for caching
         if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -80,7 +78,6 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          avd-name: api-27-android-tv
           script: echo "Generated AVD snapshot for caching."
 
       - name: UI tests
