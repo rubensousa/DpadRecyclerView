@@ -1,3 +1,19 @@
+/*
+ * Copyright 2022 Rúben Sousa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.rubensousa.dpadrecyclerview.test.helpers
 
 import android.graphics.Rect
@@ -7,9 +23,10 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderSelectedAssertion
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
+import com.rubensousa.dpadrecyclerview.testing.actions.DpadViewActions
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
 
 fun selectLastPosition(smooth: Boolean = false, id: Int = R.id.recyclerView): Int {
@@ -82,7 +99,7 @@ fun getRecyclerViewBounds(id: Int = R.id.recyclerView): Rect {
     val rect = Rect()
     Espresso.onView(ViewMatchers.withId(id)).perform(
         DpadRecyclerViewActions.waitForIdleScroll(),
-        DpadRecyclerViewActions.getViewBounds(rect)
+        DpadViewActions.getViewBounds(rect)
     )
     return rect
 }
