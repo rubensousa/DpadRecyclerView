@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.testing.R
 
 class TestAdapter(
     private val adapterLayoutId: Int,

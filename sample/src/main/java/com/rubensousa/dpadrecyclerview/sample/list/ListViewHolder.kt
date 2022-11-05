@@ -16,7 +16,7 @@ class ListViewHolder(private val binding: AdapterListBinding) :
     private var key: String? = null
 
     init {
-        itemView.setOnFocusChangeListener { v, hasFocus ->
+        itemView.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 binding.recyclerView.requestFocus()
             }

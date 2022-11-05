@@ -18,7 +18,7 @@ class ItemViewHolder(
         itemView.setOnClickListener {
             clickListener?.onViewHolderClicked()
         }
-        root.setOnFocusChangeListener { v, hasFocus ->
+        root.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 grow()
             } else {
