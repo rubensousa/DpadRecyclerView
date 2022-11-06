@@ -62,10 +62,16 @@ See this for more details: https://github.com/rubensousa/DpadRecyclerView/wiki/T
 
 Check the sample app for a complete example of integration of this library.
 
-![image](https://user-images.githubusercontent.com/10662096/200150069-63d3fa41-cf21-4d39-9d2d-d58de87e344e.png)
+Nested lists:
+
+[nested_lists.webm](https://user-images.githubusercontent.com/10662096/200195777-e6020eb8-5a85-4254-82e2-f2f0cc503406.webm)
 
 
-![image](https://user-images.githubusercontent.com/10662096/200150031-dc76c90a-1d98-4035-bbc1-d57420e976de.png)
+Grid with different span sizes and sub focus positions:
+
+
+[grid_span_different.webm](https://user-images.githubusercontent.com/10662096/200195709-203b78ec-873c-4e21-bab4-7cd8dede808e.webm)
+
 
 
 ## License
