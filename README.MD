@@ -25,10 +25,14 @@ androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 | Continuous grid focus             | ❌            | ✅                |
 | XML attributes for configuration  | ❌            | ✅                |
 | Touch event scrolling             | ✅            | ❌                |
+| Item spacing                      | ✅            | ❌                |
 | Save children state automatically | ✅            | ❌                |
 | setLayoutEnabled                  | ✅            | ❌                |
 | setScrollEnabled                  | ✅            | ❌                |
 | Scroll in secondary direction     | ✅            | ❌                |
+
+
+Item spacing wasn't supported on purpose since you can achieve the same with a plain `RecyclerView.ItemDecoration`. Check this library for some standard use cases: https://github.com/rubensousa/Decorator/
 
 Features still planned:
 
