@@ -20,9 +20,12 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterNestedItemBinding
+import com.rubensousa.dpadrecyclerview.sample.R
 
-class ItemNestedAdapter : RecyclerView.Adapter<ItemViewHolder>() {
+class ItemNestedAdapter(
+    private val layoutId: Int,
+    private val animateFocusChanges: Boolean
+) : RecyclerView.Adapter<ItemViewHolder>() {
 
     private var list: List<Int> = emptyList()
 
@@ -35,10 +38,8 @@ class ItemNestedAdapter : RecyclerView.Adapter<ItemViewHolder>() {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val binding = AdapterNestedItemBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
-        return ItemViewHolder(binding.root, binding.textView)
+        val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
+        return ItemViewHolder(view, view.findViewById(R.id.textView), animateFocusChanges)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {

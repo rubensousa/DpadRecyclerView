@@ -16,28 +16,34 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
+import android.view.View
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemNestedAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 
-class ListViewHolder(private val binding: AdapterListBinding) :
-    RecyclerView.ViewHolder(binding.root), DpadViewHolder {
+class ListViewHolder(view: View, itemLayoutId: Int = R.layout.adapter_nested_item_start) :
+    RecyclerView.ViewHolder(view), DpadViewHolder {
 
-    private val adapter = ItemNestedAdapter()
+    private val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
+    private val textView = view.findViewById<TextView>(R.id.textView)
+    private val adapter = ItemNestedAdapter(
+        itemLayoutId,
+        animateFocusChanges = itemLayoutId == R.layout.adapter_nested_item_start
+    )
     private var key: String? = null
 
     init {
         itemView.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
-                binding.recyclerView.requestFocus()
+                recyclerView.requestFocus()
             }
         }
-        setupRecyclerView(binding.recyclerView)
+        setupRecyclerView(recyclerView)
         onViewHolderDeselected()
     }
 
@@ -47,30 +53,30 @@ class ListViewHolder(private val binding: AdapterListBinding) :
     ) {
         adapter.clickListener = clickListener
         key = list.title
-        binding.textView.text = list.title
+        textView.text = list.title
         adapter.replaceList(list.items)
-        binding.recyclerView.adapter = adapter
-        stateHolder.register(binding.recyclerView, list.title)
+        recyclerView.adapter = adapter
+        stateHolder.register(recyclerView, list.title)
     }
 
     fun onRecycled(stateHolder: DpadStateHolder) {
         adapter.clickListener = null
         key?.let { scrollKey ->
-            stateHolder.unregister(binding.recyclerView, scrollKey)
+            stateHolder.unregister(recyclerView, scrollKey)
         }
-        binding.recyclerView.adapter = null
+        recyclerView.adapter = null
     }
 
     override fun onViewHolderSelected() {
         super.onViewHolderSelected()
-        binding.recyclerView.alpha = 1.0f
-        binding.textView.alpha = 1.0f
+        recyclerView.alpha = 1.0f
+        textView.alpha = 1.0f
     }
 
     override fun onViewHolderDeselected() {
         super.onViewHolderDeselected()
-        binding.recyclerView.alpha = 0.5f
-        binding.textView.alpha = 0.5f
+        recyclerView.alpha = 0.5f
+        textView.alpha = 0.5f
     }
 
     fun onAttachedToWindow() {}
@@ -81,7 +87,7 @@ class ListViewHolder(private val binding: AdapterListBinding) :
         recyclerView.apply {
             addItemDecoration(
                 LinearMarginDecoration.createHorizontal(
-                    horizontalMargin = binding.root.context.resources.getDimensionPixelOffset(
+                    horizontalMargin = itemView.resources.getDimensionPixelOffset(
                         R.dimen.item_spacing
                     ) / 2
                 )

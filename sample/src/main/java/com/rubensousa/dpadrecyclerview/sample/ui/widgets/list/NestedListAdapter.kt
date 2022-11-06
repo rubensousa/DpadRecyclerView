@@ -20,13 +20,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListBinding
+import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 
 class NestedListAdapter(
     private val stateHolder: DpadStateHolder,
-    private val onItemClickListener: ItemViewHolder.ItemClickListener) :
-    ListAdapter<ListModel, ListViewHolder>(DIFF_CALLBACK) {
+    private val onItemClickListener: ItemViewHolder.ItemClickListener
+) : ListAdapter<ListModel, ListViewHolder>(DIFF_CALLBACK) {
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListModel>() {
@@ -41,9 +41,27 @@ class NestedListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
+        val layoutId: Int
+        val itemLayoutId: Int
+        if (viewType == ListTypes.LIST_CENTER) {
+            layoutId = R.layout.adapter_list_center
+            itemLayoutId = R.layout.adapter_nested_item_center
+        } else {
+            layoutId = R.layout.adapter_list_start
+            itemLayoutId = R.layout.adapter_nested_item_start
+        }
         return ListViewHolder(
-            AdapterListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            LayoutInflater.from(parent.context).inflate(layoutId, parent, false),
+            itemLayoutId
         )
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        val item = getItem(position)
+        if (item.centerAligned) {
+            return ListTypes.LIST_CENTER
+        }
+        return ListTypes.LIST_START
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {

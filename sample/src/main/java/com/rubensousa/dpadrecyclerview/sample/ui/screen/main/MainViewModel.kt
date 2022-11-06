@@ -34,9 +34,7 @@ class MainViewModel : ViewModel() {
     val listState: LiveData<List<ListModel>> = listLiveData
 
     init {
-        for (i in 0 until 3) {
-            list.add(generateList("List $i"))
-        }
+        appendNewPage()
         listLiveData.postValue(ArrayList(list))
     }
 
@@ -51,21 +49,27 @@ class MainViewModel : ViewModel() {
 
         loadingStateLiveData.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
-            for (i in 0 until 2) {
-                list.add(generateList("List ${list.size}"))
-            }
+            appendNewPage()
             delay(1000L)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
 
     }
 
-    private fun generateList(title: String): ListModel {
+    private fun appendNewPage() {
+        repeat(3) {
+            list.add(generateList("List ${list.size}", centerAligned = true))
+            list.add(generateList("List ${list.size}"))
+            list.add(generateList("List ${list.size}"))
+        }
+    }
+
+    private fun generateList(title: String, centerAligned: Boolean = false): ListModel {
         val items = ArrayList<Int>()
         repeat(100) {
             items.add(it)
         }
-        return ListModel(title, items)
+        return ListModel(title, items, centerAligned)
     }
 
 

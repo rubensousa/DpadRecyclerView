@@ -51,7 +51,7 @@ class ListPlaceholderAdapter(
         if (show) {
             notifyItemRangeInserted(0, items)
         } else {
-            notifyItemRangeChanged(0, items)
+            notifyItemRangeRemoved(0, items)
         }
     }
 

@@ -24,7 +24,8 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 
 class ItemViewHolder(
     root: View,
-    private val textView: TextView
+    private val textView: TextView,
+    private val animateFocusChanges: Boolean = true
 ) : RecyclerView.ViewHolder(root), DpadViewHolder {
 
     private var clickListener: ItemClickListener? = null
@@ -35,6 +36,9 @@ class ItemViewHolder(
             clickListener?.onViewHolderClicked()
         }
         root.setOnFocusChangeListener { _, hasFocus ->
+            if (!animateFocusChanges) {
+                return@setOnFocusChangeListener
+            }
             if (hasFocus) {
                 grow()
             } else {

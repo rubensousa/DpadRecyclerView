@@ -16,4 +16,4 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
-data class ListModel(val title: String, val items: List<Int>)
+data class ListModel(val title: String, val items: List<Int>, val centerAligned: Boolean)

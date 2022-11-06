@@ -20,4 +20,6 @@ object ListTypes {
     const val LOADING = 0
     const val HEADER = 1
     const val ITEM = 2
+    const val LIST_CENTER = 3
+    const val LIST_START = 4
 }
