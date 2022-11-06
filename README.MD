@@ -40,31 +40,33 @@ Features still planned:
 - setScrollEnabled
 - setSelectedSubPosition with `ViewHolderTask`
 - Custom sub position parent alignment with `ViewHolderAlignment`
+- State saving for nested lists
 
-## Migrating from Leanback
+## How to use
 
-I tried to keep the public API of `DpadRecyclerView` really similar to the one of `BaseGridView`. The migration should be pretty straightforward
-See this for more details: https://github.com/rubensousa/DpadRecyclerView/wiki/Migrating-from-Leanback
+- Migrating from Leanback's BaseGridView: https://github.com/rubensousa/DpadRecyclerView/wiki/Migrating-from-Leanback's-BaseGridView
 
-## XML Attributes
+I tried to keep the public API of `DpadRecyclerView` really similar to the one of `BaseGridView`. The migration should be pretty straightforward.
 
-See: https://github.com/rubensousa/DpadRecyclerView/wiki/XML-Attributes
+- XML Attributes: https://github.com/rubensousa/DpadRecyclerView/wiki/XML-Attributes
 
-## View Alignment
+- View Alignment: https://github.com/rubensousa/DpadRecyclerView/wiki/Customize-View-Alignment
 
-See: https://github.com/rubensousa/DpadRecyclerView/wiki/Customize-View-Alignment
-
-## Compose Interoperability
-
-See: https://github.com/rubensousa/DpadRecyclerView/wiki/Compose-Interoperability
+- Compose Interoperability: https://github.com/rubensousa/DpadRecyclerView/wiki/Compose-Interoperability
 
 ## Testing
 
-See: https://github.com/rubensousa/DpadRecyclerView/wiki/Testing
+See this for more details: https://github.com/rubensousa/DpadRecyclerView/wiki/Testing
 
 ## Sample app
 
 Check the sample app for a complete example of integration of this library.
+
+![image](https://user-images.githubusercontent.com/10662096/200150069-63d3fa41-cf21-4d39-9d2d-d58de87e344e.png)
+
+
+![image](https://user-images.githubusercontent.com/10662096/200150031-dc76c90a-1d98-4035-bbc1-d57420e976de.png)
+
 
 ## License
 
