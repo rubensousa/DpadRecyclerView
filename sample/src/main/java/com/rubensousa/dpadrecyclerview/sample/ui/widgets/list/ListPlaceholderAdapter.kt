@@ -1,4 +1,20 @@
-package com.rubensousa.dpadrecyclerview.sample.list
+/*
+ * Copyright 2022 Rúben Sousa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +34,8 @@ class ListPlaceholderAdapter(
         val view = LayoutInflater.from(parent.context).inflate(
             layoutId, parent, false
         )
-        view.isFocusableInTouchMode = focusPlaceholders
         view.isFocusable = focusPlaceholders
+        view.isFocusableInTouchMode = focusPlaceholders
         return VH(view)
     }
 
@@ -28,12 +44,14 @@ class ListPlaceholderAdapter(
     }
 
     fun show(enabled: Boolean) {
-        val wasShowing = show
+        if (enabled == show) {
+            return
+        }
         show = enabled
-        if (!wasShowing && show) {
+        if (show) {
             notifyItemRangeInserted(0, items)
-        } else if (wasShowing && !show) {
-            notifyItemRangeRemoved(0, items)
+        } else {
+            notifyItemRangeChanged(0, items)
         }
     }
 
