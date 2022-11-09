@@ -28,6 +28,34 @@ class TvSelectionState {
     var subPosition: Int = 0
         private set
 
+    // TODO
+    fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
+
+    }
+
+    // TODO
+    fun onItemsChanged(recyclerView: RecyclerView) {
+
+    }
+
+    // TODO
+    fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
+
+    }
+
+    // TODO
+    fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
+
+    }
+
+    // TODO
+    fun onAdapterChanged(
+        oldAdapter: RecyclerView.Adapter<*>?,
+        newAdapter: RecyclerView.Adapter<*>?
+    ) {
+
+    }
+
     fun onSaveInstanceState(): Parcelable {
         return SavedState(position)
     }

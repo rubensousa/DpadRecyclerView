@@ -94,6 +94,16 @@ class TvLayoutArchitect(
         viewBounds.set(viewLeft, viewTop, viewRight, viewBottom)
     }
 
+    // TODO
+    fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
+
+    }
+
+    // TODO
+    fun onLayoutCompleted(state: RecyclerView.State?) {
+
+    }
+
     fun getDecoratedLeft(child: View, decoratedLeft: Int): Int {
         return decoratedLeft + getLayoutParams(child).leftInset
     }
@@ -121,5 +131,6 @@ class TvLayoutArchitect(
     private fun getLayoutParams(child: View): DpadLayoutParams {
         return child.layoutParams as DpadLayoutParams
     }
+
 
 }

@@ -36,6 +36,7 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
     private val layoutInfo = TvLayoutInfo(config)
     private val layoutArchitect = TvLayoutArchitect(config, layoutInfo)
     private val layoutScroller = TvLayoutScroller(layoutArchitect)
+    private val focusFinder = TvLayoutFocusFinder(config, layoutInfo)
     private val selectionState = TvSelectionState()
     private val accessibilityHelper = TvLayoutAccessibility(
         this, config, layoutInfo, selectionState, layoutScroller
@@ -44,6 +45,7 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
 
     fun setDpadRecyclerView(recyclerView: DpadRecyclerView?) {
         dpadRecyclerView = recyclerView
+        focusFinder.setRecyclerView(recyclerView)
         accessibilityHelper.setRecyclerView(recyclerView)
         layoutInfo.setRecyclerView(recyclerView)
     }
@@ -93,14 +95,12 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
 
     override fun supportsPredictiveItemAnimations(): Boolean = true
 
-    // TODO
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
-
+        layoutArchitect.onLayoutChildren(recycler, state)
     }
 
-    // TODO
     override fun onLayoutCompleted(state: RecyclerView.State?) {
-        // Do stuff
+        layoutArchitect.onLayoutCompleted(state)
     }
 
     // TODO
@@ -158,57 +158,49 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
 
     }
 
-    // TODO
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        super.onItemsAdded(recyclerView, positionStart, itemCount)
+        selectionState.onItemsAdded(recyclerView, positionStart, itemCount)
     }
 
-    // TODO
     override fun onItemsChanged(recyclerView: RecyclerView) {
-        super.onItemsChanged(recyclerView)
+        selectionState.onItemsChanged(recyclerView)
     }
 
-    // TODO
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        super.onItemsRemoved(recyclerView, positionStart, itemCount)
+        selectionState.onItemsRemoved(recyclerView, positionStart, itemCount)
     }
 
-    // TODO
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
-        super.onItemsMoved(recyclerView, from, to, itemCount)
+        selectionState.onItemsMoved(recyclerView, from, to, itemCount)
     }
 
-    // TODO
     override fun onAdapterChanged(
         oldAdapter: RecyclerView.Adapter<*>?,
         newAdapter: RecyclerView.Adapter<*>?
     ) {
-        super.onAdapterChanged(oldAdapter, newAdapter)
+        selectionState.onAdapterChanged(oldAdapter, newAdapter)
     }
 
-    // TODO
     override fun onRequestChildFocus(
         parent: RecyclerView,
         state: RecyclerView.State,
         child: View,
         focused: View?
     ): Boolean {
-        return super.onRequestChildFocus(parent, state, child, focused)
+        return focusFinder.onRequestChildFocus(parent, state, child, focused)
     }
 
-    // TODO
     override fun onInterceptFocusSearch(focused: View, direction: Int): View? {
-        return super.onInterceptFocusSearch(focused, direction)
+        return focusFinder.onInterceptFocusSearch(focused, direction)
     }
 
-    // TODO
     override fun onAddFocusables(
         recyclerView: RecyclerView,
         views: ArrayList<View>,
         direction: Int,
         focusableMode: Int
     ): Boolean {
-        return super.onAddFocusables(recyclerView, views, direction, focusableMode)
+        return focusFinder.onAddFocusables(recyclerView, views, direction, focusableMode)
     }
 
     // Disabled since only this LayoutManager knows how to position views
