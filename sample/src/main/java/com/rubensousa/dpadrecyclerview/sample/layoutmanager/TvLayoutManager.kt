@@ -35,11 +35,11 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
     private val config = TvLayoutConfiguration()
     private val layoutInfo = TvLayoutInfo(config)
     private val layoutArchitect = TvLayoutArchitect(config, layoutInfo)
-    private val layoutScroller = TvLayoutScroller(layoutArchitect)
+    private val scroller = TvLayoutScroller(layoutArchitect)
     private val focusFinder = TvLayoutFocusFinder(config, layoutInfo)
     private val selectionState = TvSelectionState()
     private val accessibilityHelper = TvLayoutAccessibility(
-        this, config, layoutInfo, selectionState, layoutScroller
+        this, config, layoutInfo, selectionState, scroller
     )
     private var dpadRecyclerView: DpadRecyclerView? = null
 
@@ -121,41 +121,32 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
         super.collectInitialPrefetchPositions(adapterItemCount, layoutPrefetchRegistry)
     }
 
-    // TODO
     override fun scrollHorizontallyBy(
         dx: Int,
         recycler: RecyclerView.Recycler?,
         state: RecyclerView.State?
-    ): Int {
-        return 0
-    }
+    ): Int = scroller.scrollHorizontallyBy(dx, recycler, state)
 
-    // TODO
     override fun scrollVerticallyBy(
         dy: Int,
         recycler: RecyclerView.Recycler?,
         state: RecyclerView.State?
-    ): Int {
-        return 0
-    }
+    ): Int = scroller.scrollVerticallyBy(dy, recycler, state)
 
-    // TODO
     override fun scrollToPosition(position: Int) {
-
+        scroller.scrollToPosition(position)
     }
 
-    // TODO
     override fun smoothScrollToPosition(
         recyclerView: RecyclerView?,
         state: RecyclerView.State?,
         position: Int
     ) {
-        super.smoothScrollToPosition(recyclerView, state, position)
+        scroller.smoothScrollToPosition(recyclerView, state, position)
     }
 
-    // TODO
     override fun startSmoothScroll(smoothScroller: RecyclerView.SmoothScroller?) {
-
+        scroller.startSmoothScroll(smoothScroller)
     }
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {

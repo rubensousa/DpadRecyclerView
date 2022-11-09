@@ -16,7 +16,46 @@
 
 package com.rubensousa.dpadrecyclerview.sample.layoutmanager
 
+import androidx.recyclerview.widget.RecyclerView
+
 class TvLayoutScroller(private val layoutArchitect: TvLayoutArchitect) {
+
+    // TODO
+    fun scrollHorizontallyBy(
+        dx: Int,
+        recycler: RecyclerView.Recycler?,
+        state: RecyclerView.State?
+    ): Int {
+        return 0
+    }
+
+    // TODO
+    fun scrollVerticallyBy(
+        dy: Int,
+        recycler: RecyclerView.Recycler?,
+        state: RecyclerView.State?
+    ): Int {
+        return 0
+    }
+
+    // TODO
+    fun scrollToPosition(position: Int) {
+
+    }
+
+    // TODO
+    fun smoothScrollToPosition(
+        recyclerView: RecyclerView?,
+        state: RecyclerView.State?,
+        position: Int
+    ) {
+
+    }
+
+    // TODO
+    fun startSmoothScroll(smoothScroller: RecyclerView.SmoothScroller?) {
+
+    }
 
     // TODO
     fun dispatchPendingMovement(forward: Boolean) {
@@ -32,5 +71,6 @@ class TvLayoutScroller(private val layoutArchitect: TvLayoutArchitect) {
     fun dispatchSelectionMoves(preventScroll: Boolean, moves: Int): Int {
         return moves
     }
+
 
 }
