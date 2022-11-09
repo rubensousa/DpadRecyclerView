@@ -54,6 +54,10 @@ class TvLayoutConfiguration {
     var isScrollEnabled = true
         private set
 
+    // Number of items to prefetch when first coming on screen with new data
+    var initialPrefetchItemCount = 4
+        private set
+
     fun setGravity(newGravity: Int) {
         gravity = newGravity
     }

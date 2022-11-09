@@ -33,11 +33,11 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 class TvLayoutManager : RecyclerView.LayoutManager() {
 
     private val config = TvLayoutConfiguration()
+    private val selectionState = TvSelectionState()
     private val layoutInfo = TvLayoutInfo(config)
-    private val layoutArchitect = TvLayoutArchitect(config, layoutInfo)
+    private val layoutArchitect = TvLayoutArchitect(config, selectionState, layoutInfo)
     private val scroller = TvLayoutScroller(layoutArchitect)
     private val focusFinder = TvLayoutFocusFinder(config, layoutInfo)
-    private val selectionState = TvSelectionState()
     private val accessibilityHelper = TvLayoutAccessibility(
         this, config, layoutInfo, selectionState, scroller
     )
@@ -45,6 +45,7 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
 
     fun setDpadRecyclerView(recyclerView: DpadRecyclerView?) {
         dpadRecyclerView = recyclerView
+        layoutArchitect.setRecyclerView(recyclerView)
         focusFinder.setRecyclerView(recyclerView)
         accessibilityHelper.setRecyclerView(recyclerView)
         layoutInfo.setRecyclerView(recyclerView)
@@ -103,22 +104,20 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
         layoutArchitect.onLayoutCompleted(state)
     }
 
-    // TODO
     override fun collectAdjacentPrefetchPositions(
         dx: Int,
         dy: Int,
         state: RecyclerView.State?,
-        layoutPrefetchRegistry: LayoutPrefetchRegistry?
+        layoutPrefetchRegistry: LayoutPrefetchRegistry
     ) {
-        super.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
+        layoutArchitect.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
     }
 
-    // TODO
     override fun collectInitialPrefetchPositions(
         adapterItemCount: Int,
-        layoutPrefetchRegistry: LayoutPrefetchRegistry?
+        layoutPrefetchRegistry: LayoutPrefetchRegistry
     ) {
-        super.collectInitialPrefetchPositions(adapterItemCount, layoutPrefetchRegistry)
+        layoutArchitect.collectInitialPrefetchPositions(adapterItemCount, layoutPrefetchRegistry)
     }
 
     override fun scrollHorizontallyBy(

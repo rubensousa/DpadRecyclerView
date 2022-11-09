@@ -24,11 +24,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import kotlin.math.max
+import kotlin.math.min
 
 class TvLayoutArchitect(
     private val configuration: TvLayoutConfiguration,
+    private val selectionState: TvSelectionState,
     private val layoutInfo: TvLayoutInfo
 ) {
+
+    private var dpadRecyclerView: DpadRecyclerView? = null
+
+    fun setRecyclerView(recyclerView: DpadRecyclerView?) {
+        dpadRecyclerView = recyclerView
+    }
 
     fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
         return layoutParams is DpadLayoutParams
@@ -102,6 +112,37 @@ class TvLayoutArchitect(
     // TODO
     fun onLayoutCompleted(state: RecyclerView.State?) {
 
+    }
+
+    // TODO
+    fun collectAdjacentPrefetchPositions(
+        dx: Int,
+        dy: Int,
+        state: RecyclerView.State?,
+        layoutPrefetchRegistry: RecyclerView.LayoutManager.LayoutPrefetchRegistry
+    ) {
+
+    }
+
+    fun collectInitialPrefetchPositions(
+        adapterItemCount: Int,
+        layoutPrefetchRegistry: RecyclerView.LayoutManager.LayoutPrefetchRegistry
+    ) {
+        val prefetchCount: Int = configuration.initialPrefetchItemCount
+        if (adapterItemCount != 0 && prefetchCount != 0) {
+            // Prefetch items centered around the selected position
+            val initialPosition = max(
+                0, min(
+                    selectionState.position - (prefetchCount - 1) / 2,
+                    adapterItemCount - prefetchCount
+                )
+            )
+            var i = initialPosition
+            while (i < adapterItemCount && i < initialPosition + prefetchCount) {
+                layoutPrefetchRegistry.addPosition(i, 0)
+                i++
+            }
+        }
     }
 
     fun getDecoratedLeft(child: View, decoratedLeft: Int): Int {
