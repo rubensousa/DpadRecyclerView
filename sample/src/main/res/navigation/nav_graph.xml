@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/list_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.MainFragment">
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.main.MainFragment">
 
         <action
             android:id="@+id/open_detail"
@@ -16,6 +16,6 @@
 
     <fragment
         android:id="@+id/detail_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.DetailFragment" />
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.detail.DetailFragment" />
 
 </navigation>
