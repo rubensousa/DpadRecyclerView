@@ -35,6 +35,7 @@ android {
 
 dependencies {
     implementation project (":dpadrecyclerview")
+    implementation "androidx.leanback:leanback-grid:1.0.0-alpha01"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
