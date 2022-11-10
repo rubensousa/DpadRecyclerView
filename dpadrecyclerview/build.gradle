@@ -53,6 +53,7 @@ android {
 
 dependencies {
     implementation "androidx.recyclerview:recyclerview:$versions.recyclerview"
+    implementation "androidx.leanback:leanback-grid:1.0.0-alpha01"
     testImplementation "junit:junit:$testVersions.junit"
     testImplementation "com.google.truth:truth:$testVersions.truth"
     debugImplementation "androidx.fragment:fragment-testing:$testVersions.fragment"
