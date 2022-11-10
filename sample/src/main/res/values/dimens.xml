@@ -4,5 +4,6 @@
     <dimen name="list_margin_start">60dp</dimen>
     <dimen name="sub_position_0_offset">160dp</dimen>
     <dimen name="adapter_item_height">200dp</dimen>
+    <dimen name="adapter_small_item_height">100dp</dimen>
 
 </resources>

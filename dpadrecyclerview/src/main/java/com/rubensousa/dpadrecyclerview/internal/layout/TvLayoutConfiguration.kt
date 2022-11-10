@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.layoutmanager
+package com.rubensousa.dpadrecyclerview.internal.layout
 
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
@@ -54,9 +54,22 @@ class TvLayoutConfiguration {
     var isScrollEnabled = true
         private set
 
+    /**
+     * If true, focus search won't work and there won't be selection changes from any key event
+     */
+    var isFocusSearchDisabled = false
+        private set
+
     // Number of items to prefetch when first coming on screen with new data
     var initialPrefetchItemCount = 4
         private set
+
+    var isSmoothFocusChangesEnabled = true
+        private set
+
+    fun setFocusSearchDisabled(isDisabled: Boolean){
+        isFocusSearchDisabled = isDisabled
+    }
 
     fun setGravity(newGravity: Int) {
         gravity = newGravity

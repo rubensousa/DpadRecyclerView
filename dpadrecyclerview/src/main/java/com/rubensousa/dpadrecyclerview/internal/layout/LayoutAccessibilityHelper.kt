@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.layoutmanager
+package com.rubensousa.dpadrecyclerview.internal.layout
 
 import android.os.Build
 import android.os.Bundle
@@ -26,18 +26,20 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionIn
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
-class TvLayoutAccessibility(
+/**
+ * Helper for dealing with accessibility
+ */
+internal class LayoutAccessibilityHelper(
     private val layoutManager: LayoutManager,
     private val configuration: TvLayoutConfiguration,
     private val layoutInfo: TvLayoutInfo,
     private val selectionState: TvSelectionState,
     private val scroller: TvLayoutScroller
 ) {
-    private var dpadRecyclerView: DpadRecyclerView? = null
+    private var dpadRecyclerView: RecyclerView? = null
 
-    fun setRecyclerView(recyclerView: DpadRecyclerView?) {
+    fun setRecyclerView(recyclerView: RecyclerView?) {
         dpadRecyclerView = recyclerView
     }
 

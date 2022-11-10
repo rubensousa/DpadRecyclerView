@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.internal
 import android.view.FocusFinder
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLayoutManager
 import com.rubensousa.dpadrecyclerview.FocusableDirection
@@ -85,7 +84,7 @@ internal class DpadFocusManager(
         }
         val focusFinder = FocusFinder.getInstance()
         var result: View? = null
-        val movement: ScrollMovement? = calculateMovement(
+        val movement: ScrollMovement? = ScrollMovementCalculator.calculate(
             layout.isHorizontal(), layout.isRTL(), direction
         )
         if (direction == View.FOCUS_FORWARD || direction == View.FOCUS_BACKWARD) {
@@ -235,7 +234,7 @@ internal class DpadFocusManager(
         direction: Int,
         focusableMode: Int
     ) {
-        val movement: ScrollMovement = calculateMovement(
+        val movement = ScrollMovementCalculator.calculate(
             layout.isHorizontal(),
             layout.isRTL(),
             direction
@@ -574,43 +573,5 @@ internal class DpadFocusManager(
     private fun isViewFocusable(view: View): Boolean {
         return view.visibility == View.VISIBLE && view.hasFocusable() && view.isFocusable
     }
-
-    @VisibleForTesting
-    fun calculateMovement(isHorizontal: Boolean, isRTL: Boolean, direction: Int): ScrollMovement? {
-        return if (isHorizontal) {
-            when (direction) {
-                View.FOCUS_LEFT -> {
-                    if (isRTL) ScrollMovement.NEXT_ROW else ScrollMovement.PREVIOUS_ROW
-                }
-                View.FOCUS_RIGHT -> {
-                    if (isRTL) ScrollMovement.PREVIOUS_ROW else ScrollMovement.NEXT_ROW
-                }
-                View.FOCUS_UP -> ScrollMovement.PREVIOUS_COLUMN
-                View.FOCUS_DOWN -> ScrollMovement.NEXT_COLUMN
-                else -> null
-            }
-        } else {
-            when (direction) {
-                View.FOCUS_LEFT -> {
-                    if (isRTL) ScrollMovement.NEXT_COLUMN else ScrollMovement.PREVIOUS_COLUMN
-                }
-                View.FOCUS_RIGHT -> {
-                    if (isRTL) ScrollMovement.PREVIOUS_COLUMN else ScrollMovement.NEXT_COLUMN
-                }
-                View.FOCUS_UP -> ScrollMovement.PREVIOUS_ROW
-                View.FOCUS_DOWN -> ScrollMovement.NEXT_ROW
-                else -> null
-            }
-        }
-    }
-
-    @VisibleForTesting
-    enum class ScrollMovement {
-        PREVIOUS_ROW,
-        NEXT_ROW,
-        PREVIOUS_COLUMN,
-        NEXT_COLUMN
-    }
-
 
 }

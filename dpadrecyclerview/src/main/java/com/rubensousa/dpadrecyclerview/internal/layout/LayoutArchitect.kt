@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.layoutmanager
+package com.rubensousa.dpadrecyclerview.internal.layout
 
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import kotlin.math.max
 import kotlin.math.min
 
-class TvLayoutArchitect(
+class LayoutArchitect(
+    private val layoutManager: LayoutManager,
     private val configuration: TvLayoutConfiguration,
     private val selectionState: TvSelectionState,
     private val layoutInfo: TvLayoutInfo
 ) {
 
-    private var dpadRecyclerView: DpadRecyclerView? = null
+    private val rowArchitect = RowArchitect(configuration, layoutManager, layoutInfo)
+    private var dpadRecyclerView: RecyclerView? = null
 
-    fun setRecyclerView(recyclerView: DpadRecyclerView?) {
+    fun setRecyclerView(recyclerView: RecyclerView?) {
         dpadRecyclerView = recyclerView
     }
 
@@ -71,42 +72,33 @@ class TvLayoutArchitect(
         }
     }
 
-    fun layoutDecoratedWithMargins(
-        left: Int, top: Int, right: Int, bottom: Int,
-        width: Int, height: Int, viewBounds: Rect
-    ) {
-        var viewLeft = left
-        var viewTop = top
-        var viewRight = right
-        var viewBottom = bottom
-        val gravity = configuration.gravity
-        if (configuration.isHorizontal() && gravity != Gravity.TOP && configuration.spanCount == 1) {
-            if (gravity == Gravity.CENTER) {
-                val viewHeight = viewBottom - viewTop
-                viewTop = height / 2 - viewHeight / 2
-                viewBottom = viewTop + viewHeight
-            } else if (gravity == Gravity.BOTTOM) {
-                val viewHeight = viewBottom - viewTop
-                viewBottom = height
-                viewTop = viewBottom - viewHeight
-            }
-        } else if (configuration.isVertical() && gravity != Gravity.START && configuration.spanCount == 1) {
-            if (gravity == Gravity.CENTER) {
-                val viewWidth = viewRight - viewLeft
-                viewLeft = width / 2 - viewWidth / 2
-                viewRight = viewLeft + viewWidth
-            } else if (gravity == Gravity.END) {
-                val viewWidth = viewRight - viewLeft
-                viewRight = width
-                viewLeft = viewRight - viewWidth
-            }
-        }
-        viewBounds.set(viewLeft, viewTop, viewRight, viewBottom)
-    }
-
     // TODO
-    fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
+    fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
+        // If we don't have any items, recycle them all
+        if (state.itemCount == 0) {
+            layoutManager.removeAndRecycleAllViews(recycler)
+            return
+        }
 
+        // Detach all existing views
+        layoutManager.detachAndScrapAttachedViews(recycler)
+
+        // TODO Use specific parent keyline alignment + child alignment
+        val keyline: Int
+        if (configuration.isHorizontal()) {
+            keyline = layoutManager.width / 2
+        } else {
+            keyline = layoutManager.height / 2
+        }
+
+        // TODO Use extraSpace configuration instead
+        val layoutLimit = keyline * 2
+        val anchorPosition = selectionState.position
+        rowArchitect.layout(anchorPosition, keyline, layoutLimit, state.itemCount, recycler)
+
+        if (!state.isPreLayout) {
+            layoutInfo.update()
+        }
     }
 
     // TODO
@@ -119,14 +111,14 @@ class TvLayoutArchitect(
         dx: Int,
         dy: Int,
         state: RecyclerView.State?,
-        layoutPrefetchRegistry: RecyclerView.LayoutManager.LayoutPrefetchRegistry
+        layoutPrefetchRegistry: LayoutManager.LayoutPrefetchRegistry
     ) {
 
     }
 
     fun collectInitialPrefetchPositions(
         adapterItemCount: Int,
-        layoutPrefetchRegistry: RecyclerView.LayoutManager.LayoutPrefetchRegistry
+        layoutPrefetchRegistry: LayoutManager.LayoutPrefetchRegistry
     ) {
         val prefetchCount: Int = configuration.initialPrefetchItemCount
         if (adapterItemCount != 0 && prefetchCount != 0) {

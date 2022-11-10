@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.layoutmanager
+package com.rubensousa.dpadrecyclerview.internal.layout
 
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
 class TvSelectionState {
 
-    var position: Int = RecyclerView.NO_POSITION
+    var position: Int = 0
         private set
 
     var subPosition: Int = 0
@@ -54,6 +56,12 @@ class TvSelectionState {
         newAdapter: RecyclerView.Adapter<*>?
     ) {
 
+    }
+
+    fun update(position: Int, subPosition: Int) {
+        this.position = position
+        this.subPosition = subPosition
+        Log.i(DpadRecyclerView.TAG, "Selection state update: $position, $subPosition")
     }
 
     fun onSaveInstanceState(): Parcelable {

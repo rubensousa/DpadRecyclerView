@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.layoutmanager
+package com.rubensousa.dpadrecyclerview.internal.layout
 
 import android.content.Context
 import android.graphics.Rect
@@ -25,7 +25,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
 /**
  * Built from scratch for performance optimizations
@@ -34,16 +33,16 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
 
     private val config = TvLayoutConfiguration()
     private val selectionState = TvSelectionState()
-    private val layoutInfo = TvLayoutInfo(config)
-    private val layoutArchitect = TvLayoutArchitect(config, selectionState, layoutInfo)
-    private val scroller = TvLayoutScroller(layoutArchitect)
-    private val focusFinder = TvLayoutFocusFinder(config, layoutInfo)
-    private val accessibilityHelper = TvLayoutAccessibility(
+    private val layoutInfo = TvLayoutInfo(this, config)
+    private val layoutArchitect = LayoutArchitect(this, config, selectionState, layoutInfo)
+    private val scroller = TvLayoutScroller(this, layoutArchitect, layoutInfo, selectionState)
+    private val focusFinder = TvLayoutFocusFinder(this, config, scroller, layoutInfo, selectionState)
+    private val accessibilityHelper = LayoutAccessibilityHelper(
         this, config, layoutInfo, selectionState, scroller
     )
-    private var dpadRecyclerView: DpadRecyclerView? = null
+    private var dpadRecyclerView: RecyclerView? = null
 
-    fun setDpadRecyclerView(recyclerView: DpadRecyclerView?) {
+    fun setDpadRecyclerView(recyclerView: RecyclerView?) {
         dpadRecyclerView = recyclerView
         layoutArchitect.setRecyclerView(recyclerView)
         focusFinder.setRecyclerView(recyclerView)
@@ -96,11 +95,11 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
 
     override fun supportsPredictiveItemAnimations(): Boolean = true
 
-    override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
+    override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         layoutArchitect.onLayoutChildren(recycler, state)
     }
 
-    override fun onLayoutCompleted(state: RecyclerView.State?) {
+    override fun onLayoutCompleted(state: RecyclerView.State) {
         layoutArchitect.onLayoutCompleted(state)
     }
 

@@ -1,8 +1,7 @@
 package com.rubensousa.dpadrecyclerview.sample
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.rubensousa.dpadrecyclerview.sample.R
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -10,4 +9,5 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
+
 }

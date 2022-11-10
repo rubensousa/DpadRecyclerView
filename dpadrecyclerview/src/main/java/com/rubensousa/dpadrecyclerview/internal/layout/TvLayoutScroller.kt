@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.layoutmanager
+package com.rubensousa.dpadrecyclerview.internal.layout
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class TvLayoutScroller(private val layoutArchitect: TvLayoutArchitect) {
+class TvLayoutScroller(
+    private val layoutManager: TvLayoutManager,
+    private val layoutArchitect: LayoutArchitect,
+    private val layoutInfo: TvLayoutInfo,
+    private val selectionState: TvSelectionState
+) {
+
+    companion object {
+        const val SCROLL_NONE = 0
+        const val SCROLL_START = -1
+        const val SCROLL_END = 1
+    }
+
+    var isSelectionInProgress = false
+        private set
 
     // TODO
     fun scrollHorizontallyBy(
@@ -70,6 +85,27 @@ class TvLayoutScroller(private val layoutArchitect: TvLayoutArchitect) {
     // TODO
     fun dispatchSelectionMoves(preventScroll: Boolean, moves: Int): Int {
         return moves
+    }
+
+    // TODO
+    fun scrollToView(
+        recyclerView: RecyclerView,
+        viewHolderView: View?,
+        subPositionView: View?,
+        smooth: Boolean
+    ) {
+        if (viewHolderView == null) {
+            selectionState.update(
+                position = RecyclerView.NO_POSITION,
+                subPosition = 0
+            )
+            return
+        }
+        selectionState.update(
+            position = layoutInfo.getAdapterPositionOfView(viewHolderView),
+            subPosition = 0
+        )
+        layoutManager.requestLayout()
     }
 
 
