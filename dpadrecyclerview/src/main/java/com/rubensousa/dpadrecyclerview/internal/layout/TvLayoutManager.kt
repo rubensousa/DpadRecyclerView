@@ -35,8 +35,12 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
     private val selectionState = TvSelectionState()
     private val layoutInfo = TvLayoutInfo(this, config)
     private val layoutArchitect = LayoutArchitect(this, config, selectionState, layoutInfo)
-    private val scroller = TvLayoutScroller(this, layoutArchitect, layoutInfo, selectionState)
-    private val focusFinder = TvLayoutFocusFinder(this, config, scroller, layoutInfo, selectionState)
+    private val scroller = TvLayoutScroller(
+        this, config, layoutArchitect, layoutInfo, selectionState
+    )
+    private val focusFinder = TvLayoutFocusFinder(
+        this, config, scroller, layoutInfo, selectionState
+    )
     private val accessibilityHelper = LayoutAccessibilityHelper(
         this, config, layoutInfo, selectionState, scroller
     )
@@ -46,7 +50,6 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
         dpadRecyclerView = recyclerView
         layoutArchitect.setRecyclerView(recyclerView)
         focusFinder.setRecyclerView(recyclerView)
-        accessibilityHelper.setRecyclerView(recyclerView)
         layoutInfo.setRecyclerView(recyclerView)
     }
 
@@ -121,14 +124,14 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
 
     override fun scrollHorizontallyBy(
         dx: Int,
-        recycler: RecyclerView.Recycler?,
-        state: RecyclerView.State?
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
     ): Int = scroller.scrollHorizontallyBy(dx, recycler, state)
 
     override fun scrollVerticallyBy(
         dy: Int,
-        recycler: RecyclerView.Recycler?,
-        state: RecyclerView.State?
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
     ): Int = scroller.scrollVerticallyBy(dy, recycler, state)
 
     override fun scrollToPosition(position: Int) {
@@ -245,7 +248,9 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
         action: Int,
         args: Bundle?
     ): Boolean {
-        return accessibilityHelper.performAccessibilityAction(recycler, state, action, args)
+        return accessibilityHelper.performAccessibilityAction(
+            dpadRecyclerView, recycler, state, action, args
+        )
     }
 
 }

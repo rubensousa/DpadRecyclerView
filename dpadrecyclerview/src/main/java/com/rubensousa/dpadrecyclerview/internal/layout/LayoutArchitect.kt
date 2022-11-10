@@ -27,7 +27,7 @@ import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 import kotlin.math.max
 import kotlin.math.min
 
-class LayoutArchitect(
+internal class LayoutArchitect(
     private val layoutManager: LayoutManager,
     private val configuration: TvLayoutConfiguration,
     private val selectionState: TvSelectionState,

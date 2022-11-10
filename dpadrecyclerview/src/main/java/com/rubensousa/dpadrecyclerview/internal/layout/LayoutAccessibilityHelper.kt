@@ -37,11 +37,6 @@ internal class LayoutAccessibilityHelper(
     private val selectionState: TvSelectionState,
     private val scroller: TvLayoutScroller
 ) {
-    private var dpadRecyclerView: RecyclerView? = null
-
-    fun setRecyclerView(recyclerView: RecyclerView?) {
-        dpadRecyclerView = recyclerView
-    }
 
     fun getRowCountForAccessibility(
         recycler: RecyclerView.Recycler,
@@ -138,6 +133,7 @@ internal class LayoutAccessibilityHelper(
     }
 
     fun performAccessibilityAction(
+        recyclerView: RecyclerView?,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
         action: Int,
@@ -162,7 +158,7 @@ internal class LayoutAccessibilityHelper(
             // will try to jump focus out of the RecyclerView.
             // We know at this point that either focusOutFront or focusOutEnd is true (or both),
             // because otherwise, we never hit ACTION_SCROLL_BACKWARD/FORWARD here.
-            sendViewScrolledAccessibilityEvent()
+            sendViewScrolledAccessibilityEvent(recyclerView)
         } else {
             when (translatedAction) {
                 AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD -> {
@@ -206,9 +202,9 @@ internal class LayoutAccessibilityHelper(
         return action
     }
 
-    private fun sendViewScrolledAccessibilityEvent() {
+    private fun sendViewScrolledAccessibilityEvent(recyclerView: RecyclerView?) {
         val event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_SCROLLED)
-        dpadRecyclerView?.let { recyclerView ->
+        recyclerView?.let { recyclerView ->
             recyclerView.onInitializeAccessibilityEvent(event)
             recyclerView.requestSendAccessibilityEvent(recyclerView, event)
         }

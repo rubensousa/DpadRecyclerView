@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovement
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovementCalculator
 
-class TvLayoutFocusFinder(
+internal class TvLayoutFocusFinder(
     private val layout: LayoutManager,
     private val configuration: TvLayoutConfiguration,
     private val scroller: TvLayoutScroller,

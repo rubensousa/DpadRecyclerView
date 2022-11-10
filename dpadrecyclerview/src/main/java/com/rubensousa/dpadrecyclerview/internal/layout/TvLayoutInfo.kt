@@ -27,7 +27,7 @@ import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
 @SuppressLint("LogNotTimber")
-class TvLayoutInfo(
+internal class TvLayoutInfo(
     private val layout: LayoutManager,
     private val configuration: TvLayoutConfiguration
 ) {

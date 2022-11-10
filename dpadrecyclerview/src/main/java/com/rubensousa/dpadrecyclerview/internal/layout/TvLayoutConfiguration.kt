@@ -19,7 +19,7 @@ package com.rubensousa.dpadrecyclerview.internal.layout
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 
-class TvLayoutConfiguration {
+internal class TvLayoutConfiguration {
 
     var orientation: Int = RecyclerView.VERTICAL
         private set

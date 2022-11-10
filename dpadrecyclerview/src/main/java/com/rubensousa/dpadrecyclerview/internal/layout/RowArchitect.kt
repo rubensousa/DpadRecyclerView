@@ -22,7 +22,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 
-class RowArchitect(
+internal class RowArchitect(
     private val configuration: TvLayoutConfiguration,
     private val layout: LayoutManager,
     private val layoutInfo: TvLayoutInfo,

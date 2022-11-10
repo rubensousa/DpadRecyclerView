@@ -19,8 +19,9 @@ package com.rubensousa.dpadrecyclerview.internal.layout
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class TvLayoutScroller(
+internal class TvLayoutScroller(
     private val layoutManager: TvLayoutManager,
+    private val configuration: TvLayoutConfiguration,
     private val layoutArchitect: LayoutArchitect,
     private val layoutInfo: TvLayoutInfo,
     private val selectionState: TvSelectionState
@@ -35,21 +36,35 @@ class TvLayoutScroller(
     var isSelectionInProgress = false
         private set
 
-    // TODO
     fun scrollHorizontallyBy(
         dx: Int,
-        recycler: RecyclerView.Recycler?,
-        state: RecyclerView.State?
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
     ): Int {
-        return 0
+        if (configuration.isVertical()) {
+            return 0
+        }
+        return scrollBy(dx, recycler, state)
     }
 
-    // TODO
     fun scrollVerticallyBy(
         dy: Int,
-        recycler: RecyclerView.Recycler?,
-        state: RecyclerView.State?
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
     ): Int {
+        if (configuration.isHorizontal()) {
+            return 0
+        }
+        return scrollBy(dy, recycler, state)
+    }
+
+    private fun scrollBy(
+        offset: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State
+    ): Int {
+        if (layoutManager.childCount == 0 || offset == 0) {
+            return 0
+        }
+
         return 0
     }
 
@@ -107,6 +122,5 @@ class TvLayoutScroller(
         )
         layoutManager.requestLayout()
     }
-
 
 }
