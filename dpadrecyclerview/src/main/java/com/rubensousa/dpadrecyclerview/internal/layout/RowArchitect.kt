@@ -51,7 +51,7 @@ internal class RowArchitect(
     }
 
     private fun layoutAnchor(anchorPosition: Int, keyline: Int, recycler: Recycler) {
-        val view = addView(anchorPosition, recycler, start = true)
+        val view = addView(anchorPosition, recycler, LayoutDirection.START)
         layout.measureChildWithMargins(view, 0, 0)
         val size = layoutInfo.getMeasuredSize(view)
         val perpendicularSize = layoutInfo.getPerpendicularDecoratedSize(view)
@@ -78,7 +78,7 @@ internal class RowArchitect(
         var remainingSpace = calculateRemainingSpace(limit)
         var currentPosition = anchorPosition - 1
         while (remainingSpace >= 0 && currentPosition >= 0) {
-            val view = addView(currentPosition, recycler, start = true)
+            val view = addView(currentPosition, recycler, LayoutDirection.START)
             updateViewOffsetLocation(view, start = true)
             layoutView(view, viewOffsetLocation)
             currentPosition--
@@ -92,7 +92,7 @@ internal class RowArchitect(
         var remainingSpace = calculateRemainingSpace(limit)
         var currentPosition = anchorPosition + 1
         while (remainingSpace >= 0 && currentPosition < itemCount) {
-            val view = addView(currentPosition, recycler, start = false)
+            val view = addView(currentPosition, recycler, LayoutDirection.END)
             updateViewOffsetLocation(view, start = false)
             layoutView(view, viewOffsetLocation)
             currentPosition++
@@ -147,9 +147,9 @@ internal class RowArchitect(
         )
     }
 
-    private fun addView(position: Int, recycler: Recycler, start: Boolean = false): View {
+    private fun addView(position: Int, recycler: Recycler, direction: LayoutDirection): View {
         val view = recycler.getViewForPosition(position)
-        if (start) {
+        if (direction == LayoutDirection.START) {
             layout.addView(view, 0)
         } else {
             layout.addView(view)
