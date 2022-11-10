@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
-import com.rubensousa.dpadrecyclerview.internal.layout.TvLayoutManager
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.TvLayoutManager
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemGridBinding
 
 class CustomLayoutActivity : AppCompatActivity() {

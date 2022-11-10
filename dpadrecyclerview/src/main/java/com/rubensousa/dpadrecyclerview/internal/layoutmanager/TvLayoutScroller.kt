@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layout
+package com.rubensousa.dpadrecyclerview.internal.layoutmanager
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -64,8 +64,13 @@ internal class TvLayoutScroller(
         if (layoutManager.childCount == 0 || offset == 0) {
             return 0
         }
-
-        return 0
+        val direction = if (offset > 0) {
+            LayoutDirection.END
+        } else {
+            LayoutDirection.START
+        }
+        offsetChildren(offset)
+        return offset
     }
 
     // TODO
@@ -116,11 +121,25 @@ internal class TvLayoutScroller(
             )
             return
         }
+        // Todo get sub position
         selectionState.update(
             position = layoutInfo.getAdapterPositionOfView(viewHolderView),
             subPosition = 0
         )
         layoutManager.requestLayout()
+    }
+
+    private fun offsetChildren(offset: Int) {
+        val childCount: Int = layoutManager.childCount
+        if (configuration.isVertical()) {
+            for (i in 0 until childCount) {
+                layoutManager.getChildAt(i)?.offsetTopAndBottom(offset)
+            }
+        } else {
+            for (i in 0 until childCount) {
+                layoutManager.getChildAt(i)?.offsetLeftAndRight(offset)
+            }
+        }
     }
 
 }

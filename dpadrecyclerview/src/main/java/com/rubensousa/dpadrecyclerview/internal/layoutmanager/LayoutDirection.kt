@@ -1,4 +1,4 @@
-package com.rubensousa.dpadrecyclerview.internal.layout
+package com.rubensousa.dpadrecyclerview.internal.layoutmanager
 
 /**
  * Direction in which the layout is being filled.

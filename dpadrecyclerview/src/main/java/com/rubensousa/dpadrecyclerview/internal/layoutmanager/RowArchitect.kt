@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layout
+package com.rubensousa.dpadrecyclerview.internal.layoutmanager
 
 import android.graphics.Rect
 import android.view.Gravity
