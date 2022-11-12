@@ -286,10 +286,6 @@ class PivotLayoutManager : RecyclerView.LayoutManager() {
         state: RecyclerView.State,
         action: Int,
         args: Bundle?
-    ): Boolean {
-        return accessibilityHelper.performAccessibilityAction(
-            dpadRecyclerView, recycler, state, action, args
-        )
-    }
+    ): Boolean = accessibilityHelper.performAccessibilityAction(dpadRecyclerView, state, action)
 
 }

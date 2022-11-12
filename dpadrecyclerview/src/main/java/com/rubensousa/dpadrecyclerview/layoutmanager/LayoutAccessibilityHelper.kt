@@ -17,7 +17,6 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.os.Build
-import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
@@ -136,10 +135,8 @@ internal class LayoutAccessibilityHelper(
 
     fun performAccessibilityAction(
         recyclerView: RecyclerView?,
-        recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
-        action: Int,
-        args: Bundle?
+        action: Int
     ): Boolean {
         if (!configuration.isScrollEnabled) {
             // Consume request to avoid talkback focusing out of the RecyclerView
