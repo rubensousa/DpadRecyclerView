@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager
+package com.rubensousa.dpadrecyclerview.internal.layoutmanager.scroll
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.PivotLayoutManager
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.ViewSelector
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutArchitect
 
-internal class TvLayoutScroller(
-    private val layoutManager: TvLayoutManager,
-    private val configuration: TvLayoutConfiguration,
+internal class LayoutScroller(
+    private val layoutManager: PivotLayoutManager,
+    private val configuration: LayoutConfiguration,
     private val layoutArchitect: LayoutArchitect,
-    private val layoutInfo: TvLayoutInfo,
-    private val selectionState: TvSelectionState
+    private val layoutInfo: LayoutInfo,
+    private val viewSelector: ViewSelector
 ) {
 
     companion object {
@@ -64,13 +69,7 @@ internal class TvLayoutScroller(
         if (layoutManager.childCount == 0 || offset == 0) {
             return 0
         }
-        val direction = if (offset > 0) {
-            LayoutDirection.END
-        } else {
-            LayoutDirection.START
-        }
-        offsetChildren(offset)
-        return offset
+        return layoutArchitect.scroll(offset, recycler, state)
     }
 
     // TODO
@@ -115,31 +114,28 @@ internal class TvLayoutScroller(
         smooth: Boolean
     ) {
         if (viewHolderView == null) {
-            selectionState.update(
+            viewSelector.update(
                 position = RecyclerView.NO_POSITION,
                 subPosition = 0
             )
             return
         }
         // Todo get sub position
-        selectionState.update(
-            position = layoutInfo.getAdapterPositionOfView(viewHolderView),
+        val previousPosition = viewSelector.position
+        val nextPosition = layoutInfo.getAdapterPositionOfView(viewHolderView)
+        if (nextPosition == previousPosition) {
+            return
+        }
+        viewSelector.update(
+            position = nextPosition,
             subPosition = 0
         )
-        layoutManager.requestLayout()
+         layoutManager.requestLayout()
     }
 
-    private fun offsetChildren(offset: Int) {
-        val childCount: Int = layoutManager.childCount
-        if (configuration.isVertical()) {
-            for (i in 0 until childCount) {
-                layoutManager.getChildAt(i)?.offsetTopAndBottom(offset)
-            }
-        } else {
-            for (i in 0 until childCount) {
-                layoutManager.getChildAt(i)?.offsetLeftAndRight(offset)
-            }
-        }
+    // TODO
+    private fun updateScrollLimits() {
+
     }
 
 }

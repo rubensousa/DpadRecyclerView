@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.TvLayoutManager
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.PivotLayoutManager
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemGridBinding
 
 class CustomLayoutActivity : AppCompatActivity() {
@@ -16,7 +16,7 @@ class CustomLayoutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_custom_layout)
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val layoutManager = TvLayoutManager()
+        val layoutManager = PivotLayoutManager()
         layoutManager.setDpadRecyclerView(recyclerView)
         recyclerView.addItemDecoration(
             LinearMarginDecoration.createVertical(

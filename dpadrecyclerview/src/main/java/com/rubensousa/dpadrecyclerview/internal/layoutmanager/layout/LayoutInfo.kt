@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager
+package com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout
 
-import android.annotation.SuppressLint
+import android.graphics.Rect
 import android.util.Log
 import android.view.View
 import androidx.core.view.ViewCompat
@@ -25,24 +25,39 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.LayoutConfiguration
 
-@SuppressLint("LogNotTimber")
-internal class TvLayoutInfo(
+internal class LayoutInfo(
     private val layout: LayoutManager,
-    private val configuration: TvLayoutConfiguration
+    private val configuration: LayoutConfiguration
 ) {
 
-    private var spanSizeLookup: TvSpanSizeLookup = TvSpanSizeLookup.default()
-    private var orientationHelper = OrientationHelper.createOrientationHelper(
-        layout,
-        configuration.orientation
+    var orientationHelper = OrientationHelper.createOrientationHelper(
+        layout, configuration.orientation
     )
+        private set
+
+    var isScrolling = false
+        private set
+    var isInLayout = false
+        private set
+
+    private var spanSizeLookup: DpadSpanSizeLookup = DpadSpanSizeLookup.default()
     private var dpadRecyclerView: RecyclerView? = null
 
     fun isRTL() = layout.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL
 
-    fun update(){
+    fun update() {
         orientationHelper.onLayoutComplete()
+    }
+
+    fun setIsScrolling(isScrolling: Boolean) {
+        this.isScrolling = isScrolling
+    }
+
+    fun setIsInLayout(isInLayout: Boolean) {
+        this.isInLayout = isInLayout
     }
 
     fun setRecyclerView(recyclerView: RecyclerView?) {
@@ -65,7 +80,7 @@ internal class TvLayoutInfo(
         return spanSizeLookup.getSpanGroupIndex(position, configuration.spanCount)
     }
 
-    fun setSpanSizeLookup(lookup: TvSpanSizeLookup) {
+    fun setSpanSizeLookup(lookup: DpadSpanSizeLookup) {
         spanSizeLookup = lookup
     }
 
@@ -130,6 +145,34 @@ internal class TvLayoutInfo(
         return orientationHelper.getDecoratedMeasurement(view)
     }
 
+    fun getDecoratedLeft(child: View, decoratedLeft: Int): Int {
+        return decoratedLeft + getLayoutParams(child).leftInset
+    }
+
+    fun getDecoratedTop(child: View, decoratedTop: Int): Int {
+        return decoratedTop + getLayoutParams(child).topInset
+    }
+
+    fun getDecoratedRight(child: View, decoratedRight: Int): Int {
+        return decoratedRight - getLayoutParams(child).rightInset
+    }
+
+    fun getDecoratedBottom(child: View, decoratedBottom: Int): Int {
+        return decoratedBottom - getLayoutParams(child).bottomInset
+    }
+
+    fun getDecoratedBoundsWithMargins(view: View, outBounds: Rect) {
+        val params = view.layoutParams as DpadLayoutParams
+        outBounds.left += params.leftInset
+        outBounds.top += params.topInset
+        outBounds.right -= params.rightInset
+        outBounds.bottom -= params.bottomInset
+    }
+
+    private fun getLayoutParams(child: View): DpadLayoutParams {
+        return child.layoutParams as DpadLayoutParams
+    }
+
     // If the main size is the width, this would be the height and vice-versa
     fun getPerpendicularDecoratedSize(view: View): Int {
         return orientationHelper.getDecoratedMeasurementInOther(view)
@@ -161,6 +204,28 @@ internal class TvLayoutInfo(
             }
         }
         return RecyclerView.NO_POSITION
+    }
+
+    fun isWrapContent(): Boolean {
+        return orientationHelper.mode == View.MeasureSpec.UNSPECIFIED && orientationHelper.end == 0
+    }
+
+    fun getChildClosestToStart(): View? {
+        val startIndex = if (configuration.reverseLayout) {
+            layout.childCount - 1
+        } else {
+            0
+        }
+        return layout.getChildAt(startIndex)
+    }
+
+    fun getChildClosestToEnd(): View? {
+        val endIndex = if (configuration.reverseLayout) {
+            0
+        } else {
+            layout.childCount - 1
+        }
+        return layout.getChildAt(endIndex)
     }
 
 }

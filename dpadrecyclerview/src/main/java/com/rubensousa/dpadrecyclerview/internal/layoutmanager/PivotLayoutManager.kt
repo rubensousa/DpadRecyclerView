@@ -25,24 +25,35 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadLayoutParams
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.focus.LayoutFocusFinder
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutArchitect
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.internal.layoutmanager.scroll.LayoutScroller
 
 /**
- * Built from scratch for performance optimizations
+ * Successor of DpadLayoutManager built from scratch for performance optimizations
+ *
+ * TODO:
+ * - setRecycleChildrenOnDetach
+ * - setExtraSpace
+ * - custom alignment
+ * - using simple row structure for single spans
  */
-class TvLayoutManager : RecyclerView.LayoutManager() {
+class PivotLayoutManager : RecyclerView.LayoutManager() {
 
-    private val config = TvLayoutConfiguration()
-    private val selectionState = TvSelectionState()
-    private val layoutInfo = TvLayoutInfo(this, config)
-    private val layoutArchitect = LayoutArchitect(this, config, selectionState, layoutInfo)
-    private val scroller = TvLayoutScroller(
-        this, config, layoutArchitect, layoutInfo, selectionState
+    private val configuration = LayoutConfiguration()
+    private val viewSelector = ViewSelector()
+    private val layoutInfo = LayoutInfo(this, configuration)
+    private val layoutArchitect = LayoutArchitect(this, configuration, viewSelector, layoutInfo)
+    private val scroller = LayoutScroller(
+        this, configuration, layoutArchitect, layoutInfo, viewSelector
     )
-    private val focusFinder = TvLayoutFocusFinder(
-        this, config, scroller, layoutInfo, selectionState
+    private val focusFinder = LayoutFocusFinder(
+        this, configuration, scroller, layoutInfo, viewSelector
     )
     private val accessibilityHelper = LayoutAccessibilityHelper(
-        this, config, layoutInfo, selectionState, scroller
+        this, configuration, layoutInfo, viewSelector, scroller
     )
     private var dpadRecyclerView: RecyclerView? = null
 
@@ -53,46 +64,64 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
         layoutInfo.setRecyclerView(recyclerView)
     }
 
-    override fun checkLayoutParams(lp: RecyclerView.LayoutParams?): Boolean {
-        return layoutArchitect.checkLayoutParams(lp)
-    }
-
-    override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
-        return layoutArchitect.generateDefaultLayoutParams()
-    }
-
-    override fun generateLayoutParams(lp: ViewGroup.LayoutParams): RecyclerView.LayoutParams {
-        return layoutArchitect.generateLayoutParams(lp)
+    override fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
+        return layoutParams is DpadLayoutParams
     }
 
     override fun generateLayoutParams(
-        context: Context, attrs: AttributeSet
-    ): RecyclerView.LayoutParams = layoutArchitect.generateLayoutParams(context, attrs)
+        context: Context,
+        attrs: AttributeSet
+    ): RecyclerView.LayoutParams {
+        return DpadLayoutParams(context, attrs)
+    }
 
-    override fun getDecoratedLeft(child: View): Int = layoutArchitect.getDecoratedLeft(
+    override fun generateLayoutParams(layoutParams: ViewGroup.LayoutParams): RecyclerView.LayoutParams {
+        return when (layoutParams) {
+            is DpadLayoutParams -> DpadLayoutParams(layoutParams)
+            is RecyclerView.LayoutParams -> DpadLayoutParams(layoutParams)
+            is ViewGroup.MarginLayoutParams -> DpadLayoutParams(layoutParams)
+            else -> DpadLayoutParams(layoutParams)
+        }
+    }
+
+    override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
+        return if (configuration.isHorizontal()) {
+            DpadLayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        } else {
+            DpadLayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+    }
+
+    override fun getDecoratedLeft(child: View): Int = layoutInfo.getDecoratedLeft(
         child, super.getDecoratedLeft(child)
     )
 
-    override fun getDecoratedTop(child: View): Int = layoutArchitect.getDecoratedTop(
+    override fun getDecoratedTop(child: View): Int = layoutInfo.getDecoratedTop(
         child, super.getDecoratedTop(child)
     )
 
-    override fun getDecoratedRight(child: View): Int = layoutArchitect.getDecoratedRight(
+    override fun getDecoratedRight(child: View): Int = layoutInfo.getDecoratedRight(
         child, super.getDecoratedRight(child)
     )
 
-    override fun getDecoratedBottom(child: View): Int = layoutArchitect.getDecoratedBottom(
+    override fun getDecoratedBottom(child: View): Int = layoutInfo.getDecoratedBottom(
         child, super.getDecoratedBottom(child)
     )
 
     override fun getDecoratedBoundsWithMargins(view: View, outBounds: Rect) {
         super.getDecoratedBoundsWithMargins(view, outBounds)
-        layoutArchitect.getDecoratedBoundsWithMargins(view, outBounds)
+        layoutInfo.getDecoratedBoundsWithMargins(view, outBounds)
     }
 
-    override fun canScrollHorizontally(): Boolean = config.isHorizontal()
+    override fun canScrollHorizontally(): Boolean = configuration.isHorizontal()
 
-    override fun canScrollVertically(): Boolean = config.isVertical()
+    override fun canScrollVertically(): Boolean = configuration.isVertical()
 
     override fun isAutoMeasureEnabled(): Boolean = true
 
@@ -151,26 +180,26 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
     }
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        selectionState.onItemsAdded(recyclerView, positionStart, itemCount)
+        viewSelector.onItemsAdded(recyclerView, positionStart, itemCount)
     }
 
     override fun onItemsChanged(recyclerView: RecyclerView) {
-        selectionState.onItemsChanged(recyclerView)
+        viewSelector.onItemsChanged(recyclerView)
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        selectionState.onItemsRemoved(recyclerView, positionStart, itemCount)
+        viewSelector.onItemsRemoved(recyclerView, positionStart, itemCount)
     }
 
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
-        selectionState.onItemsMoved(recyclerView, from, to, itemCount)
+        viewSelector.onItemsMoved(recyclerView, from, to, itemCount)
     }
 
     override fun onAdapterChanged(
         oldAdapter: RecyclerView.Adapter<*>?,
         newAdapter: RecyclerView.Adapter<*>?
     ) {
-        selectionState.onAdapterChanged(oldAdapter, newAdapter)
+        viewSelector.onAdapterChanged(oldAdapter, newAdapter)
     }
 
     override fun onRequestChildFocus(
@@ -204,11 +233,11 @@ class TvLayoutManager : RecyclerView.LayoutManager() {
     ): Boolean = false
 
     override fun onSaveInstanceState(): Parcelable {
-        return selectionState.onSaveInstanceState()
+        return viewSelector.onSaveInstanceState()
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        selectionState.onRestoreInstanceState(state)
+        viewSelector.onRestoreInstanceState(state)
     }
 
     override fun getRowCountForAccessibility(

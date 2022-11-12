@@ -19,7 +19,7 @@ package com.rubensousa.dpadrecyclerview.internal.layoutmanager
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 
-internal class TvLayoutConfiguration {
+internal class LayoutConfiguration {
 
     var orientation: Int = RecyclerView.VERTICAL
         private set
@@ -65,6 +65,12 @@ internal class TvLayoutConfiguration {
         private set
 
     var isSmoothFocusChangesEnabled = true
+        private set
+
+    var extraLayoutSpace: Int = 0
+        private set
+
+    var stackFromEnd = false
         private set
 
     fun setFocusSearchDisabled(isDisabled: Boolean){

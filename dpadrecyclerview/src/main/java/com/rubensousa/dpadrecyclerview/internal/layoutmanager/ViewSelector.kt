@@ -22,7 +22,7 @@ import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
-internal class TvSelectionState {
+internal class ViewSelector {
 
     var position: Int = 0
         private set
