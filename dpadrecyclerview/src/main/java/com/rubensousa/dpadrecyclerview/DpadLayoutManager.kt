@@ -656,10 +656,7 @@ class DpadLayoutManager : GridLayoutManager {
         return count == 0 || recyclerView.findViewHolderForAdapterPosition(0) != null
     }
 
-    internal fun setRecyclerView(
-        recyclerView: RecyclerView?,
-        childDrawingOrderEnabled: Boolean = false
-    ) {
+    internal fun setRecyclerView(recyclerView: RecyclerView?) {
         if (recyclerView === this.recyclerView) {
             return
         }
@@ -670,7 +667,6 @@ class DpadLayoutManager : GridLayoutManager {
         }
         this.recyclerView?.removeOnScrollListener(idleScrollListener)
         this.recyclerView = recyclerView
-        scroller.childDrawingOrderEnabled = childDrawingOrderEnabled
         // Disable flinging since this isn't supposed to be scrollable by touch
         recyclerView?.onFlingListener = object : RecyclerView.OnFlingListener() {
             override fun onFling(velocityX: Int, velocityY: Int): Boolean {
@@ -751,6 +747,10 @@ class DpadLayoutManager : GridLayoutManager {
 
     internal fun isSmoothScrollEnabled(): Boolean {
         return isSmoothFocusChangesEnabled
+    }
+
+    internal fun setChildrenDrawingOrderEnabled(enabled: Boolean) {
+        scroller.childDrawingOrderEnabled = enabled
     }
 
     private fun hasSelectionListeners(): Boolean {

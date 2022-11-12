@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView

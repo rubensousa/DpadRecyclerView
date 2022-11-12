@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
 import android.util.Log
@@ -25,13 +25,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.layout.DpadSpanSizeLookup
-import com.rubensousa.dpadrecyclerview.layout.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
 internal class LayoutInfo(
     private val layout: LayoutManager,
     private val configuration: LayoutConfiguration
 ) {
+
+    val orientation: Int
+        get() = configuration.orientation
 
     var orientationHelper = OrientationHelper.createOrientationHelper(
         layout, configuration.orientation
@@ -40,7 +43,9 @@ internal class LayoutInfo(
 
     var isScrolling = false
         private set
-    var isInLayout = false
+    var isLayoutInProgress = false
+        private set
+    var isChildDrawingOrderEnabled = true
         private set
 
     private var spanSizeLookup: DpadSpanSizeLookup = DpadSpanSizeLookup.default()
@@ -48,7 +53,18 @@ internal class LayoutInfo(
 
     fun isRTL() = layout.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL
 
-    fun update() {
+    fun isHorizontal() = configuration.isHorizontal()
+
+    fun isVertical() = configuration.isVertical()
+
+    fun setChildDrawingOrderEnabled(enabled: Boolean) {
+        isChildDrawingOrderEnabled = enabled
+    }
+
+    /**
+     * Needs to be called after onLayoutChildren when not in pre-layout
+     */
+    fun onLayoutCompleted() {
         orientationHelper.onLayoutComplete()
     }
 
@@ -56,8 +72,8 @@ internal class LayoutInfo(
         this.isScrolling = isScrolling
     }
 
-    fun setIsInLayout(isInLayout: Boolean) {
-        this.isInLayout = isInLayout
+    fun setLayoutInProgress(isInProgress: Boolean) {
+        isLayoutInProgress = isInProgress
     }
 
     fun setRecyclerView(recyclerView: RecyclerView?) {
@@ -226,6 +242,22 @@ internal class LayoutInfo(
             layout.childCount - 1
         }
         return layout.getChildAt(endIndex)
+    }
+
+    fun findFirstAddedPosition(): Int {
+        if (layout.childCount == 0) {
+            return RecyclerView.NO_POSITION
+        }
+        val child = layout.getChildAt(0) ?: return RecyclerView.NO_POSITION
+        return getAdapterPositionOfView(child)
+    }
+
+    fun findLastAddedPosition(): Int {
+        if (layout.childCount == 0) {
+            return RecyclerView.NO_POSITION
+        }
+        val child = layout.getChildAt(layout.childCount - 1) ?: return RecyclerView.NO_POSITION
+        return getAdapterPositionOfView(child)
     }
 
 }

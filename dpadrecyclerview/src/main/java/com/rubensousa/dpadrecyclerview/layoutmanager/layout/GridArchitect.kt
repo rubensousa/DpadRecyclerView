@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-class LayoutResult {
-    var consumed = 0
-    var finished = false
-    var ignoreConsumed = false
+import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
-    fun reset() {
-        consumed = 0
-        finished = false
-        ignoreConsumed = false
+internal class GridArchitect(
+    private val layout: RecyclerView.LayoutManager,
+    private val layoutInfo: LayoutInfo,
+    private val configuration: LayoutConfiguration,
+) {
+
+    fun layoutChunk(
+        recycler: RecyclerView.Recycler,
+        recyclerViewState: RecyclerView.State,
+        layoutState: LayoutState,
+        layoutResult: LayoutResult
+    ) {
+
     }
 
 }

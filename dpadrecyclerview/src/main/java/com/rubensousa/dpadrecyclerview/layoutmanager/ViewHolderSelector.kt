@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
-internal class ViewSelector {
+internal class ViewHolderSelector {
 
     var position: Int = 0
         private set
@@ -58,10 +56,11 @@ internal class ViewSelector {
 
     }
 
-    fun update(position: Int, subPosition: Int) {
+    fun update(position: Int, subPosition: Int): Boolean {
+        val changed = position != this.position || subPosition != this.subPosition
         this.position = position
         this.subPosition = subPosition
-        Log.i(DpadRecyclerView.TAG, "Selection state update: $position, $subPosition")
+        return changed
     }
 
     fun onSaveInstanceState(): Parcelable {
@@ -72,6 +71,16 @@ internal class ViewSelector {
         if (state is SavedState) {
             position = state.selectedPosition
         }
+    }
+    
+    // TODO
+    fun dispatchViewHolderSelected() {
+        
+    }
+
+    // TODO
+    fun dispatchViewHolderSelectedAndAligned() {
+        
     }
 
     data class SavedState(val selectedPosition: Int) : Parcelable {

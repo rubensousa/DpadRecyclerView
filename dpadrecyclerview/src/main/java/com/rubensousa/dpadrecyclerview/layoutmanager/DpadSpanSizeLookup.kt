@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.util.SparseIntArray
 import androidx.recyclerview.widget.GridLayoutManager

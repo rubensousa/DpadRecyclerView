@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
-import com.rubensousa.dpadrecyclerview.layout.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
 /**
  * Layout algorithm:
@@ -31,7 +31,9 @@ import com.rubensousa.dpadrecyclerview.layout.LayoutConfiguration
  * 3. Starting from the top/end of the selected view,
  * fill towards the top/start until there's no more space
  *
- * This was mostly adapted from LinearLayoutManager.
+ * - [layoutPivot] - creates the pivot view and aligns it based on the alignment configuration
+ * - [layoutChunk] - creates the next view and aligns it based on the current layout state
+ * (Adapted from LinearLayoutManager)
  */
 internal class RowArchitect(
     private val layoutManager: LayoutManager,
@@ -56,7 +58,8 @@ internal class RowArchitect(
         pivotInfo: PivotInfo
     ) {
         val keyline = calculateParentKeyline()
-        val view = addView(position, recycler, LayoutState.LayoutDirection.START)
+        val view = recycler.getViewForPosition(position)
+        layoutManager.addView(view)
         layoutManager.measureChildWithMargins(view, 0, 0)
         val size = layoutInfo.getMeasuredSize(view)
         val headOffset = keyline - size / 2 - layoutInfo.getStartDecorationSize(view)
@@ -156,20 +159,6 @@ internal class RowArchitect(
         layoutManager.layoutDecoratedWithMargins(
             view, bounds.left, bounds.top, bounds.right, bounds.bottom
         )
-    }
-
-    private fun addView(
-        position: Int,
-        recycler: Recycler,
-        direction: LayoutState.LayoutDirection
-    ): View {
-        val view = recycler.getViewForPosition(position)
-        if (direction == LayoutState.LayoutDirection.START) {
-            layoutManager.addView(view, 0)
-        } else {
-            layoutManager.addView(view)
-        }
-        return view
     }
 
 }

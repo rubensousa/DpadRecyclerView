@@ -214,6 +214,7 @@ class DpadRecyclerView @JvmOverloads constructor(
      */
     fun setFocusDrawingOrderEnabled(enabled: Boolean) {
         super.setChildrenDrawingOrderEnabled(enabled)
+        delegate.setChildrenDrawingOrderEnabled(enabled)
     }
 
     /**

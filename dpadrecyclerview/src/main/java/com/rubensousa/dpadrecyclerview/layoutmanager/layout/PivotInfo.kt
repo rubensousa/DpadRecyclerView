@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -37,9 +37,13 @@ internal class PivotInfo {
                 && layoutParams.viewLayoutPosition < state.itemCount
     }
 
+    fun offset(offset: Int) {
+        headOffset += offset
+        tailOffset += offset
+    }
+
     override fun toString(): String {
         return "PivotInfo(position=$position, headOffset=$headOffset, tailOffset=$tailOffset)"
     }
-
 
 }

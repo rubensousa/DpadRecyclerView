@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -102,7 +102,7 @@ internal class LayoutState {
 
     fun isLayingOutStart() = direction == LayoutDirection.START
 
-    fun isLayingOutEnd() = direction == LayoutDirection.START
+    fun isLayingOutEnd() = direction == LayoutDirection.END
 
     fun hasMoreItems(state: RecyclerView.State): Boolean {
         return currentPosition >= 0 && currentPosition < state.itemCount

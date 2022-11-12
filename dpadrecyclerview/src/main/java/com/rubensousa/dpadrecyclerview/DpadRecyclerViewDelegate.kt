@@ -76,7 +76,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
             )
         }
         if (layoutManager is DpadLayoutManager) {
-            layoutManager.setRecyclerView(recyclerView, true)
+            layoutManager.setRecyclerView(recyclerView)
             layoutManager.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             layout = layoutManager
         }
@@ -391,6 +391,10 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         return requireNotNull(layout) {
             "LayoutManager is null. You need to call RecyclerView.setLayoutManager"
         }
+    }
+
+    fun setChildrenDrawingOrderEnabled(enabled: Boolean) {
+        requireLayout().setChildrenDrawingOrderEnabled(enabled)
     }
 
     private class ViewHolderTaskExecutor : OnViewHolderSelectedListener {

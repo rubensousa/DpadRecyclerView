@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.os.Build
 import android.os.Bundle
@@ -26,8 +26,8 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionIn
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
-import com.rubensousa.dpadrecyclerview.layout.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layout.scroll.LayoutScroller
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
 /**
  * Helper for dealing with accessibility
@@ -36,7 +36,7 @@ internal class LayoutAccessibilityHelper(
     private val layoutManager: LayoutManager,
     private val configuration: LayoutConfiguration,
     private val layoutInfo: LayoutInfo,
-    private val selectionState: ViewSelector,
+    private val selectionState: ViewHolderSelector,
     private val scroller: LayoutScroller
 ) {
 

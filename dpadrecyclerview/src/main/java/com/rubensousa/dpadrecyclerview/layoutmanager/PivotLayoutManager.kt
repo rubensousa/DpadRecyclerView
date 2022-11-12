@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.content.Context
 import android.graphics.Rect
@@ -26,10 +26,12 @@ import android.view.ViewGroup
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
-import com.rubensousa.dpadrecyclerview.layout.focus.LayoutFocusFinder
-import com.rubensousa.dpadrecyclerview.layout.layout.LayoutArchitect
-import com.rubensousa.dpadrecyclerview.layout.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layout.scroll.LayoutScroller
+import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.LayoutFocusFinder
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
 /**
  * Successor of DpadLayoutManager built from scratch for performance optimizations
@@ -43,23 +45,26 @@ import com.rubensousa.dpadrecyclerview.layout.scroll.LayoutScroller
 class PivotLayoutManager : RecyclerView.LayoutManager() {
 
     private val configuration = LayoutConfiguration()
-    private val viewSelector = ViewSelector()
+    private val viewHolderSelector = ViewHolderSelector()
     private val layoutInfo = LayoutInfo(this, configuration)
-    private val layoutArchitect = LayoutArchitect(this, configuration, viewSelector, layoutInfo)
-    private val scroller = LayoutScroller(
-        this, configuration, layoutArchitect, layoutInfo, viewSelector
-    )
+    private val architect = LayoutArchitect(this, configuration, viewHolderSelector, layoutInfo)
+    private val alignment = LayoutAlignment(layoutInfo, this)
+    private val scroller = LayoutScroller(layoutInfo, alignment, architect, viewHolderSelector)
     private val focusFinder = LayoutFocusFinder(
-        this, configuration, scroller, layoutInfo, viewSelector
+        this, configuration, scroller, layoutInfo, viewHolderSelector
     )
     private val accessibilityHelper = LayoutAccessibilityHelper(
-        this, configuration, layoutInfo, viewSelector, scroller
+        this, configuration, layoutInfo, viewHolderSelector, scroller
     )
     private var dpadRecyclerView: RecyclerView? = null
 
+    init {
+        alignment.setParentAlignment(ParentAlignment(edge = ParentAlignment.Edge.NONE))
+    }
+
     fun setDpadRecyclerView(recyclerView: RecyclerView?) {
         dpadRecyclerView = recyclerView
-        layoutArchitect.setRecyclerView(recyclerView)
+        architect.setRecyclerView(recyclerView)
         focusFinder.setRecyclerView(recyclerView)
         layoutInfo.setRecyclerView(recyclerView)
     }
@@ -128,11 +133,16 @@ class PivotLayoutManager : RecyclerView.LayoutManager() {
     override fun supportsPredictiveItemAnimations(): Boolean = true
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
-        layoutArchitect.onLayoutChildren(recycler, state)
+        architect.onLayoutChildren(recycler, state)
+        alignment.onLayoutChildren(
+            width, height,
+            configuration.reverseLayout,
+            paddingLeft, paddingRight, paddingTop, paddingBottom
+        )
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
-        layoutArchitect.onLayoutCompleted(state)
+        architect.onLayoutCompleted(state)
     }
 
     override fun collectAdjacentPrefetchPositions(
@@ -141,27 +151,27 @@ class PivotLayoutManager : RecyclerView.LayoutManager() {
         state: RecyclerView.State?,
         layoutPrefetchRegistry: LayoutPrefetchRegistry
     ) {
-        layoutArchitect.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
+        architect.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
     }
 
     override fun collectInitialPrefetchPositions(
         adapterItemCount: Int,
         layoutPrefetchRegistry: LayoutPrefetchRegistry
     ) {
-        layoutArchitect.collectInitialPrefetchPositions(adapterItemCount, layoutPrefetchRegistry)
+        architect.collectInitialPrefetchPositions(adapterItemCount, layoutPrefetchRegistry)
     }
 
     override fun scrollHorizontallyBy(
         dx: Int,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
-    ): Int = scroller.scrollHorizontallyBy(dx, recycler, state)
+    ): Int = architect.scrollHorizontallyBy(dx, recycler, state)
 
     override fun scrollVerticallyBy(
         dy: Int,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
-    ): Int = scroller.scrollVerticallyBy(dy, recycler, state)
+    ): Int = architect.scrollVerticallyBy(dy, recycler, state)
 
     override fun scrollToPosition(position: Int) {
         scroller.scrollToPosition(position)
@@ -180,26 +190,26 @@ class PivotLayoutManager : RecyclerView.LayoutManager() {
     }
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        viewSelector.onItemsAdded(recyclerView, positionStart, itemCount)
+        viewHolderSelector.onItemsAdded(recyclerView, positionStart, itemCount)
     }
 
     override fun onItemsChanged(recyclerView: RecyclerView) {
-        viewSelector.onItemsChanged(recyclerView)
+        viewHolderSelector.onItemsChanged(recyclerView)
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        viewSelector.onItemsRemoved(recyclerView, positionStart, itemCount)
+        viewHolderSelector.onItemsRemoved(recyclerView, positionStart, itemCount)
     }
 
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
-        viewSelector.onItemsMoved(recyclerView, from, to, itemCount)
+        viewHolderSelector.onItemsMoved(recyclerView, from, to, itemCount)
     }
 
     override fun onAdapterChanged(
         oldAdapter: RecyclerView.Adapter<*>?,
         newAdapter: RecyclerView.Adapter<*>?
     ) {
-        viewSelector.onAdapterChanged(oldAdapter, newAdapter)
+        viewHolderSelector.onAdapterChanged(oldAdapter, newAdapter)
     }
 
     override fun onRequestChildFocus(
@@ -233,11 +243,11 @@ class PivotLayoutManager : RecyclerView.LayoutManager() {
     ): Boolean = false
 
     override fun onSaveInstanceState(): Parcelable {
-        return viewSelector.onSaveInstanceState()
+        return viewHolderSelector.onSaveInstanceState()
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        viewSelector.onRestoreInstanceState(state)
+        viewHolderSelector.onRestoreInstanceState(state)
     }
 
     override fun getRowCountForAccessibility(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layout.focus
+package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
 import android.view.FocusFinder
 import android.view.View
@@ -22,17 +22,17 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovement
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovementCalculator
-import com.rubensousa.dpadrecyclerview.layout.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layout.ViewSelector
-import com.rubensousa.dpadrecyclerview.layout.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layout.scroll.LayoutScroller
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.ViewHolderSelector
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
 internal class LayoutFocusFinder(
     private val layout: LayoutManager,
     private val configuration: LayoutConfiguration,
     private val scroller: LayoutScroller,
     private val layoutInfo: LayoutInfo,
-    private val viewSelector: ViewSelector
+    private val viewHolderSelector: ViewHolderSelector
 ) {
 
     private var dpadRecyclerView: RecyclerView? = null
@@ -67,7 +67,7 @@ internal class LayoutFocusFinder(
     }
 
     private fun saveSpanFocus(newPosition: Int) {
-        val previousPosition = viewSelector.position
+        val previousPosition = viewHolderSelector.position
         val previousSpanSize = layoutInfo.getSpanSize(previousPosition)
         val newSpanSize = layoutInfo.getSpanSize(newPosition)
         if (previousSpanSize != newSpanSize && previousSpanSize != configuration.spanCount) {
@@ -102,7 +102,7 @@ internal class LayoutFocusFinder(
             return true
         }
         val focusableCount = views.size
-        val view = layout.findViewByPosition(viewSelector.position)
+        val view = layout.findViewByPosition(viewHolderSelector.position)
         view?.addFocusables(views, direction, focusableMode)
         // if still cannot find any, fall through and add itself
         if (views.size != focusableCount) {
