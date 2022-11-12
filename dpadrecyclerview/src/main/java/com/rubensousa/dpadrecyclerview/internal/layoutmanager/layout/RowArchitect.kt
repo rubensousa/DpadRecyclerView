@@ -41,7 +41,7 @@ import com.rubensousa.dpadrecyclerview.internal.layoutmanager.LayoutConfiguratio
 
 /**
  * Layout algorithm:
- * 1. Layout the view at the selected position and align it
+ * 1. Layout the view at the selected position (pivot) and align it
  * 2. Starting from the bottom/end of the selected view,
  * fill towards the top/start until there's no more space
  * 3. Starting from the top/end of the selected view,
@@ -55,8 +55,7 @@ internal class RowArchitect(
     private val configuration: LayoutConfiguration,
 ) {
 
-    private var pivotLocation = Rect()
-    private var viewOffsetLocation = Rect()
+    private val viewBounds = Rect()
 
     // TODO Use specific parent keyline alignment + child alignment and move this to another class
     private fun calculateParentKeyline(): Int {
@@ -76,24 +75,19 @@ internal class RowArchitect(
         val view = addView(position, recycler, LayoutState.LayoutDirection.START)
         layoutManager.measureChildWithMargins(view, 0, 0)
         val size = layoutInfo.getMeasuredSize(view)
-        val perpendicularSize = layoutInfo.getPerpendicularDecoratedSize(view)
-
         val headOffset = keyline - size / 2 - layoutInfo.getStartDecorationSize(view)
         val tailOffset = keyline + size / 2 + layoutInfo.getEndDecorationSize(view)
 
-        // TODO support gravity here
         if (configuration.isVertical()) {
-            pivotLocation.top = headOffset
-            pivotLocation.bottom = tailOffset
-            pivotLocation.left = layoutManager.paddingLeft
-            pivotLocation.right = pivotLocation.left + perpendicularSize
+            applyHorizontalGravity(view, viewBounds)
+            viewBounds.top = headOffset
+            viewBounds.bottom = tailOffset
         } else {
-            pivotLocation.left = headOffset
-            pivotLocation.right = tailOffset
-            pivotLocation.top = layoutManager.paddingTop
-            pivotLocation.bottom = pivotLocation.top + perpendicularSize
+            applyVerticalGravity(view, viewBounds)
+            viewBounds.left = headOffset
+            viewBounds.right = tailOffset
         }
-        layoutView(view, pivotLocation)
+        layoutView(view, viewBounds)
         pivotInfo.position = position
         pivotInfo.headOffset = headOffset
         pivotInfo.tailOffset = tailOffset
@@ -125,40 +119,31 @@ internal class RowArchitect(
         }
         layoutManager.measureChildWithMargins(view, 0, 0)
         result.consumed = layoutInfo.orientationHelper.getDecoratedMeasurement(view)
-        val left: Int
-        val top: Int
-        val right: Int
-        val bottom: Int
+
         if (configuration.isVertical()) {
-            // Support gravity here
-            if (layoutInfo.isRTL()) {
-                right = layoutManager.width - layoutManager.paddingRight
-                left = right - layoutInfo.getPerpendicularDecoratedSize(view)
-            } else {
-                left = layoutManager.paddingLeft
-                right = left + layoutInfo.getPerpendicularDecoratedSize(view)
-            }
+            // We need to align this view to an edge or center it, depending on the gravity set
+            applyHorizontalGravity(view, viewBounds)
             if (layoutState.isLayingOutStart()) {
-                bottom = layoutState.offset
-                top = layoutState.offset - result.consumed
+                viewBounds.bottom = layoutState.offset
+                viewBounds.top = layoutState.offset - result.consumed
             } else {
-                top = layoutState.offset
-                bottom = layoutState.offset + result.consumed
+                viewBounds.top = layoutState.offset
+                viewBounds.bottom = layoutState.offset + result.consumed
             }
         } else {
-            top = layoutManager.paddingTop
-            bottom = top + layoutInfo.getPerpendicularDecoratedSize(view)
+            // We need to align this view to an edge or center it, depending on the gravity set
+            applyVerticalGravity(view, viewBounds)
             if (layoutState.isLayingOutStart()) {
-                right = layoutState.offset
-                left = layoutState.offset - result.consumed
+                viewBounds.right = layoutState.offset
+                viewBounds.left = layoutState.offset - result.consumed
             } else {
-                left = layoutState.offset
-                right = layoutState.offset + result.consumed
+                viewBounds.left = layoutState.offset
+                viewBounds.right = layoutState.offset + result.consumed
             }
         }
         // We calculate everything with View's bounding box (which includes decor and margins)
         // To calculate correct layout position, we subtract margins.
-        layoutManager.layoutDecoratedWithMargins(view, left, top, right, bottom)
+        layoutView(view, viewBounds)
 
         // Consume the available space if the view is not removed OR changed
         if (params.isItemRemoved || params.isItemChanged) {
@@ -166,51 +151,26 @@ internal class RowArchitect(
         }
     }
 
-
-    private fun updateViewOffsetLocation(view: View, start: Boolean) {
-        layoutManager.measureChildWithMargins(view, 0, 0)
-        val size = layoutInfo.getDecoratedSize(view)
-        val perpendicularSize = layoutInfo.getPerpendicularDecoratedSize(view)
-
-        // TODO support gravity here
-        if (configuration.isVertical()) {
-            if (start) {
-                viewOffsetLocation.bottom = viewOffsetLocation.top
-                viewOffsetLocation.top = viewOffsetLocation.bottom - size
-            } else {
-                viewOffsetLocation.top = viewOffsetLocation.bottom
-                viewOffsetLocation.bottom = viewOffsetLocation.top + size
-            }
-            viewOffsetLocation.left = layoutManager.paddingLeft
-            viewOffsetLocation.right = viewOffsetLocation.left + perpendicularSize
+    // TODO Support all gravity types
+    private fun applyHorizontalGravity(view: View, bounds: Rect) {
+        if (layoutInfo.isRTL()) {
+            bounds.right = layoutManager.width - layoutManager.paddingRight
+            bounds.left = viewBounds.right - layoutInfo.getPerpendicularDecoratedSize(view)
         } else {
-            if (start) {
-                viewOffsetLocation.right = viewOffsetLocation.left
-                viewOffsetLocation.left = viewOffsetLocation.right - size
-            } else {
-                viewOffsetLocation.left = viewOffsetLocation.right
-                viewOffsetLocation.right = viewOffsetLocation.left + size
-            }
-            viewOffsetLocation.top = layoutManager.paddingTop
-            viewOffsetLocation.bottom = viewOffsetLocation.top + perpendicularSize
+            bounds.left = layoutManager.paddingLeft
+            bounds.right = viewBounds.left + layoutInfo.getPerpendicularDecoratedSize(view)
         }
     }
 
-    private fun updateRemainingSpace(remainingSpace: Int): Int {
-        return if (configuration.isVertical()) {
-            remainingSpace - viewOffsetLocation.height()
-        } else {
-            remainingSpace - viewOffsetLocation.width()
-        }
+    // TODO Support all gravity types
+    private fun applyVerticalGravity(view: View, bounds: Rect) {
+        bounds.top = layoutManager.paddingTop
+        bounds.bottom = viewBounds.top + layoutInfo.getPerpendicularDecoratedSize(view)
     }
 
     private fun layoutView(view: View, bounds: Rect) {
         layoutManager.layoutDecoratedWithMargins(
-            view,
-            bounds.left,
-            bounds.top,
-            bounds.right,
-            bounds.bottom
+            view, bounds.left, bounds.top, bounds.right, bounds.bottom
         )
     }
 
@@ -226,14 +186,6 @@ internal class RowArchitect(
             layoutManager.addView(view)
         }
         return view
-    }
-
-    private fun calculateRemainingSpace(limit: Int): Int {
-        return if (configuration.isVertical()) {
-            limit - pivotLocation.height()
-        } else {
-            limit - pivotLocation.width()
-        }
     }
 
 }
