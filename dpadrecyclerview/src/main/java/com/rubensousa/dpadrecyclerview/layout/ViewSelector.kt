@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager
+package com.rubensousa.dpadrecyclerview.layout
 
 import android.os.Parcel
 import android.os.Parcelable

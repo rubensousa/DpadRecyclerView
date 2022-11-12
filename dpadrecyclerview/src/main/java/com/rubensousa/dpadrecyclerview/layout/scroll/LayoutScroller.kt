@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager.scroll
+package com.rubensousa.dpadrecyclerview.layout.scroll
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.PivotLayoutManager
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.ViewSelector
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutArchitect
+import com.rubensousa.dpadrecyclerview.layout.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layout.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layout.PivotLayoutManager
+import com.rubensousa.dpadrecyclerview.layout.ViewSelector
+import com.rubensousa.dpadrecyclerview.layout.layout.LayoutArchitect
 
 internal class LayoutScroller(
     private val layoutManager: PivotLayoutManager,

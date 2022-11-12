@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.layout.layout
 
 import android.graphics.Rect
 import android.util.Log
@@ -25,8 +25,8 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.DpadSpanSizeLookup
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layout.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.layout.LayoutConfiguration
 
 internal class LayoutInfo(
     private val layout: LayoutManager,

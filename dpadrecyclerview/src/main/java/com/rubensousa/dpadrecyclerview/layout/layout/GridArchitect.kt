@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.layout.layout
 
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layout.LayoutConfiguration
 
 internal class GridArchitect(
     private val layout: RecyclerView.LayoutManager,

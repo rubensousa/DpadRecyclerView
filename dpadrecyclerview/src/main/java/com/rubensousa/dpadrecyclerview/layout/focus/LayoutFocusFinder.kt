@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager.focus
+package com.rubensousa.dpadrecyclerview.layout.focus
 
 import android.view.FocusFinder
 import android.view.View
@@ -22,10 +22,10 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovement
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovementCalculator
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.ViewSelector
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.scroll.LayoutScroller
+import com.rubensousa.dpadrecyclerview.layout.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layout.ViewSelector
+import com.rubensousa.dpadrecyclerview.layout.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layout.scroll.LayoutScroller
 
 internal class LayoutFocusFinder(
     private val layout: LayoutManager,

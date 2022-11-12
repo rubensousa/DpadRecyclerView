@@ -1,20 +1,4 @@
 /*
- * Copyright 2018 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/*
  * Copyright 2022 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager
+package com.rubensousa.dpadrecyclerview.layout
 
 import android.os.Build
 import android.os.Bundle
@@ -42,8 +26,8 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionIn
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.scroll.LayoutScroller
+import com.rubensousa.dpadrecyclerview.layout.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layout.scroll.LayoutScroller
 
 /**
  * Helper for dealing with accessibility

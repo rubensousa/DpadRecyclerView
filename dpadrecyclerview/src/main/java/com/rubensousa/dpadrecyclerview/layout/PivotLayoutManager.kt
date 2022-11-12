@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal.layoutmanager
+package com.rubensousa.dpadrecyclerview.layout
 
 import android.content.Context
 import android.graphics.Rect
@@ -26,10 +26,10 @@ import android.view.ViewGroup
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLayoutParams
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.focus.LayoutFocusFinder
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutArchitect
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.internal.layoutmanager.scroll.LayoutScroller
+import com.rubensousa.dpadrecyclerview.layout.focus.LayoutFocusFinder
+import com.rubensousa.dpadrecyclerview.layout.layout.LayoutArchitect
+import com.rubensousa.dpadrecyclerview.layout.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layout.scroll.LayoutScroller
 
 /**
  * Successor of DpadLayoutManager built from scratch for performance optimizations
