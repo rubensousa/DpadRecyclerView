@@ -47,7 +47,8 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  * - custom alignment
  * - using simple row structure for single spans
  */
-class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(), PivotLayoutManagerDelegate {
+class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
+    PivotLayoutManagerDelegate {
 
     private val configuration = LayoutConfiguration()
     private val pivotLayoutState = PivotLayoutState()
@@ -66,12 +67,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     private var recyclerView: RecyclerView? = null
 
     init {
-        configuration.apply {
-            setSpanCount(properties.spanCount)
-            setOrientation(properties.orientation)
-            setReverseLayout(properties.reverseLayout)
-            setStackFromEnd(properties.stackFromEnd)
-        }
+        setSpanCount(properties.spanCount)
+        setOrientation(properties.orientation)
+        configuration.setReverseLayout(properties.reverseLayout)
+        configuration.setStackFromEnd(properties.stackFromEnd)
     }
 
     override fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
@@ -312,6 +311,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun setOrientation(orientation: Int) {
         configuration.setOrientation(orientation)
+        layoutInfo.updateOrientation()
         requestLayout()
     }
 

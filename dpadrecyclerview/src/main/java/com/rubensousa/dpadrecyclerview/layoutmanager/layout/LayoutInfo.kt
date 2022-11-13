@@ -58,6 +58,12 @@ internal class LayoutInfo(
 
     fun isVertical() = configuration.isVertical()
 
+    fun updateOrientation() {
+        orientationHelper = OrientationHelper.createOrientationHelper(
+            layout, configuration.orientation
+        )
+    }
+
     fun setGravity(gravity: Int) {
         this.gravity = gravity
     }

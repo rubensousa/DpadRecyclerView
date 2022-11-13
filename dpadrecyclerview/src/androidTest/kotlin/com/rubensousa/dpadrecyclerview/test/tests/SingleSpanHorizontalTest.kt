@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.test.tests
 import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -56,7 +57,13 @@ class SingleSpanHorizontalTest : GridTest() {
 
     @Before
     fun setup() {
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
         launchFragment()
+    }
+
+    override fun destroy() {
+        super.destroy()
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
     }
 
     @Test
@@ -113,16 +120,18 @@ class SingleSpanHorizontalTest : GridTest() {
     @Test
     fun testMultiStepScroll() {
         KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 50)
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 25)
         waitForIdleScrollState()
-        assertFocusPosition(position = 0)
+        assertFocusPosition(position = 25)
     }
 
     @Test
     fun testContinuousScrollThatSettlesInSamePosition() {
         repeat(5) {
             KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_RIGHT, times = 10)
+            assertFocusPosition(position = 10)
             KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 10)
+            assertFocusPosition(position = 0)
         }
         waitForIdleScrollState()
         assertFocusPosition(position = 0)

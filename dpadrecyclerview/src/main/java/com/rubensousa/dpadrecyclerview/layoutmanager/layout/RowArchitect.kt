@@ -112,7 +112,7 @@ internal class RowArchitect(
             layoutManager.addDisappearingView(view, 0)
         }
         layoutManager.measureChildWithMargins(view, 0, 0)
-        result.consumed = layoutInfo.orientationHelper.getDecoratedMeasurement(view)
+        result.consumed = layoutInfo.getDecoratedSize(view)
 
         if (configuration.isVertical()) {
             // We need to align this view to an edge or center it, depending on the gravity set

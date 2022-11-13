@@ -299,9 +299,9 @@ internal class LayoutArchitect(
                 LayoutState.LayoutDirection.END
             }
             if (direction == LayoutState.LayoutDirection.START) {
-                scrapExtraStart += layoutInfo.orientationHelper.getDecoratedMeasurement(scrap.itemView)
+                scrapExtraStart += layoutInfo.getDecoratedSize(scrap.itemView)
             } else {
-                scrapExtraEnd += layoutInfo.orientationHelper.getDecoratedMeasurement(scrap.itemView)
+                scrapExtraEnd += layoutInfo.getDecoratedSize(scrap.itemView)
             }
         }
 
