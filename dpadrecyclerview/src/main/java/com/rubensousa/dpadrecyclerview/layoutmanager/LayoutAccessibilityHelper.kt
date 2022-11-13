@@ -24,7 +24,6 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionInfoCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
@@ -179,17 +178,17 @@ internal class LayoutAccessibilityHelper(
         }
         if (configuration.isHorizontal()) {
             if (action == AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_LEFT.id) {
-                return if(reverseLayout) {
+                return if (reverseLayout) {
                     AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD
                 } else {
                     AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD
                 }
             } else if (action == AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_RIGHT.id) {
-                 return if (reverseLayout){
-                     AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD
-                 } else{
-                     AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD
-                 }
+                return if (reverseLayout) {
+                    AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD
+                } else {
+                    AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD
+                }
             }
         } else { // VERTICAL layout
             if (action == AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_UP.id) {
@@ -203,9 +202,9 @@ internal class LayoutAccessibilityHelper(
 
     private fun sendViewScrolledAccessibilityEvent(recyclerView: RecyclerView?) {
         val event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_VIEW_SCROLLED)
-        recyclerView?.let { recyclerView ->
-            recyclerView.onInitializeAccessibilityEvent(event)
-            recyclerView.requestSendAccessibilityEvent(recyclerView, event)
+        recyclerView?.apply {
+            onInitializeAccessibilityEvent(event)
+            requestSendAccessibilityEvent(this, event)
         }
     }
 
