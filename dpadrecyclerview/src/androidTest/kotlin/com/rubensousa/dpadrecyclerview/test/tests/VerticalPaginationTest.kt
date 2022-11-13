@@ -22,6 +22,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
@@ -37,6 +38,7 @@ import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -67,9 +69,15 @@ class VerticalPaginationTest : GridTest() {
 
     private lateinit var fragmentScenario: FragmentScenario<TestPaginationFragment>
 
+    @Before
+    fun setup() {
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
+    }
+
     @After
     override fun destroy() {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
     }
 
     @Test

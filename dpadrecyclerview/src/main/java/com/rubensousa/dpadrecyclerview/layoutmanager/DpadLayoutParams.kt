@@ -67,11 +67,21 @@ class DpadLayoutParams : GridLayoutManager.LayoutParams {
     }
 
     fun getOpticalWidth(view: View): Int {
-        return view.width - leftInset - rightInset
+        val width = if (view.isLaidOut) {
+            view.width
+        } else {
+            view.measuredWidth
+        }
+        return width - leftInset - rightInset
     }
 
     fun getOpticalHeight(view: View): Int {
-        return view.height - topInset - bottomInset
+        val height = if (view.isLaidOut) {
+            view.height
+        } else {
+            view.measuredHeight
+        }
+        return height - topInset - bottomInset
     }
 
     fun getAlignmentPositions(): IntArray? {
