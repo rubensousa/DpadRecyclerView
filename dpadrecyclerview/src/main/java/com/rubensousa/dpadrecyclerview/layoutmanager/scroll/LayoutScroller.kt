@@ -19,16 +19,18 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.layoutmanager.ViewHolderSelector
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutState
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
 internal class LayoutScroller(
+    private val layoutManager: LayoutManager,
     private val layoutInfo: LayoutInfo,
     private val layoutAlignment: LayoutAlignment,
-    private val layoutArchitect: LayoutArchitect,
-    private val viewHolderSelector: ViewHolderSelector
+    private val configuration: LayoutConfiguration,
+    private val pivotLayoutState: PivotLayoutState
 ) {
 
     companion object {
@@ -40,6 +42,39 @@ internal class LayoutScroller(
     
     var isSelectionInProgress = false
         private set
+
+    fun scrollToPosition(
+        recyclerView: RecyclerView,
+        position: Int,
+        subPosition: Int,
+        smooth: Boolean
+    ) {
+
+    }
+
+    /**
+     * Scrolls to the current focused position
+     */
+    fun scrollToFocusedPosition(recyclerView: RecyclerView, smooth: Boolean) {
+        val itemCount = layoutManager.itemCount
+        var targetPosition = pivotLayoutState.position
+        var targetSubPosition = pivotLayoutState.subPosition
+        if (itemCount == 0) {
+            targetPosition = 0
+            targetSubPosition = 0
+        } else if (targetPosition >= itemCount) {
+            targetPosition = itemCount - 1
+            targetSubPosition = 0
+        } else if (targetPosition == RecyclerView.NO_POSITION) {
+            targetPosition = 0
+            targetSubPosition = 0
+        }
+        if (targetSubPosition != 0) {
+            scrollToPosition(recyclerView, targetPosition, targetSubPosition, smooth)
+        } else {
+            scrollToView(recyclerView, layoutManager.findViewByPosition(targetPosition), smooth)
+        }
+    }
 
     // TODO
     fun scrollToPosition(position: Int) {
@@ -93,7 +128,7 @@ internal class LayoutScroller(
         val newSubFocusPosition = layoutAlignment.findSubPositionOfChild(
             recyclerView, viewHolderView, subPositionView
         )
-        val focusChanged = viewHolderSelector.update(newFocusPosition, newSubFocusPosition)
+        val focusChanged = pivotLayoutState.update(newFocusPosition, newSubFocusPosition)
         var selectViewHolder = false
         if (focusChanged) {
             if (!layoutInfo.isLayoutInProgress) {
@@ -101,7 +136,7 @@ internal class LayoutScroller(
             } else {
                 isSelectionUpdatePending = true
             }
-            if (layoutInfo.isChildDrawingOrderEnabled) {
+            if (configuration.isChildDrawingOrderEnabled) {
                 recyclerView.invalidate()
             }
         }
@@ -120,11 +155,15 @@ internal class LayoutScroller(
             } != null
 
         if (selectViewHolder) {
-            viewHolderSelector.dispatchViewHolderSelected()
+            pivotLayoutState.dispatchViewHolderSelected()
             if (!scrolled) {
-                viewHolderSelector.dispatchViewHolderSelectedAndAligned()
+                pivotLayoutState.dispatchViewHolderSelectedAndAligned()
             }
         }
+    }
+
+    private fun scrollToView(recyclerView: RecyclerView, view: View?, smooth: Boolean) {
+        scrollToView(recyclerView, view, subPositionView = view?.findFocus(), smooth)
     }
 
     private fun scroll(

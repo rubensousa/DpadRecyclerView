@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview
+package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.content.Context
 import android.util.AttributeSet
@@ -23,9 +23,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-open class DpadLayoutParams : GridLayoutManager.LayoutParams {
+class DpadLayoutParams : GridLayoutManager.LayoutParams {
 
-    // For placement
+    // TODO For custom placement
     var leftInset = 0
         private set
     var topInset = 0

@@ -27,6 +27,7 @@ import android.view.View
 import android.view.animation.Interpolator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
 
 /**
  * A [RecyclerView] that scrolls to items on DPAD key events instead of swipe/touch gestures.
@@ -241,11 +242,23 @@ class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Updates the [GridLayoutManager.SpanSizeLookup] used by the [DpadLayoutManager]
-     * of this RecyclerView
-     * @param spanSizeLookup the new span configuration
+     * Updates the [DpadSpanSizeLookup] used by the layout manager of this RecyclerView.
+     * @param spanSizeLookup the new span size configuration
      */
+    @Deprecated("Use setSpanSizeLookup(DpadSpanSizeLookup) instead")
     fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
+        setSpanSizeLookup(object : DpadSpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return spanSizeLookup.getSpanSize(position)
+            }
+        })
+    }
+
+    /**
+     * Updates the [DpadSpanSizeLookup] used by the layout manager of this RecyclerView.
+     * @param spanSizeLookup the new span size configuration
+     */
+    fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
         delegate.setSpanSizeLookup(spanSizeLookup)
     }
 
@@ -536,13 +549,6 @@ class DpadRecyclerView @JvmOverloads constructor(
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
 
     /**
-     * @return the [DpadLayoutManager] used by this RecyclerView
-     */
-    fun getDpadLayoutManager(): DpadLayoutManager {
-        return delegate.requireLayout()
-    }
-
-    /**
      * Defines behavior of duration and interpolator for [smoothScrollBy].
      */
     interface SmoothScrollByBehavior {
@@ -587,7 +593,7 @@ class DpadRecyclerView @JvmOverloads constructor(
 
     /**
      * Listener for receiving notifications of a completed layout pass
-     * by the LayoutManager of this RecyclerView ([DpadLayoutManager.onLayoutCompleted])
+     * by the LayoutManager of this RecyclerView
      */
     interface OnLayoutCompletedListener {
         /**
@@ -607,12 +613,4 @@ class DpadRecyclerView @JvmOverloads constructor(
         fun onInterceptMotionEvent(event: MotionEvent): Boolean
     }
 
-}
-
-fun RecyclerView.canScrollHorizontally(): Boolean {
-    return layoutManager?.canScrollVertically() == true
-}
-
-fun RecyclerView.canScrollVertically(): Boolean {
-    return layoutManager?.canScrollVertically() == true
 }

@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
+import android.graphics.Rect
 import android.view.FocusFinder
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +24,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovement
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovementCalculator
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.ViewHolderSelector
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutState
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
@@ -32,7 +33,7 @@ internal class LayoutFocusFinder(
     private val configuration: LayoutConfiguration,
     private val scroller: LayoutScroller,
     private val layoutInfo: LayoutInfo,
-    private val viewHolderSelector: ViewHolderSelector
+    private val pivotLayoutState: PivotLayoutState
 ) {
 
     private var dpadRecyclerView: RecyclerView? = null
@@ -42,6 +43,30 @@ internal class LayoutFocusFinder(
 
     fun setRecyclerView(recyclerView: RecyclerView?) {
         dpadRecyclerView = recyclerView
+    }
+
+    fun onRequestFocusInDescendants(direction: Int, previouslyFocusedRect: Rect?): Boolean {
+        val view = layout.findViewByPosition(pivotLayoutState.position) ?: return false
+        return view.requestFocus(direction, previouslyFocusedRect)
+    }
+
+    /**
+     * When [RecyclerView.requestFocus] is called, we need to focus the first focusable child
+     */
+    fun onFocusChanged(gainFocus: Boolean) {
+        // Skip if we didn't gain focus or no view is selected
+        if (!gainFocus || pivotLayoutState.position == RecyclerView.NO_POSITION){
+            return
+        }
+        var index = pivotLayoutState.position
+        while (index < layout.itemCount) {
+            val view = layout.findViewByPosition(index) ?: break
+            if (view.hasFocusable()) {
+                view.requestFocus()
+                break
+            }
+            index++
+        }
     }
 
     fun onRequestChildFocus(
@@ -67,7 +92,7 @@ internal class LayoutFocusFinder(
     }
 
     private fun saveSpanFocus(newPosition: Int) {
-        val previousPosition = viewHolderSelector.position
+        val previousPosition = pivotLayoutState.position
         val previousSpanSize = layoutInfo.getSpanSize(previousPosition)
         val newSpanSize = layoutInfo.getSpanSize(newPosition)
         if (previousSpanSize != newSpanSize && previousSpanSize != configuration.spanCount) {
@@ -102,7 +127,7 @@ internal class LayoutFocusFinder(
             return true
         }
         val focusableCount = views.size
-        val view = layout.findViewByPosition(viewHolderSelector.position)
+        val view = layout.findViewByPosition(pivotLayoutState.position)
         view?.addFocusables(views, direction, focusableMode)
         // if still cannot find any, fall through and add itself
         if (views.size != focusableCount) {
@@ -272,5 +297,6 @@ internal class LayoutFocusFinder(
     private fun isViewFocusable(view: View): Boolean {
         return view.visibility == View.VISIBLE && view.hasFocusable() && view.isFocusable
     }
+
 
 }

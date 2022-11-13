@@ -20,17 +20,19 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadLayoutParams
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.internal.ChildScrollAlignment
 import com.rubensousa.dpadrecyclerview.internal.ParentScrollAlignment
 import com.rubensousa.dpadrecyclerview.internal.ViewHolderScrollAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
 internal class LayoutAlignment(
+    private val layoutManager: LayoutManager,
     private val layoutInfo: LayoutInfo,
-    private val layoutManager: LayoutManager
+    private val configuration: LayoutConfiguration
 ) {
 
     private val parentAlignment = ParentScrollAlignment()
@@ -41,18 +43,14 @@ internal class LayoutAlignment(
         parentAlignment.reset()
     }
 
-    fun onLayoutChildren(
-        width: Int, height: Int, reversedFlow: Boolean,
-        paddingLeft: Int, paddingRight: Int,
-        paddingTop: Int, paddingBottom: Int
-    ) {
-        parentAlignment.setSize(width, height, layoutInfo.orientation)
-        parentAlignment.reversedFlow = reversedFlow
+    fun onLayoutChildren() {
+        parentAlignment.setSize(layoutManager.width, layoutManager.height, layoutInfo.orientation)
+        parentAlignment.reverseLayout = configuration.reverseLayout
         parentAlignment.setPadding(
-            paddingLeft,
-            paddingRight,
-            paddingTop,
-            paddingBottom,
+            layoutManager.paddingLeft,
+            layoutManager.paddingRight,
+            layoutManager.paddingTop,
+            layoutManager.paddingBottom,
             layoutInfo.orientation
         )
     }

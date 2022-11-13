@@ -19,14 +19,24 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 
-internal class ViewHolderSelector {
+internal class PivotLayoutState {
+
+    private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
 
     var position: Int = 0
         private set
 
     var subPosition: Int = 0
         private set
+
+    private var selectedViewHolder: DpadViewHolder? = null
+
+    fun getCurrentSubPositions(): Int {
+        return selectedViewHolder?.getAlignments()?.size ?: 0
+    }
 
     // TODO
     fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
@@ -81,6 +91,18 @@ internal class ViewHolderSelector {
     // TODO
     fun dispatchViewHolderSelectedAndAligned() {
         
+    }
+
+    fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
+        selectionListeners.add(listener)
+    }
+
+    fun removeOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
+        selectionListeners.remove(listener)
+    }
+
+    fun clearOnViewHolderSelectedListeners() {
+        selectionListeners.clear()
     }
 
     data class SavedState(val selectedPosition: Int) : Parcelable {

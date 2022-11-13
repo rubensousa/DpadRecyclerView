@@ -103,14 +103,6 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         })
         recyclerView.setChildAlignment(topChildAlignment)
         recyclerView.setParentAlignment(topParentAlignment)
-        recyclerView.addItemDecoration(
-            GridSpanMarginDecoration.create(
-                margin = binding.root.context.resources.getDimensionPixelOffset(
-                    R.dimen.item_spacing
-                ),
-                recyclerView.getDpadLayoutManager()
-            )
-        )
         recyclerView.adapter = concatAdapter
         recyclerView.addOnViewHolderSelectedListener(object :
             OnViewHolderSelectedListener {

@@ -17,7 +17,7 @@
 package com.rubensousa.dpadrecyclerview.internal
 
 import android.view.View
-import com.rubensousa.dpadrecyclerview.DpadLayoutParams
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.ViewHolderAlignment
 
 internal class ViewHolderScrollAlignment {

@@ -18,6 +18,8 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.FocusableDirection
 
 internal class LayoutConfiguration {
 
@@ -48,6 +50,27 @@ internal class LayoutConfiguration {
     var focusOutBack = false
         private set
 
+    /**
+     * Allow dpad events to navigate outside the View at the last position
+     * in the opposite direction of the orientation
+     * For horizontal orientation, this means navigating out from the top of the last view
+     * For vertical orientation, this means navigation out from the start of the last view
+     */
+    var focusOutSideFront = true
+        private set
+
+    /**
+     * Allow dpad events to navigate outside the View at the last position
+     * in the opposite direction of the orientation
+     * For horizontal orientation, this means navigating out from the bottom of the last view
+     * For vertical orientation, this means navigation out from the end of the last view
+     */
+    var focusOutSideBack = true
+        private set
+
+    var focusableDirection = FocusableDirection.STANDARD
+        private set
+
     var reverseLayout = false
         private set
 
@@ -73,8 +96,18 @@ internal class LayoutConfiguration {
     var stackFromEnd = false
         private set
 
+    var isChildDrawingOrderEnabled = true
+        private set
+
+    var spanSizeLookup: DpadSpanSizeLookup = DpadSpanSizeLookup.default()
+        private set
+
     fun setFocusSearchDisabled(isDisabled: Boolean){
         isFocusSearchDisabled = isDisabled
+    }
+
+    fun setSmoothFocusChangesEnabled(isEnabled: Boolean) {
+        isSmoothFocusChangesEnabled = isEnabled
     }
 
     fun setGravity(newGravity: Int) {
@@ -89,8 +122,34 @@ internal class LayoutConfiguration {
         spanCount = count
     }
 
+    fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup){
+        this.spanSizeLookup = spanSizeLookup
+    }
+
+    fun setChildDrawingOrderEnabled(enabled: Boolean) {
+        isChildDrawingOrderEnabled = enabled
+    }
+
     fun isHorizontal() = orientation == RecyclerView.HORIZONTAL
 
     fun isVertical() = orientation == RecyclerView.VERTICAL
+
+    fun setExtraLayoutSpace(value: Int) {
+        extraLayoutSpace = value
+    }
+
+    fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
+        focusOutFront = throughFront
+        focusOutBack = throughBack
+    }
+
+    fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
+        focusOutSideFront = throughFront
+        focusOutSideBack = throughBack
+    }
+
+    fun setFocusableDirection(direction: FocusableDirection) {
+        focusableDirection = direction
+    }
 
 }

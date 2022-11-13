@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview
+package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.content.Context
 import android.graphics.Rect
@@ -26,6 +26,13 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.FocusableDirection
+import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.internal.DpadFocusManager
 import com.rubensousa.dpadrecyclerview.internal.DpadLayoutDelegate
 import com.rubensousa.dpadrecyclerview.internal.DpadScroller
@@ -34,17 +41,11 @@ import com.rubensousa.dpadrecyclerview.internal.ScrollAlignment
 /**
  * A [GridLayoutManager] that supports DPAD navigation
  */
-class DpadLayoutManager : GridLayoutManager {
+internal class DpadLayoutManager : GridLayoutManager, PivotLayoutManagerDelegate {
 
     companion object {
         private val LAYOUT_RECT = Rect()
     }
-
-    val selectedPosition: Int
-        get() = focusManager.position
-
-    val subSelectionPosition: Int
-        get() = focusManager.subPosition
 
     private val idleScrollListener = IdleScrollListener()
     private val requestLayoutRunnable = Runnable {
@@ -114,6 +115,14 @@ class DpadLayoutManager : GridLayoutManager {
             delegate.spanCount = spanCount
         }
         super.setSpanCount(spanCount)
+    }
+
+    override fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
+        setSpanSizeLookup(object : SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return spanSizeLookup.getSpanSize(position)
+            }
+        })
     }
 
     override fun setOrientation(orientation: Int) {
@@ -347,7 +356,7 @@ class DpadLayoutManager : GridLayoutManager {
     }
 
     override fun onSaveInstanceState(): Parcelable {
-        return SavedState(selectedPosition)
+        return SavedState(getSelectedPosition())
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
@@ -369,14 +378,22 @@ class DpadLayoutManager : GridLayoutManager {
         return spanSizeLookup.getSpanGroupIndex(position, spanCount)
     }
 
-    fun setExtraLayoutSpace(value: Int) {
+    override fun getSelectedPosition(): Int = focusManager.position
+
+    override fun getSelectedSubPosition(): Int = focusManager.subPosition
+
+    override fun getCurrentSubPositions(): Int {
+        return selectedViewHolder?.getAlignments()?.size ?: 0
+    }
+
+    override fun setExtraLayoutSpace(value: Int) {
         extraLayoutSpace = value
         requestLayout()
     }
 
-    fun getExtraLayoutSpace() = extraLayoutSpace
+    override fun getExtraLayoutSpace() = extraLayoutSpace
 
-    fun setGravity(gravity: Int) {
+    override fun setGravity(gravity: Int) {
         delegate.gravity = gravity
         if (recyclerView == null) {
             return
@@ -401,7 +418,7 @@ class DpadLayoutManager : GridLayoutManager {
         return getAdapterPositionOfView(child)
     }
 
-    fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean) {
+    override fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean) {
         scrollAlignment.setParentAlignment(alignment)
         if (recyclerView == null) {
             return
@@ -414,9 +431,9 @@ class DpadLayoutManager : GridLayoutManager {
         }
     }
 
-    fun getParentAlignment(): ParentAlignment = scrollAlignment.getParentAlignment()
+    override fun getParentAlignment(): ParentAlignment = scrollAlignment.getParentAlignment()
 
-    fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean) {
+    override fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean) {
         scrollAlignment.setChildAlignment(alignment)
         if (recyclerView == null) {
             return
@@ -429,9 +446,9 @@ class DpadLayoutManager : GridLayoutManager {
         }
     }
 
-    fun getChildAlignment() = scrollAlignment.getChildAlignment()
+    override fun getChildAlignment() = scrollAlignment.getChildAlignment()
 
-    fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
+    override fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
         scrollAlignment.setParentAlignment(parent)
         scrollAlignment.setChildAlignment(child)
         if (recyclerView == null) {
@@ -445,72 +462,68 @@ class DpadLayoutManager : GridLayoutManager {
         }
     }
 
-    fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
+    override fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
         focusManager.focusOutFront = throughFront
         focusManager.focusOutBack = throughBack
     }
 
-    fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
+    override fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
         focusManager.focusOutSideFront = throughFront
         focusManager.focusOutSideBack = throughBack
     }
 
-    fun setFocusSearchDisabled(disabled: Boolean) {
+    override fun setFocusSearchDisabled(disabled: Boolean) {
         focusManager.isFocusSearchDisabled = disabled
     }
 
-    fun isFocusSearchDisabled() = focusManager.isFocusSearchDisabled
+    override fun isFocusSearchDisabled() = focusManager.isFocusSearchDisabled
 
-    fun setFocusableDirection(direction: FocusableDirection) {
+    override fun setFocusableDirection(direction: FocusableDirection) {
         focusManager.focusableDirection = direction
     }
 
-    fun getFocusableDirection() = focusManager.focusableDirection
+    override fun getFocusableDirection() = focusManager.focusableDirection
 
-    fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
+    override fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
         selectionListeners.add(listener)
     }
 
-    fun removeOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
+    override fun removeOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
         selectionListeners.remove(listener)
     }
 
-    fun clearOnViewHolderSelectedListeners() {
+    override fun clearOnViewHolderSelectedListeners() {
         selectionListeners.clear()
     }
 
     fun isRTL() = isLayoutRTL
 
-    fun addOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
+    override fun addOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
         layoutCompleteListeners.add(listener)
     }
 
-    fun removeOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
+    override fun removeOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
         layoutCompleteListeners.remove(listener)
     }
 
-    fun clearOnLayoutCompletedListeners() {
+    override fun clearOnLayoutCompletedListeners() {
         layoutCompleteListeners.clear()
     }
 
-    fun getCurrentSubSelectionCount(): Int {
-        return selectedViewHolder?.getAlignments()?.size ?: 0
-    }
-
-    fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {
+    override fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {
         scroller.scrollToPosition(
             requireNotNull(recyclerView), position, subPosition, smooth
         )
     }
 
-    fun selectSubPosition(subPosition: Int, smooth: Boolean) {
+    override fun selectSubPosition(subPosition: Int, smooth: Boolean) {
         scroller.scrollToPosition(
             requireNotNull(recyclerView), focusManager.position, subPosition, smooth
         )
     }
 
-    fun setSmoothFocusChangesEnabled(enabled: Boolean) {
-        isSmoothFocusChangesEnabled = enabled
+    override fun setSmoothFocusChangesEnabled(isEnabled: Boolean) {
+        isSmoothFocusChangesEnabled = isEnabled
     }
 
     internal fun scrollToView(
@@ -553,10 +566,10 @@ class DpadLayoutManager : GridLayoutManager {
     internal fun dispatchViewHolderSelected() {
         val currentRecyclerView = recyclerView ?: return
 
-        val view = if (selectedPosition == RecyclerView.NO_POSITION) {
+        val view = if (getSelectedPosition() == RecyclerView.NO_POSITION) {
             null
         } else {
-            findViewByPosition(selectedPosition)
+            findViewByPosition(getSelectedPosition())
         }
 
         val viewHolder = if (view != null) {
@@ -581,7 +594,7 @@ class DpadLayoutManager : GridLayoutManager {
         if (viewHolder != null) {
             selectionListeners.forEach { listener ->
                 listener.onViewHolderSelected(
-                    currentRecyclerView, viewHolder, selectedPosition, subSelectionPosition
+                    currentRecyclerView, viewHolder, getSelectedPosition(), getSelectedSubPosition()
                 )
             }
         } else {
@@ -620,10 +633,10 @@ class DpadLayoutManager : GridLayoutManager {
 
         val currentRecyclerView = recyclerView ?: return
 
-        val view = if (selectedPosition == RecyclerView.NO_POSITION) {
+        val view = if (getSelectedPosition() == RecyclerView.NO_POSITION) {
             null
         } else {
-            findViewByPosition(selectedPosition)
+            findViewByPosition(getSelectedPosition())
         }
         val viewHolder = if (view != null) {
             currentRecyclerView.getChildViewHolder(view)
@@ -634,7 +647,7 @@ class DpadLayoutManager : GridLayoutManager {
         if (viewHolder != null) {
             selectionListeners.forEach { listener ->
                 listener.onViewHolderSelectedAndAligned(
-                    currentRecyclerView, viewHolder, selectedPosition, subSelectionPosition
+                    currentRecyclerView, viewHolder, getSelectedPosition(), getSelectedSubPosition()
                 )
             }
         } else {
@@ -656,7 +669,7 @@ class DpadLayoutManager : GridLayoutManager {
         return count == 0 || recyclerView.findViewHolderForAdapterPosition(0) != null
     }
 
-    internal fun setRecyclerView(recyclerView: RecyclerView?) {
+    override fun setRecyclerView(recyclerView: RecyclerView?) {
         if (recyclerView === this.recyclerView) {
             return
         }
@@ -676,37 +689,23 @@ class DpadLayoutManager : GridLayoutManager {
         recyclerView?.addOnScrollListener(idleScrollListener)
     }
 
-    internal fun getChildDrawingOrder(childCount: Int, drawingOrderPosition: Int): Int {
-        val view = findViewByPosition(selectedPosition) ?: return drawingOrderPosition
-        val focusIndex = recyclerView?.indexOfChild(view) ?: return drawingOrderPosition
-        // Scenario: 0 1 2 3 4 5 6 7 8 9, 4 is the focused item
-        // drawing order is: 0 1 2 3 9 8 7 6 5 4
-        return if (drawingOrderPosition < focusIndex) {
-            drawingOrderPosition
-        } else if (drawingOrderPosition < childCount - 1) {
-            focusIndex + childCount - 1 - drawingOrderPosition
-        } else {
-            focusIndex
-        }
-    }
-
-    internal fun onRequestFocusInDescendants(
+    override fun onRequestFocusInDescendants(
         direction: Int,
         previouslyFocusedRect: Rect?
     ): Boolean {
-        val view = findViewByPosition(selectedPosition) ?: return false
+        val view = findViewByPosition(getSelectedPosition()) ?: return false
         return view.requestFocus(direction, previouslyFocusedRect)
     }
 
     /**
      * When [RecyclerView.requestFocus] is called, we need to focus the first focusable child
      */
-    internal fun onFocusChanged(gainFocus: Boolean) {
+    override fun onFocusChanged(gainFocus: Boolean) {
         if (!gainFocus) return
-        var index = if (selectedPosition == RecyclerView.NO_POSITION) {
+        var index = if (getSelectedPosition() == RecyclerView.NO_POSITION) {
             0
         } else {
-            selectedPosition
+            getSelectedPosition()
         }
         while (index < itemCount) {
             val view = findViewByPosition(index) ?: break
@@ -718,7 +717,7 @@ class DpadLayoutManager : GridLayoutManager {
         }
     }
 
-    internal fun onRtlPropertiesChanged() {
+    override fun onRtlPropertiesChanged() {
         requestLayout()
     }
 
@@ -749,7 +748,7 @@ class DpadLayoutManager : GridLayoutManager {
         return isSmoothFocusChangesEnabled
     }
 
-    internal fun setChildrenDrawingOrderEnabled(enabled: Boolean) {
+    override fun setChildrenDrawingOrderEnabled(enabled: Boolean) {
         scroller.childDrawingOrderEnabled = enabled
     }
 
@@ -790,7 +789,7 @@ class DpadLayoutManager : GridLayoutManager {
             if (wasScrolling == isScrolling) return
             if (isScrolling) {
                 // If we're now scrolling, save the current selection state
-                previousSelectedPosition = selectedPosition
+                previousSelectedPosition = getSelectedPosition()
             } else if (previousSelectedPosition != RecyclerView.NO_POSITION) {
                 // If we're no longer scrolling, check if we need to send a new event
                 dispatchViewHolderSelectedAndAligned()

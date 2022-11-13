@@ -20,6 +20,8 @@ import android.view.View
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.*
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
 internal class ScrollAlignment(
     private val layoutManager: DpadLayoutManager
@@ -53,7 +55,7 @@ internal class ScrollAlignment(
         paddingTop: Int, paddingBottom: Int
     ) {
         parentAlignment.setSize(width, height, orientation)
-        parentAlignment.reversedFlow = reversedFlow
+        parentAlignment.reverseLayout = reversedFlow
         parentAlignment.setPadding(
             paddingLeft,
             paddingRight,

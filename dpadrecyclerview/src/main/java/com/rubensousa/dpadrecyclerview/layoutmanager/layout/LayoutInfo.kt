@@ -18,12 +18,13 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.DpadLayoutParams
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
@@ -45,10 +46,10 @@ internal class LayoutInfo(
         private set
     var isLayoutInProgress = false
         private set
-    var isChildDrawingOrderEnabled = true
+
+    var gravity: Int = Gravity.START.or(Gravity.TOP)
         private set
 
-    private var spanSizeLookup: DpadSpanSizeLookup = DpadSpanSizeLookup.default()
     private var dpadRecyclerView: RecyclerView? = null
 
     fun isRTL() = layout.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL
@@ -57,8 +58,8 @@ internal class LayoutInfo(
 
     fun isVertical() = configuration.isVertical()
 
-    fun setChildDrawingOrderEnabled(enabled: Boolean) {
-        isChildDrawingOrderEnabled = enabled
+    fun setGravity(gravity: Int) {
+        this.gravity = gravity
     }
 
     /**
@@ -81,23 +82,20 @@ internal class LayoutInfo(
     }
 
     fun getSpanSize(position: Int): Int {
-        return spanSizeLookup.getSpanSize(position)
+        return configuration.spanSizeLookup.getSpanSize(position)
     }
 
     fun getColumnIndex(position: Int): Int {
-        return spanSizeLookup.getSpanIndex(position, configuration.spanCount)
+        return configuration.spanSizeLookup.getSpanIndex(position, configuration.spanCount)
     }
 
     fun getEndColumnIndex(position: Int): Int {
-        return getColumnIndex(position) + spanSizeLookup.getSpanSize(position) - 1
+        return getColumnIndex(position) + configuration.spanSizeLookup.getSpanSize(position) - 1
     }
 
     fun getRowIndex(position: Int): Int {
-        return spanSizeLookup.getSpanGroupIndex(position, configuration.spanCount)
-    }
-
-    fun setSpanSizeLookup(lookup: DpadSpanSizeLookup) {
-        spanSizeLookup = lookup
+        return configuration.spanSizeLookup
+            .getSpanGroupIndex(position, configuration.spanCount)
     }
 
     fun getAdapterPositionOfChildAt(index: Int): Int {
@@ -121,7 +119,8 @@ internal class LayoutInfo(
         viewPosition: Int
     ): Int {
         if (!state.isPreLayout) {
-            return spanSizeLookup.getCachedSpanGroupIndex(viewPosition, configuration.spanCount)
+            return configuration.spanSizeLookup
+                .getCachedSpanGroupIndex(viewPosition, configuration.spanCount)
         }
         val adapterPosition = recycler.convertPreLayoutPositionToPostLayout(viewPosition)
         if (adapterPosition == RecyclerView.NO_POSITION) {
@@ -130,7 +129,8 @@ internal class LayoutInfo(
             )
             return 0
         }
-        return spanSizeLookup.getCachedSpanGroupIndex(adapterPosition, configuration.spanCount)
+        return configuration.spanSizeLookup
+            .getCachedSpanGroupIndex(adapterPosition, configuration.spanCount)
     }
 
     fun getMeasuredSize(view: View): Int {

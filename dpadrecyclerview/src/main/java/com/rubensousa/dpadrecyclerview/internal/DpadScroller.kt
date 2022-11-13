@@ -22,7 +22,7 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadLayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import kotlin.math.sqrt

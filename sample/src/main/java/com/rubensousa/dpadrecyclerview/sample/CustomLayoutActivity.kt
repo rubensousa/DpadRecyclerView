@@ -17,7 +17,7 @@ class CustomLayoutActivity : AppCompatActivity() {
         setContentView(R.layout.activity_custom_layout)
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val layoutManager = PivotLayoutManager()
-        layoutManager.setDpadRecyclerView(recyclerView)
+        layoutManager.setRecyclerView(recyclerView)
         recyclerView.addItemDecoration(
             LinearMarginDecoration.createVertical(
                 verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing) / 2

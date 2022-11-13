@@ -34,7 +34,7 @@ internal class LayoutAccessibilityHelper(
     private val layoutManager: LayoutManager,
     private val configuration: LayoutConfiguration,
     private val layoutInfo: LayoutInfo,
-    private val selectionState: ViewHolderSelector,
+    private val selectionState: PivotLayoutState,
     private val scroller: LayoutScroller
 ) {
 

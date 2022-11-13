@@ -20,8 +20,9 @@ import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.ViewHolderSelector
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutState
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -32,7 +33,7 @@ import kotlin.math.min
 internal class LayoutArchitect(
     private val layoutManager: LayoutManager,
     private val configuration: LayoutConfiguration,
-    private val viewHolderSelector: ViewHolderSelector,
+    private val pivotLayoutState: PivotLayoutState,
     private val layoutInfo: LayoutInfo
 ) {
 
@@ -48,7 +49,21 @@ internal class LayoutArchitect(
     private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
     private val rowArchitect = RowArchitect(layoutManager, layoutInfo, configuration)
     private val gridArchitect = GridArchitect(layoutManager, layoutInfo, configuration)
+    private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
+
     private var dpadRecyclerView: RecyclerView? = null
+
+    fun addOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
+        layoutCompleteListeners.add(listener)
+    }
+
+    fun removeOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
+        layoutCompleteListeners.remove(listener)
+    }
+
+    fun clearOnLayoutCompletedListeners() {
+        layoutCompleteListeners.clear()
+    }
 
     fun setRecyclerView(recyclerView: RecyclerView?) {
         dpadRecyclerView = recyclerView
@@ -106,7 +121,7 @@ internal class LayoutArchitect(
         var startOffset = 0
         var endOffset = 0
 
-        val pivotPosition = viewHolderSelector.position
+        val pivotPosition = pivotLayoutState.position
         rowArchitect.layoutPivot(pivotPosition, recycler, pivotInfo)
 
         if (layoutState.reverseLayout) {
@@ -150,10 +165,12 @@ internal class LayoutArchitect(
 
     }
 
-    // TODO
     fun onLayoutCompleted(state: RecyclerView.State) {
         layoutInfo.setLayoutInProgress(false)
         layoutResult.reset()
+        layoutCompleteListeners.forEach { listener ->
+            listener.onLayoutCompleted(state)
+        }
     }
 
     /**
@@ -229,7 +246,7 @@ internal class LayoutArchitect(
             // Prefetch items centered around the selected position
             val initialPosition = max(
                 0, min(
-                    viewHolderSelector.position - (prefetchCount - 1) / 2,
+                    pivotLayoutState.position - (prefetchCount - 1) / 2,
                     adapterItemCount - prefetchCount
                 )
             )

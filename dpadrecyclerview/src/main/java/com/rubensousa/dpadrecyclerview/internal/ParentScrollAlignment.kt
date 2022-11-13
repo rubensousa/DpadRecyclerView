@@ -46,7 +46,7 @@ internal class ParentScrollAlignment {
     var maxScroll = 0
         private set
 
-    var reversedFlow = false
+    var reverseLayout = false
 
     var size = 0
         private set
@@ -112,7 +112,7 @@ internal class ParentScrollAlignment {
         val isMinUnknown = isMinUnknown
         val isMaxUnknown = isMaxUnknown
         if (!isMinUnknown) {
-            val alignToMinEdge = if (!reversedFlow) {
+            val alignToMinEdge = if (!reverseLayout) {
                 shouldAlignToMinEdge(defaultAlignment)
             } else {
                 shouldAlignToMaxEdge(defaultAlignment)
@@ -126,7 +126,7 @@ internal class ParentScrollAlignment {
             }
         }
         if (!isMaxUnknown) {
-            val alignToMaxEdge = if (!reversedFlow) {
+            val alignToMaxEdge = if (!reverseLayout) {
                 shouldAlignToMaxEdge(defaultAlignment)
             } else {
                 shouldAlignToMinEdge(defaultAlignment)
@@ -140,7 +140,7 @@ internal class ParentScrollAlignment {
             }
         }
         if (!isMaxUnknown && !isMinUnknown) {
-            if (!reversedFlow) {
+            if (!reverseLayout) {
                 if (shouldAlignToMinEdge(defaultAlignment)) {
                     // don't over scroll max
                     maxScroll = max(minScroll, maxScroll)
@@ -172,7 +172,7 @@ internal class ParentScrollAlignment {
         val keyLine = calculateKeyline(alignment)
         if (!isMinUnknown) {
             val keyLineToMinEdge = keyLine - paddingMin
-            val alignToMinEdge = if (!reversedFlow) {
+            val alignToMinEdge = if (!reverseLayout) {
                 shouldAlignToMinEdge(alignment)
             } else {
                 shouldAlignToMaxEdge(alignment)
@@ -189,7 +189,7 @@ internal class ParentScrollAlignment {
         }
         if (!isMaxUnknown) {
             val keyLineToMaxEdge = size - keyLine - paddingMax
-            val alignToMaxEdge = if (!reversedFlow) {
+            val alignToMaxEdge = if (!reverseLayout) {
                 shouldAlignToMaxEdge(alignment)
             } else {
                 shouldAlignToMinEdge(alignment)
@@ -216,7 +216,7 @@ internal class ParentScrollAlignment {
     @VisibleForTesting
     fun calculateKeyline(alignment: ParentAlignment): Int {
         var keyLine = 0
-        if (!reversedFlow) {
+        if (!reverseLayout) {
             if (alignment.isOffsetRatioEnabled) {
                 keyLine += (size * alignment.offsetRatio).toInt()
             }

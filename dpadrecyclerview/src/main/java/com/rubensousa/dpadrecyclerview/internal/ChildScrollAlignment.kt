@@ -21,7 +21,7 @@ import android.view.View
 import androidx.annotation.MainThread
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadLayoutParams
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
 @MainThread
 internal class ChildScrollAlignment {

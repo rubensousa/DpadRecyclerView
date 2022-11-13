@@ -20,7 +20,7 @@ import android.view.FocusFinder
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadLayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 
 internal class DpadFocusManager(
