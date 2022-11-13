@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
 internal class LayoutInfo(
@@ -50,7 +49,7 @@ internal class LayoutInfo(
     var gravity: Int = Gravity.START.or(Gravity.TOP)
         private set
 
-    private var dpadRecyclerView: RecyclerView? = null
+    private var recyclerView: RecyclerView? = null
 
     fun isRTL() = layout.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL
 
@@ -84,7 +83,7 @@ internal class LayoutInfo(
     }
 
     fun setRecyclerView(recyclerView: RecyclerView?) {
-        dpadRecyclerView = recyclerView
+        this.recyclerView = recyclerView
     }
 
     fun getSpanSize(position: Int): Int {
@@ -201,7 +200,7 @@ internal class LayoutInfo(
     }
 
     fun isItemFullyVisible(position: Int): Boolean {
-        val recyclerView = dpadRecyclerView ?: return false
+        val recyclerView = recyclerView ?: return false
         val itemView = recyclerView.findViewHolderForAdapterPosition(position)?.itemView
             ?: return false
         return itemView.left >= 0
@@ -212,7 +211,7 @@ internal class LayoutInfo(
 
     fun findImmediateChildIndex(view: View): Int {
         var currentView: View? = view
-        if (currentView != null && currentView !== dpadRecyclerView) {
+        if (currentView != null && currentView !== recyclerView) {
             currentView = layout.findContainingItemView(currentView)
             if (currentView != null) {
                 var i = 0
@@ -264,6 +263,22 @@ internal class LayoutInfo(
         }
         val child = layout.getChildAt(layout.childCount - 1) ?: return RecyclerView.NO_POSITION
         return getAdapterPositionOfView(child)
+    }
+
+    fun getChildViewHolder(view: View): RecyclerView.ViewHolder? {
+        return recyclerView?.getChildViewHolder(view)
+    }
+
+    fun findViewByPosition(position: Int): View? {
+        return layout.findViewByPosition(position)
+    }
+
+    fun getChildCount() = layout.childCount
+
+    fun getChildAt(index: Int) = layout.getChildAt(index)
+
+    fun requestLayout() {
+        layout.requestLayout()
     }
 
 }

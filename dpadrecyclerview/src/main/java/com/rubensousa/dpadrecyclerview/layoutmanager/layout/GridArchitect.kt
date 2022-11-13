@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
+// TODO
 internal class GridArchitect(
     private val layout: RecyclerView.LayoutManager,
     private val layoutInfo: LayoutInfo,

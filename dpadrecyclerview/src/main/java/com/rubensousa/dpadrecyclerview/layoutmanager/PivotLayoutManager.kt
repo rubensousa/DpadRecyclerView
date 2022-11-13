@@ -51,10 +51,12 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     PivotLayoutManagerDelegate {
 
     private val configuration = LayoutConfiguration()
-    private val pivotLayoutState = PivotLayoutState()
     private val layoutInfo = LayoutInfo(this, configuration)
-    private val layoutArchitect = LayoutArchitect(this, configuration, pivotLayoutState, layoutInfo)
+    private val pivotLayoutState = PivotLayoutState(layoutInfo)
     private val layoutAlignment = LayoutAlignment(this, layoutInfo, configuration)
+    private val layoutArchitect = LayoutArchitect(
+        this, layoutAlignment, configuration, pivotLayoutState, layoutInfo
+    )
     private val scroller = LayoutScroller(
         this, layoutInfo, layoutAlignment, configuration, pivotLayoutState
     )
@@ -298,6 +300,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         layoutArchitect.setRecyclerView(recyclerView)
         focusFinder.setRecyclerView(recyclerView)
         layoutInfo.setRecyclerView(recyclerView)
+        scroller.setRecyclerView(recyclerView)
     }
 
     override fun setChildrenDrawingOrderEnabled(enabled: Boolean) {
@@ -405,7 +408,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {
-        scroller.scrollToPosition(requireNotNull(recyclerView), position, subPosition, smooth)
+        scroller.scrollToPosition(position, subPosition, smooth)
     }
 
     override fun selectSubPosition(subPosition: Int, smooth: Boolean) {

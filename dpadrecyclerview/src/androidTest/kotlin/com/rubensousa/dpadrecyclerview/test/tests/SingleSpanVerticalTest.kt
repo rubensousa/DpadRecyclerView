@@ -57,11 +57,6 @@ class SingleSpanVerticalTest : GridTest() {
         launchFragment()
     }
 
-    override fun destroy() {
-        super.destroy()
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
-    }
-
     @Test
     fun testFocusStaysAtTopEdgePosition() {
         KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 5)

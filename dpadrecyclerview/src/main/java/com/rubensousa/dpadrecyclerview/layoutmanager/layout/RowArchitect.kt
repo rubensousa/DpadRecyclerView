@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 
 /**
  * Layout algorithm:
@@ -38,6 +39,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
  */
 internal class RowArchitect(
     private val layoutManager: LayoutManager,
+    private val layoutAlignment: LayoutAlignment,
     private val layoutInfo: LayoutInfo,
     private val configuration: LayoutConfiguration,
 ) {
@@ -48,27 +50,18 @@ internal class RowArchitect(
 
     private val viewBounds = Rect()
 
-    // TODO Use specific parent keyline alignment + child alignment and move this to another class
-    private fun calculateParentKeyline(): Int {
-        return if (configuration.isHorizontal()) {
-            layoutManager.width / 2
-        } else {
-            layoutManager.height / 2
-        }
-    }
-
     fun layoutPivot(
         position: Int,
         recycler: Recycler,
         pivotInfo: PivotInfo
     ) {
-        val keyline = calculateParentKeyline()
         val view = recycler.getViewForPosition(position)
         layoutManager.addView(view)
         layoutManager.measureChildWithMargins(view, 0, 0)
         val size = layoutInfo.getMeasuredSize(view)
-        val headOffset = keyline - size / 2 - layoutInfo.getStartDecorationSize(view)
-        val tailOffset = keyline + size / 2 + layoutInfo.getEndDecorationSize(view)
+        val viewCenter = layoutAlignment.calculateViewCenterForLayout(view, size)
+        val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
+        val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
 
         if (configuration.isVertical()) {
             applyHorizontalGravity(view, viewBounds)

@@ -67,6 +67,17 @@ internal class LayoutAlignment(
 
     fun getChildAlignment() = childAlignment.getAlignment()
 
+    /**
+     * Calculates the view center based on the alignment for this view
+     * specified by the parent and child alignment configurations.
+     */
+    fun calculateViewCenterForLayout(view: View, size: Int): Int {
+        updateChildAlignments(view)
+        val parentKeyline = parentAlignment.calculateKeyline()
+        val childKeyline = getViewCenter(view)
+        return parentKeyline - childKeyline + size / 2
+    }
+
     fun findSubPositionOfChild(
         recyclerView: RecyclerView, view: View?, childView: View?
     ): Int {
@@ -124,8 +135,8 @@ internal class LayoutAlignment(
         childView: View?
     ): Int? {
         updateScrollLimits()
-        updateChildAlignments(recyclerView, view)
-        var scrollOffset = calculateAlignedScrollDistance(view)
+        updateChildAlignments(view)
+        var scrollOffset = calculateDistanceToKeyline(view)
         if (childView != null) {
             scrollOffset = calculateAdjustedAlignedScrollDistance(
                 recyclerView, scrollOffset, view, childView
@@ -138,9 +149,9 @@ internal class LayoutAlignment(
         }
     }
 
-    private fun updateChildAlignments(recyclerView: RecyclerView, view: View) {
+    private fun updateChildAlignments(view: View) {
         val layoutParams = view.layoutParams as DpadLayoutParams
-        val viewHolder = recyclerView.getChildViewHolder(view) ?: return
+        val viewHolder = layoutInfo.getChildViewHolder(view) ?: return
         val alignments = if (viewHolder is DpadViewHolder) {
             viewHolder.getAlignments()
         } else {
@@ -272,7 +283,7 @@ internal class LayoutAlignment(
      * Return the scroll delta required to make the view selected and aligned.
      * If the returned value is 0, there is no need to scroll.
      */
-    private fun calculateAlignedScrollDistance(
+    private fun calculateDistanceToKeyline(
         view: View,
         subPositionAlignment: ParentAlignment? = null
     ): Int {

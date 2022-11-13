@@ -20,6 +20,7 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
@@ -123,6 +124,8 @@ abstract class GridTest {
     @After
     open fun destroy() {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
+        // Reset this for every test
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
     }
 
 }

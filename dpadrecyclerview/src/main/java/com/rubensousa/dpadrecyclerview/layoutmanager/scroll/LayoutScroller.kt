@@ -44,6 +44,19 @@ internal class LayoutScroller(
         private set
 
     private var isFocusUpdatePending = false
+    private var recyclerView: RecyclerView? = null
+    private var scrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            layoutInfo.setIsScrolling(newState != RecyclerView.SCROLL_STATE_IDLE)
+        }
+    }
+
+    fun setRecyclerView(recyclerView: RecyclerView?) {
+        this.recyclerView?.removeOnScrollListener(scrollListener)
+        recyclerView?.addOnScrollListener(scrollListener)
+        this.recyclerView = recyclerView
+    }
 
     /**
      * Scrolls to a position-subPosition pair.
@@ -52,7 +65,6 @@ internal class LayoutScroller(
      * with the new pivot position
      */
     fun scrollToPosition(
-        recyclerView: RecyclerView,
         position: Int,
         subPosition: Int,
         smooth: Boolean
@@ -83,8 +95,8 @@ internal class LayoutScroller(
         )
         if (isSelectionUpdatePending) {
             isSelectionUpdatePending = false
-            pivotLayoutState.dispatchViewHolderSelected()
-            pivotLayoutState.dispatchViewHolderSelectedAndAligned()
+            pivotLayoutState.dispatchViewHolderSelected(recyclerView)
+            pivotLayoutState.dispatchViewHolderSelectedAndAligned(recyclerView)
         }
         isFocusUpdatePending = false
     }
@@ -111,7 +123,7 @@ internal class LayoutScroller(
             targetSubPosition = 0
         }
         if (targetSubPosition != 0) {
-            scrollToPosition(recyclerView, targetPosition, targetSubPosition, smooth)
+            scrollToPosition(targetPosition, targetSubPosition, smooth)
         } else {
             scrollToView(
                 recyclerView, layoutManager.findViewByPosition(targetPosition), smooth, requestFocus
@@ -213,9 +225,9 @@ internal class LayoutScroller(
             } != null
 
         if (selectViewHolder) {
-            pivotLayoutState.dispatchViewHolderSelected()
+            pivotLayoutState.dispatchViewHolderSelected(recyclerView)
             if (!scrolled) {
-                pivotLayoutState.dispatchViewHolderSelectedAndAligned()
+                pivotLayoutState.dispatchViewHolderSelectedAndAligned(recyclerView)
             }
         }
     }

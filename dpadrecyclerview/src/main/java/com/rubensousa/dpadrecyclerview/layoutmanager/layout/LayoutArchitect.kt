@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -32,6 +33,7 @@ import kotlin.math.min
  */
 internal class LayoutArchitect(
     private val layoutManager: LayoutManager,
+    private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration,
     private val pivotLayoutState: PivotLayoutState,
     private val layoutInfo: LayoutInfo
@@ -47,7 +49,9 @@ internal class LayoutArchitect(
     private val layoutResult = LayoutResult()
     private val extraLayoutSpace = IntArray(2)
     private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
-    private val rowArchitect = RowArchitect(layoutManager, layoutInfo, configuration)
+    private val rowArchitect = RowArchitect(
+        layoutManager, layoutAlignment, layoutInfo, configuration
+    )
     private val gridArchitect = GridArchitect(layoutManager, layoutInfo, configuration)
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
 
@@ -498,7 +502,7 @@ internal class LayoutArchitect(
      * Layout an extra page by default if we're scrolling
      */
     private fun getDefaultExtraLayoutSpace(state: RecyclerView.State): Int {
-        return if (state.hasTargetScrollPosition()) {
+        return if (layoutInfo.isScrolling || state.hasTargetScrollPosition()) {
             layoutInfo.orientationHelper.totalSpace
         } else {
             0

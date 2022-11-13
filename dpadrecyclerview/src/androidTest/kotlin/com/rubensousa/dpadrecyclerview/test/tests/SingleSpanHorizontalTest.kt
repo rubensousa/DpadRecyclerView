@@ -61,11 +61,6 @@ class SingleSpanHorizontalTest : GridTest() {
         launchFragment()
     }
 
-    override fun destroy() {
-        super.destroy()
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
-    }
-
     @Test
     fun testFocusStaysAtLeftEdgePosition() {
         KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_LEFT, times = 5)

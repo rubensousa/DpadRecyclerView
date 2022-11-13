@@ -16,7 +16,6 @@
 
 package com.rubensousa.dpadrecyclerview.internal
 
-import androidx.annotation.VisibleForTesting
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
@@ -213,8 +212,7 @@ internal class ParentScrollAlignment {
         maxEdge = Int.MAX_VALUE
     }
 
-    @VisibleForTesting
-    fun calculateKeyline(alignment: ParentAlignment): Int {
+    fun calculateKeyline(alignment: ParentAlignment = defaultAlignment): Int {
         var keyLine = 0
         if (!reverseLayout) {
             if (alignment.isOffsetRatioEnabled) {

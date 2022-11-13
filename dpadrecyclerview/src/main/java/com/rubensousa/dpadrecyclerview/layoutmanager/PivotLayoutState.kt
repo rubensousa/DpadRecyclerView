@@ -18,13 +18,18 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
-internal class PivotLayoutState {
-
-    private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
+/**
+ * Responsibilities:
+ * - Holding the current pivot state
+ * - Saving/restoring pivot state
+ */
+internal class PivotLayoutState(private val layoutInfo: LayoutInfo) {
 
     var position: Int = 0
         private set
@@ -32,6 +37,10 @@ internal class PivotLayoutState {
     var subPosition: Int = 0
         private set
 
+    private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
+    private val requestLayoutRunnable = Runnable {
+        layoutInfo.requestLayout()
+    }
     private var selectedViewHolder: DpadViewHolder? = null
 
     fun getCurrentSubPositions(): Int {
@@ -82,15 +91,65 @@ internal class PivotLayoutState {
             position = state.selectedPosition
         }
     }
-    
-    // TODO
-    fun dispatchViewHolderSelected() {
-        
+
+    fun dispatchViewHolderSelected(recyclerView: RecyclerView) {
+        val view = if (position == RecyclerView.NO_POSITION) {
+            null
+        } else {
+            layoutInfo.findViewByPosition(position)
+        }
+
+        val viewHolder = if (view != null) {
+            recyclerView.getChildViewHolder(view)
+        } else {
+            null
+        }
+
+        selectedViewHolder?.onViewHolderDeselected()
+
+        if (viewHolder is DpadViewHolder) {
+            selectedViewHolder = viewHolder
+            viewHolder.onViewHolderSelected()
+        } else {
+            selectedViewHolder = null
+        }
+
+        if (!hasSelectionListeners()) {
+            return
+        }
+
+        if (viewHolder != null) {
+            selectionListeners.forEach { listener ->
+                listener.onViewHolderSelected(
+                    recyclerView, viewHolder, position, subPosition
+                )
+            }
+        } else {
+            selectionListeners.forEach { listener ->
+                listener.onViewHolderSelected(
+                    recyclerView, null, RecyclerView.NO_POSITION, 0
+                )
+            }
+        }
+
+        /**
+         * We might have a requestLayout event from children reacting to the selection changes,
+         * so schedule a new layout pass if we're not in the layout phase.
+         */
+        if (!layoutInfo.isLayoutInProgress && !recyclerView.isLayoutRequested) {
+            val childCount = layoutInfo.getChildCount()
+            for (i in 0 until childCount) {
+                val child = layoutInfo.getChildAt(i)
+                if (child != null && child.isLayoutRequested) {
+                    scheduleNewLayout(recyclerView)
+                    break
+                }
+            }
+        }
     }
 
-    // TODO
-    fun dispatchViewHolderSelectedAndAligned() {
-        
+    fun dispatchViewHolderSelectedAndAligned(recyclerView: RecyclerView) {
+
     }
 
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
@@ -104,6 +163,17 @@ internal class PivotLayoutState {
     fun clearOnViewHolderSelectedListeners() {
         selectionListeners.clear()
     }
+
+    /**
+     * RecyclerView prevents us from requesting layout in many cases
+     * (during layout, during scroll, etc.)
+     * We might need to resize rows when wrap_content is used, so schedule a new layout request
+     */
+    private fun scheduleNewLayout(recyclerView: RecyclerView) {
+        ViewCompat.postOnAnimation(recyclerView, requestLayoutRunnable)
+    }
+
+    private fun hasSelectionListeners(): Boolean = selectionListeners.isNotEmpty()
 
     data class SavedState(val selectedPosition: Int) : Parcelable {
 
