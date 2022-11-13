@@ -27,10 +27,7 @@
             <enum name="continuous" value="2" />
         </attr>
 
-        <attr name="spanCount" />
-        <attr name="reverseLayout" />
         <attr name="android:gravity" />
-        <attr name="android:orientation" />
     </declare-styleable>
 
 

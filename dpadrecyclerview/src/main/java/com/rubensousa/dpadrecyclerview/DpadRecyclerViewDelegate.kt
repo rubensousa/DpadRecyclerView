@@ -23,10 +23,10 @@ import android.view.Gravity
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManagerDelegate
 
 /**
@@ -85,35 +85,24 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         }
     }
 
-    private fun createLayoutManager(context: Context, attrs: AttributeSet?): PivotLayoutManagerDelegate {
+    private fun createLayoutManager(
+        context: Context,
+        attrs: AttributeSet?
+    ): PivotLayoutManagerDelegate {
         val typedArray = context.obtainStyledAttributes(
             attrs,
             R.styleable.DpadRecyclerView,
             R.attr.dpadRecyclerViewStyle, 0
         )
-        val orientation = when (
-            typedArray.getInt(
-                R.styleable.DpadRecyclerView_android_orientation,
-                RecyclerView.VERTICAL
-            )
-        ) {
-            0 -> RecyclerView.HORIZONTAL
-            1 -> RecyclerView.VERTICAL
-            else -> throw IllegalArgumentException(
-                "Orientation must be either HORIZONTAL or VERTICAL"
-            )
+        val properties = LayoutManager.getProperties(context, attrs, 0, 0)
+        val useNewLayoutManager = properties.spanCount == 1
+                && DpadRecyclerViewHelper.isNewPivotLayoutManagerEnabled
+        layoutManagerImpl = if (useNewLayoutManager) {
+            PivotLayoutManager(properties)
+        } else {
+            DpadLayoutManager(context, properties)
         }
-        layoutManagerImpl = DpadLayoutManager(
-            context,
-            spanCount = typedArray.getInt(
-                R.styleable.DpadRecyclerView_spanCount, 1
-            ),
-            orientation = orientation,
-            reverseLayout = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_reverseLayout, false
-            ),
-        )
-        val layout : PivotLayoutManagerDelegate = layoutManagerImpl as DpadLayoutManager
+        val layout = layoutManagerImpl as PivotLayoutManagerDelegate
         layout.setFocusOutAllowed(
             throughFront = typedArray.getBoolean(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutFront, true
@@ -231,7 +220,8 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
 
     fun getChildDrawingOrder(childCount: Int, drawingOrderPosition: Int): Int {
         val selectedPosition = layoutDelegate?.getSelectedPosition() ?: return drawingOrderPosition
-        val view = layoutManagerImpl?.findViewByPosition(selectedPosition) ?: return drawingOrderPosition
+        val view =
+            layoutManagerImpl?.findViewByPosition(selectedPosition) ?: return drawingOrderPosition
         val focusIndex = recyclerView.indexOfChild(view)
         // Scenario: 0 1 2 3 4 5 6 7 8 9, 4 is the focused item
         // drawing order is: 0 1 2 3 9 8 7 6 5 4

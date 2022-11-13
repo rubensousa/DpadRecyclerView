@@ -41,7 +41,12 @@ import com.rubensousa.dpadrecyclerview.internal.ScrollAlignment
 /**
  * A [GridLayoutManager] that supports DPAD navigation
  */
-internal class DpadLayoutManager : GridLayoutManager, PivotLayoutManagerDelegate {
+internal class DpadLayoutManager(context: Context, properties: Properties) : GridLayoutManager(
+    context,
+    properties.spanCount,
+    properties.orientation,
+    properties.reverseLayout
+), PivotLayoutManagerDelegate {
 
     companion object {
         private val LAYOUT_RECT = Rect()
@@ -64,40 +69,12 @@ internal class DpadLayoutManager : GridLayoutManager, PivotLayoutManagerDelegate
     // we need this to avoid trying to access calls not initialized
     private var isInitialized = false
     private var selectedViewHolder: DpadViewHolder? = null
-    private lateinit var delegate: DpadLayoutDelegate
-    private lateinit var scrollAlignment: ScrollAlignment
-    private lateinit var focusManager: DpadFocusManager
-    private lateinit var scroller: DpadScroller
+    private var delegate: DpadLayoutDelegate
+    private var scrollAlignment: ScrollAlignment
+    private var focusManager: DpadFocusManager
+    private var scroller: DpadScroller
 
-    constructor(
-        context: Context,
-        attrs: AttributeSet?,
-        defStyleAttr: Int,
-        defStyleRes: Int
-    ) : super(context, attrs, defStyleAttr, defStyleRes) {
-        init()
-    }
-
-    constructor(context: Context) : this(context, 1)
-
-    constructor(context: Context, spanCount: Int) : this(
-        context, spanCount, RecyclerView.VERTICAL, false
-    )
-
-    constructor(context: Context, spanCount: Int, orientation: Int) : this(
-        context, spanCount, orientation, false
-    )
-
-    constructor(
-        context: Context,
-        spanCount: Int,
-        orientation: Int,
-        reverseLayout: Boolean
-    ) : super(context, spanCount, orientation, reverseLayout) {
-        init()
-    }
-
-    private fun init() {
+    init {
         spanSizeLookup.isSpanIndexCacheEnabled = true
         spanSizeLookup.isSpanGroupIndexCacheEnabled = true
         focusManager = DpadFocusManager(this)

@@ -47,7 +47,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  * - custom alignment
  * - using simple row structure for single spans
  */
-class PivotLayoutManager : RecyclerView.LayoutManager(), PivotLayoutManagerDelegate {
+class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(), PivotLayoutManagerDelegate {
 
     private val configuration = LayoutConfiguration()
     private val pivotLayoutState = PivotLayoutState()
@@ -64,6 +64,15 @@ class PivotLayoutManager : RecyclerView.LayoutManager(), PivotLayoutManagerDeleg
         this, configuration, layoutInfo, pivotLayoutState, scroller
     )
     private var recyclerView: RecyclerView? = null
+
+    init {
+        configuration.apply {
+            setSpanCount(properties.spanCount)
+            setOrientation(properties.orientation)
+            setReverseLayout(properties.reverseLayout)
+            setStackFromEnd(properties.stackFromEnd)
+        }
+    }
 
     override fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
         return layoutParams is DpadLayoutParams
@@ -135,6 +144,13 @@ class PivotLayoutManager : RecyclerView.LayoutManager(), PivotLayoutManagerDeleg
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
         layoutArchitect.onLayoutCompleted(state)
+        /**
+         * Since the layout pass can finish after the RecyclerView gains focus,
+         * make sure that we focus the new selected view when layout is done
+         */
+        recyclerView?.apply {
+            scroller.scrollToFocusedPosition(this, smooth = false)
+        }
     }
 
     override fun collectAdjacentPrefetchPositions(

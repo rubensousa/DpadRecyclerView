@@ -114,6 +114,14 @@ internal class LayoutConfiguration {
         gravity = newGravity
     }
 
+    fun setReverseLayout(isEnabled: Boolean) {
+        reverseLayout = isEnabled
+    }
+
+    fun setStackFromEnd(isEnabled: Boolean) {
+        stackFromEnd = isEnabled
+    }
+
     fun setOrientation(newOrientation: Int) {
         orientation = newOrientation
     }

@@ -7,24 +7,28 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
-import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemGridBinding
 
 class CustomLayoutActivity : AppCompatActivity() {
 
+    companion object {
+        init {
+            DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_custom_layout)
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val layoutManager = PivotLayoutManager()
-        layoutManager.setRecyclerView(recyclerView)
+        val recyclerView = findViewById<DpadRecyclerView>(R.id.recyclerView)
         recyclerView.addItemDecoration(
             LinearMarginDecoration.createVertical(
                 verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing) / 2
             )
         )
         recyclerView.requestFocus()
-        recyclerView.layoutManager = layoutManager
         recyclerView.adapter = Adapter()
     }
 
@@ -51,7 +55,8 @@ class CustomLayoutActivity : AppCompatActivity() {
 
         init {
             adapterItemBinding.root.updateLayoutParams<ViewGroup.LayoutParams> {
-                height = itemView.resources.getDimensionPixelOffset(R.dimen.adapter_small_item_height)
+                height =
+                    itemView.resources.getDimensionPixelOffset(R.dimen.adapter_small_item_height)
             }
             adapterItemBinding.root.apply {
                 isFocusable = true
