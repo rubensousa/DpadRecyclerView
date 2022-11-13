@@ -18,15 +18,19 @@ package com.rubensousa.dpadrecyclerview.test.tests
 
 import android.view.KeyEvent
 import androidx.recyclerview.widget.RecyclerView
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -49,7 +53,13 @@ class SingleSpanVerticalTest : GridTest() {
 
     @Before
     fun setup() {
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
         launchFragment()
+    }
+
+    override fun destroy() {
+        super.destroy()
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
     }
 
     @Test
@@ -62,6 +72,7 @@ class SingleSpanVerticalTest : GridTest() {
     @Test
     fun testFocusStaysAtBottomEdgePosition() {
         val lastPosition = selectLastPosition(smooth = false)
+        assertThat(lastPosition).isEqualTo(DEFAULT_ITEM_COUNT - 1)
         KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
         waitForIdleScrollState()
         assertFocusPosition(position = lastPosition)
@@ -75,14 +86,23 @@ class SingleSpanVerticalTest : GridTest() {
     }
 
     @Test
-    fun testContinuousScrollUp() {
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 100)
+    fun testScrollToLastItem() {
+        val distanceToEnd = 20
+        selectPosition(position = DEFAULT_ITEM_COUNT - 1 - distanceToEnd, subPosition = 0)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = distanceToEnd)
         waitForIdleScrollState()
-        assertFocusPosition(position = 100)
+        assertFocusPosition(position = DEFAULT_ITEM_COUNT - 1)
+    }
 
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 100)
+    @Test
+    fun testContinuousScrollUp() {
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 50)
         waitForIdleScrollState()
-        assertFocusPosition(position = 0)
+        assertFocusPosition(position = 50)
+
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 25)
+        waitForIdleScrollState()
+        assertFocusPosition(position = 25)
     }
 
     @Test
@@ -95,21 +115,21 @@ class SingleSpanVerticalTest : GridTest() {
         waitForIdleScrollState()
         assertFocusPosition(position = 100)
 
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 25)
         waitForIdleScrollState()
-        assertFocusPosition(position = 50)
+        assertFocusPosition(position = 75)
 
         KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 50)
         waitForIdleScrollState()
-        assertFocusPosition(position = 0)
+        assertFocusPosition(position = 25)
     }
 
     @Test
     fun testMultiStepScroll() {
         KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 50)
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 50)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 25)
         waitForIdleScrollState()
-        assertFocusPosition(position = 0)
+        assertFocusPosition(position = 25)
     }
 
     @Test

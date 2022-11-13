@@ -4,12 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemGridBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterNestedItemBinding
 
 class CustomLayoutActivity : AppCompatActivity() {
 
@@ -37,7 +36,7 @@ class CustomLayoutActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
             return VH(
-                AdapterItemGridBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                AdapterNestedItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
             )
         }
 
@@ -45,19 +44,15 @@ class CustomLayoutActivity : AppCompatActivity() {
             holder.bind(position)
         }
 
-        override fun getItemCount(): Int = 200
+        override fun getItemCount(): Int = 50
 
     }
 
 
-    class VH(private val adapterItemBinding: AdapterItemGridBinding) :
+    class VH(private val adapterItemBinding: AdapterNestedItemBinding) :
         RecyclerView.ViewHolder(adapterItemBinding.root) {
 
         init {
-            adapterItemBinding.root.updateLayoutParams<ViewGroup.LayoutParams> {
-                height =
-                    itemView.resources.getDimensionPixelOffset(R.dimen.adapter_small_item_height)
-            }
             adapterItemBinding.root.apply {
                 isFocusable = true
                 isFocusableInTouchMode = true

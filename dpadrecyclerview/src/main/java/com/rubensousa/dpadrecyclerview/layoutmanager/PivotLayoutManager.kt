@@ -144,12 +144,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
         layoutArchitect.onLayoutCompleted(state)
-        /**
-         * Since the layout pass can finish after the RecyclerView gains focus,
-         * make sure that we focus the new selected view when layout is done
-         */
         recyclerView?.apply {
-            scroller.scrollToFocusedPosition(this, smooth = false)
+            scroller.onLayoutCompleted(this)
         }
     }
 
@@ -364,19 +360,19 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
         layoutAlignment.setParentAlignment(parent)
         layoutAlignment.setChildAlignment(child)
-        scrollToFocusedPositionOrRequestLayout(smooth)
+        scrollToSelectedPositionOrRequestLayout(smooth, requestFocus = false)
     }
 
     override fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean) {
         layoutAlignment.setParentAlignment(alignment)
-        scrollToFocusedPositionOrRequestLayout(smooth)
+        scrollToSelectedPositionOrRequestLayout(smooth, requestFocus = false)
     }
 
     override fun getParentAlignment(): ParentAlignment = layoutAlignment.getParentAlignment()
 
     override fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean) {
         layoutAlignment.setChildAlignment(alignment)
-        scrollToFocusedPositionOrRequestLayout(smooth)
+        scrollToSelectedPositionOrRequestLayout(smooth, requestFocus = false)
     }
 
     override fun getChildAlignment(): ChildAlignment = layoutAlignment.getChildAlignment()
@@ -438,10 +434,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         layoutArchitect.clearOnLayoutCompletedListeners()
     }
 
-    private fun scrollToFocusedPositionOrRequestLayout(smooth: Boolean) {
+    private fun scrollToSelectedPositionOrRequestLayout(smooth: Boolean, requestFocus: Boolean) {
         recyclerView?.apply {
             if (smooth) {
-                scroller.scrollToFocusedPosition(this, smooth = true)
+                scroller.scrollToSelectedPosition(this, smooth = true, requestFocus = requestFocus)
             } else {
                 requestLayout()
             }

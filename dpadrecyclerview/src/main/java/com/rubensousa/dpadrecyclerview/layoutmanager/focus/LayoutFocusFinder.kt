@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
 import android.graphics.Rect
+import android.util.Log
 import android.view.FocusFinder
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,10 @@ internal class LayoutFocusFinder(
     private val layoutInfo: LayoutInfo,
     private val pivotLayoutState: PivotLayoutState
 ) {
+
+    companion object {
+        const val TAG = "LayoutFocusFinder"
+    }
 
     private var dpadRecyclerView: RecyclerView? = null
 
@@ -55,7 +60,7 @@ internal class LayoutFocusFinder(
      */
     fun onFocusChanged(gainFocus: Boolean) {
         // Skip if we didn't gain focus or no view is selected
-        if (!gainFocus || pivotLayoutState.position == RecyclerView.NO_POSITION){
+        if (!gainFocus || pivotLayoutState.position == RecyclerView.NO_POSITION) {
             return
         }
         var index = pivotLayoutState.position
@@ -83,10 +88,14 @@ internal class LayoutFocusFinder(
         if (newViewPosition == RecyclerView.NO_POSITION) {
             return true
         }
-        val canScrollToView = !scroller.isSelectionInProgress
+        val canScrollToView = !scroller.isSelectionInProgress && !layoutInfo.isLayoutInProgress
+        Log.d(TAG, "onRequestChildFocus: $newViewPosition")
         if (canScrollToView) {
             saveSpanFocus(newViewPosition)
-            scroller.scrollToView(parent, child, focused, configuration.isSmoothFocusChangesEnabled)
+            scroller.scrollToView(
+                parent, child, focused, configuration.isSmoothFocusChangesEnabled,
+                requestFocus = true
+            )
         }
         return true
     }

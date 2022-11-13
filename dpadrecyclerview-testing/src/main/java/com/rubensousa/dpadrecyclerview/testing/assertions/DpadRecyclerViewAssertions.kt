@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.testing.assertions
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.PerformException
 import androidx.test.espresso.ViewAssertion
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -58,6 +59,12 @@ object DpadRecyclerViewAssertions {
                     assertThat(focusedView).isNull()
                 }
             } else {
+                if (focusedView == null) {
+                    throw PerformException.Builder()
+                        .withActionDescription("Assertion for focusedPosition $focusedPosition")
+                        .withViewDescription("DpadRecyclerView")
+                        .build()
+                }
                 assertThat(view.findContainingViewHolder(focusedView)!!.absoluteAdapterPosition)
                     .isEqualTo(focusedPosition)
             }

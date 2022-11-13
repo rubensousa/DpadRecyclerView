@@ -39,23 +39,64 @@ internal class LayoutScroller(
 
     var isSelectionUpdatePending = false
         private set
-    
+
     var isSelectionInProgress = false
         private set
 
+    private var isFocusUpdatePending = false
+
+    /**
+     * Scrolls to a position-subPosition pair.
+     *
+     * If don't need to smooth scroll, we can scroll immediately by triggering a layout pass
+     * with the new pivot position
+     */
     fun scrollToPosition(
         recyclerView: RecyclerView,
         position: Int,
         subPosition: Int,
         smooth: Boolean
     ) {
+        Log.d(
+            TAG, "Scrolling requested to position $position " +
+                    "and subPosition $subPosition with smooth: $smooth"
+        )
+        if (!smooth) {
+            if (pivotLayoutState.update(position, subPosition)) {
+                isSelectionUpdatePending = true
+                isFocusUpdatePending = true
+                layoutManager.requestLayout()
+            }
+            return
+        }
+    }
 
+    /**
+     * Since the layout pass can finish after the RecyclerView gains focus,
+     * make sure that we focus the new selected view when layout is done
+     */
+    fun onLayoutCompleted(recyclerView: RecyclerView) {
+        scrollToSelectedPosition(
+            recyclerView,
+            smooth = false,
+            requestFocus = recyclerView.hasFocus() || isFocusUpdatePending
+        )
+        if (isSelectionUpdatePending) {
+            isSelectionUpdatePending = false
+            pivotLayoutState.dispatchViewHolderSelected()
+            pivotLayoutState.dispatchViewHolderSelectedAndAligned()
+        }
+        isFocusUpdatePending = false
     }
 
     /**
      * Scrolls to the current focused position
      */
-    fun scrollToFocusedPosition(recyclerView: RecyclerView, smooth: Boolean) {
+    fun scrollToSelectedPosition(
+        recyclerView: RecyclerView,
+        smooth: Boolean,
+        requestFocus: Boolean
+    ) {
         val itemCount = layoutManager.itemCount
         var targetPosition = pivotLayoutState.position
         var targetSubPosition = pivotLayoutState.subPosition
@@ -72,7 +113,9 @@ internal class LayoutScroller(
         if (targetSubPosition != 0) {
             scrollToPosition(recyclerView, targetPosition, targetSubPosition, smooth)
         } else {
-            scrollToView(recyclerView, layoutManager.findViewByPosition(targetPosition), smooth)
+            scrollToView(
+                recyclerView, layoutManager.findViewByPosition(targetPosition), smooth, requestFocus
+            )
         }
     }
 
@@ -110,12 +153,23 @@ internal class LayoutScroller(
         return moves
     }
 
+
+    private fun scrollToView(
+        recyclerView: RecyclerView,
+        view: View?,
+        smooth: Boolean,
+        requestFocus: Boolean
+    ) {
+        scrollToView(recyclerView, view, subPositionView = view?.findFocus(), smooth, requestFocus)
+    }
+
     // TODO
     fun scrollToView(
         recyclerView: RecyclerView,
         viewHolderView: View?,
         subPositionView: View?,
-        smooth: Boolean
+        smooth: Boolean,
+        requestFocus: Boolean
     ) {
         val newFocusPosition = if (viewHolderView == null) {
             RecyclerView.NO_POSITION
@@ -143,10 +197,14 @@ internal class LayoutScroller(
         if (viewHolderView == null) {
             return
         }
-        if (subPositionView != null && !subPositionView.hasFocus() && recyclerView.hasFocus()) {
+        if (subPositionView != null && !subPositionView.hasFocus() && requestFocus) {
             subPositionView.requestFocus()
-        } else if (!viewHolderView.hasFocus() && recyclerView.hasFocus()) {
+        } else if (!viewHolderView.hasFocus() && requestFocus) {
             viewHolderView.requestFocus()
+        }
+
+        if (!focusChanged) {
+            return
         }
 
         val scrolled = layoutAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
@@ -160,10 +218,6 @@ internal class LayoutScroller(
                 pivotLayoutState.dispatchViewHolderSelectedAndAligned()
             }
         }
-    }
-
-    private fun scrollToView(recyclerView: RecyclerView, view: View?, smooth: Boolean) {
-        scrollToView(recyclerView, view, subPositionView = view?.findFocus(), smooth)
     }
 
     private fun scroll(

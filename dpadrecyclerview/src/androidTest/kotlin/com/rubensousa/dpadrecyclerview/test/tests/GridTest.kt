@@ -30,12 +30,16 @@ import org.junit.After
 
 abstract class GridTest {
 
+    companion object {
+        const val DEFAULT_ITEM_COUNT = 200
+    }
+
     abstract fun getDefaultLayoutConfiguration(): TestLayoutConfiguration
 
     open fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return TestAdapterConfiguration(
             itemLayoutId = R.layout.dpadrecyclerview_test_item_grid,
-            numberOfItems = 200
+            numberOfItems = DEFAULT_ITEM_COUNT
         )
     }
 
