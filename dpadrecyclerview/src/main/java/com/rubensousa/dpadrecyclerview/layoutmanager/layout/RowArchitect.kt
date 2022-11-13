@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -40,6 +41,10 @@ internal class RowArchitect(
     private val layoutInfo: LayoutInfo,
     private val configuration: LayoutConfiguration,
 ) {
+
+    companion object {
+        const val TAG = "RowArchitect"
+    }
 
     private val viewBounds = Rect()
 
@@ -86,9 +91,11 @@ internal class RowArchitect(
         result: LayoutResult
     ) {
         val view = layoutState.next(recycler)
+        Log.d(TAG, "LayoutChunk requested for: $layoutState")
         if (view == null) {
             // if we are laying out views in scrap, this may return null which means there is
             // no more items to layout.
+            Log.d(TAG, "LayoutChunk finished for: $layoutState")
             result.finished = true
             return
         }

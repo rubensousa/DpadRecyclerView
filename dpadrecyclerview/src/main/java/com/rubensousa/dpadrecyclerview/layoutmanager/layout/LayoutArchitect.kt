@@ -339,7 +339,16 @@ internal class LayoutArchitect(
             LayoutState.LayoutDirection.START
         }
         updateLayoutState(direction, requiredSpace = abs(offset), state)
-        val consumed = layoutState.availableScrollSpace + fill(recycler, state)
+        /**
+         * If we reached the edge of the list, we can technically scroll the rest of the size
+         * since the first item can be center aligned in the parent
+         */
+        val availableScrollSpace = if (!layoutState.hasMoreItems(state)) {
+            layoutInfo.orientationHelper.totalSpace
+        } else {
+            layoutState.availableScrollSpace
+        }
+        val consumed = availableScrollSpace + fill(recycler, state)
         if (consumed < 0) {
             // Reached an edge of the list, just return
             return 0
@@ -368,18 +377,8 @@ internal class LayoutArchitect(
             layoutManager.getPosition(child) + layoutState.itemDirection.value
         val decoratedEnd = layoutInfo.orientationHelper.getDecoratedEnd(child)
         layoutState.offset = decoratedEnd
-
-        /**
-         * If we reached the edge of the list, we can technically scroll the rest of the size
-         * since the first item can be center aligned in the parent.
-         * Otherwise, just take the start of the closest child
-         */
-        if (layoutState.currentPosition == layoutManager.itemCount - 1) {
-            layoutState.availableScrollSpace = layoutInfo.orientationHelper.totalSpace
-        } else {
-            layoutState.availableScrollSpace =
-                decoratedEnd - layoutInfo.orientationHelper.endAfterPadding
-        }
+        layoutState.availableScrollSpace =
+            decoratedEnd - layoutInfo.orientationHelper.endAfterPadding
     }
 
     private fun updateStartLayoutState() {
@@ -397,18 +396,8 @@ internal class LayoutArchitect(
 
         val decoratedStart = layoutInfo.orientationHelper.getDecoratedStart(child)
         layoutState.offset = decoratedStart
-
-        /**
-         * If we reached the edge of the list, we can technically scroll the rest of the size
-         * since the first item can be center aligned in the parent.
-         * Otherwise, just take the start of the closest child
-         */
-        if (layoutState.currentPosition == RecyclerView.NO_POSITION) {
-            layoutState.availableScrollSpace = layoutInfo.orientationHelper.totalSpace
-        } else {
-            layoutState.availableScrollSpace =
-                -decoratedStart + layoutInfo.orientationHelper.startAfterPadding
-        }
+        layoutState.availableScrollSpace =
+            -decoratedStart + layoutInfo.orientationHelper.startAfterPadding
     }
 
     private fun updateLayoutStateToFillStart(position: Int, offset: Int) {
@@ -466,6 +455,7 @@ internal class LayoutArchitect(
         }
         layoutState.available = requiredSpace
         layoutState.available -= layoutState.availableScrollSpace
+
     }
 
     private fun updateExtraLayoutSpace(state: RecyclerView.State) {
