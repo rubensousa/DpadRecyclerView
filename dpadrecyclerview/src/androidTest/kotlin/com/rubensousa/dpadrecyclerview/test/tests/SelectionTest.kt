@@ -55,7 +55,7 @@ class SelectionTest : GridTest() {
 
     @Before
     fun setup() {
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
     }
 
     @Test
