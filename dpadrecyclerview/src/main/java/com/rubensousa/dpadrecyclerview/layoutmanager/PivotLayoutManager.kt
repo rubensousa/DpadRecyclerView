@@ -140,7 +140,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         layoutArchitect.onLayoutChildren(recycler, state)
-        layoutAlignment.onLayoutChildren()
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {

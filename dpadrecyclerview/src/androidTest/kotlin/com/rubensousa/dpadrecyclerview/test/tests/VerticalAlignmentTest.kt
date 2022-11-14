@@ -20,6 +20,7 @@ import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -28,6 +29,7 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -52,8 +54,13 @@ class VerticalAlignmentTest : GridTest() {
         )
     }
 
+    @Before
+    fun setup() {
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
+    }
+
     @Test
-    fun testMiddleItemsAreAlignedToContainerOffsets() {
+    fun testMiddleItemsAreAlignedToParentOffsets() {
         launchFragment()
         KeyEvents.pressDown(times = 5)
 
@@ -92,7 +99,7 @@ class VerticalAlignmentTest : GridTest() {
     }
 
     @Test
-    fun testMiddleItemsAreAlignedToItemOffsets() {
+    fun testMiddleItemsAreAlignedToChildOffsets() {
         launchFragment()
         KeyEvents.pressDown(times = 5)
 
@@ -203,7 +210,7 @@ class VerticalAlignmentTest : GridTest() {
     }
 
     @Test
-    fun testItemsAreAlignedToContainerOffset() {
+    fun testItemsAreAlignedToParentOffset() {
         val offset = 100
         launchFragment(
             parentAlignment = ParentAlignment(
@@ -227,7 +234,7 @@ class VerticalAlignmentTest : GridTest() {
     }
 
     @Test
-    fun testItemsAreAlignedToBothContainerAndItemAlignmentOffsets() {
+    fun testItemsAreAlignedToBothParentAndChildAlignmentOffsets() {
         val containerOffset = 100
         val itemOffset = 100
         launchFragment(
@@ -253,7 +260,7 @@ class VerticalAlignmentTest : GridTest() {
     }
 
     @Test
-    fun testItemsAreAlignedToBothContainerAndItemAlignmentOffsetPercentages() {
+    fun testItemsAreAlignedToBothParentAndChildAlignmentOffsetRatios() {
         val containerOffset = 100
         val itemOffset = 100
         launchFragment(

@@ -73,8 +73,8 @@ internal class LayoutAlignment(
      */
     fun calculateViewCenterForLayout(view: View, size: Int): Int {
         updateChildAlignments(view)
-        val parentKeyline = parentAlignment.calculateKeyline()
         val childKeyline = getViewCenter(view)
+        val parentKeyline = parentAlignment.calculateKeyline()
         return parentKeyline - childKeyline + size / 2
     }
 
@@ -127,6 +127,12 @@ internal class LayoutAlignment(
             }
         }
         return scrollOffset
+    }
+
+    fun calculateScrollForAlignment(view: View): Int {
+        updateScrollLimits()
+        updateChildAlignments(view)
+        return calculateDistanceToKeyline(view)
     }
 
     fun updateScroll(

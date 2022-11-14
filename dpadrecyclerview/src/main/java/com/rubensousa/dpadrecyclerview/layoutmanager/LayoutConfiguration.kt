@@ -29,7 +29,7 @@ internal class LayoutConfiguration {
     var spanCount = 1
         private set
 
-    var gravity = Gravity.TOP
+    var gravity = Gravity.TOP.or(Gravity.START)
         private set
 
     /**

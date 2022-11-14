@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -64,13 +65,13 @@ internal class RowArchitect(
         val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
 
         if (configuration.isVertical()) {
-            applyHorizontalGravity(view, viewBounds)
             viewBounds.top = headOffset
             viewBounds.bottom = tailOffset
+            applyHorizontalGravity(view, viewBounds)
         } else {
-            applyVerticalGravity(view, viewBounds)
             viewBounds.left = headOffset
             viewBounds.right = tailOffset
+            applyVerticalGravity(view, viewBounds)
         }
         layoutView(view, viewBounds)
         pivotInfo.position = position
@@ -138,21 +139,51 @@ internal class RowArchitect(
         }
     }
 
-    // TODO Support all gravity types
     private fun applyHorizontalGravity(view: View, bounds: Rect) {
-        if (layoutInfo.isRTL()) {
-            bounds.right = layoutManager.width - layoutManager.paddingRight
-            bounds.left = viewBounds.right - layoutInfo.getPerpendicularDecoratedSize(view)
+        val horizontalGravity = if (configuration.reverseLayout) {
+            Gravity.getAbsoluteGravity(
+                configuration.gravity.and(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK),
+                View.LAYOUT_DIRECTION_RTL
+            )
         } else {
-            bounds.left = layoutManager.paddingLeft
-            bounds.right = viewBounds.left + layoutInfo.getPerpendicularDecoratedSize(view)
+            configuration.gravity.and(Gravity.HORIZONTAL_GRAVITY_MASK)
         }
+        when (horizontalGravity) {
+            Gravity.CENTER, Gravity.CENTER_HORIZONTAL -> {
+                val width = layoutInfo.getPerpendicularDecoratedSize(view)
+                bounds.left = layoutManager.width / 2 - width / 2
+                bounds.right = bounds.left + width
+            }
+            Gravity.RIGHT -> {
+                val width = layoutInfo.getPerpendicularDecoratedSize(view)
+                bounds.right = layoutManager.width - layoutManager.paddingRight
+                bounds.left = bounds.right - width
+            }
+            else -> { // Fallback to left gravity since this is the default expected behavior
+                bounds.left = layoutManager.paddingLeft
+                bounds.right = viewBounds.left + layoutInfo.getPerpendicularDecoratedSize(view)
+            }
+        }
+
     }
 
-    // TODO Support all gravity types
     private fun applyVerticalGravity(view: View, bounds: Rect) {
-        bounds.top = layoutManager.paddingTop
-        bounds.bottom = viewBounds.top + layoutInfo.getPerpendicularDecoratedSize(view)
+        when (configuration.gravity.and(Gravity.VERTICAL_GRAVITY_MASK)) {
+            Gravity.CENTER, Gravity.CENTER_VERTICAL -> {
+                val height = layoutInfo.getPerpendicularDecoratedSize(view)
+                bounds.top = layoutManager.height / 2 - height / 2
+                bounds.bottom = bounds.top + height
+            }
+            Gravity.BOTTOM -> {
+                val height = layoutInfo.getPerpendicularDecoratedSize(view)
+                bounds.bottom = layoutManager.height - layoutManager.paddingBottom
+                bounds.top = bounds.bottom - height
+            }
+            else -> {  // Fallback to top gravity since this is the default expected behavior
+                bounds.top = layoutManager.paddingTop
+                bounds.bottom = viewBounds.top + layoutInfo.getPerpendicularDecoratedSize(view)
+            }
+        }
     }
 
     private fun layoutView(view: View, bounds: Rect) {

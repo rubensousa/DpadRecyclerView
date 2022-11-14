@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutState
@@ -96,6 +95,7 @@ internal class LayoutArchitect(
     }
 
     fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
+        layoutAlignment.onLayoutChildren()
         layoutInfo.setLayoutInProgress(true)
         // If we don't have any items, recycle them all
         if (state.itemCount == 0) {
@@ -105,7 +105,7 @@ internal class LayoutArchitect(
 
         // Disable recycling at this stage, since we need to add as many views as we need
         layoutState.recycle = false
-        layoutState.reverseLayout = shouldReverseLayout()
+        layoutState.reverseLayout = layoutInfo.shouldReverseLayout()
         layoutState.spanCount = configuration.spanCount
 
         layoutState.updateDirectionFromLastScroll()
@@ -125,16 +125,15 @@ internal class LayoutArchitect(
         var startOffset = 0
         var endOffset = 0
 
-        val pivotPosition = pivotLayoutState.position
-        rowArchitect.layoutPivot(pivotPosition, recycler, pivotInfo)
+        rowArchitect.layoutPivot(pivotLayoutState.position, recycler, pivotInfo)
 
         if (layoutState.reverseLayout) {
             updateLayoutStateToFillBeforePivot(pivotInfo)
             layoutState.extraFillSpace = extraForStart
             fill(recycler, state)
             startOffset = layoutState.offset
-            if (layoutState.available > 0) {
-                extraForEnd += layoutState.available
+            if (layoutState.fillSpace > 0) {
+                extraForEnd += layoutState.fillSpace
             }
 
             // fill towards end
@@ -149,8 +148,8 @@ internal class LayoutArchitect(
             layoutState.extraFillSpace = extraForEnd
             fill(recycler, state)
             endOffset = layoutState.offset
-            if (layoutState.available > 0) {
-                extraForStart += layoutState.available
+            if (layoutState.fillSpace > 0) {
+                extraForStart += layoutState.fillSpace
             }
 
             // fill towards start
@@ -161,12 +160,21 @@ internal class LayoutArchitect(
             startOffset = layoutState.offset
         }
 
-        layoutForPredictiveAnimations(recycler, state, startOffset, endOffset)
+        /**
+         * After laying out everything, it's time to fix any pending alignment issues:
+         * 1. Pivot could be aligned to keyline when it should be aligned to the min edge
+         * 2. Pivot could be aligned to keyline when it should be aligned to the max edge
+         */
+        val scrollOffset = alignPivot(recycler, state)
+
+        layoutForPredictiveAnimations(
+            recycler, state,
+            startOffset + scrollOffset, endOffset + scrollOffset
+        )
 
         if (!state.isPreLayout) {
             layoutInfo.onLayoutCompleted()
         }
-
     }
 
     fun onLayoutCompleted(state: RecyclerView.State) {
@@ -177,19 +185,27 @@ internal class LayoutArchitect(
         }
     }
 
+    private fun alignPivot(recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
+        val pivotView = layoutInfo.findViewByPosition(pivotInfo.position) ?: return 0
+        val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
+        pivotInfo.offset(scrollOffset)
+        scrollBy(scrollOffset, recycler, state)
+        return scrollOffset
+    }
+
     /**
      * Keeps adding views until the remaining space is exhausted
      * @return number of pixels added to the existing layout
      */
-    private fun fill(recycler: Recycler, state: RecyclerView.State): Int {
-        val start = layoutState.available
+    private fun fill(recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
+        val start = layoutState.fillSpace
         if (layoutState.availableScrollSpace != LayoutState.SCROLL_SPACE_NONE) {
-            if (layoutState.available < 0) {
-                layoutState.availableScrollSpace += layoutState.available
+            if (layoutState.fillSpace < 0) {
+                layoutState.availableScrollSpace += layoutState.fillSpace
             }
             childRecycler.recycleByLayoutState(recycler, layoutState)
         }
-        var remainingSpace = layoutState.available + layoutState.extraFillSpace
+        var remainingSpace = layoutState.fillSpace + layoutState.extraFillSpace
         while ((layoutState.isInfinite || remainingSpace > 0) && layoutState.hasMoreItems(state)) {
             layoutResult.reset()
             layoutChunk(recycler, state)
@@ -208,22 +224,25 @@ internal class LayoutArchitect(
                 || layoutState.scrappedViews != null
                 || !state.isPreLayout
             ) {
-                layoutState.available -= layoutResult.consumed
+                layoutState.fillSpace -= layoutResult.consumed
                 // we keep a separate remaining space because available is important for recycling
                 remainingSpace -= layoutResult.consumed
             }
             if (layoutState.availableScrollSpace != LayoutState.SCROLL_SPACE_NONE) {
                 layoutState.availableScrollSpace += layoutResult.consumed
-                if (layoutState.available < 0) {
-                    layoutState.availableScrollSpace += layoutState.available
+                if (layoutState.fillSpace < 0) {
+                    layoutState.availableScrollSpace += layoutState.fillSpace
                 }
                 childRecycler.recycleByLayoutState(recycler, layoutState)
             }
         }
-        return start - layoutState.available
+        return start - layoutState.fillSpace
     }
 
-    private fun layoutChunk(recycler: Recycler, recyclerViewState: RecyclerView.State) {
+    private fun layoutChunk(
+        recycler: RecyclerView.Recycler,
+        recyclerViewState: RecyclerView.State
+    ) {
         if (configuration.spanCount == 1) {
             rowArchitect.layoutChunk(recycler, layoutState, layoutResult)
         } else {
@@ -266,7 +285,7 @@ internal class LayoutArchitect(
      * If necessary, layouts new items for predictive animations
      */
     private fun layoutForPredictiveAnimations(
-        recycler: Recycler,
+        recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
         startOffset: Int,
         endOffset: Int
@@ -315,7 +334,7 @@ internal class LayoutArchitect(
                 updateLayoutStateToFillStart(layoutManager.getPosition(view), startOffset)
             }
             layoutState.extraFillSpace = scrapExtraStart
-            layoutState.available = 0
+            layoutState.fillSpace = 0
             layoutState.assignPositionFromScrapList()
             fill(recycler, state)
         }
@@ -324,14 +343,16 @@ internal class LayoutArchitect(
                 updateLayoutStateToFillEnd(layoutManager.getPosition(view), endOffset)
             }
             layoutState.extraFillSpace = scrapExtraEnd
-            layoutState.available = 0
+            layoutState.fillSpace = 0
             layoutState.assignPositionFromScrapList()
             fill(recycler, state)
         }
         layoutState.scrappedViews = null
     }
 
-    private fun scrollBy(offset: Int, recycler: Recycler, state: RecyclerView.State): Int {
+    private fun scrollBy(
+        offset: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State
+    ): Int {
         if (layoutManager.childCount == 0 || offset == 0) {
             return 0
         }
@@ -343,15 +364,7 @@ internal class LayoutArchitect(
             LayoutState.LayoutDirection.START
         }
         updateLayoutState(direction, requiredSpace = abs(offset), state)
-        /**
-         * If we reached the edge of the list, we can technically scroll the rest of the size
-         * since the first item can be center aligned in the parent
-         */
-        val availableScrollSpace = if (!layoutState.hasMoreItems(state)) {
-            layoutInfo.orientationHelper.totalSpace
-        } else {
-            layoutState.availableScrollSpace
-        }
+        val availableScrollSpace = calculateAvailableScrollSpace(state)
         val consumed = availableScrollSpace + fill(recycler, state)
         if (consumed < 0) {
             // Reached an edge of the list, just return
@@ -365,6 +378,20 @@ internal class LayoutArchitect(
         layoutInfo.orientationHelper.offsetChildren(-scrolledOffset)
         layoutState.lastScrollOffset = scrolledOffset
         return scrolledOffset
+    }
+
+    /**
+     * If we reached the edge of the list, we can technically scroll the rest of the size
+     * since the first item can be center aligned in the parent.
+     *
+     * By default, if we're not near an edge,
+     * just returns the available scroll space in [layoutState]
+     */
+    private fun calculateAvailableScrollSpace(state: RecyclerView.State): Int {
+        if (!layoutState.hasMoreItems(state)) {
+            return layoutInfo.orientationHelper.totalSpace
+        }
+        return layoutState.availableScrollSpace
     }
 
     private fun updateEndLayoutState() {
@@ -405,7 +432,7 @@ internal class LayoutArchitect(
     }
 
     private fun updateLayoutStateToFillStart(position: Int, offset: Int) {
-        layoutState.available = offset - layoutInfo.orientationHelper.startAfterPadding
+        layoutState.fillSpace = offset - layoutInfo.orientationHelper.startAfterPadding
         layoutState.currentPosition = position
         layoutState.itemDirection = if (layoutState.reverseLayout) {
             LayoutState.ItemDirection.TAIL
@@ -422,7 +449,7 @@ internal class LayoutArchitect(
     }
 
     private fun updateLayoutStateToFillEnd(position: Int, offset: Int) {
-        layoutState.available = layoutInfo.orientationHelper.endAfterPadding - offset
+        layoutState.fillSpace = layoutInfo.orientationHelper.endAfterPadding - offset
         layoutState.itemDirection = if (layoutState.reverseLayout) {
             LayoutState.ItemDirection.HEAD
         } else {
@@ -457,9 +484,8 @@ internal class LayoutArchitect(
         } else {
             updateStartLayoutState()
         }
-        layoutState.available = requiredSpace
-        layoutState.available -= layoutState.availableScrollSpace
-
+        layoutState.fillSpace = requiredSpace
+        layoutState.fillSpace -= layoutState.availableScrollSpace
     }
 
     private fun updateExtraLayoutSpace(state: RecyclerView.State) {
@@ -506,19 +532,6 @@ internal class LayoutArchitect(
             layoutInfo.orientationHelper.totalSpace
         } else {
             0
-        }
-    }
-
-    /**
-     * Calculates the view layout order. (e.g. from end to start or start to end)
-     * RTL layout support is applied automatically. So if layout is RTL and
-     * [LayoutConfiguration.reverseLayout] is true, elements will be laid out starting from left.
-     */
-    private fun shouldReverseLayout(): Boolean {
-        return if (configuration.isVertical() || !layoutInfo.isRTL()) {
-            configuration.reverseLayout
-        } else {
-            !configuration.reverseLayout
         }
     }
 

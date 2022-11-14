@@ -58,7 +58,7 @@ internal class LayoutState {
     /**
      * Number of pixels that we should fill, in the layout direction.
      */
-    var available = 0
+    var fillSpace = 0
 
     /**
      * Used to pre-layout items that are not yet visible
@@ -182,7 +182,7 @@ internal class LayoutState {
     override fun toString(): String {
         return "LayoutState(offset=$offset, " +
                 "nextItemPosition=$currentPosition, " +
-                "available=$available, " +
+                "available=$fillSpace, " +
                 "extraFillSpace=$extraFillSpace, " +
                 "extraLayoutSpace=$extraLayoutSpace," +
                 "availableScrollSpace=$availableScrollSpace," +

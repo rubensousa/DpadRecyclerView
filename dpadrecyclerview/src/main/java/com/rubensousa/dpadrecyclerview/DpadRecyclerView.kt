@@ -289,6 +289,8 @@ class DpadRecyclerView @JvmOverloads constructor(
      * Defaults to [Gravity.TOP] for horizontal orientation
      * and [Gravity.START] for vertical orientation.
      *
+     * This is only supported for single rows (i.e 1 span)
+     *
      * @param gravity See [Gravity]
      */
     fun setGravity(gravity: Int) {

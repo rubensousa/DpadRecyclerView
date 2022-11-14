@@ -165,8 +165,9 @@ internal class ParentScrollAlignment {
      * according to the current [defaultAlignment].
      * The scroll distance will be capped by [minScroll] and [maxScroll]
      */
-    fun calculateScrollDistance(viewCenter: Int, subPositionAlignment: ParentAlignment? = null)
-            : Int {
+    fun calculateScrollDistance(
+        viewCenter: Int, subPositionAlignment: ParentAlignment? = null
+    ): Int {
         val alignment = subPositionAlignment ?: defaultAlignment
         val keyLine = calculateKeyline(alignment)
         if (!isMinUnknown) {

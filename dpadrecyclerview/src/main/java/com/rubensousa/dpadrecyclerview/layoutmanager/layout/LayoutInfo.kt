@@ -46,9 +46,6 @@ internal class LayoutInfo(
     var isLayoutInProgress = false
         private set
 
-    var gravity: Int = Gravity.START.or(Gravity.TOP)
-        private set
-
     private var recyclerView: RecyclerView? = null
 
     fun isRTL() = layout.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL
@@ -61,10 +58,6 @@ internal class LayoutInfo(
         orientationHelper = OrientationHelper.createOrientationHelper(
             layout, configuration.orientation
         )
-    }
-
-    fun setGravity(gravity: Int) {
-        this.gravity = gravity
     }
 
     /**
@@ -279,6 +272,19 @@ internal class LayoutInfo(
 
     fun requestLayout() {
         layout.requestLayout()
+    }
+
+    /**
+     * Calculates the view layout order. (e.g. from end to start or start to end)
+     * RTL layout support is applied automatically. So if layout is RTL and
+     * [LayoutConfiguration.reverseLayout] is true, elements will be laid out starting from left.
+     */
+    fun shouldReverseLayout(): Boolean {
+        return if (configuration.isVertical() || !isRTL()) {
+            configuration.reverseLayout
+        } else {
+            !configuration.reverseLayout
+        }
     }
 
 }

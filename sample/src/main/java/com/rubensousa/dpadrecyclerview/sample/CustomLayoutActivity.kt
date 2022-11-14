@@ -23,8 +23,8 @@ class CustomLayoutActivity : AppCompatActivity() {
         setContentView(R.layout.activity_custom_layout)
         val recyclerView = findViewById<DpadRecyclerView>(R.id.recyclerView)
         recyclerView.addItemDecoration(
-            LinearMarginDecoration.createHorizontal(
-                horizontalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing) / 2
+            LinearMarginDecoration.createVertical(
+                verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing) / 2
             )
         )
         recyclerView.requestFocus()
