@@ -21,7 +21,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
@@ -30,7 +30,7 @@ internal class LayoutScroller(
     private val layoutInfo: LayoutInfo,
     private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration,
-    private val pivotLayoutState: PivotLayoutState
+    private val pivotState: PivotState
 ) {
 
     companion object {
@@ -58,6 +58,15 @@ internal class LayoutScroller(
         this.recyclerView = recyclerView
     }
 
+    fun onRestoreInstanceState() {
+        if (pivotState.position != RecyclerView.NO_POSITION) {
+            isSelectionUpdatePending = true
+            isFocusUpdatePending = recyclerView?.hasFocus() ?: false
+            layoutManager.requestLayout()
+        }
+
+    }
+
     /**
      * Scrolls to a position-subPosition pair.
      *
@@ -74,7 +83,7 @@ internal class LayoutScroller(
                     "and subPosition $subPosition with smooth: $smooth"
         )
         if (!smooth) {
-            if (pivotLayoutState.update(position, subPosition)) {
+            if (pivotState.update(position, subPosition)) {
                 isSelectionUpdatePending = true
                 isFocusUpdatePending = true
                 layoutManager.requestLayout()
@@ -95,8 +104,8 @@ internal class LayoutScroller(
         )
         if (isSelectionUpdatePending) {
             isSelectionUpdatePending = false
-            pivotLayoutState.dispatchViewHolderSelected(recyclerView)
-            pivotLayoutState.dispatchViewHolderSelectedAndAligned(recyclerView)
+            pivotState.dispatchViewHolderSelected(recyclerView)
+            pivotState.dispatchViewHolderSelectedAndAligned(recyclerView)
         }
         isFocusUpdatePending = false
     }
@@ -110,8 +119,8 @@ internal class LayoutScroller(
         requestFocus: Boolean
     ) {
         val itemCount = layoutManager.itemCount
-        var targetPosition = pivotLayoutState.position
-        var targetSubPosition = pivotLayoutState.subPosition
+        var targetPosition = pivotState.position
+        var targetSubPosition = pivotState.subPosition
         if (itemCount == 0) {
             targetPosition = 0
             targetSubPosition = 0
@@ -194,7 +203,7 @@ internal class LayoutScroller(
         val newSubFocusPosition = layoutAlignment.findSubPositionOfChild(
             recyclerView, viewHolderView, subPositionView
         )
-        val focusChanged = pivotLayoutState.update(newFocusPosition, newSubFocusPosition)
+        val focusChanged = pivotState.update(newFocusPosition, newSubFocusPosition)
         var selectViewHolder = false
         if (focusChanged) {
             if (!layoutInfo.isLayoutInProgress) {
@@ -225,9 +234,9 @@ internal class LayoutScroller(
             } != null
 
         if (selectViewHolder) {
-            pivotLayoutState.dispatchViewHolderSelected(recyclerView)
+            pivotState.dispatchViewHolderSelected(recyclerView)
             if (!scrolled) {
-                pivotLayoutState.dispatchViewHolderSelectedAndAligned(recyclerView)
+                pivotState.dispatchViewHolderSelectedAndAligned(recyclerView)
             }
         }
     }

@@ -17,12 +17,16 @@
 package com.rubensousa.dpadrecyclerview.test.tests
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.assertOnRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -49,6 +53,7 @@ class SaveRestoreStateTest : GridTest() {
 
     @Before
     fun setup() {
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
         launchFragment()
     }
 
@@ -62,6 +67,7 @@ class SaveRestoreStateTest : GridTest() {
         val recyclerViewBounds = getRecyclerViewBounds()
         val viewBounds = getItemViewBounds(position = 5)
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
+        assertOnRecyclerView(ViewAssertions.matches(ViewMatchers.hasFocus()))
         assertFocusPosition(5)
     }
 

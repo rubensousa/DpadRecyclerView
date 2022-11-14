@@ -66,6 +66,10 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         recyclerView.requestFocus()
     }
 
+    fun requestFocus() {
+        view?.findViewById<DpadRecyclerView>(R.id.recyclerView)?.requestFocus()
+    }
+
     open fun createAdapter(
         recyclerView: DpadRecyclerView,
         adapterConfig: TestAdapterConfiguration

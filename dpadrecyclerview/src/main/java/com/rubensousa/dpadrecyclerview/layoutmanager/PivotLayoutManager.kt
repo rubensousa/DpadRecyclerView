@@ -52,19 +52,19 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     private val configuration = LayoutConfiguration()
     private val layoutInfo = LayoutInfo(this, configuration)
-    private val pivotLayoutState = PivotLayoutState(layoutInfo)
+    private val pivotState = PivotState(layoutInfo)
     private val layoutAlignment = LayoutAlignment(this, layoutInfo, configuration)
     private val layoutArchitect = LayoutArchitect(
-        this, layoutAlignment, configuration, pivotLayoutState, layoutInfo
+        this, layoutAlignment, configuration, pivotState, layoutInfo
     )
     private val scroller = LayoutScroller(
-        this, layoutInfo, layoutAlignment, configuration, pivotLayoutState
+        this, layoutInfo, layoutAlignment, configuration, pivotState
     )
     private val focusFinder = LayoutFocusFinder(
-        this, configuration, scroller, layoutInfo, pivotLayoutState
+        this, configuration, scroller, layoutInfo, pivotState
     )
     private val accessibilityHelper = LayoutAccessibilityHelper(
-        this, configuration, layoutInfo, pivotLayoutState, scroller
+        this, configuration, layoutInfo, pivotState, scroller
     )
     private var recyclerView: RecyclerView? = null
 
@@ -194,26 +194,26 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        pivotLayoutState.onItemsAdded(recyclerView, positionStart, itemCount)
+        pivotState.onItemsAdded(recyclerView, positionStart, itemCount)
     }
 
     override fun onItemsChanged(recyclerView: RecyclerView) {
-        pivotLayoutState.onItemsChanged(recyclerView)
+        pivotState.onItemsChanged(recyclerView)
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        pivotLayoutState.onItemsRemoved(recyclerView, positionStart, itemCount)
+        pivotState.onItemsRemoved(recyclerView, positionStart, itemCount)
     }
 
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
-        pivotLayoutState.onItemsMoved(recyclerView, from, to, itemCount)
+        pivotState.onItemsMoved(recyclerView, from, to, itemCount)
     }
 
     override fun onAdapterChanged(
         oldAdapter: RecyclerView.Adapter<*>?,
         newAdapter: RecyclerView.Adapter<*>?
     ) {
-        pivotLayoutState.onAdapterChanged(oldAdapter, newAdapter)
+        pivotState.onAdapterChanged(oldAdapter, newAdapter)
     }
 
     override fun onRequestChildFocus(
@@ -285,11 +285,12 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     ): Boolean = accessibilityHelper.performAccessibilityAction(recyclerView, state, action)
 
     override fun onSaveInstanceState(): Parcelable {
-        return pivotLayoutState.onSaveInstanceState()
+        return pivotState.onSaveInstanceState()
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        pivotLayoutState.onRestoreInstanceState(state)
+        pivotState.onRestoreInstanceState(state)
+        scroller.onRestoreInstanceState()
     }
 
     // Configuration methods
@@ -391,15 +392,15 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
-        pivotLayoutState.addOnViewHolderSelectedListener(listener)
+        pivotState.addOnViewHolderSelectedListener(listener)
     }
 
     override fun removeOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
-        pivotLayoutState.removeOnViewHolderSelectedListener(listener)
+        pivotState.removeOnViewHolderSelectedListener(listener)
     }
 
     override fun clearOnViewHolderSelectedListeners() {
-        pivotLayoutState.clearOnViewHolderSelectedListeners()
+        pivotState.clearOnViewHolderSelectedListeners()
     }
 
     override fun onRtlPropertiesChanged() {
@@ -411,14 +412,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun selectSubPosition(subPosition: Int, smooth: Boolean) {
-        selectPosition(pivotLayoutState.position, subPosition, smooth)
+        selectPosition(pivotState.position, subPosition, smooth)
     }
 
-    override fun getSelectedPosition(): Int = pivotLayoutState.position
+    override fun getSelectedPosition(): Int = pivotState.position
 
-    override fun getSelectedSubPosition(): Int = pivotLayoutState.subPosition
+    override fun getSelectedSubPosition(): Int = pivotState.subPosition
 
-    override fun getCurrentSubPositions(): Int = pivotLayoutState.getCurrentSubPositions()
+    override fun getCurrentSubPositions(): Int = pivotState.getCurrentSubPositions()
 
     override fun addOnLayoutCompletedListener(
         listener: DpadRecyclerView.OnLayoutCompletedListener

@@ -46,8 +46,13 @@ abstract class GridTest {
 
     private lateinit var fragmentScenario: FragmentScenario<TestGridFragment>
 
-    fun recreateFragment() {
+    fun recreateFragment(requestFocus: Boolean = true) {
         fragmentScenario.recreate()
+        fragmentScenario.onFragment { fragment ->
+            if (requestFocus) {
+                fragment.requestFocus()
+            }
+        }
     }
 
     fun launchFragment(): FragmentScenario<TestGridFragment> {

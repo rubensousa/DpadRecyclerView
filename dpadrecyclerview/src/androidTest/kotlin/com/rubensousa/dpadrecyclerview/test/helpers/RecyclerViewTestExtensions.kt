@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.test.helpers
 import android.graphics.Rect
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
+import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.matcher.ViewMatchers
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -84,6 +85,12 @@ fun assertFocusPosition(position: Int, id: Int = R.id.recyclerView) {
     Espresso.onView(ViewMatchers.withId(id))
         .check(DpadRecyclerViewAssertions.isFocused(position))
 }
+
+fun assertOnRecyclerView(assertion: ViewAssertion, id: Int = R.id.recyclerView) {
+    Espresso.onView(ViewMatchers.withId(id))
+        .check(assertion)
+}
+
 
 fun getItemViewBounds(position: Int, id: Int = R.id.recyclerView): Rect {
     val rect = Rect()

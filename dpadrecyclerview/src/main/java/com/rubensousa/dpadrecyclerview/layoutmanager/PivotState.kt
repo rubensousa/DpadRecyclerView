@@ -29,7 +29,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
  * - Holding the current pivot state
  * - Saving/restoring pivot state
  */
-internal class PivotLayoutState(private val layoutInfo: LayoutInfo) {
+internal class PivotState(private val layoutInfo: LayoutInfo) {
 
     var position: Int = 0
         private set
