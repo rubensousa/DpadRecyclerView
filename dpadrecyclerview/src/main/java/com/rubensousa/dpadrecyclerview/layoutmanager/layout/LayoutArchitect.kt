@@ -165,12 +165,9 @@ internal class LayoutArchitect(
          * 1. Pivot could be aligned to keyline when it should be aligned to the min edge
          * 2. Pivot could be aligned to keyline when it should be aligned to the max edge
          */
-        val scrollOffset = alignPivot(recycler, state)
+        alignPivot(recycler, state)
 
-        layoutForPredictiveAnimations(
-            recycler, state,
-            startOffset + scrollOffset, endOffset + scrollOffset
-        )
+        layoutForPredictiveAnimations(recycler, state, startOffset, endOffset)
 
         if (!state.isPreLayout) {
             layoutInfo.onLayoutCompleted()
@@ -185,12 +182,14 @@ internal class LayoutArchitect(
         }
     }
 
-    private fun alignPivot(recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
-        val pivotView = layoutInfo.findViewByPosition(pivotInfo.position) ?: return 0
+    private fun alignPivot(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
+        if (state.willRunPredictiveAnimations()) {
+            return
+        }
+        val pivotView = layoutInfo.findViewByPosition(pivotInfo.position) ?: return
         val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
         pivotInfo.offset(scrollOffset)
         scrollBy(scrollOffset, recycler, state)
-        return scrollOffset
     }
 
     /**
@@ -351,7 +350,9 @@ internal class LayoutArchitect(
     }
 
     private fun scrollBy(
-        offset: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State
+        offset: Int,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
     ): Int {
         if (layoutManager.childCount == 0 || offset == 0) {
             return 0
