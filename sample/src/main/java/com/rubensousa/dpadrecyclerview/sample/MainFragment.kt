@@ -6,10 +6,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.decorator.DecorationLookup
 import com.rubensousa.decorator.LinearMarginDecoration
-import com.rubensousa.dpadrecyclerview.*
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.ViewHolderTask
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenTvNestedListsBinding
 import com.rubensousa.dpadrecyclerview.sample.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.list.DpadStateHolder
@@ -40,6 +42,9 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             loadingAdapter.show(isLoading)
         }
+        val itemAnimator = binding.recyclerView.itemAnimator as DefaultItemAnimator
+        itemAnimator.removeDuration = 500
+
         binding.recyclerView.requestFocus()
         if (selectedPosition != RecyclerView.NO_POSITION) {
             binding.recyclerView.setSelectedPosition(
@@ -100,14 +105,7 @@ class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
     private fun setupAlignment(recyclerView: DpadRecyclerView) {
         recyclerView.addItemDecoration(
             LinearMarginDecoration.createVertical(
-                verticalMargin = resources.getDimensionPixelOffset(
-                    R.dimen.item_spacing
-                ),
-                decorationLookup = object : DecorationLookup {
-                    override fun shouldApplyDecoration(position: Int, itemCount: Int): Boolean {
-                        return position != itemCount - 1 || !loadingAdapter.isShowing()
-                    }
-                }
+                verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing)
             )
         )
     }
