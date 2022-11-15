@@ -26,6 +26,7 @@
             <enum name="circular" value="1" />
             <enum name="continuous" value="2" />
         </attr>
+        <attr name="dpadRecyclerViewPivotLayoutManager" format="boolean" />
 
         <attr name="android:gravity" />
     </declare-styleable>

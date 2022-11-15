@@ -96,7 +96,10 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         )
         val properties = LayoutManager.getProperties(context, attrs, 0, 0)
         val useNewLayoutManager = properties.spanCount == 1
-                && DpadRecyclerViewHelper.isNewPivotLayoutManagerEnabled
+                && typedArray.getBoolean(
+            R.styleable.DpadRecyclerView_dpadRecyclerViewPivotLayoutManager,
+            DpadRecyclerViewHelper.isNewPivotLayoutManagerEnabled
+        )
         layoutManagerImpl = if (useNewLayoutManager) {
             PivotLayoutManager(properties)
         } else {
