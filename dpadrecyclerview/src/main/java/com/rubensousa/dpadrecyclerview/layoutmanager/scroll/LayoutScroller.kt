@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
@@ -37,7 +38,7 @@ internal class LayoutScroller(
         const val TAG = "LayoutScroller"
     }
 
-    var isSelectionUpdatePending = false
+    var isSelectionUpdatePending = true
         private set
 
     var isSelectionInProgress = false
@@ -45,16 +46,11 @@ internal class LayoutScroller(
 
     private var isFocusUpdatePending = false
     private var recyclerView: RecyclerView? = null
-    private var scrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-            layoutInfo.setIsScrolling(newState != RecyclerView.SCROLL_STATE_IDLE)
-        }
-    }
+    private val idleScrollListener = IdleScrollListener()
 
     fun setRecyclerView(recyclerView: RecyclerView?) {
-        this.recyclerView?.removeOnScrollListener(scrollListener)
-        recyclerView?.addOnScrollListener(scrollListener)
+        this.recyclerView?.removeOnScrollListener(idleScrollListener)
+        recyclerView?.addOnScrollListener(idleScrollListener)
         this.recyclerView = recyclerView
     }
 
@@ -284,9 +280,28 @@ internal class LayoutScroller(
         return scrollOffset
     }
 
-    // TODO
-    private fun updateScrollLimits() {
+    /**
+     * Takes care of dispatching [OnViewHolderSelectedListener.onViewHolderSelectedAndAligned]
+     */
+    private inner class IdleScrollListener : RecyclerView.OnScrollListener() {
+        private var isScrolling = false
+        private var previousSelectedPosition = RecyclerView.NO_POSITION
 
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            layoutInfo.setIsScrolling(newState != RecyclerView.SCROLL_STATE_IDLE)
+            val wasScrolling = isScrolling
+            isScrolling = newState != RecyclerView.SCROLL_STATE_IDLE
+            if (wasScrolling == isScrolling) return
+            if (isScrolling) {
+                // If we're now scrolling, save the current selection state
+                previousSelectedPosition = pivotState.position
+            } else if (previousSelectedPosition != RecyclerView.NO_POSITION) {
+                // If we're no longer scrolling, check if we need to send a new event
+                pivotState.dispatchViewHolderSelectedAndAligned(recyclerView)
+                previousSelectedPosition = RecyclerView.NO_POSITION
+            }
+        }
     }
 
 }

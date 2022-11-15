@@ -149,7 +149,28 @@ internal class PivotState(private val layoutInfo: LayoutInfo) {
     }
 
     fun dispatchViewHolderSelectedAndAligned(recyclerView: RecyclerView) {
+        if (!hasSelectionListeners()) {
+            return
+        }
 
+        val view = if (position == RecyclerView.NO_POSITION) {
+            null
+        } else {
+            layoutInfo.findViewByPosition(position)
+        }
+        val viewHolder = if (view != null) {
+            recyclerView.getChildViewHolder(view)
+        } else {
+            null
+        }
+
+        if (viewHolder != null) {
+            selectionListeners.forEach { listener ->
+                listener.onViewHolderSelectedAndAligned(
+                    recyclerView, viewHolder, position, subPosition
+                )
+            }
+        }
     }
 
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {

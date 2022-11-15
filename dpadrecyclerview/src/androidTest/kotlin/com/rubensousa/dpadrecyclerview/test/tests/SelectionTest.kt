@@ -128,8 +128,10 @@ class SelectionTest : GridTest() {
 
     }
 
+    // TODO Migrate to PivotLayoutManager once grid is supported
     @Test
     fun testViewHoldersAlreadyAlignedStillDispatchAlignedEvent() {
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
         launchFragment(getDefaultLayoutConfiguration().copy(spans = 5))
 
         val expectedEvents = ArrayList<DpadSelectionEvent>()
@@ -159,7 +161,7 @@ class SelectionTest : GridTest() {
     @Test
     fun testTaskIsExecutedAfterViewHolderIsSelectedAndAligned() {
         launchFragment()
-        val targetPosition = 40
+        val targetPosition = 5
 
         selectWithTask(position = targetPosition, smooth = true, executeWhenAligned = true)
 
