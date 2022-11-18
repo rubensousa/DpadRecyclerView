@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview
+package com.rubensousa.dpadrecyclerview.test
 
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.ChildAlignment
 import org.junit.Test
 
 class ChildAlignmentTest {

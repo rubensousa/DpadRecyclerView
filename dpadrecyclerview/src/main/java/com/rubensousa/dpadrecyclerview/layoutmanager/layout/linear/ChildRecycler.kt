@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
 internal class ChildRecycler(
     private val layoutManager: LayoutManager,
@@ -26,14 +27,14 @@ internal class ChildRecycler(
     private val configuration: LayoutConfiguration
 ) {
 
-    fun recycleByLayoutState(recycler: Recycler, layoutState: LayoutState) {
+    fun recycleByLayoutState(recycler: Recycler, layoutState: LinearLayoutState) {
         if (!layoutState.recycle || layoutState.isInfinite) {
             return
         }
         if (layoutState.isLayingOutStart()) {
-            recycleFromEnd(recycler, layoutState.availableScrollSpace, layoutState.extraLayoutSpace)
+            recycleFromEnd(recycler, layoutState.availableScrollSpace, layoutState.extraLayoutSpaceStart)
         } else {
-            recycleFromStart(recycler, layoutState.availableScrollSpace, layoutState.extraLayoutSpace)
+            recycleFromStart(recycler, layoutState.availableScrollSpace, layoutState.extraLayoutSpaceStart)
         }
     }
 

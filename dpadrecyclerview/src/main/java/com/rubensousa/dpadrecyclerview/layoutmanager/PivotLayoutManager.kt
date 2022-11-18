@@ -297,7 +297,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun setRecyclerView(recyclerView: RecyclerView?) {
         this.recyclerView = recyclerView
-        layoutArchitect.setRecyclerView(recyclerView)
         focusFinder.setRecyclerView(recyclerView)
         layoutInfo.setRecyclerView(recyclerView)
         scroller.setRecyclerView(recyclerView)

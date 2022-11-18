@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
 // TODO
 internal class GridArchitect(
@@ -29,7 +30,7 @@ internal class GridArchitect(
     fun layoutChunk(
         recycler: RecyclerView.Recycler,
         recyclerViewState: RecyclerView.State,
-        layoutState: LayoutState,
+        layoutState: LinearLayoutState,
         layoutResult: LayoutResult
     ) {
 

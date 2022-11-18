@@ -56,6 +56,7 @@ dependencies {
     implementation "androidx.leanback:leanback-grid:1.0.0-alpha01"
     testImplementation "junit:junit:$testVersions.junit"
     testImplementation "com.google.truth:truth:$testVersions.truth"
+    testImplementation  "io.mockk:mockk:$testVersions.mockk"
     debugImplementation "androidx.fragment:fragment-testing:$testVersions.fragment"
     androidTestImplementation project (':dpadrecyclerview-testing')
     androidTestImplementation "androidx.test:core-ktx:$testVersions.testCore"

@@ -14,11 +14,12 @@ class MainViewModel : ViewModel() {
     private val list = ArrayList<ListModel>()
     private val listLiveData = MutableLiveData<List<ListModel>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
+    private val pageSize = 5
     val loadingState: LiveData<Boolean> = loadingStateLiveData
     val listState: LiveData<List<ListModel>> = listLiveData
 
     init {
-        for (i in 0 until 3) {
+        for (i in 0 until pageSize) {
             list.add(generateList("List $i"))
         }
         listLiveData.postValue(ArrayList(list))
@@ -35,7 +36,7 @@ class MainViewModel : ViewModel() {
 
         loadingStateLiveData.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
-            for (i in 0 until 2) {
+            for (i in 0 until pageSize) {
                 list.add(generateList("List ${list.size}"))
             }
             delay(1000L)

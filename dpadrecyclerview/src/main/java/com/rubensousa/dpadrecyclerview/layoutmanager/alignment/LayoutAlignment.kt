@@ -20,12 +20,12 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.internal.ChildScrollAlignment
 import com.rubensousa.dpadrecyclerview.internal.ParentScrollAlignment
 import com.rubensousa.dpadrecyclerview.internal.ViewHolderScrollAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
@@ -43,7 +43,7 @@ internal class LayoutAlignment(
         parentAlignment.reset()
     }
 
-    fun onLayoutChildren() {
+    fun update() {
         parentAlignment.setSize(layoutManager.width, layoutManager.height, layoutInfo.orientation)
         parentAlignment.reverseLayout = configuration.reverseLayout
         parentAlignment.setPadding(

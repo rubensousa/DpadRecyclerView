@@ -191,7 +191,7 @@ internal class LayoutScroller(
         val newFocusPosition = if (viewHolderView == null) {
             RecyclerView.NO_POSITION
         } else {
-            layoutInfo.getAdapterPositionOfView(viewHolderView)
+            layoutInfo.getAdapterPositionOf(viewHolderView)
         }
         if (newFocusPosition == RecyclerView.NO_POSITION) {
             return
@@ -214,9 +214,9 @@ internal class LayoutScroller(
         if (viewHolderView == null) {
             return
         }
-        if (subPositionView != null && !subPositionView.hasFocus() && requestFocus) {
+        if (subPositionView != null && requestFocus) {
             subPositionView.requestFocus()
-        } else if (!viewHolderView.hasFocus() && requestFocus) {
+        } else if (requestFocus) {
             viewHolderView.requestFocus()
         }
 

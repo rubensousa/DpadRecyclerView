@@ -18,102 +18,121 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
 
 /**
  * Adapted from LinearLayoutManager
- * Saves the temporary layout state until `onLayoutCompleted`
+ * Holds information required for the next layout
  */
 internal class LayoutState {
 
-    companion object {
-        const val SCROLL_SPACE_NONE = Int.MIN_VALUE
-    }
+    private val window = LayoutWindow()
+    private val scrap = LayoutScrap()
 
-    /**
-     * Enables or disables recycling in some scenarios
-     */
-    var recycle = true
+    // The current direction of the layout stage
+    var direction: LayoutDirection = LayoutDirection.END
+        private set
 
-    /**
-     * Pixel offset where layout should start
-     */
-    var offset = 0
-
-    /**
-     * The current direction of the layout stage
-     */
-    var direction: LayoutDirection = LayoutDirection.START
-
-    /**
-     * Defines the direction in which the data adapter is traversed
-     */
+    // The current direction in which the adapter is traversed
     var itemDirection = ItemDirection.TAIL
+        private set
 
-    /**
-     * Current position on the adapter to get the next item.
-     */
-    var currentPosition = 0
-
-    /**
-     * Number of pixels that we should fill, in the layout direction.
-     */
+    // Number of pixels that we should fill, in the layout direction.
     var fillSpace = 0
+        private set
+
+    // Current position on the adapter to get the next item.
+    var currentPosition = 0
+        private set
 
     /**
-     * Used to pre-layout items that are not yet visible
-     */
-    var extraFillSpace = 0
-
-    /**
-     * The extra layout space calculated from the LayoutManager
-     */
-    var extraLayoutSpace: Int = 0
-
-    /**
-     * How much we can scroll without adding new children
-     */
-    var availableScrollSpace: Int = 0
-
-    /**
-     * Last scroll output from `scrollBy`
-     */
-    var lastScrollOffset: Int = 0
-
-    /**
-     * Used when there is no limit in how many views can be laid out.
-     */
-    var isInfinite = false
-
-    /**
-     * When consuming [scrappedViews], if this value is set to true,
+     * When consuming [scrap], if this value is set to true,
      * we skip removed views since they should not be laid out in post layout step.
      */
     var isPreLayout = false
+        private set
 
-    /**
-     * Views pending recycling/removal
-     */
-    var scrappedViews: List<RecyclerView.ViewHolder>? = null
-
-    var spanCount = 1
-
+    // True if we should start the layout from the opposite direction
     var reverseLayout = false
+        private set
 
-    fun isLayingOutStart() = direction == LayoutDirection.START
+    // Recycling will be disabled during
+    var isRecyclingEnabled = true
+        private set
 
-    fun isLayingOutEnd() = direction == LayoutDirection.END
+    // The extra layout space calculated from the LayoutManager
+    var extraLayoutSpaceStart: Int = 0
+        private set
+
+    // The extra layout space calculated from the LayoutManager
+    var extraLayoutSpaceEnd: Int = 0
+        private set
+
+    // How much we can scroll without adding new children at the edges
+    var availableScrollSpace: Int = 0
+        private set
+
+    // Pixel offset where layout should start
+    var checkpoint: Int = 0
+        private set
+
+    //  Last scroll output from `scrollBy`
+    var lastScrollDelta: Int = 0
+
+    fun setCurrentPosition(position: Int) {
+        currentPosition = position
+    }
+
+    fun setPreLayout(isPreLayout: Boolean) {
+        this.isPreLayout = isPreLayout
+    }
+
+    fun setReverseLayout(enabled: Boolean) {
+        reverseLayout = enabled
+    }
+
+    fun setRecyclingEnabled(enabled: Boolean) {
+        isRecyclingEnabled = enabled
+    }
+
+    fun setFillSpace(space: Int) {
+        fillSpace = space
+    }
+
+    fun getStartOffset() = window.startOffset
+
+    fun getEndOffset() = window.endOffset
+
+    // true if WRAP_CONTENT is used and we need to layout everything
+    fun isInfinite() = window.isInfinite
+
+    fun setCheckpoint(offset: Int) {
+        checkpoint = offset
+    }
+
+    fun setWindowStart(offset: Int) {
+        window.startOffset = offset
+    }
+
+    fun setWindowEnd(offset: Int) {
+        window.endOffset = offset
+    }
+
+    fun offsetWindow(offset: Int) {
+        window.offset(offset)
+    }
+
+    fun appendWindow(offset: Int) {
+        window.append(offset)
+        checkpoint += offset
+    }
+
+    fun prependWindow(offset: Int) {
+        window.prepend(offset)
+        checkpoint -= offset
+    }
 
     fun hasMoreItems(state: RecyclerView.State): Boolean {
         return currentPosition >= 0 && currentPosition < state.itemCount
-    }
-
-    fun updateDirectionFromLastScroll() {
-       direction =  if (lastScrollOffset >= 0) {
-           LayoutDirection.END
-        } else {
-           LayoutDirection.START
-        }
     }
 
     /**
@@ -122,96 +141,181 @@ internal class LayoutState {
      *
      * @return The next element that we should layout.
      */
-    fun next(recycler: Recycler): View? {
-        if (scrappedViews != null) {
-            return nextViewFromScrapList()
+    fun getNextView(recycler: RecyclerView.Recycler): View? {
+        if (scrap.exists()) {
+            val scrapView = scrap.getNextScrapView()
+            if (scrapView != null) {
+                scrap.updateCurrentPositionFromScrap(scrapView)
+            }
+            return scrapView
         }
         val view = recycler.getViewForPosition(currentPosition)
         currentPosition += itemDirection.value
         return view
     }
 
-    /**
-     * Returns the next item from the scrap list.
-     *
-     * Upon finding a valid VH, sets current item position to VH.itemPosition + mItemDirection
-     * @return View if an item in the current position or direction exists if not null.
-     */
-    private fun nextViewFromScrapList(): View? {
-        scrappedViews?.forEachIndexed { _, viewHolder ->
-            val view = viewHolder.itemView
-            val layoutParams = view.layoutParams as RecyclerView.LayoutParams
-            if (!layoutParams.isItemRemoved && currentPosition == layoutParams.viewLayoutPosition) {
-                assignPositionFromScrapList(view)
-                return view
-            }
-        }
-        return null
+    fun setScrap(scrappedViews: List<RecyclerView.ViewHolder>?) {
+        scrap.update(scrappedViews)
     }
 
-    fun assignPositionFromScrapList(ignore: View? = null) {
-        val closest = nextViewInLimitedList(ignore)
-        currentPosition = if (closest == null) {
-            RecyclerView.NO_POSITION
+    fun isLayingOutStart() = direction == LayoutDirection.START
+
+    fun isLayingOutEnd() = direction == LayoutDirection.END
+
+    fun setExtraLayoutSpace(extraSpace: Int) {
+        extraLayoutSpaceStart = extraSpace
+        extraLayoutSpaceEnd = extraSpace
+    }
+
+    fun setExtraLayoutSpaceStart(extraSpace: Int) {
+        extraLayoutSpaceStart = extraSpace
+    }
+
+    fun setExtraLayoutSpaceEnd(extraSpace: Int) {
+        extraLayoutSpaceEnd = extraSpace
+    }
+
+    fun setStartDirection() {
+        direction = LayoutDirection.START
+        itemDirection = if (reverseLayout) {
+            ItemDirection.TAIL
         } else {
-            (closest.layoutParams as RecyclerView.LayoutParams).viewLayoutPosition
+            ItemDirection.HEAD
         }
     }
 
-    fun nextViewInLimitedList(ignore: View?): View? {
-        var closest: View? = null
-        var closestDistance = Int.MAX_VALUE
-        scrappedViews?.forEachIndexed { _, viewHolder ->
-            val view = viewHolder.itemView
-            val layoutParams = view.layoutParams as RecyclerView.LayoutParams
-            val distance = ((layoutParams.viewLayoutPosition - currentPosition) * itemDirection.value)
-            val skipView = view === ignore
-                    || layoutParams.isItemRemoved
-                    || distance < 0  // item is not in current direction
-            if (!skipView && distance < closestDistance) {
-                closest = view
-                closestDistance = distance
-                if (distance == 0) {
-                   return@forEachIndexed
-                }
-            }
+    fun setEndDirection() {
+        direction = LayoutDirection.END
+        itemDirection = if (reverseLayout) {
+            ItemDirection.HEAD
+        } else {
+            ItemDirection.TAIL
         }
-        return closest
+    }
+
+    fun setAvailableScrollSpace(space: Int) {
+        availableScrollSpace = space
     }
 
     override fun toString(): String {
-        return "LayoutState(offset=$offset, " +
-                "nextItemPosition=$currentPosition, " +
-                "available=$fillSpace, " +
-                "extraFillSpace=$extraFillSpace, " +
-                "extraLayoutSpace=$extraLayoutSpace," +
-                "availableScrollSpace=$availableScrollSpace," +
-                "lastScrollOffset=$lastScrollOffset)"
+        return "LayoutState(window=$window, " +
+                "direction=$direction, " +
+                "fillSpace=$fillSpace, " +
+                "currentPosition=$currentPosition, " +
+                "isPreLayout=$isPreLayout, " +
+                "availableScrollSpace=$availableScrollSpace, " +
+                "checkpoint=$checkpoint, " +
+                "lastScrollDelta=$lastScrollDelta)"
     }
 
 
     /**
-     * Defines the direction in which the data adapter is traversed
+     * Represents the current layout structure
      */
-    enum class ItemDirection(val value: Int) {
-        HEAD(-1),
-        TAIL(1)
+    private inner class LayoutWindow {
+
+        /**
+         * Current start position of the laid out views
+         */
+        var startOffset = 0
+
+        /**
+         * Current end position of the laid out views
+         */
+        var endOffset = 0
+
+        /**
+         * Used when there is no limit in how many views can be laid out.
+         */
+        var isInfinite = false
+
+        fun append(offset: Int) {
+            endOffset += offset
+        }
+
+        fun prepend(offset: Int) {
+            startOffset -= offset
+        }
+
+        fun offset(offset: Int) {
+            startOffset += offset
+            endOffset += offset
+        }
+
+        override fun toString(): String {
+            return "LayoutWindow(startOffset=$startOffset, endOffset=$endOffset, isInfinite=$isInfinite)"
+        }
     }
 
     /**
-     * Direction in which the layout is being filled.
-     * These are absolute directions, so it doesn't consider RTL at all
+     * Holds views pending recycling or removal
      */
-    enum class LayoutDirection(val value: Int) {
-        /**
-         * Either left in horizontal or top in vertical
-         */
-        START(-1),
+    private inner class LayoutScrap {
+
+        private var scrappedViews: List<RecyclerView.ViewHolder>? = null
+
+        fun exists(): Boolean {
+            return scrappedViews != null
+        }
+
+        fun update(views: List<RecyclerView.ViewHolder>?) {
+            scrappedViews = views
+        }
+
 
         /**
-         * Either right in horizontal or bottom in vertical
+         * Returns the next item from the scrap list.
          */
-        END(1)
+        fun getNextScrapView(): View? {
+            scrappedViews?.forEach { viewHolder ->
+                val view = viewHolder.itemView
+                val layoutParams = view.layoutParams as RecyclerView.LayoutParams
+                if (!layoutParams.isItemRemoved
+                    && currentPosition == layoutParams.viewLayoutPosition
+                ) {
+                    return view
+                }
+            }
+            return null
+        }
+
+        /**
+         * Updates the layout position to the one from the nearest view to the current position
+         * to ensure layout continuity.
+         *
+         * New current item position will be: VH.layoutPosition + itemDirection
+         */
+        fun updateCurrentPositionFromScrap(ignoredView: View?) {
+            val closestView = findClosestViewToCurrentPosition(ignoredView)
+            currentPosition = if (closestView == null) {
+                RecyclerView.NO_POSITION
+            } else {
+                (closestView.layoutParams as RecyclerView.LayoutParams).viewLayoutPosition
+            }
+        }
+
+        private fun findClosestViewToCurrentPosition(ignoredView: View?): View? {
+            var closest: View? = null
+            var closestDistance = Int.MAX_VALUE
+            scrappedViews?.forEach { viewHolder ->
+                val view = viewHolder.itemView
+                val layoutParams = view.layoutParams as RecyclerView.LayoutParams
+                val distance =
+                    (layoutParams.viewLayoutPosition - currentPosition) * itemDirection.value
+                val skipView = view === ignoredView
+                        || layoutParams.isItemRemoved
+                        || distance < 0  // item is not in current direction
+                if (!skipView && distance < closestDistance) {
+                    closest = view
+                    closestDistance = distance
+                    if (distance == 0) {
+                        return@forEach
+                    }
+                }
+            }
+            return closest
+        }
     }
+
 
 }

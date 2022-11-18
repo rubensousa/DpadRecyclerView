@@ -20,6 +20,7 @@ import android.graphics.Rect
 import android.util.Log
 import android.view.FocusFinder
 import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovement
@@ -41,13 +42,13 @@ internal class LayoutFocusFinder(
         const val TAG = "LayoutFocusFinder"
     }
 
-    private var dpadRecyclerView: RecyclerView? = null
+    private var recyclerView: RecyclerView? = null
 
     // key - row / value - previous focused span
     private val focusedSpans = LinkedHashMap<Int, Int>()
 
     fun setRecyclerView(recyclerView: RecyclerView?) {
-        dpadRecyclerView = recyclerView
+        this.recyclerView = recyclerView
     }
 
     fun onRequestFocusInDescendants(direction: Int, previouslyFocusedRect: Rect?): Boolean {
@@ -83,7 +84,7 @@ internal class LayoutFocusFinder(
         if (configuration.isFocusSearchDisabled) {
             return true
         }
-        val newViewPosition = layoutInfo.getAdapterPositionOfView(child)
+        val newViewPosition = layoutInfo.getAdapterPositionOf(child)
         // This could be the last view in DISAPPEARING animation, so ignore immediately
         if (newViewPosition == RecyclerView.NO_POSITION) {
             return true
@@ -112,13 +113,94 @@ internal class LayoutFocusFinder(
 
     // TODO
     fun onInterceptFocusSearch(focused: View, direction: Int): View? {
-        val recyclerView = dpadRecyclerView ?: return focused
+        if (configuration.isFocusSearchDisabled) {
+            return focused
+        }
         val focusFinder = FocusFinder.getInstance()
-        var result: View? = focusFinder.findNextFocus(recyclerView, focused, direction)
+        var result: View? = null
+        val movement: ScrollMovement? = ScrollMovementCalculator.calculate(
+            layoutInfo.isHorizontal(), layoutInfo.isRTL(), direction
+        )
+        if (direction == View.FOCUS_FORWARD || direction == View.FOCUS_BACKWARD) {
+            // convert direction to absolute direction and see if we have a view there and if not
+            // tell LayoutManager to add if it can.
+            if (layout.canScrollVertically()) {
+                val absDir = if (direction == View.FOCUS_FORWARD) {
+                    View.FOCUS_DOWN
+                } else {
+                    View.FOCUS_UP
+                }
+                result = focusFinder.findNextFocus(recyclerView, focused, absDir)
+            }
+            if (layout.canScrollHorizontally()) {
+                val absDir = if ((direction == View.FOCUS_FORWARD) xor layoutInfo.isRTL()) {
+                    View.FOCUS_RIGHT
+                } else {
+                    View.FOCUS_LEFT
+                }
+                result = focusFinder.findNextFocus(recyclerView, focused, absDir)
+            }
+        } else {
+            if (movement != null) {
+                // TODO
+                when (configuration.focusableDirection) {
+                 /*   FocusableDirection.CIRCULAR -> {
+                        result = focusCircular(movement)
+                    }
+                    FocusableDirection.CONTINUOUS -> {
+                        result = focusContinuous(movement)
+                    }*/
+                    else -> {
+                        // Do nothing
+                    }
+                }
+            }
+            if (result == null) {
+                result = focusFinder.findNextFocus(recyclerView, focused, direction)
+            }
+        }
         if (result != null) {
             return result
         }
-        result = recyclerView.parent?.focusSearch(focused, direction)
+
+        if (recyclerView?.descendantFocusability == ViewGroup.FOCUS_BLOCK_DESCENDANTS) {
+            return recyclerView?.parent?.focusSearch(focused, direction)
+        }
+
+        val isScrolling = recyclerView?.scrollState != RecyclerView.SCROLL_STATE_IDLE
+        when (movement) {
+            ScrollMovement.NEXT_ROW -> {
+                if (isScrolling || !configuration.focusOutBack) {
+                    result = focused
+                }
+                if (!layoutInfo.hasCreatedLastItem()) {
+                    result = focused
+                }
+            }
+            ScrollMovement.PREVIOUS_ROW -> {
+                if (isScrolling || !configuration.focusOutFront) {
+                    result = focused
+                }
+                if (!layoutInfo.hasCreatedFirstItem()) {
+                    result = focused
+                }
+            }
+            ScrollMovement.NEXT_COLUMN -> {
+                if (isScrolling || !configuration.focusOutSideBack) {
+                    result = focused
+                }
+            }
+            ScrollMovement.PREVIOUS_COLUMN -> {
+                if (isScrolling || !configuration.focusOutSideFront) {
+                    result = focused
+                }
+            }
+            else -> {}
+        }
+        if (result != null) {
+            return result
+        }
+        result = recyclerView?.parent?.focusSearch(focused, direction)
         return result ?: focused
     }
 

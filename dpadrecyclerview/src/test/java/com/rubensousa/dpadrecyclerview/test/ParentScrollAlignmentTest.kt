@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview
+package com.rubensousa.dpadrecyclerview.test
 
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.internal.ParentScrollAlignment
 import org.junit.Test
 

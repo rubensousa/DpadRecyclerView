@@ -18,15 +18,15 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
 import android.util.Log
-import android.view.Gravity
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+
 
 internal class LayoutInfo(
     private val layout: LayoutManager,
@@ -36,7 +36,7 @@ internal class LayoutInfo(
     val orientation: Int
         get() = configuration.orientation
 
-    var orientationHelper = OrientationHelper.createOrientationHelper(
+    var orientationHelper: OrientationHelper = OrientationHelper.createOrientationHelper(
         layout, configuration.orientation
     )
         private set
@@ -98,17 +98,15 @@ internal class LayoutInfo(
 
     fun getAdapterPositionOfChildAt(index: Int): Int {
         val child = layout.getChildAt(index) ?: return RecyclerView.NO_POSITION
-        return getAdapterPositionOfView(child)
+        return getAdapterPositionOf(child)
     }
 
-    fun getAdapterPositionOfView(view: View): Int {
-        val params = view.layoutParams as DpadLayoutParams?
-        return if (params == null || params.isItemRemoved) {
-            // when item is removed, the position value can be any value.
-            RecyclerView.NO_POSITION
-        } else {
-            params.absoluteAdapterPosition
-        }
+    fun getAdapterPositionOf(view: View): Int {
+        return getLayoutParams(view).absoluteAdapterPosition
+    }
+
+    fun getLayoutPositionOf(view: View): Int {
+        return getLayoutParams(view).viewLayoutPosition
     }
 
     fun getSpanGroupIndex(
@@ -155,6 +153,20 @@ internal class LayoutInfo(
         }
     }
 
+    fun getStartAfterPadding() = orientationHelper.startAfterPadding
+
+    fun getEndAfterPadding() = orientationHelper.endAfterPadding
+
+    fun getTotalSpace(): Int = orientationHelper.totalSpace
+
+    fun getDecoratedStart(view: View): Int {
+        return orientationHelper.getDecoratedStart(view)
+    }
+
+    fun getDecoratedEnd(view: View): Int {
+        return orientationHelper.getDecoratedEnd(view)
+    }
+
     fun getDecoratedSize(view: View): Int {
         return orientationHelper.getDecoratedMeasurement(view)
     }
@@ -183,7 +195,17 @@ internal class LayoutInfo(
         outBounds.bottom -= params.bottomInset
     }
 
-    private fun getLayoutParams(child: View): DpadLayoutParams {
+    fun hasCreatedLastItem(): Boolean {
+        val count = layout.itemCount
+        return count == 0 || recyclerView?.findViewHolderForAdapterPosition(count - 1) != null
+    }
+
+    fun hasCreatedFirstItem(): Boolean {
+        val count = layout.itemCount
+        return count == 0 || recyclerView?.findViewHolderForAdapterPosition(0) != null
+    }
+
+    fun getLayoutParams(child: View): DpadLayoutParams {
         return child.layoutParams as DpadLayoutParams
     }
 
@@ -247,7 +269,7 @@ internal class LayoutInfo(
             return RecyclerView.NO_POSITION
         }
         val child = layout.getChildAt(0) ?: return RecyclerView.NO_POSITION
-        return getAdapterPositionOfView(child)
+        return getAdapterPositionOf(child)
     }
 
     fun findLastAddedPosition(): Int {
@@ -255,7 +277,7 @@ internal class LayoutInfo(
             return RecyclerView.NO_POSITION
         }
         val child = layout.getChildAt(layout.childCount - 1) ?: return RecyclerView.NO_POSITION
-        return getAdapterPositionOfView(child)
+        return getAdapterPositionOf(child)
     }
 
     fun getChildViewHolder(view: View): RecyclerView.ViewHolder? {
