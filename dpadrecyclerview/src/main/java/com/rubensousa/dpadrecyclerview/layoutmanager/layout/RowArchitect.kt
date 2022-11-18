@@ -90,7 +90,11 @@ internal class RowArchitect(
         var remainingSpace = layoutState.fillSpace
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
             val view = layoutState.getNextView(recycler) ?: return // No more views to layout, exit
-            layoutManager.addView(view)
+            if (!layoutState.isUsingScrap()) {
+                layoutManager.addView(view)
+            } else {
+                layoutManager.addDisappearingView(view)
+            }
             layoutManager.measureChildWithMargins(view, 0, 0)
             val decoratedSize = layoutInfo.orientationHelper.getDecoratedMeasurement(view)
 
@@ -115,7 +119,12 @@ internal class RowArchitect(
         var remainingSpace = layoutState.fillSpace
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
             val view = layoutState.getNextView(recycler) ?: return // No more views to layout, exit
-            layoutManager.addView(view, 0)
+            if (!layoutState.isUsingScrap()) {
+                layoutManager.addView(view, 0)
+            } else {
+                layoutManager.addDisappearingView(view, 0)
+            }
+
             layoutManager.measureChildWithMargins(view, 0, 0)
             val decoratedSize = layoutInfo.orientationHelper.getDecoratedMeasurement(view)
 

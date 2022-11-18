@@ -158,6 +158,10 @@ internal class LayoutState {
         scrap.update(scrappedViews)
     }
 
+    fun updateCurrentPositionFromScrap() {
+        scrap.updateCurrentPositionFromScrap(ignoredView = null)
+    }
+
     fun isLayingOutStart() = direction == LayoutDirection.START
 
     fun isLayingOutEnd() = direction == LayoutDirection.END
@@ -208,6 +212,7 @@ internal class LayoutState {
                 "lastScrollDelta=$lastScrollDelta)"
     }
 
+    fun isUsingScrap(): Boolean = scrap.exists()
 
     /**
      * Represents the current layout structure

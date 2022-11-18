@@ -40,6 +40,7 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
     fun updatePreLayoutStateBeforeStart(layoutState: LayoutState) {
         val view = layoutInfo.getChildClosestToStart() ?: return
         layoutState.apply {
+            updateCurrentPositionFromScrap()
             setStartDirection()
             setRecyclingEnabled(false)
             setCheckpoint(layoutInfo.getDecoratedStart(view))
@@ -52,6 +53,7 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
     fun updatePreLayoutStateAfterEnd(layoutState: LayoutState) {
         val view = layoutInfo.getChildClosestToEnd() ?: return
         layoutState.apply {
+            updateCurrentPositionFromScrap()
             setEndDirection()
             setRecyclingEnabled(false)
             setCheckpoint(layoutInfo.getDecoratedEnd(view))

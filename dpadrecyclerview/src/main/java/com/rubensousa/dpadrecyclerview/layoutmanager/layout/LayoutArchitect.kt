@@ -86,8 +86,12 @@ internal class LayoutArchitect(
     }
 
     /**
+     * TODO
      * RecyclerView will run predictive item animations,
-     * so we need to layout the views in their old positions
+     * so we need to layout the views in their current outdated positions and add any new views in.
+     * Steps:
+     * 1. Layout the existing views in their "old" positions
+     * 2. Layout the new views in their "temporary" positions before the changes are applied
      */
     private fun onPreLayoutChildren(recycler: Recycler, state: State) {
         // Do nothing if we don't have any children now
@@ -96,9 +100,8 @@ internal class LayoutArchitect(
         if (firstChild == null || lastChild == null) {
             return
         }
-
         var minEdge = Int.MAX_VALUE
-        var maxEdge = Int.MAX_VALUE
+        var maxEdge = Int.MIN_VALUE
         val minOldPosition = layoutInfo.getChildViewHolder(firstChild)?.oldPosition
             ?: RecyclerView.NO_POSITION
         val maxOldPosition = layoutInfo.getChildViewHolder(lastChild)?.oldPosition
@@ -119,12 +122,14 @@ internal class LayoutArchitect(
                 maxEdge = max(maxEdge, layoutInfo.getDecoratedEnd(view))
             }
         }
-
         if (maxEdge > minEdge) {
             // Add extra space in both directions
             // since we need to make sure the pivot is still aligned
             layoutState.setExtraLayoutSpace(maxEdge - minEdge)
         }
+
+        // Detach all existing views now that we know the changes required
+        layoutManager.detachAndScrapAttachedViews(recycler)
 
         layoutCalculator.updatePreLayoutStateBeforeStart(layoutState)
         rowArchitect.layoutStart(layoutState, recycler, state)
