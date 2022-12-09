@@ -611,11 +611,3 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
 }
-
-fun RecyclerView.canScrollHorizontally(): Boolean {
-    return layoutManager?.canScrollVertically() == true
-}
-
-fun RecyclerView.canScrollVertically(): Boolean {
-    return layoutManager?.canScrollVertically() == true
-}
