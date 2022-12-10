@@ -137,12 +137,7 @@ class MainListController(private val fragment: Fragment) {
             LinearMarginDecoration.createVertical(
                 verticalMargin = recyclerView.resources.getDimensionPixelOffset(
                     R.dimen.item_spacing
-                ),
-                decorationLookup = object : DecorationLookup {
-                    override fun shouldApplyDecoration(position: Int, itemCount: Int): Boolean {
-                        return position != itemCount - 1 || !loadingAdapter.isShowing()
-                    }
-                }
+                )
             )
         )
     }

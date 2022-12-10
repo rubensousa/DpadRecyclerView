@@ -49,7 +49,6 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             listController.showLoading(isLoading)
         }
-
     }
 
     override fun onDestroyView() {

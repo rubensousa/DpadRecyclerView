@@ -38,6 +38,8 @@ class ListViewHolder(view: View, itemLayoutId: Int = R.layout.adapter_nested_ite
     private var key: String? = null
 
     init {
+        itemView.isFocusable = true
+        itemView.isFocusableInTouchMode = true
         itemView.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 recyclerView.requestFocus()

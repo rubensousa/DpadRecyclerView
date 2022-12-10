@@ -121,12 +121,6 @@ class DetailListController(private val fragment: DetailFragment) {
                 }
             }
         })
-        recyclerView.addItemDecoration(
-            GridSpanMarginDecoration.create(
-                margin = recyclerView.resources.getDimensionPixelOffset(R.dimen.item_spacing),
-                recyclerView.getDpadLayoutManager()
-            )
-        )
     }
 
     private fun setupPagination(

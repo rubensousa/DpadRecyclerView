@@ -1,10 +1,10 @@
-package com.rubensousa.dpadrecyclerview.sample
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rubensousa.dpadrecyclerview.sample.list.ListModel
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -50,7 +50,7 @@ class MainViewModel : ViewModel() {
         repeat(100) {
             items.add(it)
         }
-        return ListModel(title, items)
+        return ListModel(title, items, centerAligned = false)
     }
 
 

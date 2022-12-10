@@ -32,7 +32,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CustomLayoutActivity"
+            android:name=".ui.CustomLayoutActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

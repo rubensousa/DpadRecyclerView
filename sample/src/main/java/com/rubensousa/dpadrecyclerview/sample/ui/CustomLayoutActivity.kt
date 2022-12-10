@@ -1,4 +1,4 @@
-package com.rubensousa.dpadrecyclerview.sample
+package com.rubensousa.dpadrecyclerview.sample.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterNestedItemBinding
+import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterNestedItemCenterBinding
 
 class CustomLayoutActivity : AppCompatActivity() {
 
@@ -36,7 +37,11 @@ class CustomLayoutActivity : AppCompatActivity() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
             return VH(
-                AdapterNestedItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                AdapterNestedItemCenterBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
             )
         }
 
@@ -49,7 +54,7 @@ class CustomLayoutActivity : AppCompatActivity() {
     }
 
 
-    class VH(private val adapterItemBinding: AdapterNestedItemBinding) :
+    class VH(private val adapterItemBinding: AdapterNestedItemCenterBinding) :
         RecyclerView.ViewHolder(adapterItemBinding.root) {
 
         init {
