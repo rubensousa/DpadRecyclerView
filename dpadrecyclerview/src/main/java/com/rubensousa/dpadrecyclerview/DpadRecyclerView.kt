@@ -41,7 +41,7 @@ import androidx.recyclerview.widget.RecyclerView
  * To scroll manually to any given item,
  * check [setSelectedPosition], [setSelectedPositionSmooth] and other related methods.
  */
-class DpadRecyclerView @JvmOverloads constructor(
+open class DpadRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = R.attr.dpadRecyclerViewStyle
@@ -62,20 +62,20 @@ class DpadRecyclerView @JvmOverloads constructor(
         delegate.init(context, attrs)
     }
 
-    override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
+    final override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
         return false
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(e: MotionEvent?): Boolean {
+    final override fun onTouchEvent(e: MotionEvent?): Boolean {
         return false
     }
 
-    override fun hasOverlappingRendering(): Boolean {
+    final override fun hasOverlappingRendering(): Boolean {
         return delegate.hasOverlappingRendering()
     }
 
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+    final override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (keyInterceptListener?.onInterceptKeyEvent(event) == true) {
             return true
         }
@@ -85,64 +85,68 @@ class DpadRecyclerView @JvmOverloads constructor(
         return unhandledKeyListener?.onUnhandledKey(event) == true
     }
 
-    override fun dispatchGenericFocusedEvent(event: MotionEvent): Boolean {
+    final override fun dispatchGenericFocusedEvent(event: MotionEvent): Boolean {
         if (motionInterceptListener?.onInterceptMotionEvent(event) == true) {
             return true
         }
         return super.dispatchGenericFocusedEvent(event)
     }
 
-    override fun setLayoutManager(layout: LayoutManager?) {
+    final override fun setLayoutManager(layout: LayoutManager?) {
         super.setLayoutManager(layout)
         delegate.setLayoutManager(layout)
     }
 
-    override fun focusSearch(focused: View?, direction: Int): View? {
+    final override fun focusSearch(focused: View?, direction: Int): View? {
         return delegate.focusSearch(focused, direction)
     }
 
-    override fun focusSearch(direction: Int): View? {
+    final override fun focusSearch(direction: Int): View? {
         return delegate.focusSearch(direction) ?: super.focusSearch(direction)
     }
 
-    override fun onFocusChanged(gainFocus: Boolean, direction: Int, previouslyFocusedRect: Rect?) {
+    final override fun onFocusChanged(
+        gainFocus: Boolean,
+        direction: Int,
+        previouslyFocusedRect: Rect?
+    ) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
         delegate.onFocusChanged(gainFocus)
     }
 
-    override fun onRequestFocusInDescendants(
+    final override fun onRequestFocusInDescendants(
         direction: Int,
         previouslyFocusedRect: Rect?
     ): Boolean {
         return delegate.onRequestFocusInDescendants(direction, previouslyFocusedRect)
     }
 
-    override fun removeView(view: View) {
+    final override fun removeView(view: View) {
         delegate.removeView(view)
         super.removeView(view)
         delegate.setRemoveViewFinished()
     }
 
-    override fun removeViewAt(index: Int) {
+    final override fun removeViewAt(index: Int) {
         delegate.removeViewAt(index)
         super.removeViewAt(index)
         delegate.setRemoveViewFinished()
     }
 
-    override fun getChildDrawingOrder(childCount: Int, i: Int): Int {
+    final override fun getChildDrawingOrder(childCount: Int, i: Int): Int {
         return delegate.getChildDrawingOrder(childCount, i)
     }
 
-    override fun onRtlPropertiesChanged(layoutDirection: Int) {
+    final override fun onRtlPropertiesChanged(layoutDirection: Int) {
         super.onRtlPropertiesChanged(layoutDirection)
         delegate.onRtlPropertiesChanged()
     }
 
-    override fun smoothScrollBy(dx: Int, dy: Int) {
+    final override fun smoothScrollBy(dx: Int, dy: Int) {
         delegate.smoothScrollBy(dx, dy)
     }
 
-    override fun smoothScrollBy(dx: Int, dy: Int, interpolator: Interpolator?) {
+    final override fun smoothScrollBy(dx: Int, dy: Int, interpolator: Interpolator?) {
         delegate.smoothScrollBy(dx, dy, interpolator)
     }
 
@@ -606,12 +610,4 @@ class DpadRecyclerView @JvmOverloads constructor(
         fun onInterceptMotionEvent(event: MotionEvent): Boolean
     }
 
-}
-
-fun RecyclerView.canScrollHorizontally(): Boolean {
-    return layoutManager?.canScrollVertically() == true
-}
-
-fun RecyclerView.canScrollVertically(): Boolean {
-    return layoutManager?.canScrollVertically() == true
 }

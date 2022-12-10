@@ -5,10 +5,10 @@ A RecyclerView built for Android TV as a replacement for Leanback's BaseGridView
 ## Install
 
 ```groovy
- implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:1.0.0-alpha01'
+ implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:1.0.0-alpha02'
 
 // Optional Espresso test extensions
-androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:1.0.0-alpha01'
+androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:1.0.0-alpha02'
 ```
 
 ## Feature comparison with Leanback's BaseGridView
