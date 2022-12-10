@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#2E2E2E"
+    android:clipChildren="false"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/list_margin_start"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/white"
+        tools:text="Headline" />
+
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:dpadRecyclerViewChildAlignmentOffsetRatio="0.5"
+        app:dpadRecyclerViewParentAlignmentEdge="none"
+        app:dpadRecyclerViewParentAlignmentOffsetRatio="0.5" />
+
+</LinearLayout>
