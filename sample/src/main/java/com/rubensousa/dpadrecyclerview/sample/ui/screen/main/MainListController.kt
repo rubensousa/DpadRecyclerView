@@ -21,7 +21,6 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -54,8 +53,6 @@ class MainListController(private val fragment: Fragment) {
         onSelected: (position: Int) -> Unit
     ) {
         dpadRecyclerView = recyclerView
-        val itemAnimator = recyclerView.itemAnimator as DefaultItemAnimator
-        itemAnimator.removeDuration = 1000
         setupAdapter(recyclerView)
         setupSpacings(recyclerView)
         setupPagination(recyclerView, onSelected)
