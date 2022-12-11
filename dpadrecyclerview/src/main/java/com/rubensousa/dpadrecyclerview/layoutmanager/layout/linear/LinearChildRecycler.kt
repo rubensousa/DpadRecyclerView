@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
-internal class ChildRecycler(
+internal class LinearChildRecycler(
     private val layoutManager: LayoutManager,
     private val layoutInfo: LayoutInfo,
     private val configuration: LayoutConfiguration

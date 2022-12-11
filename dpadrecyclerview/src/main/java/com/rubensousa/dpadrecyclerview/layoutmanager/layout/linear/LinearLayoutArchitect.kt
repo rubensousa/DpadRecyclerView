@@ -53,7 +53,7 @@ internal class LinearLayoutArchitect(
     private val layoutState = LinearLayoutState()
     private val layoutResult = LayoutResult()
     private val extraLayoutSpace = IntArray(2)
-    private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
+    private val childRecycler = LinearChildRecycler(layoutManager, layoutInfo, configuration)
     private val rowArchitect = RowArchitect(
         layoutManager, layoutAlignment, layoutInfo, configuration
     )
@@ -131,7 +131,7 @@ internal class LinearLayoutArchitect(
         var startOffset = 0
         var endOffset = 0
 
-        pivotInfo.position = pivotState.position
+        pivotInfo.update(pivotState.position, layoutManager, state)
         rowArchitect.layoutPivot(recycler, pivotInfo)
 
         if (layoutState.reverseLayout) {
