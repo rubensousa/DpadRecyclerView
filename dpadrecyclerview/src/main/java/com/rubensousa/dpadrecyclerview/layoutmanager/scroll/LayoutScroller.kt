@@ -226,6 +226,7 @@ internal class LayoutScroller(
 
         val scrolled = layoutAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
             ?.let { scrollOffset ->
+                Log.d(TAG, "Scroll offset: $scrollOffset")
                 scroll(recyclerView, scrollOffset, smooth)
             } != null
 

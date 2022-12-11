@@ -18,6 +18,8 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.recyclerview.widget.RecyclerView.State
 
 /**
  * Holds information for the current pivot layout point.
@@ -25,12 +27,26 @@ import androidx.recyclerview.widget.RecyclerView
  */
 internal class PivotInfo {
     var position: Int = 0
+        private set
 
     var headOffset: Int = 0
 
     var tailOffset: Int = 0
 
-    fun isViewValidAsPivot(pivot: View, state: RecyclerView.State): Boolean {
+    var view: View? = null
+        private set
+
+    fun update(position: Int, layoutManager: LayoutManager, state: State) {
+        val pivotView = layoutManager.findViewByPosition(position)
+        if (pivotView != null && isViewValidAsPivot(pivotView, state)) {
+            view = pivotView
+        } else {
+            view = null
+        }
+        this.position = position
+    }
+
+    private fun isViewValidAsPivot(pivot: View, state: State): Boolean {
         val layoutParams = pivot.layoutParams as RecyclerView.LayoutParams
         return !layoutParams.isItemRemoved
                 && layoutParams.viewLayoutPosition >= 0

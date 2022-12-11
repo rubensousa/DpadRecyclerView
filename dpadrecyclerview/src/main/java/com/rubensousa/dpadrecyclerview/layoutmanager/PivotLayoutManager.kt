@@ -21,6 +21,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
@@ -49,6 +50,10 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  */
 class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     PivotLayoutManagerDelegate {
+
+    companion object {
+        private const val TAG = "PivotLayoutManager"
+    }
 
     private val configuration = LayoutConfiguration()
     private val layoutInfo = LayoutInfo(this, configuration)
@@ -195,6 +200,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
         pivotState.onItemsAdded(recyclerView, positionStart, itemCount)
+        Log.i(TAG, "OnItemsAdded: $positionStart, $itemCount")
     }
 
     override fun onItemsChanged(recyclerView: RecyclerView) {
@@ -203,6 +209,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
         pivotState.onItemsRemoved(recyclerView, positionStart, itemCount)
+        Log.i(TAG, "OnItemsRemoved: $positionStart, $itemCount")
     }
 
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {

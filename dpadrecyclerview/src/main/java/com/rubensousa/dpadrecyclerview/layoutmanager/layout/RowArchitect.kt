@@ -58,10 +58,9 @@ internal class RowArchitect(
         layoutManager.addView(view)
         layoutManager.measureChildWithMargins(view, 0, 0)
         val size = layoutInfo.getMeasuredSize(view)
-        val viewCenter = layoutAlignment.calculateViewCenterForLayout(view, size)
+        val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
         val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
         val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
-
         if (configuration.isVertical()) {
             viewBounds.top = headOffset
             viewBounds.bottom = tailOffset
@@ -72,27 +71,28 @@ internal class RowArchitect(
             applyVerticalGravity(view, viewBounds)
         }
         layoutView(view, viewBounds)
+        Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
         pivotInfo.headOffset = headOffset
         pivotInfo.tailOffset = tailOffset
-        layoutState.setWindowStart(headOffset)
-        layoutState.setWindowEnd(tailOffset)
+        layoutState.updateWindow(pivotInfo)
     }
 
-    fun layout(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State) {
-        if (layoutState.isLayingOutEnd()) {
+    fun layout(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State): Int {
+        return if (layoutState.isLayingOutEnd()) {
             layoutEnd(layoutState, recycler, state)
         } else {
             layoutStart(layoutState, recycler, state)
         }
     }
 
-    fun layoutEnd(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State) {
+    fun layoutEnd(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State): Int {
         var remainingSpace = layoutState.fillSpace
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
-            val view = layoutState.getNextView(recycler) ?: return // No more views to layout, exit
+            val view = layoutState.getNextView(recycler) ?: break // No more views to layout, exit
             if (!layoutState.isUsingScrap()) {
                 layoutManager.addView(view)
             } else {
+                Log.i(TAG, "Laid out disappearing view at end: $view")
                 layoutManager.addDisappearingView(view)
             }
             layoutManager.measureChildWithMargins(view, 0, 0)
@@ -108,20 +108,22 @@ internal class RowArchitect(
                 viewBounds.left = layoutState.checkpoint
                 viewBounds.right = viewBounds.left + decoratedSize
             }
+            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at end with bounds: $viewBounds")
             layoutView(view, viewBounds)
             layoutState.appendWindow(viewBounds.height())
             remainingSpace -= viewBounds.height()
-            Log.i(TAG, "LayoutState: $layoutState")
         }
+        return layoutState.fillSpace - remainingSpace
     }
 
-    fun layoutStart(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State) {
+    fun layoutStart(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State): Int {
         var remainingSpace = layoutState.fillSpace
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
-            val view = layoutState.getNextView(recycler) ?: return // No more views to layout, exit
+            val view = layoutState.getNextView(recycler) ?: break // No more views to layout, exit
             if (!layoutState.isUsingScrap()) {
                 layoutManager.addView(view, 0)
             } else {
+                Log.i(TAG, "Laid out disappearing view at start: $view")
                 layoutManager.addDisappearingView(view, 0)
             }
 
@@ -138,10 +140,11 @@ internal class RowArchitect(
                 viewBounds.left = viewBounds.left - decoratedSize
             }
             layoutView(view, viewBounds)
+            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at start with bounds: $viewBounds")
             layoutState.prependWindow(viewBounds.height())
             remainingSpace -= viewBounds.height()
-            Log.i(TAG, "LayoutState: $layoutState")
         }
+        return layoutState.fillSpace - remainingSpace
     }
 
     private fun shouldContinueLayout(
@@ -272,7 +275,7 @@ internal class RowArchitect(
         layoutManager.addView(view)
         layoutManager.measureChildWithMargins(view, 0, 0)
         val size = layoutInfo.getMeasuredSize(view)
-        val viewCenter = layoutAlignment.calculateViewCenterForLayout(view, size)
+        val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
         val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
         val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
 

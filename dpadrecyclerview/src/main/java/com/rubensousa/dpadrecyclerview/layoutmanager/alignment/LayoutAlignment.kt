@@ -35,6 +35,10 @@ internal class LayoutAlignment(
     private val configuration: LayoutConfiguration
 ) {
 
+    companion object {
+        const val TAG = "LayoutAlignment"
+    }
+
     private val parentAlignment = ParentScrollAlignment()
     private val childAlignment = ChildScrollAlignment()
     private val viewHolderAlignment = ViewHolderScrollAlignment()
@@ -71,11 +75,9 @@ internal class LayoutAlignment(
      * Calculates the view center based on the alignment for this view
      * specified by the parent and child alignment configurations.
      */
-    fun calculateViewCenterForLayout(view: View, size: Int): Int {
+    fun calculateViewCenterForLayout(view: View): Int {
         updateChildAlignments(view)
-        val childKeyline = getViewCenter(view)
-        val parentKeyline = parentAlignment.calculateKeyline()
-        return parentKeyline - childKeyline + size / 2
+        return parentAlignment.calculateKeyline()
     }
 
     fun findSubPositionOfChild(
@@ -109,24 +111,22 @@ internal class LayoutAlignment(
         return 0
     }
 
-    fun getCappedScroll(offset: Int): Int {
-        var scrollOffset = offset
-        if (offset > 0) {
-            if (!parentAlignment.isMaxUnknown) {
-                val maxScroll = parentAlignment.maxScroll
-                if (offset > maxScroll) {
-                    scrollOffset = maxScroll
-                }
+    fun getCappedScroll(scrollOffset: Int): Int {
+        return if (scrollOffset > 0) {
+            if (parentAlignment.isMaxUnknown) {
+                scrollOffset
+            } else if (scrollOffset > parentAlignment.maxScroll) {
+                parentAlignment.maxScroll
+            } else {
+                scrollOffset
             }
-        } else if (offset < 0) {
-            if (!parentAlignment.isMinUnknown) {
-                val minScroll = parentAlignment.minScroll
-                if (offset < minScroll) {
-                    scrollOffset = minScroll
-                }
-            }
+        } else if (parentAlignment.isMinUnknown) {
+            scrollOffset
+        } else if (scrollOffset < parentAlignment.minScroll) {
+            parentAlignment.minScroll
+        } else {
+            scrollOffset
         }
-        return scrollOffset
     }
 
     fun calculateScrollForAlignment(view: View): Int {
@@ -135,14 +135,16 @@ internal class LayoutAlignment(
         return calculateDistanceToKeyline(view)
     }
 
+    fun getMaxScroll() = parentAlignment.maxScroll
+
+    fun getMinScroll() = parentAlignment.minScroll
+
     fun updateScroll(
         recyclerView: RecyclerView,
         view: View,
         childView: View?
     ): Int? {
-        updateScrollLimits()
-        updateChildAlignments(view)
-        var scrollOffset = calculateDistanceToKeyline(view)
+        var scrollOffset = calculateScrollForAlignment(view)
         if (childView != null) {
             scrollOffset = calculateAdjustedAlignedScrollDistance(
                 recyclerView, scrollOffset, view, childView
@@ -175,7 +177,7 @@ internal class LayoutAlignment(
     }
 
     // This can only be called after all views are in their final positions
-    private fun updateScrollLimits() {
+    fun updateScrollLimits() {
         val itemCount = layoutManager.itemCount
         if (itemCount == 0) {
             return

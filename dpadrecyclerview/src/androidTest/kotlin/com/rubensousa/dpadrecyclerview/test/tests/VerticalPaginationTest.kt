@@ -77,7 +77,6 @@ class VerticalPaginationTest : GridTest() {
     @After
     override fun destroy() {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
     }
 
     @Test

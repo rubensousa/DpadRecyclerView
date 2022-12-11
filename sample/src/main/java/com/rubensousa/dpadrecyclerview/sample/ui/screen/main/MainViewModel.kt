@@ -14,7 +14,7 @@ class MainViewModel : ViewModel() {
     private val list = ArrayList<ListModel>()
     private val listLiveData = MutableLiveData<List<ListModel>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
-    private val pageSize = 5
+    private val pageSize = 10
     val loadingState: LiveData<Boolean> = loadingStateLiveData
     val listState: LiveData<List<ListModel>> = listLiveData
 
@@ -39,7 +39,7 @@ class MainViewModel : ViewModel() {
             for (i in 0 until pageSize) {
                 list.add(generateList("List ${list.size}"))
             }
-            delay(1000L)
+            delay(5000L)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
 

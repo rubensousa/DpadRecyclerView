@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import kotlin.math.max
@@ -37,8 +38,29 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         layoutState.setExtraLayoutSpace(extraScrollSpace)
     }
 
-    fun updatePreLayoutStateBeforeStart(layoutState: LayoutState) {
-        val view = layoutInfo.getChildClosestToStart() ?: return
+    fun updateLayoutStateForPredictiveStart(layoutState: LayoutState, anchor: View) {
+        layoutState.apply {
+            setStartDirection()
+            setRecyclingEnabled(false)
+            setCheckpoint(layoutState.getStartOffset())
+            setCurrentPosition(layoutInfo.getLayoutPositionOf(anchor) + direction.value)
+            setFillSpace(layoutState.extraLayoutSpaceStart)
+            setAvailableScrollSpace(0)
+        }
+    }
+
+    fun updateLayoutStateForPredictiveEnd(layoutState: LayoutState, anchor: View) {
+        layoutState.apply {
+            setEndDirection()
+            setRecyclingEnabled(false)
+            setCheckpoint(layoutState.getEndOffset())
+            setCurrentPosition(layoutInfo.getLayoutPositionOf(anchor) + direction.value)
+            setFillSpace(layoutState.extraLayoutSpaceEnd)
+            setAvailableScrollSpace(0)
+        }
+    }
+
+    fun updatePreLayoutStateBeforeStart(layoutState: LayoutState, view: View) {
         layoutState.apply {
             updateCurrentPositionFromScrap()
             setStartDirection()
@@ -50,8 +72,7 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         }
     }
 
-    fun updatePreLayoutStateAfterEnd(layoutState: LayoutState) {
-        val view = layoutInfo.getChildClosestToEnd() ?: return
+    fun updatePreLayoutStateAfterEnd(layoutState: LayoutState, view: View) {
         layoutState.apply {
             updateCurrentPositionFromScrap()
             setEndDirection()
@@ -63,11 +84,7 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         }
     }
 
-    fun updateLayoutStateForScroll(
-        layoutState: LayoutState,
-        state: State,
-        offset: Int
-    ) {
+    fun updateLayoutStateForScroll(layoutState: LayoutState, state: State, offset: Int) {
         updateExtraLayoutSpace(layoutState, state)
         // Enable recycling since we might add new views now
         layoutState.setRecyclingEnabled(true)

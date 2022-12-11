@@ -55,7 +55,7 @@ internal class LayoutState {
     var reverseLayout = false
         private set
 
-    // Recycling will be disabled during
+    // Recycling will be disabled during layout and enabled during scroll
     var isRecyclingEnabled = true
         private set
 
@@ -74,9 +74,6 @@ internal class LayoutState {
     // Pixel offset where layout should start
     var checkpoint: Int = 0
         private set
-
-    //  Last scroll output from `scrollBy`
-    var lastScrollDelta: Int = 0
 
     fun setCurrentPosition(position: Int) {
         currentPosition = position
@@ -109,12 +106,9 @@ internal class LayoutState {
         checkpoint = offset
     }
 
-    fun setWindowStart(offset: Int) {
-        window.startOffset = offset
-    }
-
-    fun setWindowEnd(offset: Int) {
-        window.endOffset = offset
+    fun updateWindow(pivotInfo: PivotInfo) {
+        window.startOffset = pivotInfo.headOffset
+        window.endOffset = pivotInfo.tailOffset
     }
 
     fun offsetWindow(offset: Int) {
@@ -208,8 +202,7 @@ internal class LayoutState {
                 "currentPosition=$currentPosition, " +
                 "isPreLayout=$isPreLayout, " +
                 "availableScrollSpace=$availableScrollSpace, " +
-                "checkpoint=$checkpoint, " +
-                "lastScrollDelta=$lastScrollDelta)"
+                "checkpoint=$checkpoint, "
     }
 
     fun isUsingScrap(): Boolean = scrap.exists()
@@ -266,7 +259,6 @@ internal class LayoutState {
         fun update(views: List<RecyclerView.ViewHolder>?) {
             scrappedViews = views
         }
-
 
         /**
          * Returns the next item from the scrap list.

@@ -16,8 +16,10 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager
 
+import android.graphics.Rect
 import android.os.Parcel
 import android.os.Parcelable
+import android.util.Log
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
@@ -30,6 +32,10 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
  * - Saving/restoring pivot state
  */
 internal class PivotState(private val layoutInfo: LayoutInfo) {
+
+    companion object {
+        const val TAG = "PivotState"
+    }
 
     var position: Int = 0
         private set
@@ -170,6 +176,9 @@ internal class PivotState(private val layoutInfo: LayoutInfo) {
                     recyclerView, viewHolder, position, subPosition
                 )
             }
+            val bounds = Rect()
+            viewHolder.itemView.getGlobalVisibleRect(bounds)
+            Log.i(TAG, "Pivot location: $bounds")
         }
     }
 
