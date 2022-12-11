@@ -16,7 +16,6 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import kotlin.math.max
@@ -38,49 +37,25 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         layoutState.setExtraLayoutSpace(extraScrollSpace)
     }
 
-    fun updateLayoutStateForPredictiveStart(layoutState: LayoutState, anchor: View) {
+    fun updateLayoutStateForPredictiveStart(layoutState: LayoutState, anchorPosition: Int) {
         layoutState.apply {
             setStartDirection()
             setRecyclingEnabled(false)
+            setCurrentPosition(anchorPosition)
             setCheckpoint(layoutState.getStartOffset())
-            setCurrentPosition(layoutInfo.getLayoutPositionOf(anchor) + direction.value)
             setFillSpace(layoutState.extraLayoutSpaceStart)
-            setAvailableScrollSpace(0)
+            updateCurrentPositionFromScrap()
         }
     }
 
-    fun updateLayoutStateForPredictiveEnd(layoutState: LayoutState, anchor: View) {
+    fun updateLayoutStateForPredictiveEnd(layoutState: LayoutState, anchorPosition: Int) {
         layoutState.apply {
             setEndDirection()
             setRecyclingEnabled(false)
+            setCurrentPosition(anchorPosition)
             setCheckpoint(layoutState.getEndOffset())
-            setCurrentPosition(layoutInfo.getLayoutPositionOf(anchor) + direction.value)
             setFillSpace(layoutState.extraLayoutSpaceEnd)
-            setAvailableScrollSpace(0)
-        }
-    }
-
-    fun updatePreLayoutStateBeforeStart(layoutState: LayoutState, view: View) {
-        layoutState.apply {
             updateCurrentPositionFromScrap()
-            setStartDirection()
-            setRecyclingEnabled(false)
-            setCheckpoint(layoutInfo.getDecoratedStart(view))
-            setCurrentPosition(layoutInfo.getLayoutPositionOf(view) + direction.value)
-            setFillSpace(layoutState.extraLayoutSpaceStart)
-            setAvailableScrollSpace(0)
-        }
-    }
-
-    fun updatePreLayoutStateAfterEnd(layoutState: LayoutState, view: View) {
-        layoutState.apply {
-            updateCurrentPositionFromScrap()
-            setEndDirection()
-            setRecyclingEnabled(false)
-            setCheckpoint(layoutInfo.getDecoratedEnd(view))
-            setCurrentPosition(layoutInfo.getLayoutPositionOf(view) + direction.value)
-            setFillSpace(layoutState.extraLayoutSpaceEnd)
-            setAvailableScrollSpace(0)
         }
     }
 

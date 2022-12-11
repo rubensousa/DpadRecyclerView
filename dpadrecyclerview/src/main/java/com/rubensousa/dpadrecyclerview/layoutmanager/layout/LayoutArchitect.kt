@@ -17,9 +17,7 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.util.Log
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutParams
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -60,48 +58,24 @@ internal class LayoutArchitect(
      * 2. Intermediate layout requests: Items were inserted/removed/updated.
      * In this case, we need to update their layout positions.
      * This step shouldn't interfere with ongoing scroll events
+     * 3. Views cleared: just remove all views
      */
     fun onLayoutChildren(recycler: Recycler, state: State) {
         layoutInfo.setLayoutInProgress(true)
         layoutAlignment.update()
         layoutCalculator.init(layoutState, state, configuration)
 
-        if (recycler.scrapList.isEmpty() && layoutManager.childCount == 0) {
-            if (!state.isPreLayout) {
-                initialLayoutPass(recycler, state)
-            }
+        // Fast removal
+        if (state.itemCount == 0) {
+            layoutManager.removeAndRecycleAllViews(recycler)
+            layoutState.clear()
             return
         }
 
         predictiveLayoutPass(recycler, state)
     }
 
-    private fun initialLayoutPass(recycler: Recycler, state: State) {
-        // Detach all existing views before updating the layout
-        layoutManager.detachAndScrapAttachedViews(recycler)
-
-        pivotInfo.update(pivotState.position, layoutManager, state)
-
-        // Start the layout with the pivot since all other Views are around it
-        rowArchitect.layoutPivot(layoutState, recycler, pivotInfo)
-
-        // Layout views before the pivot
-        layoutCalculator.updateLayoutStateBeforePivot(layoutState, pivotInfo)
-        rowArchitect.layoutStart(layoutState, recycler, state)
-
-        // Now layout views after the pivot
-        layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotInfo)
-        rowArchitect.layoutEnd(layoutState, recycler, state)
-
-        // Now that all views are laid out, make sure the pivot is still in the correct position
-        alignPivot(recycler, state)
-    }
-
     private fun predictiveLayoutPass(recycler: Recycler, state: State) {
-        if (state.isPreLayout) {
-            onPreLayoutChildren(recycler, state)
-            return
-        }
         pivotInfo.update(pivotState.position, layoutManager, state)
 
         layoutManager.detachAndScrapAttachedViews(recycler)
@@ -116,160 +90,83 @@ internal class LayoutArchitect(
         layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotInfo)
         rowArchitect.layoutEnd(layoutState, recycler, state)
 
-        alignPivot(recycler, state)
-
-        // Offset the pivot by the existing remaining scroll to prevent over scrolling it
-        val remainingScroll = if(configuration.isVertical()) {
-            state.remainingScrollVertical
-        } else {
-            state.remainingScrollHorizontal
-        }
-        offsetBy(-remainingScroll)
-
         layoutForPredictiveAnimations(recycler, state)
+
+        alignPivot(state)
     }
 
+    /**
+     * Layout scrap views that were not laid out in the previous step
+     * to ensure animations work as expected.
+     */
     private fun layoutForPredictiveAnimations(recycler: Recycler, state: State) {
-        if (!state.willRunPredictiveAnimations() || state.isPreLayout) {
-            return
-        }
-        // Do nothing if we don't have any children now
         val firstChild = layoutManager.getChildAt(0)
-        val lastChild = layoutManager.getChildAt(layoutManager.childCount - 1)
-        if (firstChild == null || lastChild == null) {
+        if (!state.willRunPredictiveAnimations() || firstChild == null || state.isPreLayout) {
             return
         }
-
-        var minEdge = Int.MAX_VALUE
-        var maxEdge = Int.MIN_VALUE
-        val minOldPosition = layoutInfo.getChildViewHolder(firstChild)?.oldPosition
-            ?: RecyclerView.NO_POSITION
-        val maxOldPosition = layoutInfo.getChildViewHolder(lastChild)?.oldPosition
-            ?: RecyclerView.NO_POSITION
-
         val scrapList = recycler.scrapList
-
+        var scrapExtraStart = 0
+        var scrapExtraEnd = 0
+        val firstChildPosition = layoutInfo.getLayoutPositionOf(firstChild)
         for (i in 0 until scrapList.size) {
-            val view = scrapList[i].itemView
-            val layoutParams = layoutInfo.getLayoutParams(view)
-            if (didChildStateChange(view, layoutParams, minOldPosition, maxOldPosition)) {
-                minEdge = min(minEdge, layoutInfo.getDecoratedStart(view))
-                maxEdge = max(maxEdge, layoutInfo.getDecoratedEnd(view))
+            val scrap = scrapList[i]
+            if (layoutInfo.isRemoved(scrap)) {
+                continue
+            }
+            val position = scrap.layoutPosition
+            val direction = if (position < firstChildPosition != layoutState.reverseLayout) {
+                LayoutDirection.START
+            } else {
+                LayoutDirection.END
+            }
+            if (direction == LayoutDirection.START) {
+                scrapExtraStart += layoutInfo.getDecoratedSize(scrap.itemView)
+            } else {
+                scrapExtraEnd += layoutInfo.getDecoratedSize(scrap.itemView)
             }
         }
 
-        if (maxEdge > minEdge) {
-            // Add extra space in both directions
-            // since we need to make sure the pivot is still aligned
-            layoutState.setExtraLayoutSpace(maxEdge - minEdge)
+        layoutState.setExtraLayoutSpaceStart(scrapExtraStart)
+        layoutState.setExtraLayoutSpaceEnd(scrapExtraEnd)
+        layoutState.setScrap(recycler.scrapList)
+
+        if (scrapExtraStart > 0) {
+            val anchor = layoutInfo.getChildClosestToStart()
+            if (anchor != null) {
+                layoutCalculator.updateLayoutStateForPredictiveStart(
+                    layoutState,
+                    layoutManager.getPosition(anchor)
+                )
+                rowArchitect.layoutStart(layoutState, recycler, state)
+            }
         }
 
-        layoutState.setScrap(scrapList)
-
-        val viewClosestToStart = layoutInfo.getChildClosestToStart()
-        val viewClosestToEnd = layoutInfo.getChildClosestToEnd()
-
-        if (viewClosestToStart != null) {
-            layoutCalculator.updateLayoutStateForPredictiveStart(layoutState, viewClosestToStart)
-            rowArchitect.layoutStart(layoutState, recycler, state)
-        }
-
-        if (viewClosestToEnd != null) {
-            layoutCalculator.updateLayoutStateForPredictiveEnd(layoutState, viewClosestToEnd)
-            rowArchitect.layoutEnd(layoutState, recycler, state)
+        if (scrapExtraEnd > 0) {
+            val anchor = layoutInfo.getChildClosestToEnd()
+            if (anchor != null) {
+                layoutCalculator.updateLayoutStateForPredictiveEnd(
+                    layoutState,
+                    layoutManager.getPosition(anchor)
+                )
+                rowArchitect.layoutEnd(layoutState, recycler, state)
+            }
         }
 
         layoutState.setScrap(null)
     }
 
-    /**
-     * RecyclerView will run predictive item animations,
-     * so we need to layout the views in their current outdated positions and add any new views in.
-     * Steps:
-     * 1. Layout the existing views in their "old" positions
-     * 2. Layout the new views in their "temporary" positions before the changes are applied
-     */
-    private fun onPreLayoutChildren(recycler: Recycler, state: State) {
-        // Do nothing if we don't have any children now
-        val firstChild = layoutManager.getChildAt(0)
-        val lastChild = layoutManager.getChildAt(layoutManager.childCount - 1)
-        if (firstChild == null || lastChild == null) {
-            return
-        }
-        var minEdge = Int.MAX_VALUE
-        var maxEdge = Int.MIN_VALUE
-        val minOldPosition = layoutInfo.getChildViewHolder(firstChild)?.oldPosition
-            ?: RecyclerView.NO_POSITION
-        val maxOldPosition = layoutInfo.getChildViewHolder(lastChild)?.oldPosition
-            ?: RecyclerView.NO_POSITION
-
-        val childCount = layoutManager.childCount
-
-        /**
-         * Traverse all children to get the new bounds for layout
-         * Since a child could've changed its size or moved by now,
-         * we need to keep track of the total space required to handle its changes
-         */
-        for (i in 0 until childCount) {
-            val view = requireNotNull(layoutManager.getChildAt(i))
-            val layoutParams = layoutInfo.getLayoutParams(view)
-            if (didChildStateChange(view, layoutParams, minOldPosition, maxOldPosition)) {
-                minEdge = min(minEdge, layoutInfo.getDecoratedStart(view))
-                maxEdge = max(maxEdge, layoutInfo.getDecoratedEnd(view))
-            }
-        }
-        if (maxEdge > minEdge) {
-            // Add extra space in both directions
-            // since we need to make sure the pivot is still aligned
-            layoutState.setExtraLayoutSpace(maxEdge - minEdge)
-        }
-
-        val viewClosestToStart = layoutInfo.getChildClosestToStart()
-        val viewClosestToEnd = layoutInfo.getChildClosestToEnd()
-
-        // Detach all existing views now that we know the changes required
-        layoutManager.detachAndScrapAttachedViews(recycler)
-
-        if (viewClosestToStart != null) {
-            layoutCalculator.updatePreLayoutStateBeforeStart(layoutState, viewClosestToStart)
-            rowArchitect.layoutStart(layoutState, recycler, state)
-        }
-
-        if (viewClosestToEnd != null) {
-            layoutCalculator.updatePreLayoutStateAfterEnd(layoutState, viewClosestToEnd)
-            rowArchitect.layoutEnd(layoutState, recycler, state)
-        }
-
-    }
-
-    private fun didChildStateChange(
-        view: View,
-        layoutParams: LayoutParams,
-        minOldPosition: Int,
-        maxOldPosition: Int
-    ): Boolean {
-        // If layout might change
-        if (layoutParams.isItemChanged || layoutParams.isItemRemoved || view.isLayoutRequested) {
-            return true
-        }
-        // If focus was lost
-        if (view.hasFocus() && pivotState.position != layoutParams.absoluteAdapterPosition) {
-            return true
-        }
-        // If focus was gained
-        if (!view.hasFocus() && pivotState.position == layoutParams.absoluteAdapterPosition) {
-            return true
-        }
-        val newPosition = layoutInfo.getAdapterPositionOf(view)
-        // If it moved outside the previous visible range
-        return newPosition < minOldPosition || newPosition > maxOldPosition
-    }
-
-    private fun alignPivot(recycler: Recycler, state: State) {
+    private fun alignPivot(state: State) {
         pivotInfo.update(pivotState.position, layoutManager, state)
         pivotInfo.view?.let { pivotView ->
+            // Offset all views by the existing remaining scroll so that they're still scrolled
+            // to their final locations
+            val remainingScroll = if (configuration.isVertical()) {
+                state.remainingScrollVertical
+            } else {
+                state.remainingScrollHorizontal
+            }
             val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
-            offsetBy(scrollOffset)
+            offsetBy(scrollOffset - remainingScroll)
         }
     }
 
@@ -321,10 +218,8 @@ internal class LayoutArchitect(
         recycler: RecyclerView.Recycler,
         state: State
     ): Int {
-        pivotInfo.update(pivotState.position, layoutManager, state)
-        val pivotView = pivotInfo.view
-        // Do nothing if we don't have children or a valid pivot
-        if (layoutManager.childCount == 0 || offset == 0 || pivotView == null) {
+        // Do nothing if we don't have children
+        if (state.itemCount == 0 || offset == 0) {
             return 0
         }
         layoutCalculator.updateLayoutStateForScroll(layoutState, state, offset)

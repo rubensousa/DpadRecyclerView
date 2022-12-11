@@ -195,6 +195,17 @@ internal class LayoutState {
         availableScrollSpace = space
     }
 
+    fun clear() {
+        availableScrollSpace = 0
+        currentPosition = RecyclerView.NO_POSITION
+        extraLayoutSpaceEnd = 0
+        extraLayoutSpaceStart = 0
+        fillSpace = 0
+        checkpoint = 0
+        window.startOffset = 0
+        window.endOffset = 0
+    }
+
     override fun toString(): String {
         return "LayoutState(window=$window, " +
                 "direction=$direction, " +

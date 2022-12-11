@@ -23,6 +23,7 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
@@ -280,7 +281,7 @@ internal class LayoutInfo(
         return getAdapterPositionOf(child)
     }
 
-    fun getChildViewHolder(view: View): RecyclerView.ViewHolder? {
+    fun getChildViewHolder(view: View): ViewHolder? {
         return recyclerView?.getChildViewHolder(view)
     }
 
@@ -307,6 +308,36 @@ internal class LayoutInfo(
         } else {
             !configuration.reverseLayout
         }
+    }
+
+    fun isRemoved(viewHolder: ViewHolder): Boolean {
+        val layoutParams = viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
+        return layoutParams.isItemRemoved
+    }
+
+    fun didChildStateChange(
+        viewHolder: ViewHolder,
+        pivotPosition: Int,
+        minOldPosition: Int,
+        maxOldPosition: Int
+    ): Boolean {
+        val view = viewHolder.itemView
+        val layoutParams = view.layoutParams as RecyclerView.LayoutParams
+        // If layout might change
+        if (layoutParams.isItemChanged || layoutParams.isItemRemoved || view.isLayoutRequested) {
+            return true
+        }
+        // If focus was lost
+        if (view.hasFocus() && pivotPosition != layoutParams.absoluteAdapterPosition) {
+            return true
+        }
+        // If focus was gained
+        if (!view.hasFocus() && pivotPosition == layoutParams.absoluteAdapterPosition) {
+            return true
+        }
+        val newPosition = getAdapterPositionOf(view)
+        // If it moved outside the previous visible range
+        return newPosition < minOldPosition || newPosition > maxOldPosition
     }
 
 }
