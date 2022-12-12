@@ -94,11 +94,10 @@ internal class RowArchitect(
             if (!layoutState.isUsingScrap()) {
                 layoutManager.addView(view)
             } else {
-                Log.i(TAG, "Laid out disappearing view at end: $view")
                 layoutManager.addDisappearingView(view)
             }
             layoutManager.measureChildWithMargins(view, 0, 0)
-            val decoratedSize = layoutInfo.orientationHelper.getDecoratedMeasurement(view)
+            val decoratedSize = layoutInfo.getDecoratedSize(view)
 
             if (configuration.isVertical()) {
                 // We need to align this view to an edge or center it, depending on the gravity set
@@ -115,8 +114,10 @@ internal class RowArchitect(
                 "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at end with bounds: $viewBounds"
             )
             layoutView(view, viewBounds)
-            layoutState.appendWindow(viewBounds.height())
-            remainingSpace -= viewBounds.height()
+            val spaceFilled = getSpaceFilled(viewBounds)
+            layoutState.appendWindow(spaceFilled)
+            remainingSpace -= spaceFilled
+
             childRecycler.recycleByLayoutState(recycler, layoutState)
         }
         return layoutState.fillSpace - remainingSpace
@@ -130,12 +131,11 @@ internal class RowArchitect(
             if (!layoutState.isUsingScrap()) {
                 layoutManager.addView(view, 0)
             } else {
-                Log.i(TAG, "Laid out disappearing view at start: $view")
                 layoutManager.addDisappearingView(view, 0)
             }
 
             layoutManager.measureChildWithMargins(view, 0, 0)
-            val decoratedSize = layoutInfo.orientationHelper.getDecoratedMeasurement(view)
+            val decoratedSize = layoutInfo.getDecoratedSize(view)
 
             if (configuration.isVertical()) {
                 applyHorizontalGravity(view, viewBounds)
@@ -144,18 +144,27 @@ internal class RowArchitect(
             } else {
                 applyVerticalGravity(view, viewBounds)
                 viewBounds.right = layoutState.checkpoint
-                viewBounds.left = viewBounds.left - decoratedSize
+                viewBounds.left = viewBounds.right - decoratedSize
             }
             layoutView(view, viewBounds)
             Log.i(
                 TAG,
                 "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at start with bounds: $viewBounds"
             )
-            layoutState.prependWindow(viewBounds.height())
-            remainingSpace -= viewBounds.height()
+            val spaceFilled = getSpaceFilled(viewBounds)
+            layoutState.prependWindow(spaceFilled)
+            remainingSpace -= spaceFilled
             childRecycler.recycleByLayoutState(recycler, layoutState)
         }
         return layoutState.fillSpace - remainingSpace
+    }
+
+    private fun getSpaceFilled(viewBounds: Rect) : Int {
+        return if (layoutInfo.isVertical()) {
+            viewBounds.height()
+        } else {
+            viewBounds.width()
+        }
     }
 
     private fun shouldContinueLayout(

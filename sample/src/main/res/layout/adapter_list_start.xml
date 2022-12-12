@@ -25,7 +25,6 @@
         android:layout_height="220dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:dpadRecyclerViewPivotLayoutManager="false"
         app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
         app:dpadRecyclerViewParentAlignmentEdge="max"
         app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
