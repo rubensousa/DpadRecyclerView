@@ -17,6 +17,8 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
 
 import androidx.fragment.app.Fragment
+import androidx.leanback.widget.BaseGridView
+import androidx.leanback.widget.OnChildViewHolderSelectedListener
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
@@ -46,6 +48,7 @@ class MainListController(private val fragment: Fragment) {
             }
         })
     private var dpadRecyclerView: DpadRecyclerView? = null
+    private var gridView: BaseGridView? = null
 
     fun setup(
         recyclerView: DpadRecyclerView,
@@ -70,6 +73,27 @@ class MainListController(private val fragment: Fragment) {
         recyclerView.requestFocus()
     }
 
+    fun setup(
+        recyclerView: BaseGridView,
+        lifecycleOwner: LifecycleOwner,
+        onSelected: (position: Int) -> Unit
+    ) {
+        gridView = recyclerView
+        setupAdapter(recyclerView)
+        setupSpacings(recyclerView)
+        setupPagination(recyclerView, onSelected)
+        setupLifecycle(lifecycleOwner)
+
+        if (selectedPosition != RecyclerView.NO_POSITION) {
+            recyclerView.setSelectedPosition(selectedPosition) {
+                Timber.d("Selection state restored")
+            }
+        }
+
+        recyclerView.requestFocus()
+    }
+
+
     fun submitList(list: List<ListModel>) {
         nestedListAdapter.submitList(list) {
             dpadRecyclerView?.invalidateItemDecorations()
@@ -80,7 +104,7 @@ class MainListController(private val fragment: Fragment) {
         loadingAdapter.show(isLoading)
     }
 
-    private fun setupAdapter(recyclerView: DpadRecyclerView) {
+    private fun setupAdapter(recyclerView: RecyclerView) {
         val concatAdapter = ConcatAdapter(
             ConcatAdapter.Config.Builder()
                 .setIsolateViewTypes(true)
@@ -131,7 +155,37 @@ class MainListController(private val fragment: Fragment) {
         })
     }
 
-    private fun setupSpacings(recyclerView: DpadRecyclerView) {
+    private fun setupPagination(
+        recyclerView: BaseGridView,
+        onSelected: (position: Int) -> Unit
+    ) {
+        recyclerView.addOnChildViewHolderSelectedListener(object : OnChildViewHolderSelectedListener() {
+
+            override fun onChildViewHolderSelected(
+                parent: RecyclerView,
+                child: RecyclerView.ViewHolder?,
+                position: Int,
+                subposition: Int
+            ) {
+                super.onChildViewHolderSelected(parent, child, position, subposition)
+                selectedPosition = position
+                onSelected(position)
+                Timber.d("Selected: $position, $subposition")
+            }
+
+            override fun onChildViewHolderSelectedAndPositioned(
+                parent: RecyclerView,
+                child: RecyclerView.ViewHolder?,
+                position: Int,
+                subposition: Int
+            ) {
+                super.onChildViewHolderSelectedAndPositioned(parent, child, position, subposition)
+                Timber.d("Aligned: $position, $subposition")
+            }
+        })
+    }
+
+    private fun setupSpacings(recyclerView: RecyclerView) {
         recyclerView.addItemDecoration(
             LinearMarginDecoration.createVertical(
                 verticalMargin = recyclerView.resources.getDimensionPixelOffset(
