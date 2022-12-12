@@ -20,6 +20,8 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.BuildConfig
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
@@ -226,7 +228,6 @@ internal class LayoutScroller(
 
         val scrolled = layoutAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
             ?.let { scrollOffset ->
-                Log.d(TAG, "Scroll offset: $scrollOffset")
                 scroll(recyclerView, scrollOffset, smooth)
             } != null
 
@@ -244,7 +245,7 @@ internal class LayoutScroller(
         smooth: Boolean
     ) {
         if (layoutInfo.isLayoutInProgress) {
-            Log.d(TAG, "Scrolling immediately since layout is in progress")
+            Log.i(DpadRecyclerView.TAG, "Scrolling immediately since layout is in progress")
             scroll(recyclerView, offset)
             return
         }
@@ -256,10 +257,8 @@ internal class LayoutScroller(
             scrollY = offset
         }
         if (smooth) {
-            Log.d(TAG, "Smooth scrolling: $scrollX dx / $scrollY dy")
             recyclerView.smoothScrollBy(scrollX, scrollY)
         } else {
-            Log.d(TAG, "Scrolling: $scrollX dx / $scrollY dy")
             recyclerView.scrollBy(scrollX, scrollY)
         }
     }
@@ -282,6 +281,20 @@ internal class LayoutScroller(
     }
 
     /**
+     * Logs the internal representation of children for debugging purposes.
+     */
+    internal fun logChildren() {
+        Log.d(TAG, "Children laid out:")
+        for (i in 0 until layoutManager.childCount) {
+            val child = layoutManager.getChildAt(i)!!
+            val position = layoutManager.getPosition(child)
+            val childStart = layoutInfo.getDecoratedStart(child)
+            val childEnd = layoutInfo.getDecoratedEnd(child)
+            Log.d(TAG, "View $position, start: $childStart, end: $childEnd")
+        }
+    }
+
+    /**
      * Takes care of dispatching [OnViewHolderSelectedListener.onViewHolderSelectedAndAligned]
      */
     private inner class IdleScrollListener : RecyclerView.OnScrollListener() {
@@ -301,6 +314,9 @@ internal class LayoutScroller(
                 // If we're no longer scrolling, check if we need to send a new event
                 pivotState.dispatchViewHolderSelectedAndAligned(recyclerView)
                 previousSelectedPosition = RecyclerView.NO_POSITION
+                if (BuildConfig.DEBUG) {
+                    logChildren()
+                }
             }
         }
     }

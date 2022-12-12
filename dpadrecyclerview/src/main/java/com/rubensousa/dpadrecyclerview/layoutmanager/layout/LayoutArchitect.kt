@@ -16,10 +16,10 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
+import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
@@ -39,7 +39,7 @@ internal class LayoutArchitect(
 
     companion object {
         const val TAG = "LayoutArchitect"
-        private const val DEBUG = true
+        private val DEBUG = BuildConfig.DEBUG
     }
 
     private val pivotInfo = PivotInfo()
@@ -263,20 +263,6 @@ internal class LayoutArchitect(
                 layoutPrefetchRegistry.addPosition(i, 0)
                 i++
             }
-        }
-    }
-
-    /**
-     * Logs the internal representation of children for debugging purposes.
-     */
-    private fun logChildren() {
-        Log.d(TAG, "internal representation of views on the screen:")
-        for (i in 0 until layoutManager.childCount) {
-            val child = layoutManager.getChildAt(i)
-            Log.d(
-                TAG, "item " + layoutManager.getPosition(child!!) + ", coord:"
-                        + layoutInfo.getDecoratedStart(child)
-            )
         }
     }
 

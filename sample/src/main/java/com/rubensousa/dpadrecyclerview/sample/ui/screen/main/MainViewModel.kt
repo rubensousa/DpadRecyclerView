@@ -14,7 +14,7 @@ class MainViewModel : ViewModel() {
     private val list = ArrayList<ListModel>()
     private val listLiveData = MutableLiveData<List<ListModel>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
-    private val pageSize = 3
+    private val pageSize = 10
     val loadingState: LiveData<Boolean> = loadingStateLiveData
     val listState: LiveData<List<ListModel>> = listLiveData
 
