@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import kotlin.math.abs
 import kotlin.math.max
 
 /**
@@ -28,13 +29,19 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
     fun init(layoutState: LayoutState, state: State, configuration: LayoutConfiguration) {
         layoutState.setPreLayout(state.isPreLayout)
         layoutState.setReverseLayout(configuration.reverseLayout)
+        layoutState.setRecyclingEnabled(false)
         updateExtraLayoutSpace(layoutState, state)
     }
 
     private fun updateExtraLayoutSpace(layoutState: LayoutState, state: State) {
         val extraScrollSpace = getDefaultExtraLayoutSpace(state)
-        // TODO Use default of not creating extra space in opposite direction
-        layoutState.setExtraLayoutSpace(extraScrollSpace)
+        if (layoutState.isLayingOutEnd()) {
+            layoutState.setExtraLayoutSpaceEnd(extraScrollSpace / 2)
+            layoutState.setExtraLayoutSpaceStart(0)
+        } else {
+            layoutState.setExtraLayoutSpaceStart(extraScrollSpace / 2)
+            layoutState.setExtraLayoutSpaceEnd(0)
+        }
     }
 
     fun updateLayoutStateForPredictiveStart(layoutState: LayoutState, anchorPosition: Int) {
@@ -60,14 +67,16 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
     }
 
     fun updateLayoutStateForScroll(layoutState: LayoutState, state: State, offset: Int) {
-        updateExtraLayoutSpace(layoutState, state)
-        // Enable recycling since we might add new views now
-        layoutState.setRecyclingEnabled(true)
         if (offset > 0) {
             layoutState.setEndDirection()
         } else {
             layoutState.setStartDirection()
         }
+
+        updateExtraLayoutSpace(layoutState, state)
+
+        // Enable recycling since we might add new views now
+        layoutState.setRecyclingEnabled(true)
 
         val view = if (layoutState.isLayingOutEnd()) {
             layoutInfo.getChildClosestToEnd()
@@ -77,19 +86,24 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         if (view == null) {
             return
         }
+        // Start layout from the next position of the child closest to the edge
         layoutState.setCurrentPosition(
             layoutInfo.getLayoutPositionOf(view) + layoutState.direction.value
         )
+
+        // We need to at least fill the next scroll target
+        val requiredSpace = abs(offset)
+
         if (layoutState.isLayingOutEnd()) {
             layoutState.apply {
                 setCheckpoint(layoutInfo.getDecoratedEnd(view))
+                // The available scroll space starts from the checkpoint until the actual edge
                 setAvailableScrollSpace(
                     max(0, checkpoint - layoutInfo.getEndAfterPadding())
                 )
-                val endFillSpace = max(
-                    0, layoutInfo.orientationHelper.endAfterPadding - layoutState.getEndOffset()
-                )
-                setFillSpace(layoutState.extraLayoutSpaceEnd + endFillSpace)
+                // Remove availableScrollSpace since that space is already filled
+                val fill = requiredSpace + layoutState.extraLayoutSpaceEnd - availableScrollSpace
+                setFillSpace(max(0, fill))
             }
         } else {
             layoutState.apply {
@@ -97,10 +111,8 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
                 setAvailableScrollSpace(
                     max(0, layoutInfo.getStartAfterPadding() - checkpoint)
                 )
-                val startFillSpace = max(
-                    0, layoutState.getStartOffset() - layoutInfo.getStartAfterPadding()
-                )
-                setFillSpace(layoutState.extraLayoutSpaceStart + startFillSpace)
+                val fill = requiredSpace + layoutState.extraLayoutSpaceStart - availableScrollSpace
+                setFillSpace(max(0, fill))
             }
         }
     }
@@ -148,7 +160,7 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         return if (layoutInfo.isScrolling || state.hasTargetScrollPosition()) {
             layoutInfo.getTotalSpace()
         } else {
-            layoutInfo.getTotalSpace()
+            0
         }
     }
 

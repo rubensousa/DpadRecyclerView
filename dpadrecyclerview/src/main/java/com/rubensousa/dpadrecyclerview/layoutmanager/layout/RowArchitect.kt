@@ -45,6 +45,7 @@ internal class RowArchitect(
     private val layoutAlignment: LayoutAlignment,
     private val layoutInfo: LayoutInfo,
     private val configuration: LayoutConfiguration,
+    private val childRecycler: ChildRecycler
 ) {
 
     companion object {
@@ -87,6 +88,7 @@ internal class RowArchitect(
 
     fun layoutEnd(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State): Int {
         var remainingSpace = layoutState.fillSpace
+        childRecycler.recycleByLayoutState(recycler, layoutState)
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
             val view = layoutState.getNextView(recycler) ?: break // No more views to layout, exit
             if (!layoutState.isUsingScrap()) {
@@ -108,16 +110,21 @@ internal class RowArchitect(
                 viewBounds.left = layoutState.checkpoint
                 viewBounds.right = viewBounds.left + decoratedSize
             }
-            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at end with bounds: $viewBounds")
+            Log.i(
+                TAG,
+                "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at end with bounds: $viewBounds"
+            )
             layoutView(view, viewBounds)
             layoutState.appendWindow(viewBounds.height())
             remainingSpace -= viewBounds.height()
+            childRecycler.recycleByLayoutState(recycler, layoutState)
         }
         return layoutState.fillSpace - remainingSpace
     }
 
     fun layoutStart(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State): Int {
         var remainingSpace = layoutState.fillSpace
+        childRecycler.recycleByLayoutState(recycler, layoutState)
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
             val view = layoutState.getNextView(recycler) ?: break // No more views to layout, exit
             if (!layoutState.isUsingScrap()) {
@@ -140,9 +147,13 @@ internal class RowArchitect(
                 viewBounds.left = viewBounds.left - decoratedSize
             }
             layoutView(view, viewBounds)
-            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at start with bounds: $viewBounds")
+            Log.i(
+                TAG,
+                "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at start with bounds: $viewBounds"
+            )
             layoutState.prependWindow(viewBounds.height())
             remainingSpace -= viewBounds.height()
+            childRecycler.recycleByLayoutState(recycler, layoutState)
         }
         return layoutState.fillSpace - remainingSpace
     }

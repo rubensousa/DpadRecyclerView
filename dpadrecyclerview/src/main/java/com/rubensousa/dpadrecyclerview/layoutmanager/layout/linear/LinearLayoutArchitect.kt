@@ -23,6 +23,7 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ChildRecycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
@@ -53,9 +54,9 @@ internal class LinearLayoutArchitect(
     private val layoutState = LinearLayoutState()
     private val layoutResult = LayoutResult()
     private val extraLayoutSpace = IntArray(2)
-    private val childRecycler = LinearChildRecycler(layoutManager, layoutInfo, configuration)
+    private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
     private val rowArchitect = RowArchitect(
-        layoutManager, layoutAlignment, layoutInfo, configuration
+        layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler
     )
     private val gridArchitect = GridArchitect(layoutManager, layoutInfo, configuration)
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
@@ -209,7 +210,7 @@ internal class LinearLayoutArchitect(
             if (layoutState.fillSpace < 0) {
                 layoutState.availableScrollSpace += layoutState.fillSpace
             }
-            childRecycler.recycleByLayoutState(recycler, layoutState)
+           // childRecycler.recycleByLayoutState(recycler, layoutState)
         }
         var remainingSpace = layoutState.fillSpace + layoutState.invisibleFillSpace
         while ((layoutState.isInfinite || remainingSpace > 0) && layoutState.hasMoreItems(state)) {
@@ -239,7 +240,7 @@ internal class LinearLayoutArchitect(
                 if (layoutState.fillSpace < 0) {
                     layoutState.availableScrollSpace += layoutState.fillSpace
                 }
-                childRecycler.recycleByLayoutState(recycler, layoutState)
+              //  childRecycler.recycleByLayoutState(recycler, layoutState)
             }
         }
         return start - layoutState.fillSpace

@@ -160,11 +160,6 @@ internal class LayoutState {
 
     fun isLayingOutEnd() = direction == LayoutDirection.END
 
-    fun setExtraLayoutSpace(extraSpace: Int) {
-        extraLayoutSpaceStart = extraSpace
-        extraLayoutSpaceEnd = extraSpace
-    }
-
     fun setExtraLayoutSpaceStart(extraSpace: Int) {
         extraLayoutSpaceStart = extraSpace
     }
@@ -204,6 +199,14 @@ internal class LayoutState {
         checkpoint = 0
         window.startOffset = 0
         window.endOffset = 0
+    }
+
+    fun increaseStartOffset(size: Int) {
+        window.startOffset += size
+    }
+
+    fun decreaseEndOffset(size: Int) {
+        window.endOffset -= size
     }
 
     override fun toString(): String {

@@ -46,8 +46,9 @@ internal class LayoutArchitect(
     private val layoutState = LayoutState()
     private val layoutResult = LayoutResult()
     private val layoutCalculator = LayoutCalculator(layoutInfo)
+    private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
     private val rowArchitect = RowArchitect(
-        layoutManager, layoutAlignment, layoutInfo, configuration
+        layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler
     )
     private val gridArchitect = GridArchitect(layoutManager, layoutInfo, configuration)
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
@@ -82,17 +83,18 @@ internal class LayoutArchitect(
 
         rowArchitect.layoutPivot(layoutState, recycler, pivotInfo)
 
-        // Layout views before the pivot
-        layoutCalculator.updateLayoutStateBeforePivot(layoutState, pivotInfo)
-        rowArchitect.layoutStart(layoutState, recycler, state)
-
         // Layout views after the pivot
         layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotInfo)
         rowArchitect.layoutEnd(layoutState, recycler, state)
 
+        // Layout views before the pivot
+        layoutCalculator.updateLayoutStateBeforePivot(layoutState, pivotInfo)
+        rowArchitect.layoutStart(layoutState, recycler, state)
+
         layoutForPredictiveAnimations(recycler, state)
 
-        alignPivot(state)
+        // Now that all views are laid out, make sure the pivot is still in the correct position
+        alignPivot(recycler, state)
     }
 
     /**
@@ -155,7 +157,7 @@ internal class LayoutArchitect(
         layoutState.setScrap(null)
     }
 
-    private fun alignPivot(state: State) {
+    private fun alignPivot(recycler: Recycler, state: State) {
         pivotInfo.update(pivotState.position, layoutManager, state)
         pivotInfo.view?.let { pivotView ->
             // Offset all views by the existing remaining scroll so that they're still scrolled
@@ -166,7 +168,7 @@ internal class LayoutArchitect(
                 state.remainingScrollHorizontal
             }
             val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
-            offsetBy(scrollOffset - remainingScroll)
+            scrollBy(scrollOffset - remainingScroll, recycler, state)
         }
     }
 
@@ -206,7 +208,6 @@ internal class LayoutArchitect(
         recycler: RecyclerView.Recycler,
         state: State
     ): Int {
-        Log.i(TAG, "ScrollVertically by: $dy")
         if (configuration.isHorizontal()) {
             return 0
         }
@@ -262,6 +263,20 @@ internal class LayoutArchitect(
                 layoutPrefetchRegistry.addPosition(i, 0)
                 i++
             }
+        }
+    }
+
+    /**
+     * Logs the internal representation of children for debugging purposes.
+     */
+    private fun logChildren() {
+        Log.d(TAG, "internal representation of views on the screen:")
+        for (i in 0 until layoutManager.childCount) {
+            val child = layoutManager.getChildAt(i)
+            Log.d(
+                TAG, "item " + layoutManager.getPosition(child!!) + ", coord:"
+                        + layoutInfo.getDecoratedStart(child)
+            )
         }
     }
 

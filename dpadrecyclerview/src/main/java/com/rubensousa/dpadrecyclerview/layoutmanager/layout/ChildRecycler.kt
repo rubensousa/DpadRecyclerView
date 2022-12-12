@@ -14,103 +14,116 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import android.util.Log
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
-internal class LinearChildRecycler(
-    private val layoutManager: LayoutManager,
+internal class ChildRecycler(
+    private val layoutManager: RecyclerView.LayoutManager,
     private val layoutInfo: LayoutInfo,
     private val configuration: LayoutConfiguration
 ) {
 
-    fun recycleByLayoutState(recycler: Recycler, layoutState: LinearLayoutState) {
-        if (!layoutState.recycle || layoutState.isInfinite) {
+    companion object {
+        const val TAG = "ChildRecycler"
+    }
+
+    fun recycleByLayoutState(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
+        if (!layoutState.isRecyclingEnabled || layoutState.isInfinite()) {
             return
         }
         if (layoutState.isLayingOutStart()) {
-            recycleFromEnd(recycler, layoutState.availableScrollSpace, layoutState.extraLayoutSpaceStart)
+            recycleFromEnd(recycler, layoutState)
         } else {
-            recycleFromStart(recycler, layoutState.availableScrollSpace, layoutState.extraLayoutSpaceStart)
+            recycleFromStart(recycler, layoutState)
         }
     }
 
-    fun recycleFromStart(recycler: Recycler, availableScrollSpace: Int, extraLayoutSpace: Int) {
-        if (availableScrollSpace < 0) {
-            return
-        }
-        val limit = availableScrollSpace - extraLayoutSpace
-        val childCount: Int = layoutManager.childCount
-        if (configuration.reverseLayout) {
-            for (i in childCount - 1 downTo 0) {
-                val child = layoutManager.getChildAt(i) ?: continue
-                if (layoutInfo.orientationHelper.getDecoratedEnd(child) > limit
-                    || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
-                ) {
-                    recycle(recycler, childCount - 1, i)
-                    return
-                }
-            }
-        } else {
-            for (i in 0 until childCount) {
-                val child = layoutManager.getChildAt(i) ?: continue
-                if (layoutInfo.orientationHelper.getDecoratedEnd(child) > limit
-                    || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
-                ) {
-                    recycle(recycler, 0, i)
-                    return
-                }
-            }
-        }
-    }
-
-    fun recycleFromEnd(
-        recycler: Recycler,
-        availableScrollSpace: Int,
-        extraLayoutSpace: Int
-    ) {
+    private fun recycleFromStart(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
+        val limit = -layoutState.extraLayoutSpaceStart
         val childCount = layoutManager.childCount
-        if (availableScrollSpace < 0) {
-            return
-        }
-        val limit = layoutInfo.orientationHelper.end - availableScrollSpace + extraLayoutSpace
         if (configuration.reverseLayout) {
-            for (i in 0 until childCount) {
+            for (i in childCount - 1 downTo 0) {
                 val child = layoutManager.getChildAt(i) ?: continue
-                if (layoutInfo.orientationHelper.getDecoratedStart(child) < limit
-                    || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
+                if (layoutInfo.getDecoratedEnd(child) > limit
+                    || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
                 ) {
-                    recycle(recycler, 0, i)
+                    recycle(recycler, childCount - 1, i, layoutState)
                     return
                 }
             }
         } else {
-            for (i in childCount - 1 downTo 0) {
+            for (i in 0 until childCount) {
                 val child = layoutManager.getChildAt(i) ?: continue
-                if (layoutInfo.orientationHelper.getDecoratedStart(child) < limit
-                    || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
+                if (layoutInfo.getDecoratedEnd(child) > limit
+                    || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
                 ) {
-                    recycle(recycler, childCount - 1, i)
+                    recycle(recycler, 0, i, layoutState)
                     return
                 }
             }
         }
     }
 
-    private fun recycle(recycler: Recycler, startIndex: Int, endIndex: Int) {
+    private fun recycleFromEnd(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
+        val limit = layoutInfo.orientationHelper.end + layoutState.extraLayoutSpaceEnd
+        val childCount = layoutManager.childCount
+        if (configuration.reverseLayout) {
+            for (i in 0 until childCount) {
+                val child = layoutManager.getChildAt(i) ?: continue
+                if (layoutInfo.getDecoratedStart(child) < limit
+                    || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
+                ) {
+                    recycle(recycler, 0, i, layoutState)
+                    return
+                }
+            }
+        } else {
+            for (i in childCount - 1 downTo 0) {
+                val child = layoutManager.getChildAt(i) ?: continue
+                if (layoutInfo.getDecoratedStart(child) < limit
+                    || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
+                ) {
+                    recycle(recycler, childCount - 1, i, layoutState)
+                    return
+                }
+            }
+        }
+    }
+
+    private fun recycle(
+        recycler: RecyclerView.Recycler,
+        startIndex: Int,
+        endIndex: Int,
+        layoutState: LayoutState
+    ) {
         if (startIndex == endIndex) {
             return
         }
         if (endIndex > startIndex) {
             for (i in endIndex - 1 downTo startIndex) {
-                layoutManager.removeAndRecycleViewAt(i, recycler)
+                recycleViewAt(i, recycler, layoutState)
             }
         } else {
             for (i in startIndex downTo endIndex + 1) {
-                layoutManager.removeAndRecycleViewAt(i, recycler)
+                recycleViewAt(i, recycler, layoutState)
+            }
+        }
+    }
+
+    private fun recycleViewAt(index: Int, recycler: Recycler, layoutState: LayoutState) {
+        val view = layoutManager.getChildAt(index)
+        if (view != null) {
+            layoutManager.removeAndRecycleViewAt(index, recycler)
+            Log.i(TAG, "Recycled: ${layoutInfo.getAdapterPositionOf(view)}")
+            val size = layoutInfo.getDecoratedSize(view)
+            if (layoutState.isLayingOutEnd()) {
+                layoutState.increaseStartOffset(size)
+            } else {
+                layoutState.decreaseEndOffset(size)
             }
         }
     }
