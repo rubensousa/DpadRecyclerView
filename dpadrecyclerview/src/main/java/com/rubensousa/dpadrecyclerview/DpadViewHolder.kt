@@ -17,10 +17,10 @@
 package com.rubensousa.dpadrecyclerview
 
 import android.view.View
-import java.util.*
+import java.util.Collections
 
 /**
- * A ViewHolder managed by [DpadLayoutManager].
+ * A ViewHolder managed by [DpadRecyclerView].
  *
  * Implement this in case you're interested in receiving selection changes or customising alignment
  *
@@ -36,7 +36,7 @@ interface DpadViewHolder {
      * To observe focus changes,
      * you need to use the focus listener set via [View.setOnFocusChangeListener]
      *
-     * This is called automatically by [DpadLayoutManager] on selection changes.
+     * This is called automatically by [DpadRecyclerView] on selection changes.
      */
     fun onViewHolderSelected() {}
 
@@ -48,7 +48,7 @@ interface DpadViewHolder {
      * To observe focus changes,
      * you need to use the focus listener set via [View.setOnFocusChangeListener]
      *
-     * This is called automatically by [DpadLayoutManager] on selection changes.
+     * This is called automatically by [DpadRecyclerView] on selection changes.
      */
     fun onViewHolderDeselected() {}
 
