@@ -46,7 +46,6 @@ internal class LayoutScroller(
     var isSelectionInProgress = false
         private set
 
-    private var isFocusUpdatePending = false
     private var recyclerView: RecyclerView? = null
     private val idleScrollListener = IdleScrollListener()
 
@@ -59,34 +58,7 @@ internal class LayoutScroller(
     fun onRestoreInstanceState() {
         if (pivotState.position != RecyclerView.NO_POSITION) {
             isSelectionUpdatePending = true
-            isFocusUpdatePending = recyclerView?.hasFocus() ?: false
             layoutManager.requestLayout()
-        }
-
-    }
-
-    /**
-     * Scrolls to a position-subPosition pair.
-     *
-     * If don't need to smooth scroll, we can scroll immediately by triggering a layout pass
-     * with the new pivot position
-     */
-    fun scrollToPosition(
-        position: Int,
-        subPosition: Int,
-        smooth: Boolean
-    ) {
-        Log.d(
-            TAG, "Scrolling requested to position $position " +
-                    "and subPosition $subPosition with smooth: $smooth"
-        )
-        if (!smooth) {
-            if (pivotState.update(position, subPosition)) {
-                isSelectionUpdatePending = true
-                isFocusUpdatePending = true
-                layoutManager.requestLayout()
-            }
-            return
         }
     }
 
@@ -94,18 +66,35 @@ internal class LayoutScroller(
      * Since the layout pass can finish after the RecyclerView gains focus,
      * make sure that we focus the new selected view when layout is done
      */
-    fun onLayoutCompleted(recyclerView: RecyclerView) {
+    fun onLayoutCompleted(recyclerView: RecyclerView, requestFocus: Boolean) {
         scrollToSelectedPosition(
             recyclerView,
             smooth = false,
-            requestFocus = recyclerView.hasFocus() || isFocusUpdatePending
+            requestFocus = requestFocus
         )
         if (isSelectionUpdatePending) {
             isSelectionUpdatePending = false
             pivotState.dispatchViewHolderSelected(recyclerView)
             pivotState.dispatchViewHolderSelectedAndAligned(recyclerView)
         }
-        isFocusUpdatePending = false
+    }
+
+    /**
+     * Scrolls to a position-subPosition pair.
+     *
+     * If we don't need to smooth scroll, we can scroll immediately by triggering a layout pass
+     * with the new pivot position
+     */
+    fun scrollToPosition(position: Int, subPosition: Int, smooth: Boolean) {
+        Log.d(
+            TAG, "Scrolling requested to position $position " +
+                    "and subPosition $subPosition with smooth: $smooth"
+        )
+        if (!smooth) {
+            pivotState.update(position, subPosition)
+            isSelectionUpdatePending = true
+            layoutManager.requestLayout()
+        }
     }
 
     /**
@@ -182,7 +171,6 @@ internal class LayoutScroller(
         scrollToView(recyclerView, view, subPositionView = view?.findFocus(), smooth, requestFocus)
     }
 
-    // TODO
     fun scrollToView(
         recyclerView: RecyclerView,
         viewHolderView: View?,

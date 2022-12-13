@@ -109,15 +109,10 @@ internal class RowArchitect(
                 viewBounds.left = layoutState.checkpoint
                 viewBounds.right = viewBounds.left + decoratedSize
             }
-            Log.i(
-                TAG,
-                "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at end with bounds: $viewBounds"
-            )
             layoutView(view, viewBounds)
             val spaceFilled = getSpaceFilled(viewBounds)
             layoutState.appendWindow(spaceFilled)
             remainingSpace -= spaceFilled
-
             childRecycler.recycleByLayoutState(recycler, layoutState)
         }
         return layoutState.fillSpace - remainingSpace
@@ -147,10 +142,6 @@ internal class RowArchitect(
                 viewBounds.left = viewBounds.right - decoratedSize
             }
             layoutView(view, viewBounds)
-            Log.i(
-                TAG,
-                "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at start with bounds: $viewBounds"
-            )
             val spaceFilled = getSpaceFilled(viewBounds)
             layoutState.prependWindow(spaceFilled)
             remainingSpace -= spaceFilled

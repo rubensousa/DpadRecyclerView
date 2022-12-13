@@ -17,10 +17,11 @@
 package com.rubensousa.dpadrecyclerview.testing.assertions
 
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.PerformException
 import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.util.HumanReadables
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import junit.framework.AssertionFailedError
 
 object DpadRecyclerViewAssertions {
 
@@ -60,10 +61,9 @@ object DpadRecyclerViewAssertions {
                 }
             } else {
                 if (focusedView == null) {
-                    throw PerformException.Builder()
-                        .withActionDescription("Assertion for focusedPosition $focusedPosition")
-                        .withViewDescription("DpadRecyclerView")
-                        .build()
+                    throw AssertionFailedError(
+                        "DpadRecyclerView didn't have focus: ${HumanReadables.describe(view)}"
+                    )
                 }
                 assertThat(view.findContainingViewHolder(focusedView)!!.absoluteAdapterPosition)
                     .isEqualTo(focusedPosition)

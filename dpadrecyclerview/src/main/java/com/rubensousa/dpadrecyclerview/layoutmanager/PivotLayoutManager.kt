@@ -45,7 +45,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  * TODO:
  * - setRecycleChildrenOnDetach
  * - setExtraSpace
- * - custom alignment
  * - using simple row structure for single spans
  */
 class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
@@ -71,6 +70,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     private val accessibilityHelper = LayoutAccessibilityHelper(
         this, configuration, layoutInfo, pivotState, scroller
     )
+    private var hadFocusBeforeLayout = false
     private var recyclerView: RecyclerView? = null
 
     init {
@@ -144,13 +144,15 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun supportsPredictiveItemAnimations(): Boolean = true
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
+        hadFocusBeforeLayout = recyclerView?.hasFocus() ?: false
+        // If we have focus, save it temporarily since the views will change and we might lose it
         layoutArchitect.onLayoutChildren(recycler, state)
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
         layoutArchitect.onLayoutCompleted(state)
         recyclerView?.apply {
-            scroller.onLayoutCompleted(this)
+            scroller.onLayoutCompleted(this, requestFocus = hadFocusBeforeLayout)
         }
     }
 
