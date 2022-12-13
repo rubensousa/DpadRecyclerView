@@ -39,7 +39,8 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
 /**
- * Successor of DpadLayoutManager built from scratch for performance optimizations.
+ * Successor of DpadLayoutManager built from scratch for performance optimizations
+ * and to support more features.
  * Currently only supports a single row.
  *
  * TODO:

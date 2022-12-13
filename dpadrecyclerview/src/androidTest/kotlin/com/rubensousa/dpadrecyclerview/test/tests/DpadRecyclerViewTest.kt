@@ -28,8 +28,9 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.After
+import org.junit.Before
 
-abstract class GridTest {
+abstract class DpadRecyclerViewTest {
 
     companion object {
         const val DEFAULT_ITEM_COUNT = 200
@@ -45,6 +46,11 @@ abstract class GridTest {
     }
 
     private lateinit var fragmentScenario: FragmentScenario<TestGridFragment>
+
+    @Before
+    fun setupNewPivotLayoutManager() {
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
+    }
 
     fun recreateFragment(requestFocus: Boolean = true) {
         fragmentScenario.recreate()
@@ -129,8 +135,8 @@ abstract class GridTest {
     @After
     open fun destroy() {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
-        // Reset this for every test
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
+        // Enable this by default after every test
+        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
     }
 
 }

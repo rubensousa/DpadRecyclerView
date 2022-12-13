@@ -20,21 +20,25 @@ import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.*
-import com.rubensousa.dpadrecyclerview.test.tests.GridTest
+import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.updateChildAlignment
+import com.rubensousa.dpadrecyclerview.test.helpers.updateParentAlignment
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class HorizontalAlignmentTest : GridTest() {
+class HorizontalAlignmentTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
@@ -59,11 +63,6 @@ class HorizontalAlignmentTest : GridTest() {
         return super.getDefaultAdapterConfiguration().copy(
             itemLayoutId = R.layout.dpadrecyclerview_test_item_horizontal
         )
-    }
-
-    @Before
-    fun setup() {
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
     }
 
     @Test

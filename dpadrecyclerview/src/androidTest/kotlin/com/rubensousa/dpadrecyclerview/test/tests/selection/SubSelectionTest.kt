@@ -38,7 +38,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectSubPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
-import com.rubensousa.dpadrecyclerview.test.tests.GridTest
+import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
@@ -46,7 +46,7 @@ import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 
-class SubSelectionTest : GridTest() {
+class SubSelectionTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()

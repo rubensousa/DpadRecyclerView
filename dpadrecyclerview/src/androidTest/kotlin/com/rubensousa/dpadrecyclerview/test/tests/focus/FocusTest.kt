@@ -18,19 +18,17 @@ package com.rubensousa.dpadrecyclerview.test.tests.focus
 
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
-import com.rubensousa.dpadrecyclerview.test.tests.GridTest
+import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class FocusTest : GridTest() {
+class FocusTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
@@ -44,11 +42,6 @@ class FocusTest : GridTest() {
             ),
             childAlignment = ChildAlignment(offset = 0)
         )
-    }
-
-    @Before
-    fun setup() {
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
     }
 
     @Test

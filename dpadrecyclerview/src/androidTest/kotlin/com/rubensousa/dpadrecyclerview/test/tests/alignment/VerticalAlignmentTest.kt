@@ -20,7 +20,6 @@ import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
@@ -31,15 +30,14 @@ import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.updateChildAlignment
 import com.rubensousa.dpadrecyclerview.test.helpers.updateParentAlignment
-import com.rubensousa.dpadrecyclerview.test.tests.GridTest
+import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class VerticalAlignmentTest : GridTest() {
+class VerticalAlignmentTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
@@ -58,11 +56,6 @@ class VerticalAlignmentTest : GridTest() {
                 offsetRatio = 0.5f
             )
         )
-    }
-
-    @Before
-    fun setup() {
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
     }
 
     @Test

@@ -28,15 +28,14 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertViewHolderSelected
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
-import com.rubensousa.dpadrecyclerview.test.tests.GridTest
+import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class SelectionTest : GridTest() {
+class SelectionTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
@@ -52,11 +51,6 @@ class SelectionTest : GridTest() {
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return defaultConfig
-    }
-
-    @Before
-    fun setup() {
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
     }
 
     @Test
