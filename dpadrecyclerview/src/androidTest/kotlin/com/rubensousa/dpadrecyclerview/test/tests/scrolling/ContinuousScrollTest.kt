@@ -14,61 +14,61 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.tests
+package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
-import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
+import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
+import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.assertOnRecyclerView
-import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
-import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.tests.GridTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class SaveRestoreStateTest : GridTest() {
+class ContinuousScrollTest : GridTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
-            spans = 1,
+            spans = 5,
             orientation = RecyclerView.VERTICAL,
             parentAlignment = ParentAlignment(
-                edge = Edge.MIN_MAX
+                edge = ParentAlignment.Edge.MIN_MAX,
+                offset = 0,
+                offsetRatio = 0.5f
             ),
-            childAlignment = ChildAlignment(offset = 0)
+            childAlignment = ChildAlignment(
+                offset = 0,
+                offsetRatio = 0.5f
+            ),
+            focusableDirection = FocusableDirection.CONTINUOUS
         )
     }
 
-    @Before
-    fun setup() {
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
-        launchFragment()
+    override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
+        return super.getDefaultAdapterConfiguration().copy(
+            itemLayoutId = R.layout.dpadrecyclerview_test_item_grid
+        )
     }
 
     @Test
-    fun testSelectionStateIsSavedAndRestored() {
-        KeyEvents.pressDown(times = 5)
-        assertFocusPosition(5)
+    fun testContinuousScrollForwardAndBackwards() {
+        launchFragment()
+        KeyEvents.pressRight(times = 50)
+        waitForIdleScrollState()
+        assertFocusPosition(position = 50)
 
-        recreateFragment()
-
-        val recyclerViewBounds = getRecyclerViewBounds()
-        val viewBounds = getItemViewBounds(position = 5)
-        assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
-        assertOnRecyclerView(ViewAssertions.matches(ViewMatchers.hasFocus()))
-        assertFocusPosition(5)
+        KeyEvents.pressLeft(times = 50)
+        waitForIdleScrollState()
+        assertFocusPosition(position = 0)
     }
 
 }

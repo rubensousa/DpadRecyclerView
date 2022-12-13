@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.tests
+package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 
 import org.junit.Ignore
 import org.junit.Test
 
+// TODO
 @Ignore("To be written")
-class MultipleSpanVerticalTest {
+class VerticalGridScrollTest {
 
     @Test
     fun testContinuousScrollDown() {
