@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.GridArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LayoutResult
@@ -33,7 +33,7 @@ internal class LayoutArchitect(
     private val layoutManager: RecyclerView.LayoutManager,
     private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration,
-    private val pivotState: PivotState,
+    private val pivotSelector: PivotSelector,
     private val layoutInfo: LayoutInfo
 ) {
 
@@ -77,7 +77,7 @@ internal class LayoutArchitect(
     }
 
     private fun predictiveLayoutPass(recycler: Recycler, state: State) {
-        pivotInfo.update(pivotState.position, layoutManager, state)
+        pivotInfo.update(pivotSelector.position, layoutManager, state)
 
         layoutManager.detachAndScrapAttachedViews(recycler)
 
@@ -158,7 +158,7 @@ internal class LayoutArchitect(
     }
 
     private fun alignPivot(recycler: Recycler, state: State) {
-        pivotInfo.update(pivotState.position, layoutManager, state)
+        pivotInfo.update(pivotSelector.position, layoutManager, state)
         pivotInfo.view?.let { pivotView ->
             // Offset all views by the existing remaining scroll so that they're still scrolled
             // to their final locations
@@ -254,7 +254,7 @@ internal class LayoutArchitect(
             // Prefetch items centered around the pivot
             val initialPosition = max(
                 0, min(
-                    pivotState.position - (prefetchCount - 1) / 2,
+                    pivotSelector.position - (prefetchCount - 1) / 2,
                     adapterItemCount - prefetchCount
                 )
             )

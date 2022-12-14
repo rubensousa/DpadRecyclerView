@@ -58,13 +58,10 @@ internal class WaitForAdapterUpdateAction(
         uiController.loopMainThreadForAtLeast(300)
     }
 
-    class AdapterUpdateIdlingResource(
-        updates: Int,
-        recyclerView: RecyclerView,
-        private var callback: IdlingResource.ResourceCallback? = null
-    ) : IdlingResource {
+    class AdapterUpdateIdlingResource(updates: Int, recyclerView: RecyclerView) : IdlingResource {
 
         private var remainingUpdates = updates
+        private var callback: IdlingResource.ResourceCallback? = null
 
         init {
             recyclerView.adapter?.registerAdapterDataObserver(

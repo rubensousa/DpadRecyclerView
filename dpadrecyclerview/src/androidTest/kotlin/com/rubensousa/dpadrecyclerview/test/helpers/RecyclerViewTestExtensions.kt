@@ -37,7 +37,8 @@ fun selectLastPosition(smooth: Boolean = false, id: Int = R.id.recyclerView): In
             selectedPosition = position
         })
     if (smooth) {
-        Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.waitForIdleScroll())
+        Espresso.onView(ViewMatchers.withId(id))
+            .perform(DpadRecyclerViewActions.waitForIdleScroll())
     }
     return selectedPosition
 }
@@ -51,7 +52,8 @@ fun selectPosition(
     Espresso.onView(ViewMatchers.withId(id))
         .perform(DpadRecyclerViewActions.selectPosition(position, subPosition, smooth))
     if (smooth) {
-        Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.waitForIdleScroll())
+        Espresso.onView(ViewMatchers.withId(id))
+            .perform(DpadRecyclerViewActions.waitForIdleScroll())
     }
 }
 
@@ -63,7 +65,8 @@ fun selectSubPosition(
     Espresso.onView(ViewMatchers.withId(id))
         .perform(DpadRecyclerViewActions.selectSubPosition(subPosition, smooth))
     if (smooth) {
-        Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.waitForIdleScroll())
+        Espresso.onView(ViewMatchers.withId(id))
+            .perform(DpadRecyclerViewActions.waitForIdleScroll())
     }
 }
 
@@ -133,6 +136,13 @@ fun waitForIdleScrollState(id: Int = R.id.recyclerView) {
 
 fun waitForAdapterUpdate(id: Int = R.id.recyclerView) {
     Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.waitForAdapterUpdate())
+}
+
+fun waitForCondition(
+    id: Int = R.id.recyclerView,
+    condition: (recyclerView: DpadRecyclerView) -> Boolean
+) {
+    Espresso.onView(ViewMatchers.withId(id)).perform(DpadViewActions.waitForCondition(condition))
 }
 
 fun onRecyclerView(

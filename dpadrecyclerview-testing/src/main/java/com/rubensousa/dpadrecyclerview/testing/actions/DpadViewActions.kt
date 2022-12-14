@@ -22,6 +22,7 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+import java.util.concurrent.TimeUnit
 
 /**
  * Useful [ViewAction] for plain views
@@ -46,6 +47,15 @@ object DpadViewActions {
         return RequestFocusAction()
     }
 
+    @JvmStatic
+    fun <T : View> waitForCondition(
+        condition: (view: T) -> Boolean,
+        timeout: Long = 5,
+        timeoutUnit: TimeUnit = TimeUnit.SECONDS
+    ): ViewAction {
+        return WaitForCondition(condition, timeout, timeoutUnit)
+    }
+
     private class RequestFocusAction : DpadViewAction("Requesting view focus") {
         override fun perform(uiController: UiController, view: View) {
             view.requestFocus()
@@ -65,10 +75,9 @@ object DpadViewActions {
         override fun perform(uiController: UiController, view: View) {
             view.getGlobalVisibleRect(rect)
         }
-
     }
 
-    private abstract class DpadViewAction(private val description: String) : ViewAction {
+    abstract class DpadViewAction(private val description: String) : ViewAction {
         override fun getConstraints(): Matcher<View> = Matchers.isA(View::class.java)
         override fun getDescription(): String = description
     }

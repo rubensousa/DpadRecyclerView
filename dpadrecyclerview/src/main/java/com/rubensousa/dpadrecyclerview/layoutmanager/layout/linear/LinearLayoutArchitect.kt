@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ChildRecycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemDirection
@@ -41,7 +41,7 @@ internal class LinearLayoutArchitect(
     private val layoutManager: LayoutManager,
     private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration,
-    private val pivotState: PivotState,
+    private val pivotSelector: PivotSelector,
     private val layoutInfo: LayoutInfo
 ) {
 
@@ -132,7 +132,7 @@ internal class LinearLayoutArchitect(
         var startOffset = 0
         var endOffset = 0
 
-        pivotInfo.update(pivotState.position, layoutManager, state)
+        pivotInfo.update(pivotSelector.position, layoutManager, state)
         rowArchitect.layoutPivot(recycler, pivotInfo)
 
         if (layoutState.reverseLayout) {
@@ -276,7 +276,7 @@ internal class LinearLayoutArchitect(
             // Prefetch items centered around the selected position
             val initialPosition = max(
                 0, min(
-                    pivotState.position - (prefetchCount - 1) / 2,
+                    pivotSelector.position - (prefetchCount - 1) / 2,
                     adapterItemCount - prefetchCount
                 )
             )

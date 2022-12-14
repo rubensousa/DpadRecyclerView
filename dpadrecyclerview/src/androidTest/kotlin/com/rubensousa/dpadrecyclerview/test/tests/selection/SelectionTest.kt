@@ -27,6 +27,7 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertViewHolderSelected
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
@@ -70,6 +71,38 @@ class SelectionTest : DpadRecyclerViewTest() {
 
         assertThat(getSelectionEvents()).isEmpty()
         assertThat(getSelectionAndAlignedEvents()).isEmpty()
+    }
+
+    @Test
+    fun testNoPositionIsDispatchedWhenThereIsNoSelectedPosition() {
+        launchFragment(TestAdapterConfiguration(numberOfItems = 1))
+
+        assertSelectedPosition(position = 0)
+        assertFocusPosition(position = 0)
+
+        assertThat(getSelectionEvents()).isEqualTo(
+            listOf(DpadSelectionEvent(position = 0))
+        )
+        assertThat(getSelectionAndAlignedEvents()).isEqualTo(
+            listOf(DpadSelectionEvent(position = 0))
+        )
+
+        executeOnFragment { fragment ->
+            fragment.clearEvents()
+            fragment.clearAdapter()
+        }
+
+        waitForCondition { recyclerView -> recyclerView.childCount == 0 }
+
+        assertSelectedPosition(position = RecyclerView.NO_POSITION)
+        assertFocusPosition(position = RecyclerView.NO_POSITION)
+
+        assertThat(getSelectionEvents()).isEqualTo(
+            listOf(DpadSelectionEvent(position = RecyclerView.NO_POSITION))
+        )
+        assertThat(getSelectionAndAlignedEvents()).isEqualTo(
+            listOf(DpadSelectionEvent(position = RecyclerView.NO_POSITION))
+        )
     }
 
     @Test

@@ -34,7 +34,7 @@ internal class LayoutAccessibilityHelper(
     private val layoutManager: LayoutManager,
     private val configuration: LayoutConfiguration,
     private val layoutInfo: LayoutInfo,
-    private val selectionState: PivotState,
+    private val pivotSelector: PivotSelector,
     private val scroller: LayoutScroller
 ) {
 
@@ -143,10 +143,10 @@ internal class LayoutAccessibilityHelper(
         }
         val translatedAction = translateAccessibilityAction(action, configuration.reverseLayout)
 
-        val scrollingReachedStart = (selectionState.position == 0
+        val scrollingReachedStart = (pivotSelector.position == 0
                 && translatedAction == AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD)
 
-        val scrollingReachedEnd = (selectionState.position == state.itemCount - 1
+        val scrollingReachedEnd = (pivotSelector.position == state.itemCount - 1
                 && translatedAction == AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
 
         if (scrollingReachedStart || scrollingReachedEnd) {

@@ -24,7 +24,7 @@ import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
@@ -33,15 +33,12 @@ internal class LayoutScroller(
     private val layoutInfo: LayoutInfo,
     private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration,
-    private val pivotState: PivotState
+    private val pivotSelector: PivotSelector
 ) {
 
     companion object {
         const val TAG = "LayoutScroller"
     }
-
-    var isSelectionUpdatePending = true
-        private set
 
     var isSelectionInProgress = false
         private set
@@ -55,13 +52,6 @@ internal class LayoutScroller(
         this.recyclerView = recyclerView
     }
 
-    fun onRestoreInstanceState() {
-        if (pivotState.position != RecyclerView.NO_POSITION) {
-            isSelectionUpdatePending = true
-            layoutManager.requestLayout()
-        }
-    }
-
     /**
      * Since the layout pass can finish after the RecyclerView gains focus,
      * make sure that we focus the new selected view when layout is done
@@ -72,11 +62,6 @@ internal class LayoutScroller(
             smooth = false,
             requestFocus = requestFocus
         )
-        if (isSelectionUpdatePending) {
-            isSelectionUpdatePending = false
-            pivotState.dispatchViewHolderSelected(recyclerView)
-            pivotState.dispatchViewHolderSelectedAndAligned(recyclerView)
-        }
     }
 
     /**
@@ -91,9 +76,7 @@ internal class LayoutScroller(
                     "and subPosition $subPosition with smooth: $smooth"
         )
         if (!smooth) {
-            pivotState.update(position, subPosition)
-            isSelectionUpdatePending = true
-            layoutManager.requestLayout()
+            pivotSelector.update(position, subPosition, requestLayout = true)
         }
     }
 
@@ -106,8 +89,8 @@ internal class LayoutScroller(
         requestFocus: Boolean
     ) {
         val itemCount = layoutManager.itemCount
-        var targetPosition = pivotState.position
-        var targetSubPosition = pivotState.subPosition
+        var targetPosition = pivotSelector.position
+        var targetSubPosition = pivotSelector.subPosition
         if (itemCount == 0) {
             targetPosition = 0
             targetSubPosition = 0
@@ -189,13 +172,13 @@ internal class LayoutScroller(
         val newSubFocusPosition = layoutAlignment.findSubPositionOfChild(
             recyclerView, viewHolderView, subPositionView
         )
-        val focusChanged = pivotState.update(newFocusPosition, newSubFocusPosition)
+        val focusChanged = pivotSelector.update(newFocusPosition, newSubFocusPosition)
         var selectViewHolder = false
         if (focusChanged) {
             if (!layoutInfo.isLayoutInProgress) {
                 selectViewHolder = true
             } else {
-                isSelectionUpdatePending = true
+                pivotSelector.setSelectionUpdatePending()
             }
             if (configuration.isChildDrawingOrderEnabled) {
                 recyclerView.invalidate()
@@ -220,9 +203,9 @@ internal class LayoutScroller(
             } != null
 
         if (selectViewHolder) {
-            pivotState.dispatchViewHolderSelected(recyclerView)
+            pivotSelector.dispatchViewHolderSelected(recyclerView)
             if (!scrolled) {
-                pivotState.dispatchViewHolderSelectedAndAligned(recyclerView)
+                pivotSelector.dispatchViewHolderSelectedAndAligned(recyclerView)
             }
         }
     }
@@ -297,10 +280,10 @@ internal class LayoutScroller(
             if (wasScrolling == isScrolling) return
             if (isScrolling) {
                 // If we're now scrolling, save the current selection state
-                previousSelectedPosition = pivotState.position
+                previousSelectedPosition = pivotSelector.position
             } else if (previousSelectedPosition != RecyclerView.NO_POSITION) {
                 // If we're no longer scrolling, check if we need to send a new event
-                pivotState.dispatchViewHolderSelectedAndAligned(recyclerView)
+                pivotSelector.dispatchViewHolderSelectedAndAligned(recyclerView)
                 previousSelectedPosition = RecyclerView.NO_POSITION
                 if (BuildConfig.DEBUG) {
                     logChildren()

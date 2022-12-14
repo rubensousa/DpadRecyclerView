@@ -26,8 +26,7 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.testing.R
 
 class TestAdapter(
-    private val adapterLayoutId: Int,
-    private val alternateFocus: Boolean
+    private val adapterConfiguration: TestAdapterConfiguration,
 ) : ListAdapter<Int, TestAdapter.ItemViewHolder>(DIFF_CALLBACK) {
 
     companion object {
@@ -42,15 +41,20 @@ class TestAdapter(
         }
     }
 
+    init {
+        submitList(List(adapterConfiguration.numberOfItems) { it })
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(
-            LayoutInflater.from(parent.context).inflate(adapterLayoutId, parent, false)
+            LayoutInflater.from(parent.context)
+                .inflate(adapterConfiguration.itemLayoutId, parent, false)
         )
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind(getItem(position))
-        val isFocusable = if (alternateFocus) {
+        val isFocusable = if (adapterConfiguration.alternateFocus) {
             position % 2 == 0
         } else {
             true

@@ -16,12 +16,11 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager
 
-import android.graphics.Rect
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.Log
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
@@ -31,18 +30,22 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
  * - Holding the current pivot state
  * - Saving/restoring pivot state
  */
-internal class PivotState(private val layoutInfo: LayoutInfo) {
+internal class PivotSelector(
+    private val layoutManager: LayoutManager,
+    private val layoutInfo: LayoutInfo
+) {
 
     companion object {
         const val TAG = "PivotState"
     }
 
-    var position: Int = 0
+    var position: Int = RecyclerView.NO_POSITION
         private set
 
     var subPosition: Int = 0
         private set
 
+    private var isSelectionUpdatePending = false
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
     private val requestLayoutRunnable = Runnable {
         layoutInfo.requestLayout()
@@ -51,6 +54,32 @@ internal class PivotState(private val layoutInfo: LayoutInfo) {
 
     fun getCurrentSubPositions(): Int {
         return selectedViewHolder?.getAlignments()?.size ?: 0
+    }
+
+    fun setSelectionUpdatePending() {
+        isSelectionUpdatePending = true
+    }
+
+    fun onLayoutChildren(state: RecyclerView.State) {
+        // Make sure the pivot is set to 0 by default whenever we have items
+        if (position == RecyclerView.NO_POSITION && state.itemCount > 0) {
+            position = 0
+            isSelectionUpdatePending = true
+        }
+    }
+
+    fun onLayoutCompleted(recyclerView: RecyclerView) {
+        // If we had items, but now we don't, trigger an update for RecyclerView.NO_POSITION
+        if (position >= 0 && layoutManager.childCount == 0) {
+            position = RecyclerView.NO_POSITION
+            subPosition = 0
+            isSelectionUpdatePending = true
+        }
+        if (isSelectionUpdatePending) {
+            isSelectionUpdatePending = false
+            dispatchViewHolderSelected(recyclerView)
+            dispatchViewHolderSelectedAndAligned(recyclerView)
+        }
     }
 
     // TODO
@@ -81,10 +110,14 @@ internal class PivotState(private val layoutInfo: LayoutInfo) {
 
     }
 
-    fun update(position: Int, subPosition: Int): Boolean {
+    fun update(position: Int, subPosition: Int = 0, requestLayout: Boolean = false): Boolean {
         val changed = position != this.position || subPosition != this.subPosition
         this.position = position
         this.subPosition = subPosition
+        if (requestLayout) {
+            isSelectionUpdatePending = true
+            layoutManager.requestLayout()
+        }
         return changed
     }
 
@@ -95,6 +128,10 @@ internal class PivotState(private val layoutInfo: LayoutInfo) {
     fun onRestoreInstanceState(state: Parcelable?) {
         if (state is SavedState) {
             position = state.selectedPosition
+            if (position != RecyclerView.NO_POSITION) {
+                isSelectionUpdatePending = true
+                layoutManager.requestLayout()
+            }
         }
     }
 
@@ -176,9 +213,12 @@ internal class PivotState(private val layoutInfo: LayoutInfo) {
                     recyclerView, viewHolder, position, subPosition
                 )
             }
-            val bounds = Rect()
-            viewHolder.itemView.getGlobalVisibleRect(bounds)
-            Log.i(TAG, "Pivot location: $bounds")
+        } else {
+            selectionListeners.forEach { listener ->
+                listener.onViewHolderSelectedAndAligned(
+                    recyclerView, null, RecyclerView.NO_POSITION, 0
+                )
+            }
         }
     }
 

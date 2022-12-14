@@ -26,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovement
 import com.rubensousa.dpadrecyclerview.internal.ScrollMovementCalculator
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.PivotState
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
@@ -35,7 +35,7 @@ internal class LayoutFocusFinder(
     private val configuration: LayoutConfiguration,
     private val scroller: LayoutScroller,
     private val layoutInfo: LayoutInfo,
-    private val pivotState: PivotState
+    private val pivotSelector: PivotSelector
 ) {
 
     companion object {
@@ -52,7 +52,7 @@ internal class LayoutFocusFinder(
     }
 
     fun onRequestFocusInDescendants(direction: Int, previouslyFocusedRect: Rect?): Boolean {
-        val view = layout.findViewByPosition(pivotState.position) ?: return false
+        val view = layout.findViewByPosition(pivotSelector.position) ?: return false
         return view.requestFocus(direction, previouslyFocusedRect)
     }
 
@@ -61,10 +61,10 @@ internal class LayoutFocusFinder(
      */
     fun onFocusChanged(gainFocus: Boolean) {
         // Skip if we didn't gain focus or no view is selected
-        if (!gainFocus || pivotState.position == RecyclerView.NO_POSITION) {
+        if (!gainFocus || pivotSelector.position == RecyclerView.NO_POSITION) {
             return
         }
-        var index = pivotState.position
+        var index = pivotSelector.position
         while (index < layout.itemCount) {
             val view = layout.findViewByPosition(index) ?: break
             if (view.hasFocusable()) {
@@ -102,7 +102,7 @@ internal class LayoutFocusFinder(
     }
 
     private fun saveSpanFocus(newPosition: Int) {
-        val previousPosition = pivotState.position
+        val previousPosition = pivotSelector.position
         val previousSpanSize = layoutInfo.getSpanSize(previousPosition)
         val newSpanSize = layoutInfo.getSpanSize(newPosition)
         if (previousSpanSize != newSpanSize && previousSpanSize != configuration.spanCount) {
@@ -218,7 +218,7 @@ internal class LayoutFocusFinder(
             return true
         }
         val focusableCount = views.size
-        val view = layout.findViewByPosition(pivotState.position)
+        val view = layout.findViewByPosition(pivotSelector.position)
         view?.addFocusables(views, direction, focusableMode)
         // if still cannot find any, fall through and add itself
         if (views.size != focusableCount) {

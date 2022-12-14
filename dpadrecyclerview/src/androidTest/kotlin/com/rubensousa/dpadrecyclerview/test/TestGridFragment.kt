@@ -67,20 +67,14 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     }
 
     fun requestFocus() {
-        view?.findViewById<DpadRecyclerView>(R.id.recyclerView)?.requestFocus()
+       getDpadRecyclerView()?.requestFocus()
     }
 
     open fun createAdapter(
         recyclerView: DpadRecyclerView,
         adapterConfig: TestAdapterConfiguration
     ): RecyclerView.Adapter<*> {
-        val adapter = TestAdapter(adapterConfig.itemLayoutId, adapterConfig.alternateFocus)
-        adapter.submitList(ArrayList<Int>().apply {
-            repeat(adapterConfig.numberOfItems) {
-                add(it)
-            }
-        })
-        return adapter
+        return TestAdapter(adapterConfig)
     }
 
     override fun onViewHolderSelected(
@@ -117,10 +111,21 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         }
     }
 
+    fun clearEvents() {
+        selectionEvents.clear()
+        alignedEvents.clear()
+    }
+
+    fun clearAdapter() {
+        getDpadRecyclerView()?.adapter = TestAdapter(TestAdapterConfiguration(numberOfItems = 0))
+    }
+
     fun getTasksExecuted(): List<DpadSelectionEvent> = tasks
 
     fun getSelectionEvents(): List<DpadSelectionEvent> = selectionEvents
 
     fun getSelectedAndAlignedEvents(): List<DpadSelectionEvent> = alignedEvents
+
+    private fun getDpadRecyclerView(): DpadRecyclerView? = view?.findViewById(R.id.recyclerView)
 
 }

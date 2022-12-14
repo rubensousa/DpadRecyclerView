@@ -132,6 +132,10 @@ abstract class DpadRecyclerViewTest {
         }
     }
 
+    fun executeOnFragment(action: (fragment: TestGridFragment) -> Unit) {
+        fragmentScenario.onFragment(action)
+    }
+
     @After
     open fun destroy() {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
