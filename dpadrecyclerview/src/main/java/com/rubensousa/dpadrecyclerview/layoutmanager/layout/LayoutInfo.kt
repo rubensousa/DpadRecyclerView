@@ -49,6 +49,8 @@ internal class LayoutInfo(
 
     private var recyclerView: RecyclerView? = null
 
+    fun getConfiguration() = configuration
+
     fun isRTL() = layout.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL
 
     fun isHorizontal() = configuration.isHorizontal()

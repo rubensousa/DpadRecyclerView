@@ -44,7 +44,9 @@ internal class LayoutScroller(
         private set
 
     private var recyclerView: RecyclerView? = null
+    private var pivotSmoothScroller: PivotSmoothScroller? = null
     private val idleScrollListener = IdleScrollListener()
+    private val pivotListener = PivotListener()
 
     fun setRecyclerView(recyclerView: RecyclerView?) {
         this.recyclerView?.removeOnScrollListener(idleScrollListener)
@@ -70,13 +72,27 @@ internal class LayoutScroller(
      * If we don't need to smooth scroll, we can scroll immediately by triggering a layout pass
      * with the new pivot position
      */
-    fun scrollToPosition(position: Int, subPosition: Int, smooth: Boolean) {
+    fun scrollToPosition(
+        recyclerView: RecyclerView,
+        position: Int,
+        subPosition: Int,
+        smooth: Boolean
+    ) {
         Log.d(
             TAG, "Scrolling requested to position $position " +
                     "and subPosition $subPosition with smooth: $smooth"
         )
         if (!smooth) {
             pivotSelector.update(position, subPosition, requestLayout = true)
+        } else {
+            val smoothScroller = PivotSmoothScroller(
+                recyclerView,
+                position,
+                layoutInfo,
+                layoutAlignment,
+                pivotListener
+            )
+            layoutManager.startSmoothScroll(smoothScroller)
         }
     }
 
@@ -102,7 +118,7 @@ internal class LayoutScroller(
             targetSubPosition = 0
         }
         if (targetSubPosition != 0) {
-            scrollToPosition(targetPosition, targetSubPosition, smooth)
+            scrollToPosition(recyclerView, targetPosition, targetSubPosition, smooth)
         } else {
             scrollToView(
                 recyclerView, layoutManager.findViewByPosition(targetPosition), smooth, requestFocus
@@ -110,23 +126,23 @@ internal class LayoutScroller(
         }
     }
 
-    // TODO
     fun scrollToPosition(position: Int) {
-
+        pivotSelector.update(position, requestLayout = true)
     }
 
-    // TODO
-    fun smoothScrollToPosition(
-        recyclerView: RecyclerView?,
-        state: RecyclerView.State?,
-        position: Int
-    ) {
-
+    fun setSmoothScroller(smoothScroller: RecyclerView.SmoothScroller) {
+        pivotSmoothScroller = if (smoothScroller.isRunning
+            && smoothScroller is PivotSmoothScroller
+        ) {
+            smoothScroller
+        } else {
+            null
+        }
     }
 
-    // TODO
-    fun startSmoothScroll(smoothScroller: RecyclerView.SmoothScroller?) {
-
+    fun cancelSmoothScroll() {
+        pivotSmoothScroller?.cancel()
+        pivotSmoothScroller = null
     }
 
     // TODO
@@ -143,7 +159,6 @@ internal class LayoutScroller(
     fun dispatchSelectionMoves(preventScroll: Boolean, moves: Int): Int {
         return moves
     }
-
 
     private fun scrollToView(
         recyclerView: RecyclerView,
@@ -265,10 +280,36 @@ internal class LayoutScroller(
         }
     }
 
+    private inner class PivotListener :
+        PivotSmoothScroller.PivotListener {
+
+        override fun onPivotFound(targetView: View, pivotPosition: Int) {
+            pivotSelector.update(pivotPosition)
+            if (layoutManager.hasFocus()) {
+                isSelectionInProgress = true
+                targetView.requestFocus()
+                isSelectionInProgress = false
+            }
+            recyclerView?.apply {
+                pivotSelector.dispatchViewHolderSelected(this)
+                pivotSelector.dispatchViewHolderSelectedAndAligned(this)
+            }
+        }
+
+        /**
+         * If the smooth scroller didn't find the target view for whatever reason,
+         * we should just scroll immediately to the target position with a new layout pass
+         */
+        override fun onPivotNotFound(pivotPosition: Int) {
+            scrollToPosition(pivotPosition)
+        }
+    }
+
     /**
      * Takes care of dispatching [OnViewHolderSelectedListener.onViewHolderSelectedAndAligned]
      */
     private inner class IdleScrollListener : RecyclerView.OnScrollListener() {
+
         private var isScrolling = false
         private var previousSelectedPosition = RecyclerView.NO_POSITION
 

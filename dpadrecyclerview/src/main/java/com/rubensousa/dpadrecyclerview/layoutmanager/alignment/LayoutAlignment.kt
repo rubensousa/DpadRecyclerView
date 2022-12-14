@@ -165,7 +165,7 @@ internal class LayoutAlignment(
         } else {
             null
         }
-        if (alignments == null || alignments.isEmpty()) {
+        if (alignments.isNullOrEmpty()) {
             // Use the default child alignment strategy
             // if this ViewHolder didn't request a custom alignment strategy
             childAlignment.updateAlignments(view, layoutParams, layoutInfo.orientation)

@@ -102,6 +102,9 @@ internal class LayoutConfiguration {
     var spanSizeLookup: DpadSpanSizeLookup = DpadSpanSizeLookup.default()
         private set
 
+    var smoothScrollSpeedFactor: Float = 1f
+        private set
+
     fun setFocusSearchDisabled(isDisabled: Boolean){
         isFocusSearchDisabled = isDisabled
     }

@@ -192,15 +192,17 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun smoothScrollToPosition(
-        recyclerView: RecyclerView?,
-        state: RecyclerView.State?,
+        recyclerView: RecyclerView,
+        state: RecyclerView.State,
         position: Int
     ) {
-        scroller.smoothScrollToPosition(recyclerView, state, position)
+        scroller.scrollToPosition(recyclerView, position, subPosition = 0, smooth = true)
     }
 
-    override fun startSmoothScroll(smoothScroller: RecyclerView.SmoothScroller?) {
-        scroller.startSmoothScroll(smoothScroller)
+    override fun startSmoothScroll(smoothScroller: RecyclerView.SmoothScroller) {
+        scroller.cancelSmoothScroll()
+        super.startSmoothScroll(smoothScroller)
+        scroller.setSmoothScroller(smoothScroller)
     }
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
@@ -418,7 +420,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {
-        scroller.scrollToPosition(position, subPosition, smooth)
+        recyclerView?.let { scroller.scrollToPosition(it, position, subPosition, smooth) }
     }
 
     override fun selectSubPosition(subPosition: Int, smooth: Boolean) {
