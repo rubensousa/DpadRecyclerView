@@ -139,22 +139,18 @@ internal class LayoutAlignment(
 
     fun getMinScroll() = parentAlignment.minScroll
 
-    fun updateScroll(
+    fun calculateScrollOffset(
         recyclerView: RecyclerView,
         view: View,
         childView: View?
-    ): Int? {
+    ): Int {
         var scrollOffset = calculateScrollForAlignment(view)
         if (childView != null) {
             scrollOffset = calculateAdjustedAlignedScrollDistance(
                 recyclerView, scrollOffset, view, childView
             )
         }
-        return if (scrollOffset != 0) {
-            scrollOffset
-        } else {
-            null
-        }
+        return scrollOffset
     }
 
     private fun updateChildAlignments(view: View) {

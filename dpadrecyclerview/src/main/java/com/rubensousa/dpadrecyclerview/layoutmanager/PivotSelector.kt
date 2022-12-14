@@ -110,14 +110,10 @@ internal class PivotSelector(
 
     }
 
-    fun update(position: Int, subPosition: Int = 0, requestLayout: Boolean = false): Boolean {
+    fun update(position: Int, subPosition: Int = 0): Boolean {
         val changed = position != this.position || subPosition != this.subPosition
         this.position = position
         this.subPosition = subPosition
-        if (requestLayout) {
-            isSelectionUpdatePending = true
-            layoutManager.requestLayout()
-        }
         return changed
     }
 

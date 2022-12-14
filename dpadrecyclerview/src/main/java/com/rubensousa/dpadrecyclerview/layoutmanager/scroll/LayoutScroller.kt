@@ -48,10 +48,10 @@ internal class LayoutScroller(
     private val idleScrollListener = IdleScrollListener()
     private val pivotListener = PivotListener()
 
-    fun setRecyclerView(recyclerView: RecyclerView?) {
-        this.recyclerView?.removeOnScrollListener(idleScrollListener)
-        recyclerView?.addOnScrollListener(idleScrollListener)
-        this.recyclerView = recyclerView
+    fun setRecyclerView(newRecyclerView: RecyclerView?) {
+        recyclerView?.removeOnScrollListener(idleScrollListener)
+        newRecyclerView?.addOnScrollListener(idleScrollListener)
+        recyclerView = newRecyclerView
     }
 
     /**
@@ -78,22 +78,20 @@ internal class LayoutScroller(
         subPosition: Int,
         smooth: Boolean
     ) {
-        Log.d(
-            TAG, "Scrolling requested to position $position " +
-                    "and subPosition $subPosition with smooth: $smooth"
-        )
         if (!smooth) {
-            pivotSelector.update(position, subPosition, requestLayout = true)
-        } else {
-            val smoothScroller = PivotSmoothScroller(
-                recyclerView,
-                position,
-                layoutInfo,
-                layoutAlignment,
-                pivotListener
-            )
-            layoutManager.startSmoothScroll(smoothScroller)
+            scrollToPosition(position, subPosition)
+            return
         }
+
+        val smoothScroller = PivotSmoothScroller(
+            recyclerView,
+            position,
+            layoutInfo,
+            layoutAlignment,
+            pivotListener
+        )
+        layoutManager.startSmoothScroll(smoothScroller)
+
     }
 
     /**
@@ -126,8 +124,11 @@ internal class LayoutScroller(
         }
     }
 
-    fun scrollToPosition(position: Int) {
-        pivotSelector.update(position, requestLayout = true)
+    fun scrollToPosition(position: Int, subPosition: Int = 0) {
+        if (pivotSelector.update(position, subPosition)) {
+            pivotSelector.setSelectionUpdatePending()
+            layoutManager.requestLayout()
+        }
     }
 
     fun setSmoothScroller(smoothScroller: RecyclerView.SmoothScroller) {
@@ -176,20 +177,20 @@ internal class LayoutScroller(
         smooth: Boolean,
         requestFocus: Boolean
     ) {
-        val newFocusPosition = if (viewHolderView == null) {
+        val newPosition = if (viewHolderView == null) {
             RecyclerView.NO_POSITION
         } else {
             layoutInfo.getAdapterPositionOf(viewHolderView)
         }
-        if (newFocusPosition == RecyclerView.NO_POSITION) {
+        if (newPosition == RecyclerView.NO_POSITION) {
             return
         }
-        val newSubFocusPosition = layoutAlignment.findSubPositionOfChild(
+        val newSubPosition = layoutAlignment.findSubPositionOfChild(
             recyclerView, viewHolderView, subPositionView
         )
-        val focusChanged = pivotSelector.update(newFocusPosition, newSubFocusPosition)
+        val selectionChanged = pivotSelector.update(newPosition, newSubPosition)
         var selectViewHolder = false
-        if (focusChanged) {
+        if (selectionChanged) {
             if (!layoutInfo.isLayoutInProgress) {
                 selectViewHolder = true
             } else {
@@ -208,18 +209,20 @@ internal class LayoutScroller(
             viewHolderView.requestFocus()
         }
 
-        if (!focusChanged) {
+        if (!selectionChanged) {
             return
         }
 
-        val scrolled = layoutAlignment.updateScroll(recyclerView, viewHolderView, subPositionView)
-            ?.let { scrollOffset ->
-                scroll(recyclerView, scrollOffset, smooth)
-            } != null
+        val scrollOffset = layoutAlignment.calculateScrollOffset(
+            recyclerView, viewHolderView, subPositionView
+        )
+
+        scroll(recyclerView, scrollOffset, smooth)
 
         if (selectViewHolder) {
             pivotSelector.dispatchViewHolderSelected(recyclerView)
-            if (!scrolled) {
+            // If we didn't scroll, dispatch aligned event already
+            if (scrollOffset == 0) {
                 pivotSelector.dispatchViewHolderSelectedAndAligned(recyclerView)
             }
         }
@@ -230,8 +233,12 @@ internal class LayoutScroller(
         offset: Int,
         smooth: Boolean
     ) {
+        if (offset == 0) {
+            return
+        }
         if (layoutInfo.isLayoutInProgress) {
             Log.i(DpadRecyclerView.TAG, "Scrolling immediately since layout is in progress")
+            // TODO check if this is working correctly
             scroll(recyclerView, offset)
             return
         }
@@ -280,14 +287,13 @@ internal class LayoutScroller(
         }
     }
 
-    private inner class PivotListener :
-        PivotSmoothScroller.PivotListener {
+    private inner class PivotListener : PivotSmoothScroller.PivotListener {
 
-        override fun onPivotFound(targetView: View, pivotPosition: Int) {
+        override fun onPivotFound(pivotView: View, pivotPosition: Int) {
             pivotSelector.update(pivotPosition)
             if (layoutManager.hasFocus()) {
                 isSelectionInProgress = true
-                targetView.requestFocus()
+                pivotView.requestFocus()
                 isSelectionInProgress = false
             }
             recyclerView?.apply {

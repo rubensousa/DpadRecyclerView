@@ -72,13 +72,17 @@ internal class PivotSmoothScroller(
 
     override fun onTargetFound(targetView: View, state: RecyclerView.State, action: Action) {
         // TODO Handle sub position focus alignment
-        val offset = alignment.updateScroll(recyclerView, targetView, null) ?: return
+        val scrollOffset = alignment.calculateScrollOffset(recyclerView, targetView, null)
+        // Check if we don't need to scroll
+        if (scrollOffset == 0) {
+            return
+        }
         var dx = 0
         var dy = 0
         if (layoutInfo.isHorizontal()) {
-            dx = offset
+            dx = scrollOffset
         } else {
-            dy = offset
+            dy = scrollOffset
         }
         val distance = sqrt((dx * dx + dy * dy).toDouble()).toInt()
         val time = calculateTimeForDeceleration(distance)
@@ -102,7 +106,7 @@ internal class PivotSmoothScroller(
     }
 
     interface PivotListener {
-        fun onPivotFound(targetView: View, pivotPosition: Int)
+        fun onPivotFound(pivotView: View, pivotPosition: Int)
         fun onPivotNotFound(pivotPosition: Int)
     }
 
