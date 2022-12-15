@@ -23,6 +23,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LayoutResult
@@ -45,7 +46,8 @@ internal class RowArchitect(
     private val layoutAlignment: LayoutAlignment,
     private val layoutInfo: LayoutInfo,
     private val configuration: LayoutConfiguration,
-    private val childRecycler: ChildRecycler
+    private val childRecycler: ChildRecycler,
+    private val onChildLayoutListener: OnChildLayoutListener
 ) {
 
     companion object {
@@ -54,7 +56,9 @@ internal class RowArchitect(
 
     private val viewBounds = Rect()
 
-    fun layoutPivot(layoutState: LayoutState, recycler: Recycler, pivotInfo: PivotInfo) {
+    fun layoutPivot(
+        layoutState: LayoutState, recycler: Recycler, pivotInfo: PivotInfo, state: State
+    ) {
         val view = recycler.getViewForPosition(pivotInfo.position)
         layoutManager.addView(view)
         layoutManager.measureChildWithMargins(view, 0, 0)
@@ -76,9 +80,10 @@ internal class RowArchitect(
         pivotInfo.headOffset = headOffset
         pivotInfo.tailOffset = tailOffset
         layoutState.updateWindow(pivotInfo)
+        onChildLayoutListener.onChildLaidOut(view, state)
     }
 
-    fun layout(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State): Int {
+    fun layout(layoutState: LayoutState, recycler: Recycler, state: State): Int {
         return if (layoutState.isLayingOutEnd()) {
             layoutEnd(layoutState, recycler, state)
         } else {
@@ -86,7 +91,7 @@ internal class RowArchitect(
         }
     }
 
-    fun layoutEnd(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State): Int {
+    fun layoutEnd(layoutState: LayoutState, recycler: Recycler, state: State): Int {
         var remainingSpace = layoutState.fillSpace
         childRecycler.recycleByLayoutState(recycler, layoutState)
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
@@ -114,11 +119,12 @@ internal class RowArchitect(
             layoutState.appendWindow(spaceFilled)
             remainingSpace -= spaceFilled
             childRecycler.recycleByLayoutState(recycler, layoutState)
+            onChildLayoutListener.onChildLaidOut(view, state)
         }
         return layoutState.fillSpace - remainingSpace
     }
 
-    fun layoutStart(layoutState: LayoutState, recycler: Recycler, state: RecyclerView.State): Int {
+    fun layoutStart(layoutState: LayoutState, recycler: Recycler, state: State): Int {
         var remainingSpace = layoutState.fillSpace
         childRecycler.recycleByLayoutState(recycler, layoutState)
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
@@ -128,7 +134,6 @@ internal class RowArchitect(
             } else {
                 layoutManager.addDisappearingView(view, 0)
             }
-
             layoutManager.measureChildWithMargins(view, 0, 0)
             val decoratedSize = layoutInfo.getDecoratedSize(view)
 
@@ -146,11 +151,12 @@ internal class RowArchitect(
             layoutState.prependWindow(spaceFilled)
             remainingSpace -= spaceFilled
             childRecycler.recycleByLayoutState(recycler, layoutState)
+            onChildLayoutListener.onChildLaidOut(view, state)
         }
         return layoutState.fillSpace - remainingSpace
     }
 
-    private fun getSpaceFilled(viewBounds: Rect) : Int {
+    private fun getSpaceFilled(viewBounds: Rect): Int {
         return if (layoutInfo.isVertical()) {
             viewBounds.height()
         } else {
@@ -161,7 +167,7 @@ internal class RowArchitect(
     private fun shouldContinueLayout(
         remainingSpace: Int,
         layoutState: LayoutState,
-        state: RecyclerView.State
+        state: State
     ): Boolean {
         return layoutState.hasMoreItems(state) && (remainingSpace > 0 || layoutState.isInfinite())
     }

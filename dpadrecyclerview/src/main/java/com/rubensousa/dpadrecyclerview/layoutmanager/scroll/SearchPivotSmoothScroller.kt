@@ -34,8 +34,8 @@ internal class SearchPivotSmoothScroller(
     private val subPosition: Int,
     private val layoutInfo: LayoutInfo,
     private val alignment: LayoutAlignment,
-    private val listener: PivotListener
-) : LinearSmoothScroller(recyclerView.context) {
+    private val listener: Listener
+) : LinearSmoothScroller(recyclerView.context){
 
     private var isCanceled = false
 
@@ -45,25 +45,6 @@ internal class SearchPivotSmoothScroller(
 
     fun cancel() {
         isCanceled = true
-    }
-
-    override fun computeScrollVectorForPosition(targetPosition: Int): PointF? {
-        if (childCount == 0) {
-            return null
-        }
-        val firstChild = recyclerView.getChildAt(0) ?: return null
-        val firstChildPosition = layoutInfo.getLayoutPositionOf(firstChild)
-        val isStart = if (layoutInfo.isRTL() && layoutInfo.isHorizontal()) {
-            targetPosition > firstChildPosition
-        } else {
-            targetPosition < firstChildPosition
-        }
-        val direction = if (isStart) -1f else 1f
-        return if (layoutInfo.isHorizontal()) {
-            PointF(direction, 0f)
-        } else {
-            PointF(0f, direction)
-        }
     }
 
     override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
@@ -89,25 +70,45 @@ internal class SearchPivotSmoothScroller(
         action.update(dx, dy, time, mDecelerateInterpolator)
     }
 
+    override fun computeScrollVectorForPosition(targetPosition: Int): PointF? {
+        if (childCount == 0) {
+            return null
+        }
+        val direction = if (isGoingTowardsStart(targetPosition)) -1f else 1f
+        return if (layoutInfo.isHorizontal()) {
+            PointF(direction, 0f)
+        } else {
+            PointF(0f, direction)
+        }
+    }
+
+    private fun isGoingTowardsStart(targetPosition: Int): Boolean {
+        val firstChild = requireNotNull(recyclerView.getChildAt(0))
+        val firstChildPosition = layoutInfo.getLayoutPositionOf(firstChild)
+        return if (layoutInfo.isRTL() && layoutInfo.isHorizontal()) {
+            targetPosition > firstChildPosition
+        } else {
+            targetPosition < firstChildPosition
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         if (!isCanceled) {
-            dispatchEvents()
+            val pivotView = findViewByPosition(targetPosition)
+            if (pivotView != null) {
+                listener.onPivotFound(pivotView, targetPosition, subPosition)
+            } else if (targetPosition >= 0) {
+                listener.onPivotNotFound(targetPosition)
+            }
         }
+        listener.onSmoothScrollerStopped()
     }
 
-    private fun dispatchEvents() {
-        val pivotView = findViewByPosition(position)
-        if (pivotView != null) {
-            listener.onPivotFound(pivotView, position, subPosition)
-        } else if (position >= 0) {
-            listener.onPivotNotFound(position)
-        }
-    }
-
-    interface PivotListener {
+    interface Listener {
         fun onPivotFound(pivotView: View, position: Int, subPosition: Int)
         fun onPivotNotFound(position: Int)
+        fun onSmoothScrollerStopped()
     }
 
 }

@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
@@ -48,7 +49,12 @@ internal class LayoutArchitect(
     private val layoutCalculator = LayoutCalculator(layoutInfo)
     private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
     private val rowArchitect = RowArchitect(
-        layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler
+        layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler,
+        object : OnChildLayoutListener {
+            override fun onChildLaidOut(view: View, state: State) {
+
+            }
+        }
     )
     private val gridArchitect = GridArchitect(layoutManager, layoutInfo, configuration)
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
@@ -81,7 +87,7 @@ internal class LayoutArchitect(
 
         layoutManager.detachAndScrapAttachedViews(recycler)
 
-        rowArchitect.layoutPivot(layoutState, recycler, pivotInfo)
+        rowArchitect.layoutPivot(layoutState, recycler, pivotInfo, state)
 
         // Layout views after the pivot
         layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotInfo)

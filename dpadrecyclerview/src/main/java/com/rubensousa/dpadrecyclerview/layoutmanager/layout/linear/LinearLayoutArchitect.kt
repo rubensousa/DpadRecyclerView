@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -27,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ChildRecycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PivotInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.RowArchitect
 import kotlin.math.abs
@@ -56,7 +58,12 @@ internal class LinearLayoutArchitect(
     private val extraLayoutSpace = IntArray(2)
     private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
     private val rowArchitect = RowArchitect(
-        layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler
+        layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler,
+        object : OnChildLayoutListener {
+            override fun onChildLaidOut(view: View, state: RecyclerView.State) {
+
+            }
+        }
     )
     private val gridArchitect = GridArchitect(layoutManager, layoutInfo, configuration)
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()

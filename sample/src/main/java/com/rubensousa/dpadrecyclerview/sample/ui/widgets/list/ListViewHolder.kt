@@ -85,7 +85,7 @@ class ListViewHolder(view: View, itemLayoutId: Int = R.layout.adapter_nested_ite
 
     fun onDetachedFromWindow() {}
 
-    private fun setupRecyclerView(recyclerView: DpadRecyclerView) {
+    private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.apply {
             addItemDecoration(
                 LinearMarginDecoration.createHorizontal(

@@ -323,6 +323,10 @@ internal class LayoutInfo(
         return layoutParams.isItemRemoved
     }
 
+    fun shouldFocusView(view: View): Boolean {
+        return view.visibility == View.VISIBLE && view.hasFocusable() && layout.hasFocus()
+    }
+
     fun didChildStateChange(
         viewHolder: ViewHolder,
         pivotPosition: Int,

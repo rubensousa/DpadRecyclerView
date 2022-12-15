@@ -154,20 +154,21 @@ internal class LayoutAccessibilityHelper(
             // successful. Hence, Talkback will only look for next focus within the RecyclerView.
             // Not sending this will result in Talkback classifying it as a failed scroll event, and
             // will try to jump focus out of the RecyclerView.
-            // We know at this point that either focusOutFront or focusOutEnd is true (or both),
+            // We know at this point that either focusOutFront or focusOutBack is true (or both),
             // because otherwise, we never hit ACTION_SCROLL_BACKWARD/FORWARD here.
             sendViewScrolledAccessibilityEvent(recyclerView)
         } else {
-            when (translatedAction) {
+            // TODO
+          /*  when (translatedAction) {
                 AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD -> {
-                    scroller.dispatchPendingMovement(false)
+                    scroller.addScrollMovement(false)
                     scroller.dispatchSelectionMoves(false, -1)
                 }
                 AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD -> {
-                    scroller.dispatchPendingMovement(true)
+                    scroller.addScrollMovement(true)
                     scroller.dispatchSelectionMoves(false, 1)
                 }
-            }
+            }*/
         }
         return true
     }
