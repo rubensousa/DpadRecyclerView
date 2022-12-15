@@ -105,6 +105,16 @@ fun getItemViewBounds(position: Int, id: Int = R.id.recyclerView): Rect {
     return rect
 }
 
+fun getRelativeItemViewBounds(position: Int, id: Int = R.id.recyclerView): Rect {
+    val rect = Rect()
+    Espresso.onView(ViewMatchers.withId(id))
+        .perform(
+            DpadRecyclerViewActions.waitForIdleScroll(),
+            DpadRecyclerViewActions.getItemViewBounds(position, rect)
+        )
+    return rect
+}
+
 fun getRecyclerViewBounds(id: Int = R.id.recyclerView): Rect {
     val rect = Rect()
     Espresso.onView(ViewMatchers.withId(id)).perform(

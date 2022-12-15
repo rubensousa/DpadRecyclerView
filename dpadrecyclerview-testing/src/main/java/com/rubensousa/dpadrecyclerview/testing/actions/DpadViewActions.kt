@@ -31,7 +31,12 @@ object DpadViewActions {
 
     @JvmStatic
     fun getViewBounds(rect: Rect): ViewAction {
-        return GetViewBoundsAction(rect)
+        return GetViewBoundsAction(rect, relativeToParent = false)
+    }
+
+    @JvmStatic
+    fun getRelativeViewBounds(rect: Rect): ViewAction {
+        return GetViewBoundsAction(rect, relativeToParent = true)
     }
 
     /**
@@ -69,11 +74,24 @@ object DpadViewActions {
     }
 
     private class GetViewBoundsAction(
-        private val rect: Rect
+        private val rect: Rect,
+        private val relativeToParent: Boolean
     ) : DpadViewAction("Retrieving View Bounds") {
 
         override fun perform(uiController: UiController, view: View) {
-            view.getGlobalVisibleRect(rect)
+            if (relativeToParent) {
+                rect.left = view.left
+                rect.top = view.top
+                rect.right = view.right
+                rect.bottom = view.bottom
+            } else {
+                val location = IntArray(2)
+                view.getLocationInWindow(location)
+                rect.left = location[0]
+                rect.top = location[1]
+                rect.right = rect.left + view.width
+                rect.bottom = rect.top + view.height
+            }
         }
     }
 

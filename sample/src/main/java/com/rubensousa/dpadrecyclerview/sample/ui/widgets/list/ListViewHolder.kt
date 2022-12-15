@@ -58,13 +58,13 @@ class ListViewHolder(view: View, itemLayoutId: Int = R.layout.adapter_nested_ite
         textView.text = list.title
         adapter.replaceList(list.items)
         recyclerView.adapter = adapter
-        stateHolder.register(recyclerView, list.title)
+       // stateHolder.register(recyclerView, list.title)
     }
 
     fun onRecycled(stateHolder: DpadStateHolder) {
         adapter.clickListener = null
         key?.let { scrollKey ->
-            stateHolder.unregister(recyclerView, scrollKey)
+          //  stateHolder.unregister(recyclerView, scrollKey)
         }
         recyclerView.adapter = null
     }

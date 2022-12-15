@@ -42,7 +42,7 @@ internal class ChildRecycler(
         }
     }
 
-    private fun recycleFromStart(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
+    fun recycleFromStart(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
         val limit = -layoutState.extraLayoutSpaceStart
         val childCount = layoutManager.childCount
         if (configuration.reverseLayout) {
@@ -68,7 +68,7 @@ internal class ChildRecycler(
         }
     }
 
-    private fun recycleFromEnd(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
+    fun recycleFromEnd(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
         val limit = layoutInfo.orientationHelper.end + layoutState.extraLayoutSpaceEnd
         val childCount = layoutManager.childCount
         if (configuration.reverseLayout) {

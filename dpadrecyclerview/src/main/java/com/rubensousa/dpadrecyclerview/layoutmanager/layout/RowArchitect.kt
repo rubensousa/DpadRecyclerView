@@ -93,6 +93,7 @@ internal class RowArchitect(
 
     fun layoutEnd(layoutState: LayoutState, recycler: Recycler, state: State): Int {
         var remainingSpace = layoutState.fillSpace
+        Log.i(TAG, "Remaining space: $remainingSpace")
         childRecycler.recycleByLayoutState(recycler, layoutState)
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
             val view = layoutState.getNextView(recycler) ?: break // No more views to layout, exit

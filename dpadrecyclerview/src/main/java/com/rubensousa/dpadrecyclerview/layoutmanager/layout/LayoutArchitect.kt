@@ -101,6 +101,14 @@ internal class LayoutArchitect(
 
         // Now that all views are laid out, make sure the pivot is still in the correct position
         alignPivot(recycler, state)
+
+        // After aligning the pivot, we might have views we no longer need, so recycle them
+        removeInvisibleViews(recycler)
+    }
+
+    private fun removeInvisibleViews(recycler: Recycler) {
+        childRecycler.recycleFromStart(recycler, layoutState)
+        childRecycler.recycleFromEnd(recycler, layoutState)
     }
 
     /**

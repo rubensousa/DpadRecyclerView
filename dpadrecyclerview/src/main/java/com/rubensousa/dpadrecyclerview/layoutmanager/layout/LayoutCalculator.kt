@@ -30,7 +30,6 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         layoutState.setPreLayout(state.isPreLayout)
         layoutState.setReverseLayout(configuration.reverseLayout)
         layoutState.setRecyclingEnabled(false)
-        updateExtraLayoutSpace(layoutState, state)
     }
 
     private fun updateExtraLayoutSpace(layoutState: LayoutState, state: State) {

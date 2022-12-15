@@ -67,6 +67,14 @@ object DpadRecyclerViewActions {
     }
 
     @JvmStatic
+    fun getRelativeItemViewBounds(position: Int, rect: Rect): ViewAction {
+        return executeForViewHolderItemViewAt(
+            position,
+            DpadViewActions.getRelativeViewBounds(rect)
+        )
+    }
+
+    @JvmStatic
     fun updateChildAlignment(alignment: ChildAlignment): ViewAction {
         return UpdateChildAlignmentAction(alignment)
     }
