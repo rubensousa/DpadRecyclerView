@@ -44,7 +44,11 @@ internal class LayoutInfo(
 
     var isScrolling = false
         private set
+
     var isLayoutInProgress = false
+        private set
+
+    var hasLaidOutViews = false
         private set
 
     private var recyclerView: RecyclerView? = null
@@ -67,15 +71,17 @@ internal class LayoutInfo(
      * Needs to be called after onLayoutChildren when not in pre-layout
      */
     fun onLayoutCompleted() {
+        isLayoutInProgress = false
         orientationHelper.onLayoutComplete()
+        hasLaidOutViews = layout.childCount > 0
     }
 
     fun setIsScrolling(isScrolling: Boolean) {
         this.isScrolling = isScrolling
     }
 
-    fun setLayoutInProgress(isInProgress: Boolean) {
-        isLayoutInProgress = isInProgress
+    fun setLayoutInProgress() {
+        isLayoutInProgress = true
     }
 
     fun setRecyclerView(recyclerView: RecyclerView?) {

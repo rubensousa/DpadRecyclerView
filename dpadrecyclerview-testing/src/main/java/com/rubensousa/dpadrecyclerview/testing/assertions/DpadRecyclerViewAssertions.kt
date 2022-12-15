@@ -16,12 +16,16 @@
 
 package com.rubensousa.dpadrecyclerview.testing.assertions
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.util.HumanReadables
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.ViewHolderAlignment
 import junit.framework.AssertionFailedError
+import java.util.Collections
 
 object DpadRecyclerViewAssertions {
 
@@ -31,8 +35,8 @@ object DpadRecyclerViewAssertions {
     }
 
     @JvmStatic
-    fun isFocused(position: Int): ViewAssertion {
-        return FocusAssertion(position)
+    fun isFocused(position: Int, subPosition: Int = 0): ViewAssertion {
+        return FocusAssertion(position, subPosition)
     }
 
     @JvmStatic
@@ -51,7 +55,10 @@ object DpadRecyclerViewAssertions {
         }
     }
 
-    private class FocusAssertion(private val focusedPosition: Int) : DpadRvAssertion() {
+    private class FocusAssertion(
+        private val focusedPosition: Int,
+        private val focusedSubPosition: Int = 0
+    ) : DpadRvAssertion() {
 
         override fun check(view: DpadRecyclerView) {
             val focusedView = view.findFocus()
@@ -65,9 +72,31 @@ object DpadRecyclerViewAssertions {
                         "DpadRecyclerView didn't have focus: ${HumanReadables.describe(view)}"
                     )
                 }
-                assertThat(view.findContainingViewHolder(focusedView)!!.absoluteAdapterPosition)
-                    .isEqualTo(focusedPosition)
+
+                val viewHolder = view.findContainingViewHolder(focusedView)!!
+                assertThat(viewHolder.absoluteAdapterPosition).isEqualTo(focusedPosition)
+
+                val alignments = getAlignments(viewHolder)
+                if (alignments.isEmpty() && focusedSubPosition > 0) {
+                    throw AssertionFailedError(
+                        "ViewHolder doesn't have any sub position. " +
+                                "View: ${HumanReadables.describe(view)}"
+                    )
+                } else if (alignments.isNotEmpty()) {
+                    val alignment = alignments[focusedSubPosition]
+                    val expectedView = viewHolder.itemView.findViewById<View>(
+                        alignment.getFocusViewId()
+                    )
+                    assertThat(focusedView).isEqualTo(expectedView)
+                }
             }
+        }
+
+        private fun getAlignments(viewHolder: RecyclerView.ViewHolder): List<ViewHolderAlignment> {
+            if (viewHolder !is DpadViewHolder) {
+                return Collections.emptyList()
+            }
+            return viewHolder.getAlignments()
         }
 
     }

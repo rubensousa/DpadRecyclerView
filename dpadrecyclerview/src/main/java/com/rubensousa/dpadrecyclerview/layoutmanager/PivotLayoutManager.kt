@@ -200,7 +200,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun startSmoothScroll(smoothScroller: RecyclerView.SmoothScroller) {
-        scroller.cancelSmoothScroll()
+        scroller.cancelSmoothScroller()
         super.startSmoothScroll(smoothScroller)
         scroller.setSmoothScroller(smoothScroller)
     }

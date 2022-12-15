@@ -62,7 +62,7 @@ internal class LayoutArchitect(
      * 3. Views cleared: just remove all views
      */
     fun onLayoutChildren(recycler: Recycler, state: State) {
-        layoutInfo.setLayoutInProgress(true)
+        layoutInfo.setLayoutInProgress()
         layoutAlignment.update()
         layoutCalculator.init(layoutState, state, configuration)
 
@@ -173,7 +173,7 @@ internal class LayoutArchitect(
     }
 
     fun onLayoutCompleted(state: State) {
-        layoutInfo.setLayoutInProgress(false)
+        layoutInfo.onLayoutCompleted()
         layoutResult.reset()
         layoutCompleteListeners.forEach { listener ->
             listener.onLayoutCompleted(state)

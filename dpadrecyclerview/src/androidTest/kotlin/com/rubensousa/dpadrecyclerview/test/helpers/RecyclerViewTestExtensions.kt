@@ -84,9 +84,9 @@ fun assertViewHolderSelected(
         .check(ViewHolderSelectedAssertion(position, isSelected))
 }
 
-fun assertFocusPosition(position: Int, id: Int = R.id.recyclerView) {
+fun assertFocusPosition(position: Int, subPosition: Int = 0, id: Int = R.id.recyclerView) {
     Espresso.onView(ViewMatchers.withId(id))
-        .check(DpadRecyclerViewAssertions.isFocused(position))
+        .check(DpadRecyclerViewAssertions.isFocused(position, subPosition))
 }
 
 fun assertOnRecyclerView(assertion: ViewAssertion, id: Int = R.id.recyclerView) {

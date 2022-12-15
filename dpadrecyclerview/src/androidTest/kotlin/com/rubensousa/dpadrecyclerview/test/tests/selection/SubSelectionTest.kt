@@ -34,6 +34,7 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestViewHolder
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectSubPosition
@@ -85,15 +86,15 @@ class SubSelectionTest : DpadRecyclerViewTest() {
 
         repeat(5) { index ->
             assertSelectedPosition(position = index, subPosition = 0)
-
+            assertFocusPosition(position = index, subPosition = 0)
             KeyEvents.pressDown(times = 1)
 
             assertSelectedPosition(position = index, subPosition = 1)
-
+            assertFocusPosition(position = index, subPosition = 1)
             KeyEvents.pressDown(times = 1)
 
             assertSelectedPosition(position = index, subPosition = 2)
-
+            assertFocusPosition(position = index, subPosition = 2)
             KeyEvents.pressDown(times = 1)
             waitForIdleScrollState()
         }
@@ -107,14 +108,17 @@ class SubSelectionTest : DpadRecyclerViewTest() {
         selectSubPosition(1, smooth = true)
 
         assertSelectedPosition(position = 0, subPosition = 1)
+        assertFocusPosition(position = 0, subPosition = 1)
 
         selectSubPosition(2, smooth = true)
 
         assertSelectedPosition(position = 0, subPosition = 2)
+        assertFocusPosition(position = 0, subPosition = 2)
 
         selectPosition(position = 5, subPosition = 1, smooth = true)
 
         assertSelectedPosition(position = 5, subPosition = 1)
+        assertFocusPosition(position = 5, subPosition = 1)
     }
 
     private fun launchSubPositionFragment() {

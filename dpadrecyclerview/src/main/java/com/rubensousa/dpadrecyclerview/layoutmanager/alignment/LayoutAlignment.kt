@@ -80,7 +80,17 @@ internal class LayoutAlignment(
         return parentAlignment.calculateKeyline()
     }
 
-    fun findSubPositionOfChild(
+    fun getViewAtSubPosition(recyclerView: RecyclerView, view: View, subPosition: Int): View? {
+        val viewHolder = recyclerView.getChildViewHolder(view)
+        val childAlignments = (viewHolder as? DpadViewHolder)?.getAlignments() ?: return null
+        if (subPosition >= childAlignments.size) {
+            return null
+        }
+        val subPositionViewId = childAlignments[subPosition].getFocusViewId()
+        return view.findViewById(subPositionViewId)
+    }
+
+    fun getSubPositionOfView(
         recyclerView: RecyclerView, view: View?, childView: View?
     ): Int {
         if (view == null || childView == null) {
@@ -138,6 +148,15 @@ internal class LayoutAlignment(
     fun getMaxScroll() = parentAlignment.maxScroll
 
     fun getMinScroll() = parentAlignment.minScroll
+
+    fun calculateScrollOffset(
+        recyclerView: RecyclerView,
+        view: View,
+        subPosition: Int
+    ): Int {
+        val viewAtSubPosition = getViewAtSubPosition(recyclerView, view, subPosition)
+        return calculateScrollOffset(recyclerView, view, viewAtSubPosition)
+    }
 
     fun calculateScrollOffset(
         recyclerView: RecyclerView,
@@ -298,7 +317,7 @@ internal class LayoutAlignment(
         recyclerView: RecyclerView, offset: Int, view: View, childView: View
     ): Int {
         var scrollValue = offset
-        val subPosition = findSubPositionOfChild(recyclerView, view, childView)
+        val subPosition = getSubPositionOfView(recyclerView, view, childView)
         if (subPosition != 0) {
             val layoutParams = view.layoutParams as DpadLayoutParams
             val alignments = layoutParams.getAlignmentPositions()

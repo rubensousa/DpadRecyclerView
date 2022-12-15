@@ -103,7 +103,7 @@ internal class LinearLayoutArchitect(
 
     fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         layoutAlignment.update()
-        layoutInfo.setLayoutInProgress(true)
+        layoutInfo.setLayoutInProgress()
         // If we don't have any items, recycle them all
         if (state.itemCount == 0) {
             layoutManager.removeAndRecycleAllViews(recycler)
@@ -183,7 +183,7 @@ internal class LinearLayoutArchitect(
     }
 
     fun onLayoutCompleted(state: RecyclerView.State) {
-        layoutInfo.setLayoutInProgress(false)
+        layoutInfo.onLayoutCompleted()
         layoutResult.reset()
         layoutCompleteListeners.forEach { listener ->
             listener.onLayoutCompleted(state)

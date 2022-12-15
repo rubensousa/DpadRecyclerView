@@ -26,11 +26,12 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.sqrt
 
 /**
- * Smooth scrolls until the pivot at [pivotPosition] is laid out and then aligns it
+ * Smooth scrolls until the pivot at [position] is laid out and then aligns it
  */
-internal class PivotSmoothScroller(
+internal class SearchPivotSmoothScroller(
     private val recyclerView: RecyclerView,
-    private val pivotPosition: Int,
+    private val position: Int,
+    private val subPosition: Int,
     private val layoutInfo: LayoutInfo,
     private val alignment: LayoutAlignment,
     private val listener: PivotListener
@@ -39,7 +40,7 @@ internal class PivotSmoothScroller(
     private var isCanceled = false
 
     init {
-        targetPosition = pivotPosition
+        targetPosition = position
     }
 
     fun cancel() {
@@ -71,8 +72,7 @@ internal class PivotSmoothScroller(
     }
 
     override fun onTargetFound(targetView: View, state: RecyclerView.State, action: Action) {
-        // TODO Handle sub position focus alignment
-        val scrollOffset = alignment.calculateScrollOffset(recyclerView, targetView, null)
+        val scrollOffset = alignment.calculateScrollOffset(recyclerView, targetView, subPosition)
         // Check if we don't need to scroll
         if (scrollOffset == 0) {
             return
@@ -97,17 +97,17 @@ internal class PivotSmoothScroller(
     }
 
     private fun dispatchEvents() {
-        val pivotView = findViewByPosition(pivotPosition)
+        val pivotView = findViewByPosition(position)
         if (pivotView != null) {
-            listener.onPivotFound(pivotView, pivotPosition)
-        } else if (pivotPosition >= 0) {
-            listener.onPivotNotFound(pivotPosition)
+            listener.onPivotFound(pivotView, position, subPosition)
+        } else if (position >= 0) {
+            listener.onPivotNotFound(position)
         }
     }
 
     interface PivotListener {
-        fun onPivotFound(pivotView: View, pivotPosition: Int)
-        fun onPivotNotFound(pivotPosition: Int)
+        fun onPivotFound(pivotView: View, position: Int, subPosition: Int)
+        fun onPivotNotFound(position: Int)
     }
 
 }
