@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 
 internal class LayoutConfiguration {
@@ -105,6 +106,9 @@ internal class LayoutConfiguration {
     var smoothScrollSpeedFactor: Float = 1f
         private set
 
+    var extraLayoutSpaceStrategy: ExtraLayoutSpaceStrategy? = null
+        private set
+
     fun setFocusSearchDisabled(isDisabled: Boolean){
         isFocusSearchDisabled = isDisabled
     }
@@ -161,6 +165,10 @@ internal class LayoutConfiguration {
 
     fun setFocusableDirection(direction: FocusableDirection) {
         focusableDirection = direction
+    }
+
+    fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
+        extraLayoutSpaceStrategy = strategy
     }
 
 }

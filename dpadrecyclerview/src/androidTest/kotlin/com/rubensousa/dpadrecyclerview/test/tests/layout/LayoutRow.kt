@@ -42,6 +42,28 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
         return fill(fillSpace, itemWidth, itemHeight, insets, true)
     }
 
+    fun recycleStart(extraLayoutSpaceStart: Int) {
+        val limit = -extraLayoutSpaceStart
+        for (i in 0 until getNumberOfViewsInLayout()) {
+            val child = getViewAt(i)
+            if (child.getDecoratedRight() > limit) {
+                recycleFromStart(i)
+                return
+            }
+        }
+    }
+
+    fun recycleEnd(extraLayoutSpaceEnd: Int) {
+        val limit = width + extraLayoutSpaceEnd
+        for (i in getNumberOfViewsInLayout() - 1 downTo 0) {
+            val child = getViewAt(i)
+            if (child.getDecoratedLeft() < limit) {
+                recycleFromEnd(getNumberOfViewsInLayout() - 1 - i)
+                return
+            }
+        }
+    }
+
     fun assertChildrenBounds(recyclerView: RecyclerView) {
         val horizontalHelper = OrientationHelper.createHorizontalHelper(recyclerView.layoutManager)
         val verticalHelper = OrientationHelper.createVerticalHelper(recyclerView.layoutManager)
@@ -59,14 +81,14 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
     }
 
     private fun fill(
-        space: Int,
+        fillSpace: Int,
         itemWidth: Int,
         itemHeight: Int,
         insets: Rect,
         append: Boolean
     ): List<ViewItem> {
         val views = ArrayList<ViewItem>()
-        var remainingSpace = space
+        var remainingSpace = fillSpace
         while (remainingSpace > 0) {
             val viewItem = if (append) {
                 append(itemWidth, itemHeight, insets)
@@ -93,7 +115,10 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
             bounds.bottom = itemHeight
         }
 
-        val newItem = ViewItem(bounds, insets)
+        val newItem = ViewItem(
+            bounds = bounds,
+            insets = insets
+        )
         append(newItem)
         return newItem
     }
@@ -102,7 +127,10 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
         val firstItem = getFirstView()
             ?: throw IllegalStateException("Can't prepend when layout is empty")
         val right = firstItem.getLeft()
-        val item = ViewItem(Rect(right - itemWidth, 0, right, itemHeight), insets)
+        val item = ViewItem(
+            bounds = Rect(right - itemWidth, 0, right, itemHeight),
+            insets = insets
+        )
         prepend(item)
         return item
     }

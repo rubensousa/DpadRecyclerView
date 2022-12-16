@@ -17,7 +17,6 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import androidx.recyclerview.widget.RecyclerView.State
-import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -26,13 +25,29 @@ import kotlin.math.max
  */
 internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
 
-    fun init(layoutState: LayoutState, state: State, configuration: LayoutConfiguration) {
+    private val extraLayoutSpace = IntArray(2)
+
+    fun init(layoutState: LayoutState, state: State) {
         layoutState.setPreLayout(state.isPreLayout)
-        layoutState.setReverseLayout(configuration.reverseLayout)
+        layoutState.setReverseLayout(layoutInfo.getConfiguration().reverseLayout)
         layoutState.setRecyclingEnabled(false)
     }
 
+    private fun setCustomExtraLayoutSpace(layoutState: LayoutState, state: State): Boolean {
+        layoutInfo.getConfiguration().extraLayoutSpaceStrategy?.let { strategy ->
+            strategy.calculateExtraLayoutSpace(state, extraLayoutSpace)
+            layoutState.setExtraLayoutSpaceStart(extraLayoutSpace[0])
+            layoutState.setExtraLayoutSpaceEnd(extraLayoutSpace[1])
+            return true
+        }
+        return false
+    }
+
     private fun updateExtraLayoutSpace(layoutState: LayoutState, state: State) {
+        if (setCustomExtraLayoutSpace(layoutState, state)) {
+            // Skip our logic if user specified a custom strategy for extra layout space
+            return
+        }
         val extraScrollSpace = getDefaultExtraLayoutSpace(state)
         if (layoutState.isLayingOutEnd()) {
             layoutState.setExtraLayoutSpaceEnd(extraScrollSpace / 2)
@@ -40,6 +55,38 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         } else {
             layoutState.setExtraLayoutSpaceStart(extraScrollSpace / 2)
             layoutState.setExtraLayoutSpaceEnd(0)
+        }
+    }
+
+    fun updateLayoutStateForExtraLayoutEnd(layoutState: LayoutState, state: State) {
+        val view = layoutInfo.getChildClosestToEnd() ?: return
+        updateExtraLayoutSpace(layoutState, state)
+        layoutState.apply {
+            setEndDirection()
+            setRecyclingEnabled(false)
+            setCheckpoint(layoutInfo.getDecoratedEnd(view))
+            setCurrentPosition(layoutInfo.getLayoutPositionOf(view) + layoutState.direction.value)
+            setAvailableScrollSpace(
+                max(0, checkpoint - layoutInfo.getEndAfterPadding())
+            )
+            val fill = layoutState.extraLayoutSpaceEnd - availableScrollSpace
+            setFillSpace(max(0, fill))
+        }
+    }
+
+    fun updateLayoutStateForExtraLayoutStart(layoutState: LayoutState, state: State) {
+        val view = layoutInfo.getChildClosestToStart() ?: return
+        updateExtraLayoutSpace(layoutState, state)
+        layoutState.apply {
+            setStartDirection()
+            setRecyclingEnabled(false)
+            setCheckpoint(layoutInfo.getDecoratedStart(view))
+            setCurrentPosition(layoutInfo.getLayoutPositionOf(view) + layoutState.direction.value)
+            setAvailableScrollSpace(
+                max(0, layoutInfo.getStartAfterPadding() - checkpoint)
+            )
+            val fill = layoutState.extraLayoutSpaceStart - availableScrollSpace
+            setFillSpace(max(0, fill))
         }
     }
 

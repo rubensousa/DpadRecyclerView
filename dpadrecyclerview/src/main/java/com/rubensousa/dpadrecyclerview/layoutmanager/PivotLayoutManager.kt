@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -45,7 +46,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  *
  * TODO:
  * - setRecycleChildrenOnDetach
- * - setExtraSpace
  * - using simple row structure for single spans
  */
 class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
@@ -342,11 +342,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         requestLayout()
     }
 
-    override fun setExtraLayoutSpace(value: Int) {
-        configuration.setExtraLayoutSpace(value)
+    override fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
+        configuration.setExtraLayoutSpaceStrategy(strategy)
+        requestLayout()
     }
-
-    override fun getExtraLayoutSpace(): Int = configuration.extraLayoutSpace
 
     override fun setFocusableDirection(direction: FocusableDirection) {
         configuration.setFocusableDirection(direction)

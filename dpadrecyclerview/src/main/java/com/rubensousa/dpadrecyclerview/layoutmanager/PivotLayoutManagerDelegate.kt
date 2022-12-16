@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -103,8 +104,7 @@ interface PivotLayoutManagerDelegate {
 
     fun clearOnLayoutCompletedListeners()
 
-    fun setExtraLayoutSpace(value: Int)
-
-    fun getExtraLayoutSpace(): Int
+    fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?)
 
 }
+

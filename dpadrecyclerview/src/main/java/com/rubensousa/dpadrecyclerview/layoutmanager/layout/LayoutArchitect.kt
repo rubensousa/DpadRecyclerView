@@ -70,7 +70,7 @@ internal class LayoutArchitect(
     fun onLayoutChildren(recycler: Recycler, state: State) {
         layoutInfo.setLayoutInProgress()
         layoutAlignment.update()
-        layoutCalculator.init(layoutState, state, configuration)
+        layoutCalculator.init(layoutState, state)
 
         // Fast removal
         if (state.itemCount == 0) {
@@ -102,8 +102,19 @@ internal class LayoutArchitect(
         // Now that all views are laid out, make sure the pivot is still in the correct position
         alignPivot(recycler, state)
 
-        // After aligning the pivot, we might have views we no longer need, so recycle them
+        // Layout extra space if needed
+        layoutExtraSpace(recycler, state)
+
+        // We might have views we no longer need after aligning the pivot, so recycle them
         removeInvisibleViews(recycler)
+    }
+
+    private fun layoutExtraSpace(recycler: Recycler, state: State) {
+        layoutCalculator.updateLayoutStateForExtraLayoutStart(layoutState, state)
+        rowArchitect.layoutStart(layoutState, recycler, state)
+
+        layoutCalculator.updateLayoutStateForExtraLayoutEnd(layoutState, state)
+        rowArchitect.layoutEnd(layoutState, recycler, state)
     }
 
     private fun removeInvisibleViews(recycler: Recycler) {
@@ -240,6 +251,7 @@ internal class LayoutArchitect(
         layoutCalculator.updateLayoutStateForScroll(layoutState, state, offset)
         rowArchitect.layout(layoutState, recycler, state)
         offsetBy(offset)
+       // removeInvisibleViews(recycler)
         return offset
     }
 

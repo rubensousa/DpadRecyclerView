@@ -65,12 +65,24 @@ abstract class LayoutMatrix(val width: Int, val height: Int) {
         return List(circularArray.size()) { index -> circularArray.get(index) }
     }
 
+    fun clear() {
+        circularArray.clear()
+    }
+
     protected fun append(item: ViewItem) {
         circularArray.addLast(item)
     }
 
     protected fun prepend(item: ViewItem) {
         circularArray.addFirst(item)
+    }
+
+    protected fun recycleFromStart(count: Int) {
+        circularArray.removeFromStart(count)
+    }
+
+    protected fun recycleFromEnd(count: Int) {
+        circularArray.removeFromEnd(count)
     }
 
     private inline fun CircularArray<ViewItem>.forEach(action: (item: ViewItem) -> Unit) {

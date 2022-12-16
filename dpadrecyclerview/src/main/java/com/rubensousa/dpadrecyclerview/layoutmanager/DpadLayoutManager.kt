@@ -30,6 +30,7 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -61,7 +62,7 @@ internal class DpadLayoutManager(context: Context, properties: Properties) : Gri
     private var isAlignmentPending = true
     private var hasFinishedFirstLayout = false
     private var isInLayoutStage = false
-    private var extraLayoutSpace = 0
+    private var extraLayoutSpaceStrategy: ExtraLayoutSpaceStrategy? = null
     private var recyclerView: RecyclerView? = null
     private var isSmoothFocusChangesEnabled = true
 
@@ -280,18 +281,24 @@ internal class DpadLayoutManager(context: Context, properties: Properties) : Gri
     }
 
     override fun calculateExtraLayoutSpace(state: RecyclerView.State, out: IntArray) {
+        extraLayoutSpaceStrategy?.let { strategy ->
+            strategy.calculateExtraLayoutSpace(state, out)
+            return
+        }
         val totalSpace = scrollAlignment.getTotalSpace()
 
         // Default extra space must always be the size of the container
+        // due to a limitation of focus finding mechanism.
+        // PivotLayoutManager doesn't have this limitation though
         var extraLayoutSpaceStart = totalSpace
         var extraLayoutSpaceEnd = totalSpace
 
         // Add the extraLayoutSpace defined by the user to the scrolling direction
         if (scroller.scrollDirection != DpadScroller.SCROLL_NONE) {
             if (scroller.scrollDirection == DpadScroller.SCROLL_START) {
-                extraLayoutSpaceStart = totalSpace + extraLayoutSpace
+                extraLayoutSpaceStart = totalSpace
             } else {
-                extraLayoutSpaceEnd = totalSpace + extraLayoutSpace
+                extraLayoutSpaceEnd = totalSpace
             }
         }
         out[0] = extraLayoutSpaceStart
@@ -363,12 +370,10 @@ internal class DpadLayoutManager(context: Context, properties: Properties) : Gri
         return selectedViewHolder?.getAlignments()?.size ?: 0
     }
 
-    override fun setExtraLayoutSpace(value: Int) {
-        extraLayoutSpace = value
+    override fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
+        extraLayoutSpaceStrategy = strategy
         requestLayout()
     }
-
-    override fun getExtraLayoutSpace() = extraLayoutSpace
 
     override fun setGravity(gravity: Int) {
         delegate.gravity = gravity

@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.test.tests.layout
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
@@ -26,13 +27,21 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
+import org.junit.Ignore
+import org.junit.Rule
 import org.junit.Test
+import kotlin.math.max
 
 class HorizontalLayoutTest : DpadRecyclerViewTest() {
+
+    @get:Rule
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration()
@@ -71,21 +80,100 @@ class HorizontalLayoutTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    fun testNewViewIsLaidOutInDirectionOfScroll() {
+        row.append(row.width, itemWidth, itemHeight)
+        val lastViewPosition = row.getNumberOfViewsInLayout() - 1
+
+        val lastVisibleView = scrollRight()
+        val bounds = getRelativeItemViewBounds(position = lastViewPosition + 1)
+        assertThat(bounds).isEqualTo(lastVisibleView.bounds)
+    }
+
+    @Test
     fun testExtraSpaceIsNotLaidOutAfterFirstLayout() {
         row.append(row.width, itemWidth, itemHeight)
         assertChildrenPositions()
     }
 
+    @Ignore("Must add removeInvisibleViews in scrollBy")
     @Test
-    fun testNewViewIsLaidOutInDirectionOfScroll() {
+    fun testExtraSpaceIsAddedWhenScrollingRight() {
         row.append(row.width, itemWidth, itemHeight)
 
+        repeat(10) {
+            scrollRight()
+        }
+
+        waitForIdleScrollState()
+        assertChildrenPositions()
+    }
+
+    @Test
+    fun testExtraLayoutSpaceIsAddedAtEnd() {
+        row.clear()
+        row.append(row.width * 2, itemWidth, itemHeight)
+        onRecyclerView("Change extra layout space") { recyclerView ->
+            recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
+                override fun calculateExtraLayoutSpace(
+                    state: RecyclerView.State,
+                    extraLayoutSpace: IntArray
+                ) {
+                    extraLayoutSpace[1] = recyclerView.width
+                }
+            })
+        }
+        assertChildrenPositions()
+    }
+
+    @Test
+    fun testExtraLayoutSpaceIsAddedAtStart() {
+        row.append(row.width, itemWidth, itemHeight)
+        repeat(10) {
+            scrollRight()
+        }
+        onRecyclerView("Change extra layout space") { recyclerView ->
+            recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
+                override fun calculateExtraLayoutSpace(
+                    state: RecyclerView.State,
+                    extraLayoutSpace: IntArray
+                ) {
+                    extraLayoutSpace[0] = recyclerView.width
+                }
+            })
+        }
+        row.clear()
+        row.append(row.width, itemWidth, itemHeight)
+        row.prepend(row.width, itemWidth, itemHeight)
+        waitForIdleScrollState()
+        assertChildrenPositions()
+    }
+
+    private fun scrollLeft(
+        extraLayoutSpaceStart: Int = row.width / 2,
+        extraLayoutSpaceEnd: Int = 0
+    ): ViewItem {
+        KeyEvents.pressLeft()
+        row.scrollHorizontallyBy(itemWidth)
+        val newView = row.prepend(itemWidth, itemHeight)
+        val availableScrollSpace = max(0, -row.getFirstView()!!.getDecoratedLeft())
+        val extraFillSpace = extraLayoutSpaceStart - availableScrollSpace
+        row.prepend(extraFillSpace, itemWidth, itemHeight)
+        row.recycleEnd(extraLayoutSpaceEnd)
+        return newView
+    }
+
+    private fun scrollRight(
+        extraLayoutSpaceStart: Int = 0,
+        extraLayoutSpaceEnd: Int = row.width / 2
+    ): ViewItem {
         KeyEvents.pressRight()
         row.scrollHorizontallyBy(-itemWidth)
         val newView = row.append(itemWidth, itemHeight)
-
-        val bounds = getRelativeItemViewBounds(position = row.getNumberOfViewsInLayout() - 1)
-        assertThat(bounds).isEqualTo(newView.bounds)
+        val availableScrollSpace = max(0, row.getLastView()!!.getDecoratedRight() - row.width)
+        val extraFillSpace = max(0, extraLayoutSpaceEnd - availableScrollSpace)
+        row.append(extraFillSpace, itemWidth, itemHeight)
+        row.recycleStart(extraLayoutSpaceStart)
+        return newView
     }
 
     private fun assertChildrenPositions() {

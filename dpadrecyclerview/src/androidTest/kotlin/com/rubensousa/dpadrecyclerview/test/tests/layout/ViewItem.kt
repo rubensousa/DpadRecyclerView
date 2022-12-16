@@ -41,12 +41,10 @@ data class ViewItem(
 
     fun offsetHorizontally(offset: Int) {
         bounds.offset(offset, 0)
-        insets.offset(offset, 0)
     }
 
     fun offsetVertically(offset: Int) {
         bounds.offset(0, offset)
-        insets.offset(0, offset)
     }
 
 }

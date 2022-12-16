@@ -16,7 +16,6 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
@@ -118,7 +117,6 @@ internal class ChildRecycler(
         val view = layoutManager.getChildAt(index)
         if (view != null) {
             layoutManager.removeAndRecycleViewAt(index, recycler)
-            Log.i(TAG, "Recycled: ${layoutInfo.getAdapterPositionOf(view)}")
             val size = layoutInfo.getDecoratedSize(view)
             if (layoutState.isLayingOutEnd()) {
                 layoutState.increaseStartOffset(size)
