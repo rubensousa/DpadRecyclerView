@@ -17,36 +17,78 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.navigation.NavDirections
+import androidx.navigation.findNavController
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
-import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenTvNestedListsBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemNavigationBinding
 
-class MainFragment : Fragment(R.layout.screen_tv_nested_lists) {
-
-    private var _binding: ScreenTvNestedListsBinding? = null
-    private val binding: ScreenTvNestedListsBinding get() = _binding!!
-    private val viewModel by viewModels<MainViewModel>()
-    private val listController = MainListController(this)
+class MainFragment : Fragment(R.layout.screen_main) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = ScreenTvNestedListsBinding.bind(view)
-        listController.setup(binding.recyclerView, viewLifecycleOwner, onSelected = { position ->
-            viewModel.loadMore(position)
-        })
-        viewModel.listState.observe(viewLifecycleOwner) { list ->
-            listController.submitList(list)
+        val recyclerView = view as RecyclerView
+        recyclerView.adapter = NavigationAdapter(items = createScreenDestinations())
+        recyclerView.requestFocus()
+    }
+
+    private fun createScreenDestinations(): List<ScreenDestination> {
+        return listOf(
+            ScreenDestination(
+                direction = MainFragmentDirections.openList(),
+                title = "List -> Detail"
+            ),
+            ScreenDestination(
+                direction = MainFragmentDirections.openHorizontalLeanback(),
+                title = "Horizontal Leanback"
+            )
+        )
+    }
+
+    class NavigationAdapter(
+        private val items: List<ScreenDestination>
+    ) : RecyclerView.Adapter<NavigationViewHolder>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NavigationViewHolder {
+            return NavigationViewHolder(
+                AdapterItemNavigationBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+            )
         }
-        viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
-            listController.showLoading(isLoading)
+
+        override fun onBindViewHolder(holder: NavigationViewHolder, position: Int) {
+            holder.bind(items[position])
+        }
+
+        override fun getItemCount(): Int = items.size
+
+    }
+
+    class NavigationViewHolder(
+        private val binding: AdapterItemNavigationBinding
+    ) : ViewHolder(binding.root) {
+
+        private var item: ScreenDestination? = null
+
+        init {
+            itemView.setOnClickListener {
+                item?.direction?.let {
+                    itemView.findNavController().navigate(it)
+                }
+            }
+        }
+
+        fun bind(item: ScreenDestination) {
+            binding.textView.text = item.title
+            this.item = item
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
+    data class ScreenDestination(val direction: NavDirections, val title: String)
 }

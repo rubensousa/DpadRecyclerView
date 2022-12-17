@@ -5,7 +5,7 @@ versions.compileSdkVersion = 33
 versions.recyclerview = '1.2.1'
 versions.constraintLayout = '2.1.4'
 versions.lifecycle = '2.5.1'
-versions.navigation = '2.5.2'
+versions.navigation = '2.5.3'
 
 
 def testVersions = [:]

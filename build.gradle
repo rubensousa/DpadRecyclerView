@@ -3,6 +3,7 @@ buildscript {
 
     dependencies {
         classpath "org.jacoco:org.jacoco.core:$testVersions.jacoco"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$versions.navigation"
     }
 }
 

@@ -1,4 +1,4 @@
-package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class ListViewModel : ViewModel() {
 
     private val list = ArrayList<ListModel>()
     private val listLiveData = MutableLiveData<List<ListModel>>()

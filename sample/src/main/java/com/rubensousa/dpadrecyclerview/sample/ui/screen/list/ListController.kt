@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.list
 
 import androidx.fragment.app.Fragment
 import androidx.leanback.widget.BaseGridView
@@ -36,7 +36,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListPlaceholderAda
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.NestedListAdapter
 import timber.log.Timber
 
-class MainListController(private val fragment: Fragment) {
+class ListController(private val fragment: Fragment) {
 
     private var selectedPosition = RecyclerView.NO_POSITION
     private val loadingAdapter = ListPlaceholderAdapter()
