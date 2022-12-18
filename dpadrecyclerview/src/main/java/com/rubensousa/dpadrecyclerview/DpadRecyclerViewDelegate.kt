@@ -238,17 +238,16 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
     }
 
     fun removeView(view: View) {
-        val retainFocusForChild = view.hasFocus() && recyclerView.isFocusable
-        if (retainFocusForChild) {
-            isRetainingFocus = true
+        isRetainingFocus = view.hasFocus() && recyclerView.isFocusable
+        if (isRetainingFocus) {
             recyclerView.requestFocus()
         }
     }
 
     fun removeViewAt(index: Int) {
-        val retainFocusForChild = recyclerView.getChildAt(index)?.hasFocus() ?: false
-        if (retainFocusForChild) {
-            isRetainingFocus = true
+        val childHasFocus = recyclerView.getChildAt(index)?.hasFocus() ?: false
+        isRetainingFocus = childHasFocus && recyclerView.isFocusable
+        if (isRetainingFocus) {
             recyclerView.requestFocus()
         }
     }
