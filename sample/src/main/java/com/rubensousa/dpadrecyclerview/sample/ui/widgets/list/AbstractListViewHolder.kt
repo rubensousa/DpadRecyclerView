@@ -20,22 +20,24 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemNestedAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 
-class ListViewHolder(view: View, itemLayoutId: Int = R.layout.adapter_nested_item_start) :
-    RecyclerView.ViewHolder(view), DpadViewHolder {
+abstract class AbstractListViewHolder(
+    view: View,
+    val recyclerView: RecyclerView,
+    itemLayoutId: Int = R.layout.adapter_nested_item_start
+) : RecyclerView.ViewHolder(view), DpadViewHolder {
 
-    private val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
-    private val textView = view.findViewById<TextView>(R.id.textView)
-    private val adapter = ItemNestedAdapter(
+    var item: ListModel? = null
+    val textView = view.findViewById<TextView>(R.id.textView)
+    val adapter = ItemNestedAdapter(
         itemLayoutId,
         animateFocusChanges = itemLayoutId == R.layout.adapter_nested_item_start
     )
-    private var key: String? = null
 
     init {
         itemView.isFocusable = true
@@ -46,27 +48,19 @@ class ListViewHolder(view: View, itemLayoutId: Int = R.layout.adapter_nested_ite
             }
         }
         setupRecyclerView(recyclerView)
-        onViewHolderDeselected()
     }
 
-    fun bind(
-        list: ListModel, stateHolder: DpadStateHolder,
-        clickListener: ItemViewHolder.ItemClickListener
-    ) {
+    fun bind(list: ListModel, clickListener: ItemViewHolder.ItemClickListener) {
+        item = list
         adapter.clickListener = clickListener
-        key = list.title
         textView.text = list.title
         adapter.replaceList(list.items)
         recyclerView.adapter = adapter
-        stateHolder.register(recyclerView, list.title)
     }
 
-    fun onRecycled(stateHolder: DpadStateHolder) {
+    fun onRecycled() {
+        item = null
         adapter.clickListener = null
-        key?.let { scrollKey ->
-            stateHolder.unregister(recyclerView, scrollKey)
-        }
-        recyclerView.adapter = null
     }
 
     override fun onViewHolderSelected() {
@@ -81,10 +75,6 @@ class ListViewHolder(view: View, itemLayoutId: Int = R.layout.adapter_nested_ite
         textView.alpha = 0.5f
     }
 
-    fun onAttachedToWindow() {}
-
-    fun onDetachedFromWindow() {}
-
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.apply {
             addItemDecoration(
@@ -95,6 +85,7 @@ class ListViewHolder(view: View, itemLayoutId: Int = R.layout.adapter_nested_ite
                 )
             )
         }
+        RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
     }
 
 }

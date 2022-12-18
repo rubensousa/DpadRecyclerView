@@ -16,11 +16,17 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
-object ListTypes {
-    const val LOADING = 0
-    const val HEADER = 1
-    const val ITEM = 2
-    const val LIST_CENTER = 3
-    const val LIST_START = 4
-    const val LIST_START_LEANBACK = 5
+import android.view.View
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+
+class DpadListViewHolder(
+    view: View,
+    val dpadRecyclerView: DpadRecyclerView,
+    itemLayoutId: Int
+) : AbstractListViewHolder(view, dpadRecyclerView, itemLayoutId) {
+
+    init {
+        onViewHolderDeselected()
+    }
+
 }

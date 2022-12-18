@@ -14,14 +14,12 @@ class ListViewModel : ViewModel() {
     private val list = ArrayList<ListModel>()
     private val listLiveData = MutableLiveData<List<ListModel>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
-    private val pageSize = 25
+    private val pageSize = 10
     val loadingState: LiveData<Boolean> = loadingStateLiveData
     val listState: LiveData<List<ListModel>> = listLiveData
 
     init {
-        for (i in 0 until pageSize) {
-            list.add(generateList("List $i"))
-        }
+        list.addAll(createPage())
         listLiveData.postValue(ArrayList(list))
     }
 
@@ -36,21 +34,30 @@ class ListViewModel : ViewModel() {
 
         loadingStateLiveData.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
-            for (i in 0 until pageSize) {
-                list.add(generateList("List ${list.size}"))
-            }
+            list.addAll(createPage())
             delay(1000L)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
 
     }
 
-    private fun generateList(title: String): ListModel {
+    private fun createPage(leanback: Boolean = false): List<ListModel> {
+        val titlePrefix = if (leanback) {
+            "HorizontalGridView"
+        } else {
+            "DpadRecyclerView"
+        }
+        return List(pageSize) { index ->
+            generateList("$titlePrefix ${list.size + index}", leanback)
+        }
+    }
+
+    private fun generateList(title: String, leanback: Boolean): ListModel {
         val items = ArrayList<Int>()
         repeat(100) {
             items.add(it)
         }
-        return ListModel(title, items, centerAligned = false)
+        return ListModel(title, items, centerAligned = false, isLeanback = leanback)
     }
 
 

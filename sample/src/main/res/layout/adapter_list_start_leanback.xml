@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#2E2E2E"
+    android:clipChildren="false"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/list_margin_start"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/white"
+        tools:text="Headline" />
+
+    <androidx.leanback.widget.HorizontalGridView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:gravity="center" />
+
+</LinearLayout>

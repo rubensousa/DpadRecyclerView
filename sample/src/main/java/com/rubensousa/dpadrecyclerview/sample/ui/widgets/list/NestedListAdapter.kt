@@ -26,7 +26,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 class NestedListAdapter(
     private val stateHolder: DpadStateHolder,
     private val onItemClickListener: ItemViewHolder.ItemClickListener
-) : ListAdapter<ListModel, ListViewHolder>(DIFF_CALLBACK) {
+) : ListAdapter<ListModel, AbstractListViewHolder>(DIFF_CALLBACK) {
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListModel>() {
@@ -40,20 +40,25 @@ class NestedListAdapter(
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AbstractListViewHolder {
         val layoutId: Int
         val itemLayoutId: Int
         if (viewType == ListTypes.LIST_CENTER) {
             layoutId = R.layout.adapter_list_center
             itemLayoutId = R.layout.adapter_nested_item_center
-        } else {
+        } else if (viewType == ListTypes.LIST_START) {
             layoutId = R.layout.adapter_list_start
             itemLayoutId = R.layout.adapter_nested_item_start
+        } else {
+            layoutId = R.layout.adapter_list_start_leanback
+            itemLayoutId = R.layout.adapter_nested_item_start
         }
-        return ListViewHolder(
-            LayoutInflater.from(parent.context).inflate(layoutId, parent, false),
-            itemLayoutId
-        )
+        val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
+        return if (viewType == ListTypes.LIST_START_LEANBACK) {
+            LeanbackViewHolder(view, view.findViewById(R.id.recyclerView), itemLayoutId)
+        } else {
+            DpadListViewHolder(view, view.findViewById(R.id.recyclerView), itemLayoutId)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -61,27 +66,30 @@ class NestedListAdapter(
         if (item.centerAligned) {
             return ListTypes.LIST_CENTER
         }
+        if (item.isLeanback) {
+            return ListTypes.LIST_START_LEANBACK
+        }
         return ListTypes.LIST_START
     }
 
-    override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        holder.bind(getItem(position), stateHolder, onItemClickListener)
+    override fun onBindViewHolder(holder: AbstractListViewHolder, position: Int) {
+        val item = getItem(position)
+        holder.bind(item, onItemClickListener)
+        if (holder is LeanbackViewHolder) {
+            stateHolder.register(holder.horizontalGridView, item.title, holder.adapter)
+        } else if (holder is DpadListViewHolder) {
+            stateHolder.register(holder.dpadRecyclerView, item.title, holder.adapter)
+        }
     }
 
-    override fun onViewRecycled(holder: ListViewHolder) {
-        super.onViewRecycled(holder)
-        holder.onRecycled(stateHolder)
+    override fun onViewRecycled(holder: AbstractListViewHolder) {
+        val item = holder.item ?: return
+        if (holder is LeanbackViewHolder) {
+            stateHolder.unregister(holder.horizontalGridView, item.title)
+        } else if (holder is DpadListViewHolder) {
+            stateHolder.unregister(holder.dpadRecyclerView, item.title)
+        }
+        holder.onRecycled()
     }
-
-    override fun onViewAttachedToWindow(holder: ListViewHolder) {
-        super.onViewAttachedToWindow(holder)
-        holder.onAttachedToWindow()
-    }
-
-    override fun onViewDetachedFromWindow(holder: ListViewHolder) {
-        super.onViewDetachedFromWindow(holder)
-        holder.onDetachedFromWindow()
-    }
-
 
 }

@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemRowBinding
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenLeanbackHorizontalBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 
 class LeanbackHorizontalFragment : Fragment(R.layout.screen_leanback_horizontal) {
@@ -33,6 +34,8 @@ class LeanbackHorizontalFragment : Fragment(R.layout.screen_leanback_horizontal)
         super.onViewCreated(view, savedInstanceState)
         val binding = ScreenLeanbackHorizontalBinding.bind(view)
         binding.horizontalGridView.adapter = Adapter(isLeanback = true)
+        RecyclerViewLogger.logChildrenWhenIdle(binding.horizontalGridView)
+        RecyclerViewLogger.logChildrenWhenIdle(binding.dpadRecyclerView)
         binding.dpadRecyclerView.adapter = Adapter(isLeanback = false)
     }
 

@@ -29,6 +29,7 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
 import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListModel
@@ -55,6 +56,7 @@ class ListController(private val fragment: Fragment) {
         lifecycleOwner: LifecycleOwner,
         onSelected: (position: Int) -> Unit
     ) {
+        RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
         dpadRecyclerView = recyclerView
         setupAdapter(recyclerView)
         setupSpacings(recyclerView)
@@ -78,6 +80,7 @@ class ListController(private val fragment: Fragment) {
         lifecycleOwner: LifecycleOwner,
         onSelected: (position: Int) -> Unit
     ) {
+        RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
         gridView = recyclerView
         setupAdapter(recyclerView)
         setupSpacings(recyclerView)
