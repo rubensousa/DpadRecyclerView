@@ -20,14 +20,11 @@ import android.graphics.Rect
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LayoutResult
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutState
 
 /**
  * Layout algorithm:
@@ -38,8 +35,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutS
  * fill towards the top/start until there's no more space
  *
  * - [layoutPivot] - creates the pivot view and aligns it based on the alignment configuration
- * - [layoutChunk] - creates the next view and aligns it based on the current layout state
- * (Adapted from LinearLayoutManager)
  */
 internal class RowArchitect(
     private val layoutManager: LayoutManager,
@@ -57,9 +52,12 @@ internal class RowArchitect(
     private val viewBounds = Rect()
 
     fun layoutPivot(
-        layoutState: LayoutState, recycler: Recycler, pivotInfo: PivotInfo, state: State
-    ) {
-        val view = recycler.getViewForPosition(pivotInfo.position)
+        layoutState: LayoutState,
+        recycler: Recycler,
+        position: Int,
+        state: State
+    ): View {
+        val view = recycler.getViewForPosition(position)
         layoutManager.addView(view)
         onChildLayoutListener.onChildCreated(view, state)
         layoutManager.measureChildWithMargins(view, 0, 0)
@@ -78,10 +76,9 @@ internal class RowArchitect(
         }
         layoutView(view, viewBounds)
         Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
-        pivotInfo.headOffset = headOffset
-        pivotInfo.tailOffset = tailOffset
-        layoutState.updateWindow(pivotInfo)
+        layoutState.updateWindow(headOffset, tailOffset)
         onChildLayoutListener.onChildLaidOut(view, state)
+        return view
     }
 
     fun layout(layoutState: LayoutState, recycler: Recycler, state: State): Int {
@@ -117,6 +114,7 @@ internal class RowArchitect(
                 viewBounds.right = viewBounds.left + decoratedSize
             }
             layoutView(view, viewBounds)
+            Log.i(TAG, "Laid end view ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
             val spaceFilled = getSpaceFilled(viewBounds)
             layoutState.appendWindow(spaceFilled)
             remainingSpace -= spaceFilled
@@ -150,6 +148,7 @@ internal class RowArchitect(
                 viewBounds.left = viewBounds.right - decoratedSize
             }
             layoutView(view, viewBounds)
+            Log.i(TAG, "Laid start view ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
             val spaceFilled = getSpaceFilled(viewBounds)
             layoutState.prependWindow(spaceFilled)
             remainingSpace -= spaceFilled
@@ -228,7 +227,7 @@ internal class RowArchitect(
         )
     }
 
-    @Deprecated("Needs to use the new layout state class")
+  /*  @Deprecated("Needs to use the new layout state class")
     fun layoutChunk(
         recycler: RecyclerView.Recycler,
         layoutState: LinearLayoutState,
@@ -287,30 +286,6 @@ internal class RowArchitect(
         if (params.isItemRemoved || params.isItemChanged) {
             result.ignoreConsumed = true
         }
-    }
-
-    @Deprecated("Use new layout pivot that expects layout state")
-    fun layoutPivot(recycler: Recycler, pivotInfo: PivotInfo) {
-        val view = recycler.getViewForPosition(pivotInfo.position)
-        layoutManager.addView(view)
-        layoutManager.measureChildWithMargins(view, 0, 0)
-        val size = layoutInfo.getMeasuredSize(view)
-        val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
-        val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
-        val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
-
-        if (configuration.isVertical()) {
-            viewBounds.top = headOffset
-            viewBounds.bottom = tailOffset
-            applyHorizontalGravity(view, viewBounds)
-        } else {
-            viewBounds.left = headOffset
-            viewBounds.right = tailOffset
-            applyVerticalGravity(view, viewBounds)
-        }
-        layoutView(view, viewBounds)
-        pivotInfo.headOffset = headOffset
-        pivotInfo.tailOffset = tailOffset
-    }
+    }*/
 
 }

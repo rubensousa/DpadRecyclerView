@@ -106,9 +106,9 @@ internal class LayoutState {
         checkpoint = offset
     }
 
-    fun updateWindow(pivotInfo: PivotInfo) {
-        window.startOffset = pivotInfo.headOffset
-        window.endOffset = pivotInfo.tailOffset
+    fun updateWindow(start: Int, end: Int) {
+        window.startOffset = start
+        window.endOffset = end
     }
 
     fun offsetWindow(offset: Int) {

@@ -26,8 +26,6 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.GridArchitect
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LayoutResult
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 import kotlin.math.max
 import kotlin.math.min
@@ -46,9 +44,7 @@ internal class LayoutArchitect(
         private val DEBUG = BuildConfig.DEBUG
     }
 
-    private val pivotInfo = PivotInfo()
     private val layoutState = LayoutState()
-    private val layoutResult = LayoutResult()
     private val layoutCalculator = LayoutCalculator(layoutInfo)
     private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
     private val rowArchitect = RowArchitect(
@@ -63,7 +59,6 @@ internal class LayoutArchitect(
             }
         }
     )
-    private val gridArchitect = GridArchitect(layoutManager, layoutInfo, configuration)
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
 
     /**
@@ -91,18 +86,17 @@ internal class LayoutArchitect(
     }
 
     private fun predictiveLayoutPass(recycler: Recycler, state: State) {
-        pivotInfo.update(pivotSelector.position, layoutManager, state)
-
+        val pivotPosition = pivotSelector.position
         layoutManager.detachAndScrapAttachedViews(recycler)
 
-        rowArchitect.layoutPivot(layoutState, recycler, pivotInfo, state)
+        rowArchitect.layoutPivot(layoutState, recycler, pivotPosition, state)
 
         // Layout views after the pivot
-        layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotInfo)
+        layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotPosition)
         rowArchitect.layoutEnd(layoutState, recycler, state)
 
         // Layout views before the pivot
-        layoutCalculator.updateLayoutStateBeforePivot(layoutState, pivotInfo)
+        layoutCalculator.updateLayoutStateBeforePivot(layoutState, pivotPosition)
         rowArchitect.layoutStart(layoutState, recycler, state)
 
         layoutForPredictiveAnimations(recycler, state)
@@ -192,8 +186,7 @@ internal class LayoutArchitect(
     }
 
     private fun alignPivot(recycler: Recycler, state: State) {
-        pivotInfo.update(pivotSelector.position, layoutManager, state)
-        pivotInfo.view?.let { pivotView ->
+        pivotSelector.pivotView?.let { pivotView ->
             // Offset all views by the existing remaining scroll so that they're still scrolled
             // to their final locations
             val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
@@ -211,7 +204,6 @@ internal class LayoutArchitect(
 
     fun onLayoutCompleted(state: State) {
         layoutInfo.onLayoutCompleted()
-        layoutResult.reset()
         layoutCompleteListeners.forEach { listener ->
             listener.onLayoutCompleted(state)
         }
@@ -273,7 +265,6 @@ internal class LayoutArchitect(
 
     private fun offsetBy(offset: Int) {
         layoutInfo.orientationHelper.offsetChildren(-offset)
-        pivotInfo.offset(-offset)
         layoutState.offsetWindow(-offset)
     }
 

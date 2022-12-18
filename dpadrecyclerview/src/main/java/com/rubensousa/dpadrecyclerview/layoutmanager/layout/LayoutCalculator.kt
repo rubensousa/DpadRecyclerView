@@ -166,10 +166,10 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
      *
      * Pivot *****
      */
-    fun updateLayoutStateAfterPivot(layoutState: LayoutState, pivotInfo: PivotInfo) {
+    fun updateLayoutStateAfterPivot(layoutState: LayoutState, pivotPosition: Int) {
         layoutState.apply {
             setEndDirection()
-            setCurrentPosition(pivotInfo.position + 1)
+            setCurrentPosition(pivotPosition + 1)
             setCheckpoint(layoutState.getEndOffset())
             setAvailableScrollSpace(0)
             val endFillSpace = max(
@@ -184,10 +184,10 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
      *
      * ****** Pivot
      */
-    fun updateLayoutStateBeforePivot(layoutState: LayoutState, pivotInfo: PivotInfo) {
+    fun updateLayoutStateBeforePivot(layoutState: LayoutState, pivotPosition: Int) {
         layoutState.apply {
             setStartDirection()
-            setCurrentPosition(pivotInfo.position - 1)
+            setCurrentPosition(pivotPosition - 1)
             setCheckpoint(layoutState.getStartOffset())
             setAvailableScrollSpace(0)
             val startFillSpace = max(
