@@ -18,42 +18,33 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 
 import android.graphics.PointF
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.sqrt
 
 /**
- * Smooth scrolls until there's a pivot we can focus or if we reach an edge of the list.
- *
- * This smooth scroller will always be triggered whenever we haven't laid out an edge of the list.
- * For this reason, we need to report whenever a new child is laid out to determine
- * if we need to stop scrolling.
+ * Smooth scrolls until the pivot at [position] is laid out and then aligns it
  */
-internal class SearchPivotSmoothScroller(
+internal class PivotSelectionSmoothScroller(
     private val recyclerView: RecyclerView,
+    private val position: Int,
+    private val subPosition: Int,
     private val layoutInfo: LayoutInfo,
-    private val pivotSelector: PivotSelector,
     private val alignment: LayoutAlignment,
     private val listener: Listener
-) : LinearSmoothScroller(recyclerView.context) {
-
-    companion object {
-        // Forces smooth scroller to run until target is actually set
-        const val UNDEFINED_TARGET = -2
-
-        private const val TAG = "SearchPivotScroller"
-    }
+) : LinearSmoothScroller(recyclerView.context){
 
     private var isCanceled = false
-    private val movements = ScrollMovements(layoutInfo)
 
     init {
-        targetPosition = UNDEFINED_TARGET
+        targetPosition = position
+    }
+
+    fun cancel() {
+        isCanceled = true
     }
 
     override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
@@ -62,8 +53,7 @@ internal class SearchPivotSmoothScroller(
     }
 
     override fun onTargetFound(targetView: View, state: RecyclerView.State, action: Action) {
-        Log.i(TAG, "onTargetFound")
-        val scrollOffset = alignment.calculateScrollOffset(recyclerView, targetView, 0)
+        val scrollOffset = alignment.calculateScrollOffset(recyclerView, targetView, subPosition)
         // Check if we don't need to scroll
         if (scrollOffset == 0) {
             return
@@ -81,10 +71,10 @@ internal class SearchPivotSmoothScroller(
     }
 
     override fun computeScrollVectorForPosition(targetPosition: Int): PointF? {
-        if (movements.getPendingMoves() == 0) {
+        if (childCount == 0) {
             return null
         }
-        val direction = if (movements.getPendingMoves() < 0) -1f else 1f
+        val direction = if (isGoingTowardsStart(targetPosition)) -1f else 1f
         return if (layoutInfo.isHorizontal()) {
             PointF(direction, 0f)
         } else {
@@ -92,62 +82,32 @@ internal class SearchPivotSmoothScroller(
         }
     }
 
-    fun onChildCreated(child: View) {
-        val viewHolder = layoutInfo.getChildViewHolder(child) ?: return
-        val adapterPosition = viewHolder.absoluteAdapterPosition
-        Log.i(TAG, "View attached: $adapterPosition")
-        if (layoutInfo.isViewFocusable(child)
-            && adapterPosition != RecyclerView.NO_POSITION
-            && movements.consume()
-        ) {
-            listener.onPivotAttached(child, adapterPosition)
-        }
-    }
-
-    fun onChildLaidOut(view: View) {
-        if (movements.shouldStopScrolling() && isRunning) {
-            Log.i(TAG, "Requested stop scrolling")
-            targetPosition = pivotSelector.position
-            stop()
-        }
-    }
-
-    fun addScrollMovement(forward: Boolean) {
-        if (forward) {
-            movements.increase()
+    private fun isGoingTowardsStart(targetPosition: Int): Boolean {
+        val firstChild = requireNotNull(recyclerView.getChildAt(0))
+        val firstChildPosition = layoutInfo.getLayoutPositionOf(firstChild)
+        return if (layoutInfo.isRTL() && layoutInfo.isHorizontal()) {
+            targetPosition > firstChildPosition
         } else {
-            movements.decrease()
+            targetPosition < firstChildPosition
         }
-    }
-
-    fun cancel() {
-        isCanceled = true
     }
 
     override fun onStop() {
         super.onStop()
-        Log.i(TAG, "onStop")
-        if (isCanceled) {
-            listener.onSmoothScrollerStopped()
-            return
+        if (!isCanceled) {
+            val pivotView = findViewByPosition(targetPosition)
+            if (pivotView != null) {
+                listener.onPivotFound(pivotView, targetPosition, subPosition)
+            } else if (targetPosition >= 0) {
+                listener.onPivotNotFound(targetPosition)
+            }
         }
-
-        movements.clear()
-
-        val pivotView = findViewByPosition(targetPosition)
-        if (pivotView != null) {
-            listener.onPivotFound(pivotView)
-        } else {
-            listener.onPivotNotFound(targetPosition)
-        }
-
         listener.onSmoothScrollerStopped()
     }
 
     interface Listener {
-        fun onPivotAttached(pivotView: View, adapterPosition: Int)
-        fun onPivotFound(pivotView: View)
-        fun onPivotNotFound(targetPosition: Int)
+        fun onPivotFound(pivotView: View, position: Int, subPosition: Int)
+        fun onPivotNotFound(position: Int)
         fun onSmoothScrollerStopped()
     }
 

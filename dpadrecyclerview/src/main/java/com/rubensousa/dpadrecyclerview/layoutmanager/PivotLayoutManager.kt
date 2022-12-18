@@ -55,15 +55,15 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         private const val TAG = "PivotLayoutManager"
     }
 
-    private val configuration = LayoutConfiguration()
+    private val configuration = LayoutConfiguration(properties)
     private val layoutInfo = LayoutInfo(this, configuration)
     private val pivotSelector = PivotSelector(this, layoutInfo)
     private val layoutAlignment = LayoutAlignment(this, layoutInfo, configuration)
-    private val layoutArchitect = LayoutArchitect(
-        this, layoutAlignment, configuration, pivotSelector, layoutInfo
-    )
     private val scroller = LayoutScroller(
         this, layoutInfo, layoutAlignment, configuration, pivotSelector
+    )
+    private val layoutArchitect = LayoutArchitect(
+        this, layoutAlignment, configuration, pivotSelector, scroller, layoutInfo
     )
     private val focusFinder = LayoutFocusFinder(
         this, configuration, scroller, layoutInfo, pivotSelector
@@ -73,13 +73,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     )
     private var hadFocusBeforeLayout = false
     private var recyclerView: RecyclerView? = null
-
-    init {
-        setSpanCount(properties.spanCount)
-        setOrientation(properties.orientation)
-        configuration.setReverseLayout(properties.reverseLayout)
-        configuration.setStackFromEnd(properties.stackFromEnd)
-    }
 
     override fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
         return layoutParams is DpadLayoutParams
@@ -146,8 +139,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         pivotSelector.onLayoutChildren(state)
-        hadFocusBeforeLayout = recyclerView?.hasFocus() ?: false
         // If we have focus, save it temporarily since the views will change and we might lose it
+        hadFocusBeforeLayout = recyclerView?.hasFocus() ?: false
         layoutArchitect.onLayoutChildren(recycler, state)
     }
 

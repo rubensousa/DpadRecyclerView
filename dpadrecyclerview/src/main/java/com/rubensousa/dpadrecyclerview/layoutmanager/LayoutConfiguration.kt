@@ -18,11 +18,12 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager.Properties
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 
-internal class LayoutConfiguration {
+internal class LayoutConfiguration(properties: Properties) {
 
     var orientation: Int = RecyclerView.VERTICAL
         private set
@@ -109,7 +110,14 @@ internal class LayoutConfiguration {
     var extraLayoutSpaceStrategy: ExtraLayoutSpaceStrategy? = null
         private set
 
-    fun setFocusSearchDisabled(isDisabled: Boolean){
+    init {
+        setSpanCount(properties.spanCount)
+        setOrientation(properties.orientation)
+        setReverseLayout(properties.reverseLayout)
+        setStackFromEnd(properties.stackFromEnd)
+    }
+
+    fun setFocusSearchDisabled(isDisabled: Boolean) {
         isFocusSearchDisabled = isDisabled
     }
 
@@ -137,7 +145,7 @@ internal class LayoutConfiguration {
         spanCount = count
     }
 
-    fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup){
+    fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
         this.spanSizeLookup = spanSizeLookup
     }
 

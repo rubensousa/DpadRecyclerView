@@ -43,6 +43,7 @@ internal class LayoutFocusFinder(
     }
 
     private var recyclerView: RecyclerView? = null
+    private val focusFinder = FocusFinder.getInstance()
 
     // key - row / value - previous focused span
     private val focusedSpans = LinkedHashMap<Int, Int>()
@@ -60,6 +61,14 @@ internal class LayoutFocusFinder(
      * When [RecyclerView.requestFocus] is called, we need to focus the first focusable child
      */
     fun onFocusChanged(gainFocus: Boolean) {
+        /**
+         * If we gain focus during a search for a new pivot,
+         * it means an existing view was deleted and RecyclerView is retaining focus for it.
+         * In this case, just ignore and do nothing
+         */
+        if (gainFocus && scroller.isSearchingPivot()) {
+            return
+        }
         // Skip if we didn't gain focus or no view is selected
         if (!gainFocus || pivotSelector.position == RecyclerView.NO_POSITION) {
             return
@@ -67,7 +76,7 @@ internal class LayoutFocusFinder(
         var index = pivotSelector.position
         while (index < layout.itemCount) {
             val view = layout.findViewByPosition(index) ?: break
-            if (view.hasFocusable()) {
+            if (layoutInfo.isViewFocusable(view)) {
                 view.requestFocus()
                 break
             }
@@ -116,7 +125,6 @@ internal class LayoutFocusFinder(
         if (configuration.isFocusSearchDisabled) {
             return focused
         }
-        val focusFinder = FocusFinder.getInstance()
         var result: View? = null
         val movement: ScrollMovement? = ScrollMovementCalculator.calculate(
             layoutInfo.isHorizontal(), layoutInfo.isRTL(), direction
@@ -144,12 +152,12 @@ internal class LayoutFocusFinder(
             if (movement != null) {
                 // TODO
                 when (configuration.focusableDirection) {
-                 /*   FocusableDirection.CIRCULAR -> {
-                        result = focusCircular(movement)
-                    }
-                    FocusableDirection.CONTINUOUS -> {
-                        result = focusContinuous(movement)
-                    }*/
+                    /*   FocusableDirection.CIRCULAR -> {
+                           result = focusCircular(movement)
+                       }
+                       FocusableDirection.CONTINUOUS -> {
+                           result = focusContinuous(movement)
+                       }*/
                     else -> {
                         // Do nothing
                     }
@@ -173,6 +181,7 @@ internal class LayoutFocusFinder(
                 if (isScrolling || !configuration.focusOutBack) {
                     result = focused
                 }
+                scroller.addScrollMovement(forward = true)
                 if (!layoutInfo.hasCreatedLastItem()) {
                     result = focused
                 }
@@ -181,6 +190,7 @@ internal class LayoutFocusFinder(
                 if (isScrolling || !configuration.focusOutFront) {
                     result = focused
                 }
+                scroller.addScrollMovement(forward = false)
                 if (!layoutInfo.hasCreatedFirstItem()) {
                     result = focused
                 }
@@ -214,6 +224,10 @@ internal class LayoutFocusFinder(
             return true
         }
         if (recyclerView.hasFocus()) {
+            // Don't keep adding new views if we're already searching for a pivot
+            if (scroller.isSearchingPivot()) {
+                return true
+            }
             addFocusablesWhenRecyclerHasFocus(recyclerView, views, direction, focusableMode)
             return true
         }
@@ -299,7 +313,7 @@ internal class LayoutFocusFinder(
         var i = loop_start
         while ((i <= loop_end && inc > 0) || (i >= loop_end && inc < 0)) {
             val child = layout.getChildAt(i)
-            if (child == null || !isViewFocusable(child)) {
+            if (child == null || !layoutInfo.isViewFocusable(child)) {
                 i += inc
                 continue
             }
@@ -383,10 +397,6 @@ internal class LayoutFocusFinder(
 
     private fun getPreviousSpanFocus(row: Int): Int {
         return focusedSpans[row] ?: RecyclerView.NO_POSITION
-    }
-
-    private fun isViewFocusable(view: View): Boolean {
-        return view.visibility == View.VISIBLE && view.hasFocusable() && view.isFocusable
     }
 
 

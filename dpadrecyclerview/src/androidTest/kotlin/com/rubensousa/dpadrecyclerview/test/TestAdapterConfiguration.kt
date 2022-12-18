@@ -23,13 +23,13 @@ import com.rubensousa.dpadrecyclerview.testing.R
 data class TestAdapterConfiguration(
     val itemLayoutId: Int = R.layout.dpadrecyclerview_test_item_grid,
     val numberOfItems: Int = 200,
-    val alternateFocus: Boolean = false
+    val focusEvery: Int = 1,
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt(),
-        parcel.readByte() != 0.toByte()
+        parcel.readInt()
     )
 
     override fun describeContents(): Int {
@@ -39,7 +39,7 @@ data class TestAdapterConfiguration(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(itemLayoutId)
         parcel.writeInt(numberOfItems)
-        parcel.writeByte(if (alternateFocus) 1 else 0)
+        parcel.writeInt(focusEvery)
     }
 
     companion object CREATOR : Parcelable.Creator<TestAdapterConfiguration> {

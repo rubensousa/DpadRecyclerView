@@ -61,6 +61,7 @@ internal class RowArchitect(
     ) {
         val view = recycler.getViewForPosition(pivotInfo.position)
         layoutManager.addView(view)
+        onChildLayoutListener.onChildCreated(view, state)
         layoutManager.measureChildWithMargins(view, 0, 0)
         val size = layoutInfo.getMeasuredSize(view)
         val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
@@ -93,7 +94,6 @@ internal class RowArchitect(
 
     fun layoutEnd(layoutState: LayoutState, recycler: Recycler, state: State): Int {
         var remainingSpace = layoutState.fillSpace
-        Log.i(TAG, "Remaining space: $remainingSpace")
         childRecycler.recycleByLayoutState(recycler, layoutState)
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
             val view = layoutState.getNextView(recycler) ?: break // No more views to layout, exit
@@ -102,6 +102,7 @@ internal class RowArchitect(
             } else {
                 layoutManager.addDisappearingView(view)
             }
+            onChildLayoutListener.onChildCreated(view, state)
             layoutManager.measureChildWithMargins(view, 0, 0)
             val decoratedSize = layoutInfo.getDecoratedSize(view)
 
@@ -135,6 +136,7 @@ internal class RowArchitect(
             } else {
                 layoutManager.addDisappearingView(view, 0)
             }
+            onChildLayoutListener.onChildCreated(view, state)
             layoutManager.measureChildWithMargins(view, 0, 0)
             val decoratedSize = layoutInfo.getDecoratedSize(view)
 

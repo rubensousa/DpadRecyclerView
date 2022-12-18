@@ -24,6 +24,7 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
@@ -191,6 +192,7 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
         )
 
         viewBounds = getItemViewBounds(position = lastPosition)
+        assertFocusPosition(lastPosition)
         assertThat(viewBounds.centerX()).isEqualTo(recyclerViewBounds.centerX())
 
         updateParentAlignment(
@@ -203,6 +205,7 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
 
         viewBounds = getItemViewBounds(position = lastPosition)
         assertThat(viewBounds.centerX()).isEqualTo(recyclerViewBounds.centerX())
+        assertFocusPosition(lastPosition)
 
         updateParentAlignment(
             ParentAlignment(
@@ -214,6 +217,7 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
 
         viewBounds = getItemViewBounds(position = lastPosition)
         assertThat(viewBounds.right).isEqualTo(recyclerViewBounds.right)
+        assertFocusPosition(lastPosition)
     }
 
     @Test

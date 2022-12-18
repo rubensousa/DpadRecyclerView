@@ -80,8 +80,8 @@ internal class LayoutAlignment(
         return parentAlignment.calculateKeyline()
     }
 
-    fun getViewAtSubPosition(recyclerView: RecyclerView, view: View, subPosition: Int): View? {
-        val viewHolder = recyclerView.getChildViewHolder(view)
+    fun getViewAtSubPosition(view: View, subPosition: Int): View? {
+        val viewHolder = layoutInfo.getChildViewHolder(view)
         val childAlignments = (viewHolder as? DpadViewHolder)?.getAlignments() ?: return null
         if (subPosition >= childAlignments.size) {
             return null
@@ -154,7 +154,7 @@ internal class LayoutAlignment(
         view: View,
         subPosition: Int
     ): Int {
-        val viewAtSubPosition = getViewAtSubPosition(recyclerView, view, subPosition)
+        val viewAtSubPosition = getViewAtSubPosition(view, subPosition)
         return calculateScrollOffset(recyclerView, view, viewAtSubPosition)
     }
 

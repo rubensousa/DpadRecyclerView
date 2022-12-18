@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
@@ -27,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.GridArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LayoutResult
+import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 import kotlin.math.max
 import kotlin.math.min
 
@@ -35,6 +37,7 @@ internal class LayoutArchitect(
     private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration,
     private val pivotSelector: PivotSelector,
+    private val scroller: LayoutScroller,
     private val layoutInfo: LayoutInfo
 ) {
 
@@ -51,8 +54,12 @@ internal class LayoutArchitect(
     private val rowArchitect = RowArchitect(
         layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler,
         object : OnChildLayoutListener {
+            override fun onChildCreated(view: View, state: State) {
+                scroller.onChildCreated(view)
+            }
             override fun onChildLaidOut(view: View, state: State) {
-
+                layoutAlignment.updateScrollLimits()
+                scroller.onChildLaidOut(view)
             }
         }
     )
@@ -68,6 +75,7 @@ internal class LayoutArchitect(
      * 3. Views cleared: just remove all views
      */
     fun onLayoutChildren(recycler: Recycler, state: State) {
+        Log.i(TAG, "OnLayoutChildren: $state")
         layoutInfo.setLayoutInProgress()
         layoutAlignment.update()
         layoutCalculator.init(layoutState, state)
@@ -118,6 +126,7 @@ internal class LayoutArchitect(
     }
 
     private fun removeInvisibleViews(recycler: Recycler) {
+        layoutState.setRecyclingEnabled(true)
         childRecycler.recycleFromStart(recycler, layoutState)
         childRecycler.recycleFromEnd(recycler, layoutState)
     }
@@ -187,13 +196,16 @@ internal class LayoutArchitect(
         pivotInfo.view?.let { pivotView ->
             // Offset all views by the existing remaining scroll so that they're still scrolled
             // to their final locations
-            val remainingScroll = if (configuration.isVertical()) {
-                state.remainingScrollVertical
-            } else {
-                state.remainingScrollHorizontal
-            }
             val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
-            scrollBy(scrollOffset - remainingScroll, recycler, state)
+            scrollBy(scrollOffset - getRemainingScroll(state), recycler, state)
+        }
+    }
+
+    private fun getRemainingScroll(state: State): Int {
+        return if (configuration.isVertical()) {
+            state.remainingScrollVertical
+        } else {
+            state.remainingScrollHorizontal
         }
     }
 
@@ -248,11 +260,15 @@ internal class LayoutArchitect(
         if (state.itemCount == 0 || offset == 0) {
             return 0
         }
-        layoutCalculator.updateLayoutStateForScroll(layoutState, state, offset)
+        val scrollOffset = layoutAlignment.getCappedScroll(offset)
+
+        // Offset views immediately
+        offsetBy(scrollOffset)
+
+        // Now layout the next views and recycle the ones we don't need along the way
+        layoutCalculator.updateLayoutStateForScroll(layoutState, state, scrollOffset)
         rowArchitect.layout(layoutState, recycler, state)
-        offsetBy(offset)
-       // removeInvisibleViews(recycler)
-        return offset
+        return scrollOffset
     }
 
     private fun offsetBy(offset: Int) {

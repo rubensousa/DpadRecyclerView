@@ -34,13 +34,12 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
     }
 
     private fun setCustomExtraLayoutSpace(layoutState: LayoutState, state: State): Boolean {
-        layoutInfo.getConfiguration().extraLayoutSpaceStrategy?.let { strategy ->
+        return layoutInfo.getConfiguration().extraLayoutSpaceStrategy?.let { strategy ->
             strategy.calculateExtraLayoutSpace(state, extraLayoutSpace)
             layoutState.setExtraLayoutSpaceStart(extraLayoutSpace[0])
             layoutState.setExtraLayoutSpaceEnd(extraLayoutSpace[1])
-            return true
-        }
-        return false
+            true
+        } ?: false
     }
 
     private fun updateExtraLayoutSpace(layoutState: LayoutState, state: State) {
@@ -48,12 +47,11 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
             // Skip our logic if user specified a custom strategy for extra layout space
             return
         }
-        val extraScrollSpace = getDefaultExtraLayoutSpace(state)
         if (layoutState.isLayingOutEnd()) {
-            layoutState.setExtraLayoutSpaceEnd(extraScrollSpace / 2)
+            layoutState.setExtraLayoutSpaceEnd(getDefaultExtraLayoutSpace())
             layoutState.setExtraLayoutSpaceStart(0)
         } else {
-            layoutState.setExtraLayoutSpaceStart(extraScrollSpace / 2)
+            layoutState.setExtraLayoutSpaceStart(getDefaultExtraLayoutSpace())
             layoutState.setExtraLayoutSpaceEnd(0)
         }
     }
@@ -200,10 +198,12 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
     }
 
     /**
-     * Layout an extra page by default if we're scrolling
+     * If we're scrolling to a specific target position,
+     * we should layout extra items before we reach the target to make sure
+     * the scroll alignment works correctly.
      */
-    private fun getDefaultExtraLayoutSpace(state: State): Int {
-        return if (layoutInfo.isScrolling || state.hasTargetScrollPosition()) {
+    private fun getDefaultExtraLayoutSpace(): Int {
+        return if (layoutInfo.isScrollingToTarget) {
             layoutInfo.getTotalSpace()
         } else {
             0

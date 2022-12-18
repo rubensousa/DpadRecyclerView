@@ -20,5 +20,6 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView.State
 
 interface OnChildLayoutListener {
+    fun onChildCreated(view: View, state: State)
     fun onChildLaidOut(view: View, state: State)
 }

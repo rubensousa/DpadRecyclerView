@@ -32,26 +32,28 @@ class LeanbackHorizontalFragment : Fragment(R.layout.screen_leanback_horizontal)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ScreenLeanbackHorizontalBinding.bind(view)
-        binding.horizontalGridView.adapter = Adapter()
-        binding.dpadRecyclerView.adapter = Adapter()
+        binding.horizontalGridView.adapter = Adapter(isLeanback = true)
+        binding.dpadRecyclerView.adapter = Adapter(isLeanback = false)
     }
 
-    class Adapter : RecyclerView.Adapter<ItemViewHolder>() {
+    class Adapter(private val isLeanback: Boolean) : RecyclerView.Adapter<ItemViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
             val binding = AdapterItemRowBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
-            return ItemViewHolder(binding.root, binding.textView, animateFocusChanges = false)
+            return ItemViewHolder(
+                binding.root, binding.textView, animateFocusChanges = false
+            )
         }
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
             holder.bind(position, null)
-            holder.itemView.isFocusable = position % 30 == 0
-            holder.itemView.isFocusableInTouchMode = position % 30 == 0
+            holder.itemView.isFocusable = position % 10 == 0
+            holder.itemView.isFocusableInTouchMode = position % 10 == 0
         }
 
-        override fun getItemCount(): Int = 200
+        override fun getItemCount(): Int = 100
 
     }
 

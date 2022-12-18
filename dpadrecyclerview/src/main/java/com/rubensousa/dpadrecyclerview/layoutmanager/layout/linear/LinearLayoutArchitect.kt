@@ -60,6 +60,9 @@ internal class LinearLayoutArchitect(
     private val rowArchitect = RowArchitect(
         layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler,
         object : OnChildLayoutListener {
+            override fun onChildCreated(view: View, state: RecyclerView.State) {
+
+            }
             override fun onChildLaidOut(view: View, state: RecyclerView.State) {
 
             }

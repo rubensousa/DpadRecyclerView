@@ -54,11 +54,7 @@ class TestAdapter(
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.bind(getItem(position))
-        val isFocusable = if (adapterConfiguration.alternateFocus) {
-            position % 2 == 0
-        } else {
-            true
-        }
+        val isFocusable = position % adapterConfiguration.focusEvery == 0
         holder.itemView.isFocusable = isFocusable
         holder.itemView.isFocusableInTouchMode = isFocusable
     }

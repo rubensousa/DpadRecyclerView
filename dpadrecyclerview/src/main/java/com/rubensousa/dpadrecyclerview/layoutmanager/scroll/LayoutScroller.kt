@@ -44,9 +44,11 @@ internal class LayoutScroller(
         private set
 
     private var recyclerView: RecyclerView? = null
-    private var searchPivotSmoothScroller: SearchPivotSmoothScroller? = null
+    private var pivotSelectionScroller: PivotSelectionSmoothScroller? = null
+    private var searchPivotScroller: SearchPivotSmoothScroller? = null
     private val idleScrollListener = IdleScrollListener()
     private val searchPivotListener = SearchPivotListener()
+    private val selectionPivotListener = SelectionPivotListener()
 
     fun setRecyclerView(newRecyclerView: RecyclerView?) {
         recyclerView?.removeOnScrollListener(idleScrollListener)
@@ -71,7 +73,7 @@ internal class LayoutScroller(
      * and there's no pending layout request.
      *
      * If the view doesn't exist and there's no pending layout request,
-     * we use [SearchPivotSmoothScroller] to scroll until it's found.
+     * we use [PivotSelectionSmoothScroller] to scroll until it's found.
      *
      * Otherwise, the selection is deferred to the next layout pass.
      */
@@ -140,14 +142,15 @@ internal class LayoutScroller(
             )
             return
         }
+        layoutInfo.setIsScrollingToTarget(true)
         layoutManager.startSmoothScroll(
-            SearchPivotSmoothScroller(
+            PivotSelectionSmoothScroller(
                 recyclerView,
                 position,
                 subPosition,
                 layoutInfo,
                 layoutAlignment,
-                searchPivotListener
+                selectionPivotListener
             )
         )
     }
@@ -165,7 +168,7 @@ internal class LayoutScroller(
         smooth: Boolean
     ) {
         isSelectionInProgress = true
-        val subPositionView = layoutAlignment.getViewAtSubPosition(recyclerView, view, subPosition)
+        val subPositionView = layoutAlignment.getViewAtSubPosition(view, subPosition)
         if (subPositionView == null && subPosition != 0) {
             Log.w(
                 DpadRecyclerView.TAG,
@@ -186,7 +189,7 @@ internal class LayoutScroller(
     fun scrollToSelectedPosition(
         recyclerView: RecyclerView,
         smooth: Boolean,
-        requestFocus: Boolean
+        requestFocus: Boolean = layoutManager.hasFocus()
     ) {
         val itemCount = layoutManager.itemCount
         var targetPosition = pivotSelector.position
@@ -218,7 +221,14 @@ internal class LayoutScroller(
     }
 
     fun setSmoothScroller(smoothScroller: RecyclerView.SmoothScroller) {
-        searchPivotSmoothScroller = if (smoothScroller.isRunning
+        pivotSelectionScroller = if (smoothScroller.isRunning
+            && smoothScroller is PivotSelectionSmoothScroller
+        ) {
+            smoothScroller
+        } else {
+            null
+        }
+        searchPivotScroller = if (smoothScroller.isRunning
             && smoothScroller is SearchPivotSmoothScroller
         ) {
             smoothScroller
@@ -227,9 +237,37 @@ internal class LayoutScroller(
         }
     }
 
+    fun isSearchingPivot() = searchPivotScroller != null
+
     fun cancelSmoothScroller() {
-        searchPivotSmoothScroller?.cancel()
-        searchPivotSmoothScroller = null
+        layoutInfo.setIsScrollingToTarget(false)
+        searchPivotScroller?.cancel()
+        searchPivotScroller = null
+        pivotSelectionScroller?.cancel()
+        pivotSelectionScroller = null
+    }
+
+    fun addScrollMovement(forward: Boolean) {
+        // Skip action if there's no need to scroll already
+        if (forward && layoutInfo.hasCreatedLastItem()
+            || (!forward && layoutInfo.hasCreatedFirstItem())
+        ) {
+            return
+        }
+        val currentRecyclerView = recyclerView ?: return
+        if (searchPivotScroller == null) {
+            val newSmoothScroller = SearchPivotSmoothScroller(
+                currentRecyclerView,
+                layoutInfo,
+                pivotSelector,
+                layoutAlignment,
+                searchPivotListener
+            )
+            newSmoothScroller.addScrollMovement(forward)
+            layoutManager.startSmoothScroll(newSmoothScroller)
+        } else {
+            searchPivotScroller?.addScrollMovement(forward)
+        }
     }
 
     private fun scrollToView(
@@ -279,10 +317,6 @@ internal class LayoutScroller(
             subPositionView.requestFocus()
         } else if (requestFocus) {
             view.requestFocus()
-        }
-
-        if (!selectionChanged) {
-            return
         }
 
         performScrollToView(
@@ -371,17 +405,65 @@ internal class LayoutScroller(
         }
     }
 
+    fun onChildCreated(view: View) {
+        searchPivotScroller?.onChildCreated(view)
+    }
+
+    fun onChildLaidOut(view: View) {
+        searchPivotScroller?.onChildLaidOut(view)
+    }
+
     private inner class SearchPivotListener : SearchPivotSmoothScroller.Listener {
+
+        override fun onPivotAttached(pivotView: View, adapterPosition: Int) {
+            Log.i(TAG, "onPivotAttached: $pivotView")
+            pivotSelector.update(adapterPosition)
+            if (layoutManager.hasFocus()) {
+                isSelectionInProgress = true
+                pivotView.requestFocus()
+                isSelectionInProgress = false
+            }
+        }
+
+        override fun onPivotFound(pivotView: View) {
+            Log.i(TAG, "onPivotFound: $pivotView")
+            recyclerView?.let {
+                scrollToView(
+                    it,
+                    pivotView,
+                    subPositionView = null,
+                    smooth = true,
+                    requestFocus = layoutManager.hasFocus()
+                )
+            }
+        }
+
+        override fun onPivotNotFound(targetPosition: Int) {
+            // If a new pivot didn't exist in the layout, just scroll back to the previous one
+            recyclerView?.let {
+                if (targetPosition >= 0) {
+                    scrollToPosition(it, targetPosition, subPosition = 0, smooth = true)
+                } else {
+                    scrollToSelectedPosition(it, smooth = false)
+                }
+            }
+        }
+
+        override fun onSmoothScrollerStopped() {
+            searchPivotScroller = null
+        }
+
+    }
+
+    private inner class SelectionPivotListener : PivotSelectionSmoothScroller.Listener {
 
         override fun onPivotFound(pivotView: View, position: Int, subPosition: Int) {
             if (layoutManager.hasFocus()) {
                 isSelectionInProgress = true
-                recyclerView?.let {
-                    val subPositionView = layoutAlignment.getViewAtSubPosition(
-                        it, pivotView, subPosition
-                    )
-                    subPositionView?.requestFocus() ?: pivotView.requestFocus()
-                }
+                val subPositionView = layoutAlignment.getViewAtSubPosition(
+                    pivotView, subPosition
+                )
+                subPositionView?.requestFocus() ?: pivotView.requestFocus()
                 isSelectionInProgress = false
             }
             recyclerView?.apply {
@@ -399,7 +481,8 @@ internal class LayoutScroller(
         }
 
         override fun onSmoothScrollerStopped() {
-            searchPivotSmoothScroller = null
+            layoutInfo.setIsScrollingToTarget(false)
+            pivotSelectionScroller = null
         }
     }
 

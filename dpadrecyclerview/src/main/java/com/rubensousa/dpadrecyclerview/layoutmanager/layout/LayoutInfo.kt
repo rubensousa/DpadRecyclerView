@@ -45,6 +45,9 @@ internal class LayoutInfo(
     var isScrolling = false
         private set
 
+    var isScrollingToTarget = false
+        private set
+
     var isLayoutInProgress = false
         private set
 
@@ -78,6 +81,10 @@ internal class LayoutInfo(
 
     fun setIsScrolling(isScrolling: Boolean) {
         this.isScrolling = isScrolling
+    }
+
+    fun setIsScrollingToTarget(isScrolling: Boolean) {
+        isScrollingToTarget = isScrolling
     }
 
     fun setLayoutInProgress() {
@@ -323,8 +330,8 @@ internal class LayoutInfo(
         return layoutParams.isItemRemoved
     }
 
-    fun shouldFocusView(view: View): Boolean {
-        return view.visibility == View.VISIBLE && view.hasFocusable() && layout.hasFocus()
+    fun isViewFocusable(view: View): Boolean {
+        return view.visibility == View.VISIBLE && view.hasFocusable()
     }
 
     fun didChildStateChange(
