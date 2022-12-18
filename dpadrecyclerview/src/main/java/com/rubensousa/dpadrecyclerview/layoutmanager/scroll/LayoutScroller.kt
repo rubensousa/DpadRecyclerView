@@ -20,7 +20,6 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
@@ -60,12 +59,10 @@ internal class LayoutScroller(
      * Since the layout pass can finish after the RecyclerView gains focus,
      * make sure that we focus the new selected view when layout is done
      */
-    fun onLayoutCompleted(recyclerView: RecyclerView, requestFocus: Boolean) {
-        scrollToSelectedPosition(
-            recyclerView,
-            smooth = false,
-            requestFocus = requestFocus
-        )
+    fun onLayoutCompleted(requestFocus: Boolean) {
+        recyclerView?.let {
+            scrollToSelectedPosition(it, smooth = false, requestFocus = requestFocus)
+        }
     }
 
     /**
@@ -338,10 +335,10 @@ internal class LayoutScroller(
         scrollBy(recyclerView, scrollOffset, smooth)
 
         if (selectViewHolder) {
-            pivotSelector.dispatchViewHolderSelected(recyclerView)
+            pivotSelector.dispatchViewHolderSelected()
             // If we didn't scroll, dispatch aligned event already
             if (scrollOffset == 0) {
-                pivotSelector.dispatchViewHolderSelectedAndAligned(recyclerView)
+                pivotSelector.dispatchViewHolderSelectedAndAligned()
             }
         }
     }
@@ -391,20 +388,6 @@ internal class LayoutScroller(
         return scrollOffset
     }
 
-    /**
-     * Logs the internal representation of children for debugging purposes.
-     */
-    internal fun logChildren() {
-        Log.d(TAG, "Children laid out:")
-        for (i in 0 until layoutManager.childCount) {
-            val child = layoutManager.getChildAt(i)!!
-            val position = layoutManager.getPosition(child)
-            val childStart = layoutInfo.getDecoratedStart(child)
-            val childEnd = layoutInfo.getDecoratedEnd(child)
-            Log.d(TAG, "View $position, start: $childStart, end: $childEnd")
-        }
-    }
-
     fun onChildCreated(view: View) {
         searchPivotScroller?.onChildCreated(view)
     }
@@ -415,14 +398,17 @@ internal class LayoutScroller(
 
     private inner class SearchPivotListener : SearchPivotSmoothScroller.Listener {
 
-        override fun onPivotAttached(pivotView: View, adapterPosition: Int) {
-            Log.i(TAG, "onPivotAttached: $pivotView")
+        override fun onPivotAttached(adapterPosition: Int) {
             pivotSelector.update(adapterPosition)
+        }
+
+        override fun onPivotLaidOut(pivotView: View) {
             if (layoutManager.hasFocus()) {
                 isSelectionInProgress = true
                 pivotView.requestFocus()
                 isSelectionInProgress = false
             }
+            pivotSelector.dispatchViewHolderSelected()
         }
 
         override fun onPivotFound(pivotView: View) {
@@ -466,10 +452,8 @@ internal class LayoutScroller(
                 subPositionView?.requestFocus() ?: pivotView.requestFocus()
                 isSelectionInProgress = false
             }
-            recyclerView?.apply {
-                pivotSelector.dispatchViewHolderSelected(this)
-                pivotSelector.dispatchViewHolderSelectedAndAligned(this)
-            }
+            pivotSelector.dispatchViewHolderSelected()
+            pivotSelector.dispatchViewHolderSelectedAndAligned()
         }
 
         /**
@@ -505,11 +489,8 @@ internal class LayoutScroller(
                 previousSelectedPosition = pivotSelector.position
             } else if (previousSelectedPosition != RecyclerView.NO_POSITION) {
                 // If we're no longer scrolling, check if we need to send a new event
-                pivotSelector.dispatchViewHolderSelectedAndAligned(recyclerView)
+                pivotSelector.dispatchViewHolderSelectedAndAligned()
                 previousSelectedPosition = RecyclerView.NO_POSITION
-                if (BuildConfig.DEBUG) {
-                    logChildren()
-                }
             }
         }
     }

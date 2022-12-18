@@ -70,6 +70,11 @@ fun selectSubPosition(
     }
 }
 
+fun assertFocusAndSelection(position: Int, subPosition: Int = 0, id: Int = R.id.recyclerView) {
+    assertSelectedPosition(position, subPosition, id)
+    assertFocusPosition(position, subPosition, id)
+}
+
 fun assertSelectedPosition(position: Int, subPosition: Int = 0, id: Int = R.id.recyclerView) {
     Espresso.onView(ViewMatchers.withId(id))
         .check(DpadRecyclerViewAssertions.isSelected(position, subPosition))

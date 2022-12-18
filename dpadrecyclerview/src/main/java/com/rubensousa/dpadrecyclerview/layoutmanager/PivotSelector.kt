@@ -45,6 +45,7 @@ internal class PivotSelector(
     var subPosition: Int = 0
         private set
 
+    private var recyclerView: RecyclerView? = null
     private var isSelectionUpdatePending = false
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
     private val requestLayoutRunnable = Runnable {
@@ -68,7 +69,7 @@ internal class PivotSelector(
         }
     }
 
-    fun onLayoutCompleted(recyclerView: RecyclerView) {
+    fun onLayoutCompleted() {
         // If we had items, but now we don't, trigger an update for RecyclerView.NO_POSITION
         if (position >= 0 && layoutManager.childCount == 0) {
             position = RecyclerView.NO_POSITION
@@ -77,8 +78,8 @@ internal class PivotSelector(
         }
         if (isSelectionUpdatePending) {
             isSelectionUpdatePending = false
-            dispatchViewHolderSelected(recyclerView)
-            dispatchViewHolderSelectedAndAligned(recyclerView)
+            dispatchViewHolderSelected()
+            dispatchViewHolderSelectedAndAligned()
         }
     }
 
@@ -131,7 +132,8 @@ internal class PivotSelector(
         }
     }
 
-    fun dispatchViewHolderSelected(recyclerView: RecyclerView) {
+    fun dispatchViewHolderSelected() {
+        val recyclerView = this.recyclerView ?: return
         val view = if (position == RecyclerView.NO_POSITION) {
             null
         } else {
@@ -187,7 +189,9 @@ internal class PivotSelector(
         }
     }
 
-    fun dispatchViewHolderSelectedAndAligned(recyclerView: RecyclerView) {
+    fun dispatchViewHolderSelectedAndAligned() {
+        val recyclerView = this.recyclerView ?: return
+
         if (!hasSelectionListeners()) {
             return
         }
@@ -228,6 +232,10 @@ internal class PivotSelector(
 
     fun clearOnViewHolderSelectedListeners() {
         selectionListeners.clear()
+    }
+
+    fun setRecyclerView(recyclerView: RecyclerView?) {
+        this.recyclerView = recyclerView
     }
 
     /**

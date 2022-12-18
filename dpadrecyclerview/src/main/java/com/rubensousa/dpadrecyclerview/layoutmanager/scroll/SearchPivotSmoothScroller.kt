@@ -100,11 +100,15 @@ internal class SearchPivotSmoothScroller(
             && adapterPosition != RecyclerView.NO_POSITION
             && movements.consume()
         ) {
-            listener.onPivotAttached(child, adapterPosition)
+            listener.onPivotAttached(adapterPosition)
         }
     }
 
     fun onChildLaidOut(view: View) {
+        val viewHolder = layoutInfo.getChildViewHolder(view)
+        if (viewHolder?.absoluteAdapterPosition == pivotSelector.position) {
+            listener.onPivotLaidOut(view)
+        }
         if (movements.shouldStopScrolling() && isRunning) {
             Log.i(TAG, "Requested stop scrolling")
             targetPosition = pivotSelector.position
@@ -145,8 +149,9 @@ internal class SearchPivotSmoothScroller(
     }
 
     interface Listener {
-        fun onPivotAttached(pivotView: View, adapterPosition: Int)
+        fun onPivotAttached(adapterPosition: Int)
         fun onPivotFound(pivotView: View)
+        fun onPivotLaidOut(pivotView: View)
         fun onPivotNotFound(targetPosition: Int)
         fun onSmoothScrollerStopped()
     }

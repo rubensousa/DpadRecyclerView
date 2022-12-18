@@ -146,10 +146,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
         layoutArchitect.onLayoutCompleted(state)
-        recyclerView?.apply {
-            pivotSelector.onLayoutCompleted(this)
-            scroller.onLayoutCompleted(this, requestFocus = hadFocusBeforeLayout)
-        }
+        pivotSelector.onLayoutCompleted()
+        scroller.onLayoutCompleted(requestFocus = hadFocusBeforeLayout)
     }
 
     override fun collectAdjacentPrefetchPositions(
@@ -306,6 +304,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         focusFinder.setRecyclerView(recyclerView)
         layoutInfo.setRecyclerView(recyclerView)
         scroller.setRecyclerView(recyclerView)
+        pivotSelector.setRecyclerView(recyclerView)
     }
 
     override fun setChildrenDrawingOrderEnabled(enabled: Boolean) {

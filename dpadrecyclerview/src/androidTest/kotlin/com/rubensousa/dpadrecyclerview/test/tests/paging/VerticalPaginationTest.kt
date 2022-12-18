@@ -26,7 +26,7 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestPaginationFragment
-import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
@@ -79,7 +79,7 @@ class VerticalPaginationTest : DpadRecyclerViewTest() {
         repeat(19) {
             pressDown()
         }
-        assertSelectedPosition(position = 19)
+        assertFocusAndSelection(position = 19)
 
         waitForIdleScrollState()
 
@@ -94,7 +94,7 @@ class VerticalPaginationTest : DpadRecyclerViewTest() {
         launchPaginationFragment(loadDelay = delay)
 
         selectLastPosition(smooth = false)
-        assertSelectedPosition(position = 19)
+        assertFocusAndSelection(position = 19)
 
         var viewBounds = getItemViewBounds(position = 19)
         val recyclerViewBounds = getRecyclerViewBounds()
