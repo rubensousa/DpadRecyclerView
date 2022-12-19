@@ -29,7 +29,7 @@ interface ExtraLayoutSpaceStrategy {
      * `extraLayoutSpace[0]` should contain the extra space for top/left
      * and `extraLayoutSpace[1]` the extra space for bottom/right depending on the orientation.
      *
-     * By default, [DpadRecyclerView] will layout half of an extra page in the scrolling direction
+     * By default, [DpadRecyclerView] will not layout extra space to minimise the number of views
      */
     fun calculateExtraLayoutSpace(state: RecyclerView.State, extraLayoutSpace: IntArray)
 }

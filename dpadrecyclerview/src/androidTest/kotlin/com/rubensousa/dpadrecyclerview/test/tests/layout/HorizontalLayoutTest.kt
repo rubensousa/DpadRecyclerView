@@ -33,7 +33,6 @@ import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import kotlin.math.max
@@ -95,22 +94,25 @@ class HorizontalLayoutTest : DpadRecyclerViewTest() {
         assertChildrenPositions()
     }
 
-    @Ignore("Must add removeInvisibleViews in scrollBy")
     @Test
-    fun testExtraSpaceIsAddedWhenScrollingRight() {
+    fun testNoExtraSpaceIsAddedWhenScrollingByDefault() {
         row.append(row.width, itemWidth, itemHeight)
 
         repeat(10) {
             scrollRight()
         }
 
-        waitForIdleScrollState()
+        assertChildrenPositions()
+
+        repeat(10) {
+            scrollLeft()
+        }
+
         assertChildrenPositions()
     }
 
     @Test
     fun testExtraLayoutSpaceIsAddedAtEnd() {
-        row.clear()
         row.append(row.width * 2, itemWidth, itemHeight)
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
@@ -131,6 +133,41 @@ class HorizontalLayoutTest : DpadRecyclerViewTest() {
         repeat(10) {
             scrollRight()
         }
+
+        assertChildrenPositions()
+
+        onRecyclerView("Change extra layout space") { recyclerView ->
+            recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
+                override fun calculateExtraLayoutSpace(
+                    state: RecyclerView.State,
+                    extraLayoutSpace: IntArray
+                ) {
+                    extraLayoutSpace[0] = recyclerView.width
+                }
+            })
+        }
+        row.prepend(row.width, itemWidth, itemHeight)
+        assertChildrenPositions()
+    }
+
+    @Test
+    fun testRequestLayoutDuringScrollStillAlignsViews() {
+        row.append(row.width, itemWidth, itemHeight)
+        repeat(5) {
+            scrollRight()
+            onRecyclerView("RequestLayout") { recyclerView ->
+                recyclerView.requestLayout()
+            }
+        }
+        assertChildrenPositions()
+    }
+
+    @Test
+    fun testExtraLayoutSpaceIsAddedAtStartDuringScroll() {
+        row.append(row.width, itemWidth, itemHeight)
+        repeat(10) {
+            scrollRight()
+        }
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
                 override fun calculateExtraLayoutSpace(
@@ -144,12 +181,11 @@ class HorizontalLayoutTest : DpadRecyclerViewTest() {
         row.clear()
         row.append(row.width, itemWidth, itemHeight)
         row.prepend(row.width, itemWidth, itemHeight)
-        waitForIdleScrollState()
         assertChildrenPositions()
     }
 
     private fun scrollLeft(
-        extraLayoutSpaceStart: Int = row.width / 2,
+        extraLayoutSpaceStart: Int = 0,
         extraLayoutSpaceEnd: Int = 0
     ): ViewItem {
         KeyEvents.pressLeft()
@@ -164,7 +200,7 @@ class HorizontalLayoutTest : DpadRecyclerViewTest() {
 
     private fun scrollRight(
         extraLayoutSpaceStart: Int = 0,
-        extraLayoutSpaceEnd: Int = row.width / 2
+        extraLayoutSpaceEnd: Int = 0,
     ): ViewItem {
         KeyEvents.pressRight()
         row.scrollHorizontallyBy(-itemWidth)
@@ -177,6 +213,7 @@ class HorizontalLayoutTest : DpadRecyclerViewTest() {
     }
 
     private fun assertChildrenPositions() {
+        waitForIdleScrollState()
         onRecyclerView("Assert children positions") { recyclerView ->
             assertThat(recyclerView.childCount).isEqualTo(row.getNumberOfViewsInLayout())
             row.assertChildrenBounds(recyclerView)
