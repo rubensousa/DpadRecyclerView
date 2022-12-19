@@ -77,7 +77,6 @@ internal class RowArchitect(
         layoutView(view, viewBounds)
         Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
         layoutState.updateWindow(headOffset, tailOffset)
-        onChildLayoutListener.onChildLaidOut(view, state)
         return view
     }
 

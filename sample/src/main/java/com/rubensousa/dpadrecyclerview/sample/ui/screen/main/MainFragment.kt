@@ -77,6 +77,8 @@ class MainFragment : Fragment(R.layout.screen_main) {
         private var item: ScreenDestination? = null
 
         init {
+            itemView.isFocusableInTouchMode = true
+            itemView.isFocusable = true
             itemView.setOnClickListener {
                 item?.direction?.let {
                     itemView.findNavController().navigate(it)

@@ -53,7 +53,7 @@ internal class PivotSelectionSmoothScroller(
     }
 
     override fun onTargetFound(targetView: View, state: RecyclerView.State, action: Action) {
-        val scrollOffset = alignment.calculateScrollOffset(recyclerView, targetView, subPosition)
+        val scrollOffset = alignment.calculateScrollOffset(targetView, subPosition)
         // Check if we don't need to scroll
         if (scrollOffset == 0) {
             return

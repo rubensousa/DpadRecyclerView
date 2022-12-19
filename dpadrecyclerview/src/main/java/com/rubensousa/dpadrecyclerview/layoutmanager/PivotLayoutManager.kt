@@ -145,9 +145,12 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
-        layoutArchitect.onLayoutCompleted(state)
+        if (hadFocusBeforeLayout) {
+            focusFinder.onFocusChanged(true)
+        }
         pivotSelector.onLayoutCompleted()
-        scroller.onLayoutCompleted(requestFocus = hadFocusBeforeLayout)
+        layoutArchitect.onLayoutCompleted(state)
+        hadFocusBeforeLayout = false
     }
 
     override fun collectAdjacentPrefetchPositions(
@@ -187,7 +190,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         state: RecyclerView.State,
         position: Int
     ) {
-        scroller.scrollToPosition(recyclerView, position, subPosition = 0, smooth = true)
+        scroller.scrollToPosition(position, subPosition = 0, smooth = true)
     }
 
     override fun startSmoothScroll(smoothScroller: RecyclerView.SmoothScroller) {
@@ -411,7 +414,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {
-        recyclerView?.let { scroller.scrollToPosition(it, position, subPosition, smooth) }
+        scroller.scrollToPosition(position, subPosition, smooth)
     }
 
     override fun selectSubPosition(subPosition: Int, smooth: Boolean) {
@@ -441,12 +444,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     private fun scrollToSelectedPositionOrRequestLayout(smooth: Boolean, requestFocus: Boolean) {
-        recyclerView?.apply {
-            if (smooth) {
-                scroller.scrollToSelectedPosition(this, smooth = true, requestFocus = requestFocus)
-            } else {
-                requestLayout()
-            }
+        if (smooth) {
+            scroller.scrollToSelectedPosition(smooth = true, requestFocus = requestFocus)
+        } else {
+            requestLayout()
         }
     }
 

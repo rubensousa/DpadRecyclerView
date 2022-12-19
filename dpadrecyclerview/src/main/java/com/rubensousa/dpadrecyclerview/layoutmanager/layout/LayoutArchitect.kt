@@ -47,17 +47,14 @@ internal class LayoutArchitect(
     private val layoutState = LayoutState()
     private val layoutCalculator = LayoutCalculator(layoutInfo)
     private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
+    private val childLayoutListener = ChildLayoutListener()
     private val rowArchitect = RowArchitect(
-        layoutManager, layoutAlignment, layoutInfo, configuration, childRecycler,
-        object : OnChildLayoutListener {
-            override fun onChildCreated(view: View, state: State) {
-                scroller.onChildCreated(view)
-            }
-            override fun onChildLaidOut(view: View, state: State) {
-                layoutAlignment.updateScrollLimits()
-                scroller.onChildLaidOut(view)
-            }
-        }
+        layoutManager,
+        layoutAlignment,
+        layoutInfo,
+        configuration,
+        childRecycler,
+        childLayoutListener
     )
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
 
@@ -89,7 +86,13 @@ internal class LayoutArchitect(
         val pivotPosition = pivotSelector.position
         layoutManager.detachAndScrapAttachedViews(recycler)
 
-        rowArchitect.layoutPivot(layoutState, recycler, pivotPosition, state)
+        val newPivotView = rowArchitect.layoutPivot(layoutState, recycler, pivotPosition, state)
+        // Move the pivot by the remaining scroll
+        // so that it slides in correctly after the layout is done
+        offsetBy(-getRemainingScroll(state))
+
+        // Dispatch layout event after pivot is in its correct position
+        childLayoutListener.onChildLaidOut(newPivotView, state)
 
         // Layout views after the pivot
         layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotPosition)
@@ -102,13 +105,15 @@ internal class LayoutArchitect(
         layoutForPredictiveAnimations(recycler, state)
 
         // Now that all views are laid out, make sure the pivot is still in the correct position
-        alignPivot(recycler, state)
+        alignPivot(newPivotView, recycler, state)
 
-        // Layout extra space if needed
-        layoutExtraSpace(recycler, state)
+        if (!state.isPreLayout) {
+            // Layout extra space if needed
+            layoutExtraSpace(recycler, state)
 
-        // We might have views we no longer need after aligning the pivot, so recycle them
-        removeInvisibleViews(recycler)
+            // We might have views we no longer need after aligning the pivot, so recycle them
+            removeInvisibleViews(recycler)
+        }
     }
 
     private fun layoutExtraSpace(recycler: Recycler, state: State) {
@@ -185,12 +190,11 @@ internal class LayoutArchitect(
         layoutState.setScrap(null)
     }
 
-    private fun alignPivot(recycler: Recycler, state: State) {
-        pivotSelector.pivotView?.let { pivotView ->
-            // Offset all views by the existing remaining scroll so that they're still scrolled
-            // to their final locations
-            val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
-            scrollBy(scrollOffset - getRemainingScroll(state), recycler, state)
+    private fun alignPivot(pivotView: View, recycler: Recycler, state: State) {
+        val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
+        val remainingScroll = getRemainingScroll(state)
+        if (remainingScroll == 0) {
+            scrollBy(scrollOffset, recycler, state)
         }
     }
 
@@ -254,6 +258,8 @@ internal class LayoutArchitect(
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
 
+        Log.i(TAG, "ScrollOffset: $scrollOffset")
+
         // Offset views immediately
         offsetBy(scrollOffset)
 
@@ -296,6 +302,30 @@ internal class LayoutArchitect(
                 layoutPrefetchRegistry.addPosition(i, 0)
                 i++
             }
+        }
+    }
+
+    private fun logChildren() {
+        Log.i(TAG, "Children laid out:")
+        for (i in 0 until layoutManager.childCount) {
+            val child = layoutManager.getChildAt(i)!!
+            val position = layoutManager.getPosition(child)
+            val left = layoutManager.getDecoratedLeft(child)
+            val top = layoutManager.getDecoratedTop(child)
+            val right = layoutManager.getDecoratedLeft(child)
+            val bottom = layoutManager.getDecoratedBottom(child)
+            Log.i(TAG, "View $position: [$left, $top, $right, $bottom]")
+        }
+    }
+
+    private inner class ChildLayoutListener : OnChildLayoutListener {
+        override fun onChildCreated(view: View, state: State) {
+            scroller.onChildCreated(view)
+        }
+
+        override fun onChildLaidOut(view: View, state: State) {
+            layoutAlignment.updateScrollLimits()
+            scroller.onChildLaidOut(view)
         }
     }
 

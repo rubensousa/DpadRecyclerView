@@ -103,8 +103,7 @@ internal class LayoutFocusFinder(
         if (canScrollToView) {
             saveSpanFocus(newViewPosition)
             scroller.scrollToView(
-                parent, child, focused, configuration.isSmoothFocusChangesEnabled,
-                requestFocus = true
+                child, focused, configuration.isSmoothFocusChangesEnabled, requestFocus = true
             )
         }
         return true

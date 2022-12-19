@@ -56,16 +56,6 @@ internal class LayoutScroller(
     }
 
     /**
-     * Since the layout pass can finish after the RecyclerView gains focus,
-     * make sure that we focus the new selected view when layout is done
-     */
-    fun onLayoutCompleted(requestFocus: Boolean) {
-        recyclerView?.let {
-            scrollToSelectedPosition(it, smooth = false, requestFocus = requestFocus)
-        }
-    }
-
-    /**
      * We can only scroll to views if they exist when this is called
      * and there's no pending layout request.
      *
@@ -75,7 +65,6 @@ internal class LayoutScroller(
      * Otherwise, the selection is deferred to the next layout pass.
      */
     fun scrollToPosition(
-        recyclerView: RecyclerView,
         position: Int,
         subPosition: Int,
         smooth: Boolean
@@ -85,25 +74,25 @@ internal class LayoutScroller(
         // Check if we can immediately scroll to the existing view
         if (!layoutManager.isSmoothScrolling
             && view != null
-            && isScrollToViewPossible(recyclerView, position, view)
+            && isScrollToViewPossible(position, view)
         ) {
-            startScroll(recyclerView, position, subPosition, view, smooth)
+            startScroll(position, subPosition, view, smooth)
             return
         }
 
         // Otherwise update the selection and start searching for the new pivot
-        if (smooth && !recyclerView.isLayoutRequested) {
+        if (smooth && recyclerView?.isLayoutRequested == false) {
             pivotSelector.update(position, subPosition)
-            startSmoothScrollingToPivot(recyclerView, position, subPosition)
+            startSmoothScrollingToPivot(position, subPosition)
             return
         }
 
         if (layoutManager.isSmoothScrolling) {
-            stopSmoothScrolling(recyclerView)
+            stopSmoothScrolling()
         }
 
-        if (view != null && isScrollToViewPossible(recyclerView, position, view)) {
-            startScroll(recyclerView, position, subPosition, view, smooth)
+        if (view != null && isScrollToViewPossible(position, view)) {
+            startScroll(position, subPosition, view, smooth)
             return
         }
 
@@ -120,15 +109,14 @@ internal class LayoutScroller(
      * If there's a pending layout request, we defer the selection to the next layout pass.
      */
     private fun isScrollToViewPossible(
-        recyclerView: RecyclerView,
         position: Int,
         view: View
     ): Boolean {
-        return !recyclerView.isLayoutRequested && layoutInfo.getAdapterPositionOf(view) == position
+        return recyclerView?.isLayoutRequested == false
+                && layoutInfo.getAdapterPositionOf(view) == position
     }
 
     private fun startSmoothScrollingToPivot(
-        recyclerView: RecyclerView,
         position: Int,
         subPosition: Int
     ) {
@@ -139,26 +127,27 @@ internal class LayoutScroller(
             )
             return
         }
-        layoutInfo.setIsScrollingToTarget(true)
-        layoutManager.startSmoothScroll(
-            PivotSelectionSmoothScroller(
-                recyclerView,
-                position,
-                subPosition,
-                layoutInfo,
-                layoutAlignment,
-                selectionPivotListener
+        recyclerView?.let { nonNullRecyclerView ->
+            layoutInfo.setIsScrollingToTarget(true)
+            layoutManager.startSmoothScroll(
+                PivotSelectionSmoothScroller(
+                    nonNullRecyclerView,
+                    position,
+                    subPosition,
+                    layoutInfo,
+                    layoutAlignment,
+                    selectionPivotListener
+                )
             )
-        )
+        }
     }
 
-    private fun stopSmoothScrolling(recyclerView: RecyclerView) {
+    private fun stopSmoothScrolling() {
         cancelSmoothScroller()
-        recyclerView.stopScroll()
+        recyclerView?.stopScroll()
     }
 
     private fun startScroll(
-        recyclerView: RecyclerView,
         position: Int,
         subPosition: Int,
         view: View,
@@ -174,7 +163,6 @@ internal class LayoutScroller(
             )
         }
         scrollToView(
-            recyclerView,
             view,
             subPositionView,
             smooth,
@@ -184,7 +172,6 @@ internal class LayoutScroller(
     }
 
     fun scrollToSelectedPosition(
-        recyclerView: RecyclerView,
         smooth: Boolean,
         requestFocus: Boolean = layoutManager.hasFocus()
     ) {
@@ -202,11 +189,9 @@ internal class LayoutScroller(
             targetSubPosition = 0
         }
         if (targetSubPosition != 0) {
-            scrollToPosition(recyclerView, targetPosition, targetSubPosition, smooth)
+            scrollToPosition(targetPosition, targetSubPosition, smooth)
         } else {
-            scrollToView(
-                recyclerView, layoutManager.findViewByPosition(targetPosition), smooth, requestFocus
-            )
+            scrollToView(layoutManager.findViewByPosition(targetPosition), smooth, requestFocus)
         }
     }
 
@@ -267,22 +252,11 @@ internal class LayoutScroller(
         }
     }
 
-    private fun scrollToView(
-        recyclerView: RecyclerView,
-        view: View?,
-        smooth: Boolean,
-        requestFocus: Boolean
-    ) {
-        scrollToView(recyclerView, view, subPositionView = view?.findFocus(), smooth, requestFocus)
+    private fun scrollToView(view: View?, smooth: Boolean, requestFocus: Boolean) {
+        scrollToView(view, subPositionView = view?.findFocus(), smooth, requestFocus)
     }
 
-    fun scrollToView(
-        recyclerView: RecyclerView,
-        view: View?,
-        subPositionView: View?,
-        smooth: Boolean,
-        requestFocus: Boolean
-    ) {
+    fun scrollToView(view: View?, subPositionView: View?, smooth: Boolean, requestFocus: Boolean) {
         val newPosition = if (view == null) {
             RecyclerView.NO_POSITION
         } else {
@@ -291,9 +265,7 @@ internal class LayoutScroller(
         if (newPosition == RecyclerView.NO_POSITION) {
             return
         }
-        val newSubPosition = layoutAlignment.getSubPositionOfView(
-            recyclerView, view, subPositionView
-        )
+        val newSubPosition = layoutAlignment.getSubPositionOfView(view, subPositionView)
         val selectionChanged = pivotSelector.update(newPosition, newSubPosition)
         var selectViewHolder = false
         if (selectionChanged) {
@@ -303,7 +275,7 @@ internal class LayoutScroller(
                 pivotSelector.setSelectionUpdatePending()
             }
             if (configuration.isChildDrawingOrderEnabled) {
-                recyclerView.invalidate()
+                recyclerView?.invalidate()
             }
         }
         if (view == null) {
@@ -316,23 +288,18 @@ internal class LayoutScroller(
             view.requestFocus()
         }
 
-        performScrollToView(
-            recyclerView, view, subPositionView, selectViewHolder, smooth
-        )
+        performScrollToView(view, subPositionView, selectViewHolder, smooth)
     }
 
     private fun performScrollToView(
-        recyclerView: RecyclerView,
         view: View,
         subPositionView: View?,
         selectViewHolder: Boolean,
         smooth: Boolean
     ) {
-        val scrollOffset = layoutAlignment.calculateScrollOffset(
-            recyclerView, view, subPositionView
-        )
+        val scrollOffset = layoutAlignment.calculateScrollOffset(view, subPositionView)
 
-        scrollBy(recyclerView, scrollOffset, smooth)
+        scrollBy(scrollOffset, smooth)
 
         if (selectViewHolder) {
             pivotSelector.dispatchViewHolderSelected()
@@ -343,18 +310,13 @@ internal class LayoutScroller(
         }
     }
 
-    private fun scrollBy(
-        recyclerView: RecyclerView,
-        offset: Int,
-        smooth: Boolean
-    ) {
+    private fun scrollBy(offset: Int, smooth: Boolean) {
         if (offset == 0) {
             return
         }
         if (layoutInfo.isLayoutInProgress) {
-            Log.i(DpadRecyclerView.TAG, "Scrolling immediately since layout is in progress")
-            // TODO check if this is working correctly
-            scroll(recyclerView, offset)
+            // Ignore scroll actions during layout
+            // since these are already handled internally by LayoutArchitect
             return
         }
         var scrollX = 0
@@ -365,27 +327,10 @@ internal class LayoutScroller(
             scrollY = offset
         }
         if (smooth) {
-            recyclerView.smoothScrollBy(scrollX, scrollY)
+            recyclerView?.smoothScrollBy(scrollX, scrollY)
         } else {
-            recyclerView.scrollBy(scrollX, scrollY)
+            recyclerView?.scrollBy(scrollX, scrollY)
         }
-    }
-
-    private fun scroll(recyclerView: RecyclerView, dx: Int) {
-        val offset = calculateScrollAmount(dx)
-        if (offset == 0) {
-            return
-        }
-        layoutInfo.orientationHelper.offsetChildren(-offset)
-        recyclerView.invalidate()
-    }
-
-    private fun calculateScrollAmount(offset: Int): Int {
-        var scrollOffset = offset
-        if (!layoutInfo.isLayoutInProgress) {
-            scrollOffset = layoutAlignment.getCappedScroll(scrollOffset)
-        }
-        return scrollOffset
     }
 
     fun onChildCreated(view: View) {
@@ -413,25 +358,20 @@ internal class LayoutScroller(
 
         override fun onPivotFound(pivotView: View) {
             Log.i(TAG, "onPivotFound: $pivotView")
-            recyclerView?.let {
-                scrollToView(
-                    it,
-                    pivotView,
-                    subPositionView = null,
-                    smooth = true,
-                    requestFocus = layoutManager.hasFocus()
-                )
-            }
+            scrollToView(
+                pivotView,
+                subPositionView = null,
+                smooth = true,
+                requestFocus = layoutManager.hasFocus()
+            )
         }
 
         override fun onPivotNotFound(targetPosition: Int) {
             // If a new pivot didn't exist in the layout, just scroll back to the previous one
-            recyclerView?.let {
-                if (targetPosition >= 0) {
-                    scrollToPosition(it, targetPosition, subPosition = 0, smooth = true)
-                } else {
-                    scrollToSelectedPosition(it, smooth = false)
-                }
+            if (targetPosition >= 0) {
+                scrollToPosition(targetPosition, subPosition = 0, smooth = true)
+            } else {
+                scrollToSelectedPosition(smooth = false)
             }
         }
 

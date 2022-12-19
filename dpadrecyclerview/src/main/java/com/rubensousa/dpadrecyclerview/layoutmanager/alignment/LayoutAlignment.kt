@@ -17,7 +17,6 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
@@ -90,13 +89,11 @@ internal class LayoutAlignment(
         return view.findViewById(subPositionViewId)
     }
 
-    fun getSubPositionOfView(
-        recyclerView: RecyclerView, view: View?, childView: View?
-    ): Int {
+    fun getSubPositionOfView(view: View?, childView: View?): Int {
         if (view == null || childView == null) {
             return 0
         }
-        val viewHolder = recyclerView.getChildViewHolder(view)
+        val viewHolder = layoutInfo.getChildViewHolder(view)
         if (viewHolder !is DpadViewHolder) {
             return 0
         }
@@ -149,25 +146,15 @@ internal class LayoutAlignment(
 
     fun getMinScroll() = parentAlignment.minScroll
 
-    fun calculateScrollOffset(
-        recyclerView: RecyclerView,
-        view: View,
-        subPosition: Int
-    ): Int {
+    fun calculateScrollOffset(view: View, subPosition: Int): Int {
         val viewAtSubPosition = getViewAtSubPosition(view, subPosition)
-        return calculateScrollOffset(recyclerView, view, viewAtSubPosition)
+        return calculateScrollOffset(view, viewAtSubPosition)
     }
 
-    fun calculateScrollOffset(
-        recyclerView: RecyclerView,
-        view: View,
-        childView: View?
-    ): Int {
+    fun calculateScrollOffset(view: View, childView: View?): Int {
         var scrollOffset = calculateScrollForAlignment(view)
         if (childView != null) {
-            scrollOffset = calculateAdjustedAlignedScrollDistance(
-                recyclerView, scrollOffset, view, childView
-            )
+            scrollOffset = calculateAdjustedAlignedScrollDistance(scrollOffset, view, childView)
         }
         return scrollOffset
     }
@@ -314,10 +301,12 @@ internal class LayoutAlignment(
     }
 
     private fun calculateAdjustedAlignedScrollDistance(
-        recyclerView: RecyclerView, offset: Int, view: View, childView: View
+        offset: Int,
+        view: View,
+        childView: View
     ): Int {
         var scrollValue = offset
-        val subPosition = getSubPositionOfView(recyclerView, view, childView)
+        val subPosition = getSubPositionOfView(view, childView)
         if (subPosition != 0) {
             val layoutParams = view.layoutParams as DpadLayoutParams
             val alignments = layoutParams.getAlignmentPositions()

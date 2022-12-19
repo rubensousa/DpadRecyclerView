@@ -19,7 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.State
 
-interface OnChildLayoutListener {
+internal interface OnChildLayoutListener {
     fun onChildCreated(view: View, state: State)
     fun onChildLaidOut(view: View, state: State)
 }

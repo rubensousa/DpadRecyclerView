@@ -18,7 +18,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -44,9 +43,6 @@ internal class PivotSelector(
         private set
 
     var subPosition: Int = 0
-        private set
-
-    var pivotView: View? = null
         private set
 
     private var recyclerView: RecyclerView? = null
@@ -115,15 +111,10 @@ internal class PivotSelector(
 
     }
 
-    fun updatePivotView() {
-        pivotView = layoutManager.findViewByPosition(position)
-    }
-
     fun update(position: Int, subPosition: Int = 0): Boolean {
         val changed = position != this.position || subPosition != this.subPosition
         this.position = position
         this.subPosition = subPosition
-        updatePivotView()
         return changed
     }
 
