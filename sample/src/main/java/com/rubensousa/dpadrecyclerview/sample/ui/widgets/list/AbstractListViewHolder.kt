@@ -40,13 +40,6 @@ abstract class AbstractListViewHolder(
     )
 
     init {
-        itemView.isFocusable = true
-        itemView.isFocusableInTouchMode = true
-        itemView.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                recyclerView.requestFocus()
-            }
-        }
         setupRecyclerView(recyclerView)
     }
 

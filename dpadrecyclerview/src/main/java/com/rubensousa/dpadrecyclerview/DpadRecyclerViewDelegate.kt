@@ -138,6 +138,12 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
                 typedArray.getInt(R.styleable.DpadRecyclerView_android_gravity, Gravity.NO_GRAVITY)
             )
         }
+        if (!typedArray.hasValue(R.styleable.DpadRecyclerView_android_focusable)) {
+            recyclerView.isFocusable = true
+        }
+        if (!typedArray.hasValue(R.styleable.DpadRecyclerView_android_focusableInTouchMode)) {
+            recyclerView.isFocusableInTouchMode = true
+        }
         val parentAlignment = ParentAlignment(
             edge = ParentAlignment.Edge.values()[typedArray.getInt(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,

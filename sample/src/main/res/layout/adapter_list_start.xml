@@ -6,8 +6,6 @@
     android:layout_height="wrap_content"
     android:background="#2E2E2E"
     android:clipChildren="false"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
     android:orientation="vertical">
 
     <TextView

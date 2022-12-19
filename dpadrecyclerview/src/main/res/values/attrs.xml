@@ -29,6 +29,8 @@
         <attr name="dpadRecyclerViewPivotLayoutManager" format="boolean" />
 
         <attr name="android:gravity" />
+        <attr name="android:focusable" />
+        <attr name="android:focusableInTouchMode" />
     </declare-styleable>
 
 
