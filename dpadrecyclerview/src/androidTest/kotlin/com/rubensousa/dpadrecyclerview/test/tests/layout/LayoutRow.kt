@@ -17,12 +17,14 @@
 package com.rubensousa.dpadrecyclerview.test.tests.layout
 
 import android.graphics.Rect
-import androidx.core.view.children
-import androidx.recyclerview.widget.OrientationHelper
-import androidx.recyclerview.widget.RecyclerView
-import com.google.common.truth.Truth.assertThat
 
 class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
+
+    override fun scrollBy(offset: Int) {
+        forEachView { view ->
+            view.offsetVertically(offset)
+        }
+    }
 
     fun prepend(
         fillSpace: Int,
@@ -44,7 +46,8 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
 
     fun recycleStart(extraLayoutSpaceStart: Int) {
         val limit = -extraLayoutSpaceStart
-        for (i in 0 until getNumberOfViewsInLayout()) {
+        val childCount = getNumberOfViewsInLayout()
+        for (i in 0 until childCount) {
             val child = getViewAt(i)
             if (child.getDecoratedRight() > limit) {
                 recycleFromStart(i)
@@ -55,28 +58,13 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
 
     fun recycleEnd(extraLayoutSpaceEnd: Int) {
         val limit = width + extraLayoutSpaceEnd
-        for (i in getNumberOfViewsInLayout() - 1 downTo 0) {
+        val childCount = getNumberOfViewsInLayout()
+        for (i in childCount - 1 downTo 0) {
             val child = getViewAt(i)
             if (child.getDecoratedLeft() < limit) {
-                recycleFromEnd(getNumberOfViewsInLayout() - 1 - i)
+                recycleFromEnd(childCount - 1 - i)
                 return
             }
-        }
-    }
-
-    fun assertChildrenBounds(recyclerView: RecyclerView) {
-        val horizontalHelper = OrientationHelper.createHorizontalHelper(recyclerView.layoutManager)
-        val verticalHelper = OrientationHelper.createVerticalHelper(recyclerView.layoutManager)
-        recyclerView.children.forEachIndexed { index, view ->
-            val viewItem = getViewAt(index)
-            assertThat(horizontalHelper.getDecoratedStart(view))
-                .isEqualTo(viewItem.getDecoratedLeft())
-            assertThat(horizontalHelper.getDecoratedEnd(view))
-                .isEqualTo(viewItem.getDecoratedRight())
-            assertThat(verticalHelper.getDecoratedStart(view))
-                .isEqualTo(viewItem.getDecoratedTop())
-            assertThat(verticalHelper.getDecoratedEnd(view))
-                .isEqualTo(viewItem.getDecoratedBottom())
         }
     }
 
@@ -106,7 +94,7 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
         val bounds = Rect()
 
         if (lastItem != null) {
-            bounds.left = lastItem.getRight()
+            bounds.left = lastItem.getDecoratedRight()
             bounds.top = 0
             bounds.right = bounds.left + itemWidth
             bounds.bottom = itemHeight
@@ -126,7 +114,7 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
     fun prepend(itemWidth: Int, itemHeight: Int, insets: Rect = EMPTY_INSETS): ViewItem {
         val firstItem = getFirstView()
             ?: throw IllegalStateException("Can't prepend when layout is empty")
-        val right = firstItem.getLeft()
+        val right = firstItem.getDecoratedLeft()
         val item = ViewItem(
             bounds = Rect(right - itemWidth, 0, right, itemHeight),
             insets = insets
