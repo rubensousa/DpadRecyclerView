@@ -193,9 +193,9 @@ internal class LayoutArchitect(
     private fun alignPivot(pivotView: View, recycler: Recycler, state: State) {
         val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView)
         val remainingScroll = getRemainingScroll(state)
-        if (remainingScroll == 0) {
-            scrollBy(scrollOffset, recycler, state)
-        }
+        // Offset all views by the existing remaining scroll so that they're still scrolled
+        // to their final locations when RecyclerView resumes scrolling
+        scrollBy(scrollOffset - remainingScroll, recycler, state)
     }
 
     private fun getRemainingScroll(state: State): Int {
