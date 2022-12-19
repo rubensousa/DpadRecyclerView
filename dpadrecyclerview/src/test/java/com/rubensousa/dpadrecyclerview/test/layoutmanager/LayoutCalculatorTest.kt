@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.test.layoutmanager
 
+import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutCalculator
@@ -26,9 +27,9 @@ import org.junit.Test
 class LayoutCalculatorTest {
 
     private lateinit var layoutCalculator: LayoutCalculator
-    private val mockLayoutInfo = LayoutInfoMock()
     private val mockState = RecyclerViewStateMock()
-    private val configuration = LayoutConfiguration()
+    private val configuration = LayoutConfiguration(RecyclerView.LayoutManager.Properties())
+    private val mockLayoutInfo = LayoutInfoMock(configuration)
 
     @Before
     fun setup() {
@@ -40,7 +41,7 @@ class LayoutCalculatorTest {
         val layoutState = LayoutState()
         configuration.setReverseLayout(true)
         mockState.isPreLayout = false
-        layoutCalculator.init(layoutState, mockState.get(), configuration)
+        layoutCalculator.init(layoutState, mockState.get())
 
         assertThat(layoutState.isPreLayout).isFalse()
         assertThat(layoutState.reverseLayout).isTrue()

@@ -16,11 +16,12 @@
 
 package com.rubensousa.dpadrecyclerview.test.layoutmanager
 
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import io.mockk.every
 import io.mockk.mockk
 
-internal class LayoutInfoMock {
+internal class LayoutInfoMock(private val configuration: LayoutConfiguration) {
 
     private val mock = mockk<LayoutInfo>()
     var isScrolling = false
@@ -29,6 +30,7 @@ internal class LayoutInfoMock {
     init {
         every { mock.isScrolling }.answers { isScrolling }
         every { mock.getTotalSpace() }.answers { totalSpace }
+        every { mock.getConfiguration() }.answers { configuration }
     }
 
     fun get(): LayoutInfo = mock
