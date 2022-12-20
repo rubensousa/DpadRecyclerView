@@ -23,6 +23,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -37,7 +38,8 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListPlaceholderAda
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.NestedListAdapter
 import timber.log.Timber
 
-class ListController(private val fragment: Fragment) {
+class ListController
+    (private val fragment: Fragment) {
 
     private var selectedPosition = RecyclerView.NO_POSITION
     private val loadingAdapter = ListPlaceholderAdapter()
@@ -57,6 +59,12 @@ class ListController(private val fragment: Fragment) {
         onSelected: (position: Int) -> Unit
     ) {
         RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
+        recyclerView.itemAnimator = DefaultItemAnimator().also { animator ->
+            // Just here to preview changes
+            animator.removeDuration = 2000L
+            animator.addDuration = 2000L
+            animator.moveDuration = 2000L
+        }
         dpadRecyclerView = recyclerView
         setupAdapter(recyclerView)
         setupSpacings(recyclerView)
@@ -73,6 +81,37 @@ class ListController(private val fragment: Fragment) {
         }
 
         recyclerView.requestFocus()
+    }
+
+    fun deleteCurrentItem() {
+        val recyclerView = dpadRecyclerView ?: return
+        nestedListAdapter.removeAt(recyclerView.getSelectedPosition())
+        logAfterAnimation(recyclerView)
+    }
+
+    fun addItem() {
+        val recyclerView = dpadRecyclerView ?: return
+        val currentItem = nestedListAdapter.getItem(recyclerView.getSelectedPosition())
+        nestedListAdapter.addAt(
+            recyclerView.getSelectedPosition() + 1,
+            currentItem.copy(title = "New Inserted List")
+        )
+        logAfterAnimation(recyclerView)
+    }
+
+    fun swapCurrentItemWithNext() {
+        val recyclerView = dpadRecyclerView ?: return
+        nestedListAdapter.move(
+            recyclerView.getSelectedPosition(),
+            recyclerView.getSelectedPosition() + 1
+        )
+        logAfterAnimation(recyclerView)
+    }
+
+    private fun logAfterAnimation(recyclerView: RecyclerView) {
+        recyclerView.itemAnimator?.isRunning {
+            RecyclerViewLogger.logChildren(recyclerView)
+        }
     }
 
     fun setup(
@@ -97,7 +136,7 @@ class ListController(private val fragment: Fragment) {
     }
 
 
-    fun submitList(list: List<ListModel>) {
+    fun submitList(list: MutableList<ListModel>) {
         nestedListAdapter.submitList(list) {
             dpadRecyclerView?.invalidateItemDecorations()
         }
@@ -162,7 +201,8 @@ class ListController(private val fragment: Fragment) {
         recyclerView: BaseGridView,
         onSelected: (position: Int) -> Unit
     ) {
-        recyclerView.addOnChildViewHolderSelectedListener(object : OnChildViewHolderSelectedListener() {
+        recyclerView.addOnChildViewHolderSelectedListener(object :
+            OnChildViewHolderSelectedListener() {
 
             override fun onChildViewHolderSelected(
                 parent: RecyclerView,

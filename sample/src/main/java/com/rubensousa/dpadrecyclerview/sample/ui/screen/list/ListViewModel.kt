@@ -12,11 +12,11 @@ import kotlinx.coroutines.launch
 class ListViewModel : ViewModel() {
 
     private val list = ArrayList<ListModel>()
-    private val listLiveData = MutableLiveData<List<ListModel>>()
+    private val listLiveData = MutableLiveData<MutableList<ListModel>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
     private val pageSize = 10
     val loadingState: LiveData<Boolean> = loadingStateLiveData
-    val listState: LiveData<List<ListModel>> = listLiveData
+    val listState: LiveData<MutableList<ListModel>> = listLiveData
 
     init {
         list.addAll(createPage())

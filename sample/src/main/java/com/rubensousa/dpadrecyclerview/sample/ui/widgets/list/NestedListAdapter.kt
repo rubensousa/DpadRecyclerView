@@ -19,14 +19,13 @@ package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 
 class NestedListAdapter(
     private val stateHolder: DpadStateHolder,
     private val onItemClickListener: ItemViewHolder.ItemClickListener
-) : ListAdapter<ListModel, AbstractListViewHolder>(DIFF_CALLBACK) {
+) : MutableListAdapter<ListModel, AbstractListViewHolder>(DIFF_CALLBACK) {
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<ListModel>() {
