@@ -31,7 +31,7 @@ object RecyclerViewLogger {
         })
     }
 
-    private fun logChildren(recyclerView: RecyclerView) {
+    fun logChildren(recyclerView: RecyclerView) {
         Timber.i("Children laid out:")
         recyclerView.layoutManager?.let { layout ->
             for (i in 0 until layout.childCount) {

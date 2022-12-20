@@ -14,36 +14,28 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.tests
+package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
 import android.os.Handler
 import android.os.Looper
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DiffUtil.DiffResult
+import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import java.util.Collections
 import java.util.concurrent.Executors
 
-abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
-    adapterConfiguration: TestAdapterConfiguration
-) : RecyclerView.Adapter<VH>() {
+abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
+    private val itemCallback: ItemCallback<T>) : RecyclerView.Adapter<VH>() {
 
     companion object {
-        private val EMPTY_LIST = ArrayList<Int>(0)
         private val BACKGROUND_EXECUTOR = Executors.newFixedThreadPool(4)
         private val MAIN_THREAD_HANDLER = Handler(Looper.getMainLooper())
     }
 
-    private val itemCallback = object : DiffUtil.ItemCallback<Int>() {
-        override fun areItemsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
-        override fun areContentsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
-    }
-    private var items = MutableList(adapterConfiguration.numberOfItems) { it }
+    private var items : MutableList<T> = Collections.emptyList()
     private var currentVersion = 0
-    private var id = items.size
 
-    fun submitList(newList: MutableList<Int>, commitCallback: Runnable? = null) {
+    fun submitList(newList: MutableList<T>, commitCallback: Runnable? = null) {
         val version = ++currentVersion
         if (items === newList) {
             commitCallback?.run()
@@ -52,7 +44,7 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
 
         if (newList.isEmpty()) {
             val removed = items.size
-            items = EMPTY_LIST
+            items = Collections.emptyList()
             notifyItemRangeRemoved(0, removed)
             return
         }
@@ -75,9 +67,9 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
     }
 
     private fun calculateDiff(
-        oldList: List<Int>,
-        newList: List<Int>
-    ): DiffResult {
+        oldList: List<T>,
+        newList: List<T>
+    ): DiffUtil.DiffResult {
         return DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int = oldList.size
             override fun getNewListSize(): Int = newList.size
@@ -85,7 +77,10 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val oldItem = oldList[oldItemPosition]
                 val newItem = newList[newItemPosition]
-                return itemCallback.areItemsTheSame(oldItem, newItem)
+                if (oldItem != null && newItem != null) {
+                    return itemCallback.areItemsTheSame(oldItem, newItem)
+                }
+                return oldItem == null && newItem == null
             }
 
             override fun areContentsTheSame(
@@ -94,14 +89,20 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
             ): Boolean {
                 val oldItem = oldList[oldItemPosition]
                 val newItem = newList[newItemPosition]
-                return itemCallback.areContentsTheSame(oldItem, newItem)
+                if (oldItem != null && newItem != null) {
+                    return itemCallback.areContentsTheSame(oldItem, newItem)
+                }
+                if (oldItem == null && newItem == null) {
+                    return true
+                }
+                throw AssertionError()
             }
         })
     }
 
     private fun latchList(
-        newList: MutableList<Int>,
-        result: DiffResult,
+        newList: MutableList<T>,
+        result: DiffUtil.DiffResult,
         commitCallback: Runnable?
     ) {
         items = newList
@@ -110,9 +111,12 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
     }
 
     fun removeAt(index: Int) {
-        currentVersion++
-        items.removeAt(index)
-        notifyItemRemoved(index)
+        if (index >= 0 && index < items.size) {
+            currentVersion++
+            items.removeAt(index)
+            notifyItemRemoved(index)
+        }
+
     }
 
     fun move(from: Int, to: Int) {
@@ -121,20 +125,13 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
         notifyItemMoved(from, to)
     }
 
-    fun addAt(index: Int) {
+    fun addAt(index: Int, item: T) {
         currentVersion++
-        items.add(index, id++)
-        notifyItemInserted(items.size - 1)
-    }
-
-    fun add() {
-        currentVersion++
-        items.add(id++)
-        notifyItemInserted(items.size - 1)
+        items.add(index, item)
+        notifyItemInserted(index)
     }
 
     override fun getItemCount(): Int = items.size
 
-    protected fun getItem(position: Int) = items[position]
-
+    fun getItem(position: Int) = items[position]
 }
