@@ -22,7 +22,7 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
 
     override fun scrollBy(offset: Int) {
         forEachView { view ->
-            view.offsetVertically(offset)
+            view.offsetHorizontally(offset)
         }
     }
 
@@ -32,7 +32,10 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
         itemHeight: Int,
         insets: Rect = EMPTY_INSETS
     ): List<ViewItem> {
-        return fill(fillSpace, itemWidth, itemHeight, insets, false)
+        val views = fill(fillSpace, itemWidth, itemHeight, insets, false)
+        recycleStart(getExtraLayoutSpaceStart())
+        recycleEnd(getExtraLayoutSpaceEnd())
+        return views
     }
 
     fun append(
@@ -41,7 +44,10 @@ class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
         itemHeight: Int,
         insets: Rect = EMPTY_INSETS
     ): List<ViewItem> {
-        return fill(fillSpace, itemWidth, itemHeight, insets, true)
+        val views = fill(fillSpace, itemWidth, itemHeight, insets, true)
+        recycleStart(getExtraLayoutSpaceStart())
+        recycleEnd(getExtraLayoutSpaceEnd())
+        return views
     }
 
     fun recycleStart(extraLayoutSpaceStart: Int) {

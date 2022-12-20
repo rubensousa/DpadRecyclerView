@@ -30,8 +30,19 @@ abstract class LayoutMatrix(val width: Int, val height: Int) {
     }
 
     private val circularArray = CircularArray<ViewItem>()
+    private var extraLayoutSpaceStart = 0
+    private var extraLayoutSpaceEnd = 0
 
     abstract fun scrollBy(offset: Int)
+
+    fun setExtraLayoutSpace(start: Int = 0, end: Int = 0) {
+        extraLayoutSpaceStart = start
+        extraLayoutSpaceEnd = end
+    }
+
+    fun getExtraLayoutSpaceStart() = extraLayoutSpaceStart
+
+    fun getExtraLayoutSpaceEnd() = extraLayoutSpaceEnd
 
     fun getFirstView(): ViewItem? {
         if (circularArray.isEmpty) {

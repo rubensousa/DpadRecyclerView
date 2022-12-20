@@ -112,10 +112,11 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
                     state: RecyclerView.State,
                     extraLayoutSpace: IntArray
                 ) {
-                    extraLayoutSpace[1] = recyclerView.height
+                    extraLayoutSpace[1] = column.height
                 }
             })
         }
+        column.setExtraLayoutSpace(end = column.height)
         appendPage()
         assertChildrenPositions()
     }
@@ -135,10 +136,11 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
                     state: RecyclerView.State,
                     extraLayoutSpace: IntArray
                 ) {
-                    extraLayoutSpace[0] = recyclerView.height
+                    extraLayoutSpace[0] = column.height
                 }
             })
         }
+        column.setExtraLayoutSpace(start = column.height)
         prependPage()
         assertChildrenPositions()
     }
@@ -167,24 +169,21 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
                     state: RecyclerView.State,
                     extraLayoutSpace: IntArray
                 ) {
-                    extraLayoutSpace[0] = recyclerView.height
+                    extraLayoutSpace[0] = column.height
                 }
             })
         }
-        column.clear()
-        appendPage()
+        column.setExtraLayoutSpace(start = column.height)
         prependPage()
         assertChildrenPositions()
     }
 
-    private fun prependPage(count: Int = 1) {
-        require(count > 0)
-        column.prepend(column.height * count, itemWidth, itemHeight)
+    private fun prependPage() {
+        column.prepend(column.height, itemWidth, itemHeight)
     }
 
-    private fun appendPage(count: Int = 1) {
-        require(count > 0)
-        column.append(column.height * count, itemWidth, itemHeight)
+    private fun appendPage() {
+        column.append(column.height, itemWidth, itemHeight)
     }
 
     private fun scrollUp(
@@ -192,12 +191,12 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
         extraLayoutSpaceEnd: Int = 0
     ): ViewItem {
         KeyEvents.pressUp()
+        column.setExtraLayoutSpace(extraLayoutSpaceStart, extraLayoutSpaceEnd)
         column.scrollBy(itemHeight)
         val newView = column.prepend(itemWidth, itemHeight)
         val availableScrollSpace = max(0, -column.getFirstView()!!.getDecoratedTop())
         val extraFillSpace = extraLayoutSpaceStart - availableScrollSpace
         column.prepend(extraFillSpace, itemWidth, itemHeight)
-        column.recycleEnd(extraLayoutSpaceEnd)
         return newView
     }
 
@@ -206,13 +205,13 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
         extraLayoutSpaceEnd: Int = 0,
     ): ViewItem {
         KeyEvents.pressDown()
+        column.setExtraLayoutSpace(extraLayoutSpaceStart, extraLayoutSpaceEnd)
         column.scrollBy(-itemHeight)
         val newView = column.append(itemWidth, itemHeight)
         val availableScrollSpace =
             max(0, column.getLastView()!!.getDecoratedBottom() - column.height)
         val extraFillSpace = max(0, extraLayoutSpaceEnd - availableScrollSpace)
         column.append(extraFillSpace, itemWidth, itemHeight)
-        column.recycleStart(extraLayoutSpaceStart)
         return newView
     }
 
