@@ -83,6 +83,7 @@ internal class LayoutScroller(
         // Otherwise update the selection and start searching for the new pivot
         if (smooth && recyclerView?.isLayoutRequested == false) {
             pivotSelector.update(position, subPosition)
+            pivotSelector.disablePositionOffset()
             startSmoothScrollingToPivot(position, subPosition)
             return
         }
@@ -197,6 +198,7 @@ internal class LayoutScroller(
 
     fun scrollToPosition(position: Int, subPosition: Int = 0) {
         if (pivotSelector.update(position, subPosition)) {
+            pivotSelector.disablePositionOffset()
             pivotSelector.setSelectionUpdatePending()
             layoutManager.requestLayout()
         }
@@ -245,6 +247,7 @@ internal class LayoutScroller(
                 layoutAlignment,
                 searchPivotListener
             )
+            pivotSelector.resetPositionOffset()
             newSmoothScroller.addScrollMovement(forward)
             layoutManager.startSmoothScroll(newSmoothScroller)
         } else {
@@ -269,6 +272,7 @@ internal class LayoutScroller(
         val selectionChanged = pivotSelector.update(newPosition, newSubPosition)
         var selectViewHolder = false
         if (selectionChanged) {
+            pivotSelector.resetPositionOffset()
             if (!layoutInfo.isLayoutInProgress) {
                 selectViewHolder = true
             } else {
@@ -410,6 +414,7 @@ internal class LayoutScroller(
         }
     }
 
+
     /**
      * Takes care of dispatching [OnViewHolderSelectedListener.onViewHolderSelectedAndAligned]
      */
@@ -432,7 +437,22 @@ internal class LayoutScroller(
                 pivotSelector.dispatchViewHolderSelectedAndAligned()
                 previousSelectedPosition = RecyclerView.NO_POSITION
             }
+            logChildren()
         }
+
+        private fun logChildren() {
+            Log.i(TAG, "Children laid out:")
+            for (i in 0 until layoutManager.childCount) {
+                val child = layoutManager.getChildAt(i)!!
+                val position = layoutManager.getPosition(child)
+                val left = layoutManager.getDecoratedLeft(child)
+                val top = layoutManager.getDecoratedTop(child)
+                val right = layoutManager.getDecoratedLeft(child)
+                val bottom = layoutManager.getDecoratedBottom(child)
+                Log.i(TAG, "View $position: [$left, $top, $right, $bottom]")
+            }
+        }
+
     }
 
 }

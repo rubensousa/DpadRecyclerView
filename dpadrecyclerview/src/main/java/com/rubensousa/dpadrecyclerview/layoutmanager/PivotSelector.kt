@@ -37,6 +37,7 @@ internal class PivotSelector(
 
     companion object {
         const val TAG = "PivotState"
+        const val OFFSET_DISABLED = Int.MIN_VALUE
     }
 
     var position: Int = RecyclerView.NO_POSITION
@@ -45,6 +46,11 @@ internal class PivotSelector(
     var subPosition: Int = 0
         private set
 
+    /**
+     * The offset to be applied to [position], due to adapter change, on the next layout pass.
+     * Set to [OFFSET_DISABLED] means we should stop adding it to [position] until the next layout.
+     */
+    private var positionOffset = 0
     private var recyclerView: RecyclerView? = null
     private var isSelectionUpdatePending = false
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
@@ -59,6 +65,14 @@ internal class PivotSelector(
 
     fun setSelectionUpdatePending() {
         isSelectionUpdatePending = true
+    }
+
+    fun resetPositionOffset() {
+        positionOffset = 0
+    }
+
+    fun disablePositionOffset() {
+        positionOffset = OFFSET_DISABLED
     }
 
     fun onLayoutChildren(state: RecyclerView.State) {
@@ -93,13 +107,27 @@ internal class PivotSelector(
 
     }
 
-    // TODO
-    fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-
+    fun onItemsRemoved(positionStart: Int, itemCount: Int) {
+        if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
+            val finalPosition = position + positionOffset
+            if (positionStart > finalPosition) {
+                // Change was out of bounds, just ignore
+                return
+            }
+            if (positionStart + itemCount > finalPosition) {
+                // If the focused position was removed,
+                // stop updating the offset until the next layout pass
+                positionOffset += positionStart - finalPosition
+                position += positionOffset
+                positionOffset = Int.MIN_VALUE
+                isSelectionUpdatePending = true
+            } else {
+                positionOffset -= itemCount
+            }
+        }
     }
 
-    // TODO
-    fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
+    fun onItemsMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
 
     }
 
@@ -109,6 +137,20 @@ internal class PivotSelector(
         newAdapter: RecyclerView.Adapter<*>?
     ) {
 
+    }
+
+    fun consumePendingSelectionChanges(): Boolean {
+        var consumed = false
+        if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
+            position += positionOffset
+            subPosition = 0
+            consumed = true
+        }
+        if (position >= layoutManager.itemCount) {
+            position = layoutManager.itemCount - 1
+        }
+        positionOffset = 0
+        return consumed
     }
 
     fun update(position: Int, subPosition: Int = 0): Boolean {

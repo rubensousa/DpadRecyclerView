@@ -288,6 +288,10 @@ internal class LayoutInfo(
         return getAdapterPositionOf(child)
     }
 
+    fun getOldPositionOf(view: View): Int {
+        return getChildViewHolder(view)?.oldPosition ?: RecyclerView.NO_POSITION
+    }
+
     fun findLastAddedPosition(): Int {
         if (layout.childCount == 0) {
             return RecyclerView.NO_POSITION

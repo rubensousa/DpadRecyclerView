@@ -79,7 +79,56 @@ internal class LayoutArchitect(
             return
         }
 
+        pivotSelector.consumePendingSelectionChanges()
+
+        if (state.isPreLayout) {
+            preLayoutChildren(recycler, state)
+            return
+        }
+
         predictiveLayoutPass(recycler, state)
+    }
+
+    /**
+     * Make sure all children are in their initial positions before the real layout pass.
+     * Also layout more views if needed so that they correctly appear in the next pass instead of fading in
+     */
+    private fun preLayoutChildren(recycler: Recycler, state: State) {
+        val childCount = layoutManager.childCount
+        if (childCount == 0) {
+            return
+        }
+        Log.i(TAG, "PreLayoutStart")
+        logChildren()
+
+        val firstView = layoutInfo.getChildAt(0) ?: return
+        val lastView = layoutInfo.getChildAt(childCount - 1) ?: return
+        val firstPosition = layoutInfo.getOldPositionOf(firstView)
+        val lastPosition = layoutInfo.getOldPositionOf(lastView)
+        var startOffset = Int.MAX_VALUE
+        var endOffset = Int.MIN_VALUE
+
+        for (i in 0 until childCount) {
+            val view = layoutManager.getChildAt(i) ?: continue
+            val viewHolder = layoutInfo.getChildViewHolder(view) ?: continue
+            if (layoutInfo.didChildStateChange(
+                    viewHolder, pivotSelector.position, firstPosition, lastPosition
+                )
+            ) {
+                startOffset = min(startOffset, layoutInfo.getDecoratedStart(view))
+                endOffset = max(endOffset, layoutInfo.getDecoratedEnd(view))
+            }
+        }
+
+        val extraLayoutSpace = max(0, endOffset - startOffset)
+        layoutCalculator.updateForEndPreLayout(layoutState, extraLayoutSpace, lastPosition, lastView)
+        rowArchitect.layout(layoutState, recycler, state)
+
+        layoutCalculator.updateForStartPreLayout(layoutState, extraLayoutSpace, firstPosition, firstView)
+        rowArchitect.layout(layoutState, recycler, state)
+
+        Log.i(TAG, "PreLayoutFinished")
+        logChildren()
     }
 
     private fun predictiveLayoutPass(recycler: Recycler, state: State) {
@@ -107,13 +156,13 @@ internal class LayoutArchitect(
         // Now that all views are laid out, make sure the pivot is still in the correct position
         alignPivot(newPivotView, recycler, state)
 
-        if (!state.isPreLayout) {
-            // Layout extra space if needed
-            layoutExtraSpace(recycler, state)
+        // Layout extra space if user requested it
+        layoutExtraSpace(recycler, state)
 
-            // We might have views we no longer need after aligning the pivot, so recycle them
-            removeInvisibleViews(recycler)
-        }
+        // We might have views we no longer need after aligning the pivot, so recycle them
+        removeInvisibleViews(recycler)
+
+        logChildren()
     }
 
     private fun layoutExtraSpace(recycler: Recycler, state: State) {

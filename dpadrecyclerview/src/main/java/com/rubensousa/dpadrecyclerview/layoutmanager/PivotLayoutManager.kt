@@ -200,8 +200,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        pivotSelector.onItemsAdded(recyclerView, positionStart, itemCount)
         Log.i(TAG, "OnItemsAdded: $positionStart, $itemCount")
+        pivotSelector.onItemsAdded(recyclerView, positionStart, itemCount)
     }
 
     override fun onItemsChanged(recyclerView: RecyclerView) {
@@ -209,12 +209,13 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        pivotSelector.onItemsRemoved(recyclerView, positionStart, itemCount)
         Log.i(TAG, "OnItemsRemoved: $positionStart, $itemCount")
+        pivotSelector.onItemsRemoved(positionStart, itemCount)
     }
 
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
-        pivotSelector.onItemsMoved(recyclerView, from, to, itemCount)
+        Log.i(TAG, "OnItemsMoved: $from, $to, $itemCount")
+        pivotSelector.onItemsMoved(from, to, itemCount)
     }
 
     override fun onAdapterChanged(

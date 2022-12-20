@@ -42,6 +42,15 @@ class ListFragment : Fragment(R.layout.screen_tv_nested_lists) {
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             listController.showLoading(isLoading)
         }
+        binding.add.setOnClickListener {
+            listController.addItem()
+        }
+        binding.swap.setOnClickListener {
+            listController.swapCurrentItemWithNext()
+        }
+        binding.delete.setOnClickListener {
+            listController.deleteCurrentItem()
+        }
     }
 
     override fun onDestroyView() {

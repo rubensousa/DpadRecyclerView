@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView.State
 import kotlin.math.abs
 import kotlin.math.max
@@ -56,35 +57,82 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
         }
     }
 
-    fun updateLayoutStateForExtraLayoutEnd(layoutState: LayoutState, state: State) {
-        val view = layoutInfo.getChildClosestToEnd() ?: return
-        updateExtraLayoutSpace(layoutState, state)
+    fun updateForStartPreLayout(
+        layoutState: LayoutState,
+        extraLayoutSpace: Int,
+        minOldPosition: Int,
+        anchorView: View
+    ) {
+        layoutState.apply {
+            setStartDirection()
+            setExtraLayoutSpaceStart(extraLayoutSpace)
+            setRecyclingEnabled(false)
+            setCurrentPosition(minOldPosition + layoutState.itemDirection.value)
+            setCheckpoint(layoutInfo.getDecoratedStart(anchorView))
+            setAvailableScrollSpace(calculateAvailableScrollSpace(extraLayoutSpace, direction))
+            setFillSpace(calculateFillSpace(this))
+        }
+    }
+
+    fun updateForEndPreLayout(
+        layoutState: LayoutState,
+        extraLayoutSpace: Int,
+        maxOldPosition: Int,
+        anchorView: View
+    ) {
         layoutState.apply {
             setEndDirection()
+            setExtraLayoutSpaceEnd(extraLayoutSpace)
             setRecyclingEnabled(false)
+            setCurrentPosition(maxOldPosition + layoutState.itemDirection.value)
+            setCheckpoint(layoutInfo.getDecoratedEnd(anchorView))
+            setAvailableScrollSpace(calculateAvailableScrollSpace(extraLayoutSpace, direction))
+            setFillSpace(calculateFillSpace(this))
+        }
+    }
+
+    private fun calculateAvailableScrollSpace(offset: Int, direction: LayoutDirection): Int {
+        return if (direction == LayoutDirection.END) {
+            max(0, offset - layoutInfo.getEndAfterPadding())
+        } else {
+            max(0, layoutInfo.getStartAfterPadding() - offset)
+        }
+    }
+
+    private fun calculateFillSpace(layoutState: LayoutState): Int {
+        return if (layoutState.isLayingOutEnd()) {
+            max(0, layoutState.extraLayoutSpaceEnd - layoutState.availableScrollSpace)
+        } else {
+            max(0, layoutState.extraLayoutSpaceStart - layoutState.availableScrollSpace)
+        }
+    }
+
+    fun updateLayoutStateForExtraLayoutEnd(layoutState: LayoutState, state: State) {
+        val view = layoutInfo.getChildClosestToEnd() ?: return
+        layoutState.apply {
+            setEndDirection()
+            updateExtraLayoutSpace(layoutState, state)
             setCheckpoint(layoutInfo.getDecoratedEnd(view))
-            setCurrentPosition(layoutInfo.getLayoutPositionOf(view) + layoutState.direction.value)
-            setAvailableScrollSpace(
-                max(0, checkpoint - layoutInfo.getEndAfterPadding())
-            )
-            val fill = layoutState.extraLayoutSpaceEnd - availableScrollSpace
-            setFillSpace(max(0, fill))
+            updateLayoutStateForExtraLayout(this, view)
         }
     }
 
     fun updateLayoutStateForExtraLayoutStart(layoutState: LayoutState, state: State) {
         val view = layoutInfo.getChildClosestToStart() ?: return
-        updateExtraLayoutSpace(layoutState, state)
         layoutState.apply {
             setStartDirection()
-            setRecyclingEnabled(false)
+            updateExtraLayoutSpace(layoutState, state)
             setCheckpoint(layoutInfo.getDecoratedStart(view))
-            setCurrentPosition(layoutInfo.getLayoutPositionOf(view) + layoutState.direction.value)
-            setAvailableScrollSpace(
-                max(0, layoutInfo.getStartAfterPadding() - checkpoint)
-            )
-            val fill = layoutState.extraLayoutSpaceStart - availableScrollSpace
-            setFillSpace(max(0, fill))
+            updateLayoutStateForExtraLayout(this, view)
+        }
+    }
+
+    private fun updateLayoutStateForExtraLayout(layoutState: LayoutState, anchorView: View) {
+        layoutState.apply {
+            setRecyclingEnabled(false)
+            setCurrentPosition(layoutInfo.getLayoutPositionOf(anchorView) + direction.value)
+            setAvailableScrollSpace(calculateAvailableScrollSpace(checkpoint, direction))
+            setFillSpace(calculateFillSpace(this))
         }
     }
 
