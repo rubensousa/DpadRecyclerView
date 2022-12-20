@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
+import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 
@@ -66,8 +67,16 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         recyclerView.requestFocus()
     }
 
+    fun mutateAdapter(action: (adapter: AbstractTestAdapter<*>) -> Unit) {
+        getDpadRecyclerView()?.adapter?.let { adapter ->
+            if (adapter is AbstractTestAdapter<*>) {
+                action(adapter)
+            }
+        }
+    }
+
     fun requestFocus() {
-       getDpadRecyclerView()?.requestFocus()
+        getDpadRecyclerView()?.requestFocus()
     }
 
     open fun createAdapter(

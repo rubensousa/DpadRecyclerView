@@ -136,6 +136,12 @@ abstract class DpadRecyclerViewTest {
         fragmentScenario.onFragment(action)
     }
 
+    fun mutateAdapter(action: (adapter: AbstractTestAdapter<*>) -> Unit) {
+        fragmentScenario.onFragment { fragment ->
+            fragment.mutateAdapter(action)
+        }
+    }
+
     @After
     open fun destroy() {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)

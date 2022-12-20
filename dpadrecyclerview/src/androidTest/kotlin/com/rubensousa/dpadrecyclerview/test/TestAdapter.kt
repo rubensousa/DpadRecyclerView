@@ -20,30 +20,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
 import com.rubensousa.dpadrecyclerview.testing.R
 
 class TestAdapter(
     private val adapterConfiguration: TestAdapterConfiguration,
-) : ListAdapter<Int, TestAdapter.ItemViewHolder>(DIFF_CALLBACK) {
-
-    companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Int>() {
-            override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return oldItem == newItem
-            }
-        }
-    }
-
-    init {
-        submitList(List(adapterConfiguration.numberOfItems) { it })
-    }
+) : AbstractTestAdapter<TestAdapter.ItemViewHolder>(adapterConfiguration) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(
