@@ -148,8 +148,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         if (hadFocusBeforeLayout) {
             focusFinder.onFocusChanged(true)
         }
-        pivotSelector.onLayoutCompleted()
         layoutArchitect.onLayoutCompleted(state)
+        pivotSelector.onLayoutCompleted()
         hadFocusBeforeLayout = false
     }
 

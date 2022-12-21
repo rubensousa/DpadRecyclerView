@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertItemAtPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForAnimation
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
@@ -126,6 +127,32 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    fun testRemovalOfPivotAsLastViewShouldSelectPreviousView() {
+        val lastPosition = selectLastPosition()
+
+        assertFocusAndSelection(lastPosition)
+
+        executeOnFragment { fragment ->
+            fragment.clearEvents()
+        }
+
+        mutateAdapter { adapter ->
+            adapter.removeAt(lastPosition)
+        }
+        waitForAnimation()
+        waitForIdleScrollState()
+        assertFocusAndSelection(lastPosition - 1)
+
+        assertThat(getSelectionEvents()).isEqualTo(
+            listOf(DpadSelectionEvent(position = lastPosition - 1))
+        )
+
+        assertThat(getSelectionAndAlignedEvents()).isEqualTo(
+            listOf(DpadSelectionEvent(position = lastPosition - 1))
+        )
+    }
+
+    @Test
     fun testMovePivotWillKeepItsAlignmentAndFocus() {
         val oldViewBounds = getRelativeItemViewBounds(position = 0)
         mutateAdapter { adapter ->
@@ -158,6 +185,5 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         val newViewBounds = getRelativeItemViewBounds(position = 0)
         assertThat(newViewBounds).isEqualTo(oldViewBounds)
     }
-
 
 }

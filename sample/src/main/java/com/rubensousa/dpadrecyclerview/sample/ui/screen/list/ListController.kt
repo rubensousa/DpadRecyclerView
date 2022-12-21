@@ -101,6 +101,9 @@ class ListController(private val fragment: Fragment) {
 
     fun swapCurrentItemWithNext() {
         val recyclerView = getRecyclerView() ?: return
+        if (getSelectedPosition() == nestedListAdapter.itemCount - 1) {
+            return
+        }
         nestedListAdapter.move(
             getSelectedPosition(),
             getSelectedPosition() + 1

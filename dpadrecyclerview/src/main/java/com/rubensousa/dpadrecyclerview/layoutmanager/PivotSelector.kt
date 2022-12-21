@@ -59,6 +59,49 @@ internal class PivotSelector(
     }
     private var selectedViewHolder: DpadViewHolder? = null
 
+    fun update(position: Int, subPosition: Int = 0): Boolean {
+        val changed = position != this.position || subPosition != this.subPosition
+        this.position = position
+        this.subPosition = subPosition
+        return changed
+    }
+
+    fun consumePendingSelectionChanges(): Boolean {
+        var consumed = false
+        if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
+            position += positionOffset
+            subPosition = 0
+            consumed = true
+        }
+        positionOffset = 0
+        return consumed
+    }
+
+    fun onLayoutChildren(state: RecyclerView.State) {
+        // Clear the selected position if there are no more items
+        if (state.itemCount == 0) {
+            isSelectionUpdatePending = position != RecyclerView.NO_POSITION
+            position = RecyclerView.NO_POSITION
+            subPosition = 0
+        } else if (position >= state.itemCount) {
+            position = state.itemCount - 1
+            subPosition = 0
+        } else if (position == RecyclerView.NO_POSITION && state.itemCount > 0) {
+            // Make sure the pivot is set to 0 by default whenever we have items
+            position = 0
+            positionOffset = 0
+            isSelectionUpdatePending = true
+        }
+    }
+
+    fun onLayoutCompleted() {
+        if (isSelectionUpdatePending) {
+            isSelectionUpdatePending = false
+            dispatchViewHolderSelected()
+            dispatchViewHolderSelectedAndAligned()
+        }
+    }
+
     fun getCurrentSubPositions(): Int {
         return selectedViewHolder?.getAlignments()?.size ?: 0
     }
@@ -73,29 +116,6 @@ internal class PivotSelector(
 
     fun disablePositionOffset() {
         positionOffset = OFFSET_DISABLED
-    }
-
-    fun onLayoutChildren(state: RecyclerView.State) {
-        // Make sure the pivot is set to 0 by default whenever we have items
-        if (position == RecyclerView.NO_POSITION && state.itemCount > 0) {
-            position = 0
-            positionOffset = 0
-            isSelectionUpdatePending = true
-        }
-    }
-
-    fun onLayoutCompleted() {
-        // If we had items, but now we don't, trigger an update for RecyclerView.NO_POSITION
-        if (position >= 0 && layoutManager.childCount == 0) {
-            position = RecyclerView.NO_POSITION
-            subPosition = 0
-            isSelectionUpdatePending = true
-        }
-        if (isSelectionUpdatePending) {
-            isSelectionUpdatePending = false
-            dispatchViewHolderSelected()
-            dispatchViewHolderSelectedAndAligned()
-        }
     }
 
     // TODO
@@ -150,27 +170,6 @@ internal class PivotSelector(
         newAdapter: RecyclerView.Adapter<*>?
     ) {
 
-    }
-
-    fun consumePendingSelectionChanges(): Boolean {
-        var consumed = false
-        if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
-            position += positionOffset
-            subPosition = 0
-            consumed = true
-        }
-        if (position >= layoutManager.itemCount) {
-            position = layoutManager.itemCount - 1
-        }
-        positionOffset = 0
-        return consumed
-    }
-
-    fun update(position: Int, subPosition: Int = 0): Boolean {
-        val changed = position != this.position || subPosition != this.subPosition
-        this.position = position
-        this.subPosition = subPosition
-        return changed
     }
 
     fun onSaveInstanceState(): Parcelable {
