@@ -22,12 +22,15 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
+import com.rubensousa.dpadrecyclerview.test.helpers.assertItemAtPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForAnimation
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.test.tests.layout.LayoutColumn
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import org.junit.Before
 import org.junit.Test
 
@@ -78,8 +81,9 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.removeAt(0)
         }
-        waitForIdleScrollState()
+        waitForAnimation()
         assertFocusAndSelection(0)
+        assertItemAtPosition(position = 0, item = 1)
 
         val newViewBounds = getRelativeItemViewBounds(position = 0)
         assertThat(newViewBounds).isEqualTo(oldViewBounds)
@@ -106,8 +110,9 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.removeAt(1)
         }
-        waitForIdleScrollState()
+        waitForAnimation()
         assertFocusAndSelection(0)
+        assertItemAtPosition(position = 0, item = 0)
 
         val newViewBounds = getRelativeItemViewBounds(position = 0)
         assertThat(newViewBounds).isEqualTo(oldViewBounds)
@@ -119,5 +124,40 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
             listOf(DpadSelectionEvent(position = 0))
         )
     }
+
+    @Test
+    fun testMovePivotWillKeepItsAlignmentAndFocus() {
+        val oldViewBounds = getRelativeItemViewBounds(position = 0)
+        mutateAdapter { adapter ->
+            adapter.move(from = 0, to = 1)
+        }
+        waitForAnimation()
+        assertFocusAndSelection(1)
+        assertItemAtPosition(position = 1, item = 0)
+
+        val newViewBounds = getRelativeItemViewBounds(position = 1)
+        assertThat(newViewBounds).isEqualTo(oldViewBounds)
+
+        // Scroll up to check that the other item was moved
+        KeyEvents.pressUp()
+        waitForIdleScrollState()
+        assertItemAtPosition(position = 0, item = 1)
+    }
+
+    @Test
+    fun testMovingNonFocusedViewDoesNotUpdatePivot() {
+        val oldViewBounds = getRelativeItemViewBounds(position = 0)
+        mutateAdapter { adapter ->
+            adapter.move(from = 3, to = 4)
+        }
+        waitForAnimation()
+        assertFocusAndSelection(0)
+        assertItemAtPosition(position = 3, item = 4)
+        assertItemAtPosition(position = 4, item = 3)
+
+        val newViewBounds = getRelativeItemViewBounds(position = 0)
+        assertThat(newViewBounds).isEqualTo(oldViewBounds)
+    }
+
 
 }

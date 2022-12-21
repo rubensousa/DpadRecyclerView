@@ -159,8 +159,11 @@ internal class LayoutArchitect(
         // Layout extra space if user requested it
         layoutExtraSpace(recycler, state)
 
-        // We might have views we no longer need after aligning the pivot, so recycle them
-        removeInvisibleViews(recycler)
+        // We might have views we no longer need after aligning the pivot,
+        // so recycle them if we're not running animations
+        if (!state.willRunSimpleAnimations() && !state.willRunPredictiveAnimations()) {
+            removeInvisibleViews(recycler)
+        }
 
         logChildren()
     }

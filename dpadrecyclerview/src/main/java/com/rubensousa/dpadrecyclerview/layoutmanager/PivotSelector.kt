@@ -79,6 +79,7 @@ internal class PivotSelector(
         // Make sure the pivot is set to 0 by default whenever we have items
         if (position == RecyclerView.NO_POSITION && state.itemCount > 0) {
             position = 0
+            positionOffset = 0
             isSelectionUpdatePending = true
         }
     }
@@ -128,7 +129,19 @@ internal class PivotSelector(
     }
 
     fun onItemsMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
-
+        if (position != RecyclerView.NO_POSITION && positionOffset != Int.MIN_VALUE) {
+            val finalPosition = position + positionOffset
+            if (fromPosition <= finalPosition && finalPosition < fromPosition + itemCount) {
+                // moved items include focused position
+                positionOffset += toPosition - fromPosition
+            } else if (fromPosition < finalPosition && toPosition > finalPosition - itemCount) {
+                // move items before focused position to after focused position
+                positionOffset -= itemCount
+            } else if (fromPosition > finalPosition && toPosition < finalPosition) {
+                // move items after focused position to before focused position
+                positionOffset += itemCount
+            }
+        }
     }
 
     // TODO

@@ -20,7 +20,9 @@ import android.graphics.Rect
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -29,6 +31,9 @@ import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadViewActions
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
+import com.rubensousa.dpadrecyclerview.testing.matchers.DpadRecyclerViewMatchers
+import org.hamcrest.Matchers.allOf
+
 
 fun selectLastPosition(smooth: Boolean = false, id: Int = R.id.recyclerView): Int {
     var selectedPosition: Int = RecyclerView.NO_POSITION
@@ -68,6 +73,15 @@ fun selectSubPosition(
         Espresso.onView(ViewMatchers.withId(id))
             .perform(DpadRecyclerViewActions.waitForIdleScroll())
     }
+}
+
+fun assertItemAtPosition(position: Int, item: Int) {
+    Espresso.onView(
+        allOf(
+            ViewMatchers.withText(item.toString()),
+            DpadRecyclerViewMatchers.withDescendantOfItemViewAt(position)
+        )
+    ).check(ViewAssertions.matches(isDisplayed()))
 }
 
 fun assertFocusAndSelection(position: Int, subPosition: Int = 0, id: Int = R.id.recyclerView) {
@@ -151,6 +165,14 @@ fun waitForIdleScrollState(id: Int = R.id.recyclerView) {
 
 fun waitForAdapterUpdate(id: Int = R.id.recyclerView) {
     Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.waitForAdapterUpdate())
+}
+
+fun waitForAnimation() {
+    waitForIdleScrollState()
+    waitForCondition { recyclerView ->
+        val isAnimationRunning = recyclerView.itemAnimator?.isRunning ?: false
+        return@waitForCondition !isAnimationRunning
+    }
 }
 
 fun waitForCondition(
