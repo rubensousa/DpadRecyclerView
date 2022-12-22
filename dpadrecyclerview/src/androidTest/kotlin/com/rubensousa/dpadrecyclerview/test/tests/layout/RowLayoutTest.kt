@@ -160,27 +160,6 @@ class RowLayoutTest : DpadRecyclerViewTest() {
         assertChildrenPositions()
     }
 
-    @Test
-    fun testExtraLayoutSpaceIsAddedAtStartDuringScroll() {
-        appendPage()
-        repeat(10) {
-            scrollRight()
-        }
-        onRecyclerView("Change extra layout space") { recyclerView ->
-            recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateExtraLayoutSpace(
-                    state: RecyclerView.State,
-                    extraLayoutSpace: IntArray
-                ) {
-                    extraLayoutSpace[0] = row.width
-                }
-            })
-        }
-        row.setExtraLayoutSpace(start = row.width)
-        prependPage()
-        assertChildrenPositions()
-    }
-
     private fun prependPage() {
         row.prepend(row.width, itemWidth, itemHeight)
     }
