@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.test.tests.selection
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
@@ -158,7 +157,6 @@ class SelectionTest : DpadRecyclerViewTest() {
     // TODO Migrate to PivotLayoutManager once grid is supported
     @Test
     fun testViewHoldersAlreadyAlignedStillDispatchAlignedEvent() {
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
         launchFragment(getDefaultLayoutConfiguration().copy(spans = 5))
 
         val expectedEvents = ArrayList<DpadSelectionEvent>()

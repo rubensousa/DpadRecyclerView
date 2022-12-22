@@ -7,17 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterNestedItemCenterBinding
 
 class CustomLayoutActivity : AppCompatActivity() {
-
-    companion object {
-        init {
-            DpadRecyclerViewHelper.enableNewPivotLayoutManager(true)
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

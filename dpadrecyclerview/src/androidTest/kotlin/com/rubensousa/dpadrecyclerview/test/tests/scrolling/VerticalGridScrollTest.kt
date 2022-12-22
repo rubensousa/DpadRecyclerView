@@ -18,7 +18,6 @@ package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.DpadRecyclerViewHelper
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
@@ -62,7 +61,6 @@ class VerticalGridScrollTest : DpadRecyclerViewTest() {
 
     @Test
     fun testContinuousScrollForwardAndBackwards() {
-        DpadRecyclerViewHelper.enableNewPivotLayoutManager(false)
         launchFragment()
         KeyEvents.pressRight(times = 50)
         waitForIdleScrollState()
