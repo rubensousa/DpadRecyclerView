@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.After
@@ -94,6 +95,7 @@ abstract class DpadRecyclerViewTest {
             themeResId = R.style.DpadRecyclerViewTestTheme
         ).also {
             fragmentScenario = it
+            waitForCondition { recyclerView -> !recyclerView.isLayoutRequested }
         }
     }
 

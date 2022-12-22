@@ -41,7 +41,7 @@ class ListViewModel : ViewModel() {
 
     }
 
-    private fun createPage(leanback: Boolean = true): List<ListModel> {
+    private fun createPage(leanback: Boolean = false): List<ListModel> {
         val titlePrefix = if (leanback) {
             "HorizontalGridView"
         } else {

@@ -92,7 +92,6 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         position: Int,
         subPosition: Int
     ) {
-        super.onViewHolderSelected(parent, child, position, subPosition)
         selectionEvents.add(DpadSelectionEvent(position, subPosition))
     }
 
@@ -102,7 +101,6 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         position: Int,
         subPosition: Int
     ) {
-        super.onViewHolderSelectedAndAligned(parent, child, position, subPosition)
         alignedEvents.add(DpadSelectionEvent(position, subPosition))
     }
 
@@ -126,7 +124,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     }
 
     fun clearAdapter() {
-        getDpadRecyclerView()?.adapter = TestAdapter(TestAdapterConfiguration(numberOfItems = 0))
+        getDpadRecyclerView()?.adapter = null
     }
 
     fun getTasksExecuted(): List<DpadSelectionEvent> = tasks

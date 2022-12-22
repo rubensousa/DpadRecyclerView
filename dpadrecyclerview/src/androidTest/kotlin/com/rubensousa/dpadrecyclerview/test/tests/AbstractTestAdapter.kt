@@ -121,10 +121,10 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
         notifyItemMoved(from, to)
     }
 
-    fun addAt(index: Int) {
+    fun addAt(item: Int, index: Int) {
         currentVersion++
-        items.add(index, id++)
-        notifyItemInserted(items.size - 1)
+        items.add(index, item)
+        notifyItemInserted(index)
     }
 
     fun add() {

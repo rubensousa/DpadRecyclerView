@@ -43,10 +43,10 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
             orientation = RecyclerView.VERTICAL,
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.NONE,
-                offsetRatio = 0.0f
+                offsetRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
-                offsetRatio = 0.0f
+                offsetRatio = 0.5f
             )
         )
     }
@@ -173,16 +173,80 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
 
     @Test
     fun testMovingNonFocusedViewDoesNotUpdatePivot() {
-        val oldViewBounds = getRelativeItemViewBounds(position = 0)
+        val pivotPosition = 5
+        KeyEvents.pressDown(times = pivotPosition)
+        val oldViewBounds = getRelativeItemViewBounds(position = pivotPosition)
         mutateAdapter { adapter ->
             adapter.move(from = 3, to = 4)
         }
         waitForAnimation()
-        assertFocusAndSelection(0)
+        assertFocusAndSelection(pivotPosition)
         assertItemAtPosition(position = 3, item = 4)
         assertItemAtPosition(position = 4, item = 3)
 
-        val newViewBounds = getRelativeItemViewBounds(position = 0)
+        val newViewBounds = getRelativeItemViewBounds(position = pivotPosition)
+        assertThat(newViewBounds).isEqualTo(oldViewBounds)
+    }
+
+    @Test
+    fun testInsertingViewBeforePivot() {
+        val originalPivotPosition = 5
+        var currentPivotPosition = originalPivotPosition
+        KeyEvents.pressDown(times = originalPivotPosition)
+        val oldViewBounds = getRelativeItemViewBounds(position = originalPivotPosition)
+
+        mutateAdapter { adapter ->
+            adapter.addAt(item = -1, index = currentPivotPosition - 1)
+        }
+        currentPivotPosition++
+        waitForAnimation()
+        assertFocusAndSelection(currentPivotPosition)
+
+        assertItemAtPosition(position = currentPivotPosition, item = 5)
+        assertItemAtPosition(position = currentPivotPosition - 1, item = 4)
+        assertItemAtPosition(position = currentPivotPosition - 2, item = -1)
+
+        val newViewBounds = getRelativeItemViewBounds(position = currentPivotPosition)
+        assertThat(newViewBounds).isEqualTo(oldViewBounds)
+    }
+
+    @Test
+    fun testInsertingViewAtPivotPosition() {
+        val originalPivotPosition = 5
+        var currentPivotPosition = originalPivotPosition
+        KeyEvents.pressDown(times = originalPivotPosition)
+        val oldViewBounds = getRelativeItemViewBounds(position = originalPivotPosition)
+
+        mutateAdapter { adapter ->
+            adapter.addAt(item = -1, index = currentPivotPosition)
+        }
+        currentPivotPosition++
+        waitForAnimation()
+        assertFocusAndSelection(currentPivotPosition)
+
+        assertItemAtPosition(position = currentPivotPosition, item = 5)
+        assertItemAtPosition(position = currentPivotPosition - 1, item = -1)
+
+        val newViewBounds = getRelativeItemViewBounds(position = currentPivotPosition)
+        assertThat(newViewBounds).isEqualTo(oldViewBounds)
+    }
+
+    @Test
+    fun testInsertingViewAfterPivot() {
+        val originalPivotPosition = 5
+        KeyEvents.pressDown(times = originalPivotPosition)
+        val oldViewBounds = getRelativeItemViewBounds(position = originalPivotPosition)
+
+        mutateAdapter { adapter ->
+            adapter.addAt(item = -1, index = originalPivotPosition + 1)
+        }
+        waitForAnimation()
+        assertFocusAndSelection(originalPivotPosition)
+
+        assertItemAtPosition(position = originalPivotPosition, item = 5)
+        assertItemAtPosition(position = originalPivotPosition + 1, item = -1)
+
+        val newViewBounds = getRelativeItemViewBounds(position = originalPivotPosition)
         assertThat(newViewBounds).isEqualTo(oldViewBounds)
     }
 

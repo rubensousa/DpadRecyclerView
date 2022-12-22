@@ -201,11 +201,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
         Log.i(TAG, "OnItemsAdded: $positionStart, $itemCount")
-        pivotSelector.onItemsAdded(recyclerView, positionStart, itemCount)
+        pivotSelector.onItemsAdded(positionStart, itemCount)
     }
 
     override fun onItemsChanged(recyclerView: RecyclerView) {
-        pivotSelector.onItemsChanged(recyclerView)
+        pivotSelector.onItemsChanged()
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
@@ -222,7 +222,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         oldAdapter: RecyclerView.Adapter<*>?,
         newAdapter: RecyclerView.Adapter<*>?
     ) {
-        pivotSelector.onAdapterChanged(oldAdapter, newAdapter)
+        if (oldAdapter != null) {
+            layoutArchitect.reset()
+            pivotSelector.clear()
+        }
     }
 
     override fun onRequestChildFocus(

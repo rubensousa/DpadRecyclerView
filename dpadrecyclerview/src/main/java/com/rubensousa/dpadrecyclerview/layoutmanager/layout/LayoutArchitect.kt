@@ -258,6 +258,10 @@ internal class LayoutArchitect(
         }
     }
 
+    fun reset() {
+        layoutState.clear()
+    }
+
     fun onLayoutCompleted(state: State) {
         layoutInfo.onLayoutCompleted()
         layoutCompleteListeners.forEach { listener ->
@@ -309,8 +313,6 @@ internal class LayoutArchitect(
             return 0
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
-
-        Log.i(TAG, "ScrollOffset: $scrollOffset")
 
         // Offset views immediately
         offsetBy(scrollOffset)

@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
@@ -135,8 +136,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
 
         waitForIdleScrollState()
 
-        assertFocusPosition(position = lastFocusablePosition)
-        assertSelectedPosition(position = lastFocusablePosition)
+        assertFocusAndSelection(position = lastFocusablePosition)
     }
 
 }

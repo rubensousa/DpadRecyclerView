@@ -36,7 +36,6 @@ internal class PivotSelector(
 ) {
 
     companion object {
-        const val TAG = "PivotState"
         const val OFFSET_DISABLED = Int.MIN_VALUE
     }
 
@@ -118,14 +117,19 @@ internal class PivotSelector(
         positionOffset = OFFSET_DISABLED
     }
 
-    // TODO
-    fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-
+    fun onItemsAdded(positionStart: Int, itemCount: Int) {
+        if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
+            val finalPosition = position + positionOffset
+            if (positionStart <= finalPosition) {
+                // If items are inserted before the pivot,
+                // move its position by the item count
+                positionOffset += itemCount
+            }
+        }
     }
 
-    // TODO
-    fun onItemsChanged(recyclerView: RecyclerView) {
-
+    fun onItemsChanged() {
+        resetPositionOffset()
     }
 
     fun onItemsRemoved(positionStart: Int, itemCount: Int) {
@@ -164,12 +168,14 @@ internal class PivotSelector(
         }
     }
 
-    // TODO
-    fun onAdapterChanged(
-        oldAdapter: RecyclerView.Adapter<*>?,
-        newAdapter: RecyclerView.Adapter<*>?
-    ) {
-
+    fun clear() {
+        val hadPivot = position != RecyclerView.NO_POSITION
+        position = RecyclerView.NO_POSITION
+        positionOffset = 0
+        if (hadPivot) {
+            dispatchViewHolderSelected()
+            dispatchViewHolderSelectedAndAligned()
+        }
     }
 
     fun onSaveInstanceState(): Parcelable {
