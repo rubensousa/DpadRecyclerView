@@ -26,13 +26,18 @@ internal class LayoutInfoMock(private val configuration: LayoutConfiguration) {
     private val mock = mockk<LayoutInfo>()
     var isScrolling = false
     var totalSpace = 0
+    var hasCreatedFirstItem = false
+    var hasCreatedLastItem = false
 
     init {
         every { mock.isScrolling }.answers { isScrolling }
         every { mock.getTotalSpace() }.answers { totalSpace }
         every { mock.getConfiguration() }.answers { configuration }
+        every { mock.hasCreatedFirstItem() }.answers { hasCreatedFirstItem }
+        every { mock.hasCreatedLastItem() }.answers { hasCreatedLastItem }
     }
 
     fun get(): LayoutInfo = mock
+
 
 }

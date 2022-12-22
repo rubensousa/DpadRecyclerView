@@ -35,7 +35,7 @@ import kotlin.math.sqrt
  * if we need to stop scrolling.
  */
 internal class SearchPivotSmoothScroller(
-    private val recyclerView: RecyclerView,
+    recyclerView: RecyclerView,
     private val layoutInfo: LayoutInfo,
     private val pivotSelector: PivotSelector,
     private val alignment: LayoutAlignment,
@@ -80,10 +80,10 @@ internal class SearchPivotSmoothScroller(
     }
 
     override fun computeScrollVectorForPosition(targetPosition: Int): PointF? {
-        if (movements.getPendingMoves() == 0) {
+        if (movements.pendingMoves == 0) {
             return null
         }
-        val direction = if (movements.getPendingMoves() < 0) -1f else 1f
+        val direction = if (movements.pendingMoves < 0) -1f else 1f
         return if (layoutInfo.isHorizontal()) {
             PointF(direction, 0f)
         } else {
@@ -97,6 +97,7 @@ internal class SearchPivotSmoothScroller(
         Log.i(TAG, "View attached: $adapterPosition")
         if (layoutInfo.isViewFocusable(child)
             && adapterPosition != RecyclerView.NO_POSITION
+            && movements.shouldScrollToView(adapterPosition, pivotSelector.position)
             && movements.consume()
         ) {
             listener.onPivotAttached(adapterPosition)

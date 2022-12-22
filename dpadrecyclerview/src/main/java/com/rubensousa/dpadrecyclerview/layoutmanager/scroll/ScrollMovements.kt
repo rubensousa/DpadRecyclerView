@@ -16,22 +16,36 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 
-import android.util.Log
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import kotlin.math.max
 
 internal class ScrollMovements(
     private val layoutInfo: LayoutInfo
 ) {
 
-    private var pendingMoves = 0
-    private val maxPendingMoves = 1
+    var pendingMoves = 0
+        private set
 
-    fun getPendingMoves() = pendingMoves
+    var maxPendingMoves = 2
+        private set
+
+    fun setMaxPendingMoves(max: Int) {
+        maxPendingMoves = max(1, max)
+    }
 
     fun hasPendingMoves() = pendingMoves != 0
 
     fun shouldStopScrolling(): Boolean {
         return !hasPendingMoves() || isLayoutCompleteInScrollingDirection()
+    }
+
+    fun shouldScrollToView(viewPosition: Int, pivotPosition: Int) : Boolean {
+        if (viewPosition == pivotPosition) {
+            return true
+        }
+        val isMovingBackwards = pendingMoves < 0 && viewPosition < pivotPosition
+        val isMovingForwards = pendingMoves > 0 && viewPosition > pivotPosition
+        return isMovingBackwards || isMovingForwards
     }
 
     private fun isLayoutCompleteInScrollingDirection(): Boolean {
@@ -47,14 +61,12 @@ internal class ScrollMovements(
         if (pendingMoves < maxPendingMoves) {
             pendingMoves++
         }
-        Log.i(LayoutScroller.TAG, "Increased pending moves to: $pendingMoves")
     }
 
     fun decrease() {
         if (pendingMoves > -maxPendingMoves) {
             pendingMoves--
         }
-        Log.i(LayoutScroller.TAG, "Decreased pending moves to: $pendingMoves")
     }
 
     fun consume(): Boolean {
