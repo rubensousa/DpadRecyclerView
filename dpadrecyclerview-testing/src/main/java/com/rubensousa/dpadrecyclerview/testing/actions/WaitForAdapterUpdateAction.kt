@@ -30,6 +30,7 @@ import java.util.concurrent.TimeoutException
 
 internal class WaitForAdapterUpdateAction(
     private val updates: Int,
+    private val failOnTimeout: Boolean,
     timeout: Long = 5,
     timeoutUnit: TimeUnit = TimeUnit.SECONDS
 ) : ViewAction {
@@ -48,14 +49,16 @@ internal class WaitForAdapterUpdateAction(
         val recyclerView = view as RecyclerView
         val idlingResource = AdapterUpdateIdlingResource(updates, recyclerView)
         val isIdleNow = waiter.waitFor(idlingResource, uiController)
-        if (!isIdleNow) {
+        if (!isIdleNow && failOnTimeout) {
             throw PerformException.Builder()
                 .withActionDescription(description)
                 .withCause(TimeoutException("Waited ${waiter.getTimeoutMillis()} milliseconds"))
                 .withViewDescription(HumanReadables.describe(view))
                 .build()
         }
-        uiController.loopMainThreadForAtLeast(300)
+        if (isIdleNow) {
+            uiController.loopMainThreadForAtLeast(300)
+        }
     }
 
     class AdapterUpdateIdlingResource(updates: Int, recyclerView: RecyclerView) : IdlingResource {
