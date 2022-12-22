@@ -93,13 +93,13 @@ class RowLayoutTest : DpadRecyclerViewTest() {
     fun testNoExtraSpaceIsAddedWhenScrollingByDefault() {
         appendPage()
 
-        repeat(4) {
+        repeat(1) {
             scrollRight()
         }
 
         assertChildrenPositions()
 
-        repeat(4) {
+        repeat(1) {
             scrollLeft()
         }
 
