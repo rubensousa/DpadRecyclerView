@@ -164,11 +164,11 @@ class SelectionTest : DpadRecyclerViewTest() {
 
         repeat(4) { iteration ->
             KeyEvents.pressRight()
-            assertSelectedPosition(position = iteration + 1)
-            assertFocusPosition(position = iteration + 1)
+            assertFocusAndSelection(position = iteration + 1)
             expectedEvents.add(DpadSelectionEvent(position = iteration + 1))
         }
 
+        assertThat(getSelectionEvents()).isEqualTo(expectedEvents)
         assertThat(getSelectionAndAlignedEvents()).isEqualTo(expectedEvents)
     }
 

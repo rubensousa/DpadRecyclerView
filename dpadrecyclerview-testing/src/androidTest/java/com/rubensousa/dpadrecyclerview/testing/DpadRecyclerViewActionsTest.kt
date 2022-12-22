@@ -235,8 +235,10 @@ class DpadRecyclerViewActionsTest : RecyclerViewTest() {
             fragment.removeItem()
         }
         currentSize--
-        performActions(DpadRecyclerViewActions.selectLastPosition(smooth = false))
-        performActions(DpadRecyclerViewActions.waitForAdapterUpdate())
+        performActions(
+            DpadRecyclerViewActions.selectLastPosition(smooth = false),
+            DpadRecyclerViewActions.waitForAdapterUpdate()
+        )
 
         assertGridAdapterCount(currentSize)
     }
@@ -258,8 +260,10 @@ class DpadRecyclerViewActionsTest : RecyclerViewTest() {
         onGridFragment { fragment ->
             fragment.moveLastItem()
         }
-        performActions(DpadRecyclerViewActions.selectLastPosition(smooth = false))
-        performActions(DpadRecyclerViewActions.waitForAdapterUpdate())
+        performActions(
+            DpadRecyclerViewActions.selectLastPosition(smooth = false),
+            DpadRecyclerViewActions.waitForAdapterUpdate()
+        )
 
         performActions(DpadRecyclerViewActions.execute("Checking last item tag") { recyclerView ->
             val viewHolder = recyclerView.findViewHolderForAdapterPosition(0)
@@ -273,8 +277,10 @@ class DpadRecyclerViewActionsTest : RecyclerViewTest() {
         onGridFragment { fragment ->
             fragment.changeLastItem()
         }
-        performActions(DpadRecyclerViewActions.selectLastPosition(smooth = false))
-        performActions(DpadRecyclerViewActions.waitForAdapterUpdate())
+        performActions(
+            DpadRecyclerViewActions.selectLastPosition(smooth = false),
+            DpadRecyclerViewActions.waitForAdapterUpdate()
+        )
 
         performActions(DpadRecyclerViewActions.execute("Checking last item tag") { recyclerView ->
             val viewHolder = recyclerView.findViewHolderForAdapterPosition(defaultSize - 1)

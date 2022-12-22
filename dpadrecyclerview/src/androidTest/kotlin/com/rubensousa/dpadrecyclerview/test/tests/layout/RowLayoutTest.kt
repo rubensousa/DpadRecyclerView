@@ -31,16 +31,11 @@ import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
-import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import kotlin.math.max
 
 class RowLayoutTest : DpadRecyclerViewTest() {
-
-    @get:Rule
-    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration()
@@ -98,13 +93,13 @@ class RowLayoutTest : DpadRecyclerViewTest() {
     fun testNoExtraSpaceIsAddedWhenScrollingByDefault() {
         appendPage()
 
-        repeat(10) {
+        repeat(1) {
             scrollRight()
         }
 
         assertChildrenPositions()
 
-        repeat(10) {
+        repeat(1) {
             scrollLeft()
         }
 
@@ -162,27 +157,6 @@ class RowLayoutTest : DpadRecyclerViewTest() {
                 recyclerView.requestLayout()
             }
         }
-        assertChildrenPositions()
-    }
-
-    @Test
-    fun testExtraLayoutSpaceIsAddedAtStartDuringScroll() {
-        appendPage()
-        repeat(10) {
-            scrollRight()
-        }
-        onRecyclerView("Change extra layout space") { recyclerView ->
-            recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateExtraLayoutSpace(
-                    state: RecyclerView.State,
-                    extraLayoutSpace: IntArray
-                ) {
-                    extraLayoutSpace[0] = row.width
-                }
-            })
-        }
-        row.setExtraLayoutSpace(start = row.width)
-        prependPage()
         assertChildrenPositions()
     }
 
