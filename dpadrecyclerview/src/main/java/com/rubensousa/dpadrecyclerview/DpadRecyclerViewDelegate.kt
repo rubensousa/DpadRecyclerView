@@ -286,7 +286,28 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
     }
 
     fun setSpanCount(spans: Int) {
-        requireLayout().setSpanCount(spans)
+        if (spans == 1) {
+            return
+        }
+        if (layoutManagerImpl is PivotLayoutManager) {
+            val pivotLayoutManager = layoutManagerImpl as PivotLayoutManager
+            val configuration = pivotLayoutManager.getConfiguration()
+            val properties = LayoutManager.Properties()
+            properties.orientation = configuration.orientation
+            properties.spanCount = spans
+            properties.reverseLayout = configuration.reverseLayout
+            val dpadLayoutManager = DpadLayoutManager(recyclerView.context, properties)
+            dpadLayoutManager.setFocusableDirection(configuration.focusableDirection)
+            dpadLayoutManager.setGravity(configuration.gravity)
+            dpadLayoutManager.setAlignments(
+                pivotLayoutManager.getParentAlignment(),
+                pivotLayoutManager.getChildAlignment(),
+                false
+            )
+            recyclerView.layoutManager = dpadLayoutManager
+        } else {
+            requireLayout().setSpanCount(spans)
+        }
     }
 
     fun setOrientation(orientation: Int) {

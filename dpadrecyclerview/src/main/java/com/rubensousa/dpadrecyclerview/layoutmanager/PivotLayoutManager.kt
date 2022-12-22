@@ -447,6 +447,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         layoutArchitect.clearOnLayoutCompletedListeners()
     }
 
+    internal fun getConfiguration(): LayoutConfiguration = configuration
+
     private fun scrollToSelectedPositionOrRequestLayout(smooth: Boolean, requestFocus: Boolean) {
         if (smooth) {
             scroller.scrollToSelectedPosition(smooth = true, requestFocus = requestFocus)

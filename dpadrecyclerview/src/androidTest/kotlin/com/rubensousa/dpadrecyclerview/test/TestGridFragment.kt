@@ -56,13 +56,13 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         val layoutConfig = args.getParcelable<TestLayoutConfiguration>(ARG_LAYOUT_CONFIG)!!
         val adapterConfig = args.getParcelable<TestAdapterConfiguration>(ARG_ADAPTER_CONFIG)!!
         val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
-        recyclerView.addOnViewHolderSelectedListener(this)
         recyclerView.setFocusableDirection(layoutConfig.focusableDirection)
         recyclerView.setGravity(layoutConfig.gravity)
         recyclerView.setSpanCount(layoutConfig.spans)
         recyclerView.setOrientation(layoutConfig.orientation)
         recyclerView.setParentAlignment(layoutConfig.parentAlignment)
         recyclerView.setChildAlignment(layoutConfig.childAlignment)
+        recyclerView.addOnViewHolderSelectedListener(this)
         recyclerView.adapter = createAdapter(recyclerView, adapterConfig)
         recyclerView.requestFocus()
     }
