@@ -19,19 +19,19 @@ package com.rubensousa.dpadrecyclerview.test.layoutmanager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.ScrollMovements
+import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.PendingScrollMovements
 import org.junit.Before
 import org.junit.Test
 
-class ScrollMovementsTest {
+class PendingScrollMovementsTest {
 
     private val configuration = LayoutConfiguration(RecyclerView.LayoutManager.Properties())
     private val mockLayoutInfo = LayoutInfoMock(configuration)
-    private lateinit var scrollMovements: ScrollMovements
+    private lateinit var scrollMovements: PendingScrollMovements
 
     @Before
     fun setup() {
-        scrollMovements = ScrollMovements(mockLayoutInfo.get())
+        scrollMovements = PendingScrollMovements(mockLayoutInfo.get())
     }
 
     @Test

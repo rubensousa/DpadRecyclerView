@@ -240,18 +240,17 @@ internal class LayoutInfo(
                 && itemView.bottom <= recyclerView.height
     }
 
-    fun findImmediateChildIndex(view: View): Int {
-        var currentView: View? = view
-        if (currentView != null && currentView !== recyclerView) {
-            currentView = layout.findContainingItemView(currentView)
+    fun findIndexOf(view: View?): Int {
+        if (view != null && view !== recyclerView) {
+            val currentView = layout.findContainingItemView(view)
             if (currentView != null) {
-                var i = 0
+                var index = 0
                 val count = layout.childCount
-                while (i < count) {
-                    if (layout.getChildAt(i) === currentView) {
-                        return i
+                while (index < count) {
+                    if (layout.getChildAt(index) === currentView) {
+                        return index
                     }
-                    i++
+                    index++
                 }
             }
         }
