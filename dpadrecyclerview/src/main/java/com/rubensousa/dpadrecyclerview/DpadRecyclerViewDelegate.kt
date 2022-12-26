@@ -428,4 +428,8 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         requireLayout().setChildrenDrawingOrderEnabled(enabled)
     }
 
+    fun setRecycleChildrenOnDetach(recycle: Boolean) {
+        requireLayout().setRecycleChildrenOnDetach(recycle)
+    }
+
 }

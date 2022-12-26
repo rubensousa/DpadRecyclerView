@@ -106,5 +106,6 @@ interface PivotLayoutManagerDelegate {
 
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?)
 
+    fun setRecycleChildrenOnDetach(recycle: Boolean)
 }
 

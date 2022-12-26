@@ -43,10 +43,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  * Successor of DpadLayoutManager built from scratch for performance optimizations
  * and to support more features.
  * Currently only supports a single row.
- *
- * TODO:
- * - setRecycleChildrenOnDetach
- * - using simple row structure for single spans
  */
 class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     PivotLayoutManagerDelegate {
@@ -228,13 +224,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         }
     }
 
-    override fun onRequestChildFocus(
-        parent: RecyclerView,
-        state: RecyclerView.State,
-        child: View,
-        focused: View?
-    ): Boolean {
-        return focusFinder.onRequestChildFocus(parent, state, child, focused)
+    override fun onFocusChanged(gainFocus: Boolean) {
+        focusFinder.onFocusChanged(gainFocus)
     }
 
     override fun onInterceptFocusSearch(focused: View, direction: Int): View? {
@@ -250,6 +241,20 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         return focusFinder.onAddFocusables(recyclerView, views, direction, focusableMode)
     }
 
+    override fun onRequestFocusInDescendants(
+        direction: Int,
+        previouslyFocusedRect: Rect?
+    ): Boolean = focusFinder.onRequestFocusInDescendants(direction, previouslyFocusedRect)
+
+    override fun onRequestChildFocus(
+        parent: RecyclerView,
+        state: RecyclerView.State,
+        child: View,
+        focused: View?
+    ): Boolean {
+        return focusFinder.onRequestChildFocus(parent, state, child, focused)
+    }
+
     // Disabled since only this LayoutManager knows how to position views
     override fun requestChildRectangleOnScreen(
         parent: RecyclerView,
@@ -257,6 +262,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         rect: Rect,
         immediate: Boolean
     ): Boolean = false
+
+    override fun onDetachedFromWindow(view: RecyclerView, recycler: RecyclerView.Recycler) {
+        super.onDetachedFromWindow(view, recycler)
+        if (configuration.recycleChildrenOnDetach) {
+            removeAndRecycleAllViews(recycler)
+            recycler.clear()
+        }
+    }
 
     override fun getRowCountForAccessibility(
         recycler: RecyclerView.Recycler,
@@ -316,6 +329,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun setChildrenDrawingOrderEnabled(enabled: Boolean) {
         configuration.setChildDrawingOrderEnabled(enabled)
+    }
+
+    override fun setRecycleChildrenOnDetach(recycle: Boolean) {
+        configuration.setRecycleChildrenOnDetach(recycle)
     }
 
     override fun setGravity(gravity: Int) {
@@ -391,15 +408,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun getChildAlignment(): ChildAlignment = layoutAlignment.getChildAlignment()
 
     // Event methods
-
-    override fun onRequestFocusInDescendants(
-        direction: Int,
-        previouslyFocusedRect: Rect?
-    ): Boolean = focusFinder.onRequestFocusInDescendants(direction, previouslyFocusedRect)
-
-    override fun onFocusChanged(gainFocus: Boolean) {
-        focusFinder.onFocusChanged(gainFocus)
-    }
 
     override fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
         pivotSelector.addOnViewHolderSelectedListener(listener)

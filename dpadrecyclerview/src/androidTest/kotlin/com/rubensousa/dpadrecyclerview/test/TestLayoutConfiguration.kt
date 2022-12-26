@@ -30,7 +30,9 @@ data class TestLayoutConfiguration(
     val childAlignment: ChildAlignment,
     val gravity: Int = Gravity.START,
     val reverseLayout: Boolean = false,
-    val focusableDirection: FocusableDirection = FocusableDirection.STANDARD
+    val focusableDirection: FocusableDirection = FocusableDirection.STANDARD,
+    val useCustomViewPool: Boolean = false,
+    val recycleChildrenOnDetach: Boolean = false
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
@@ -48,7 +50,9 @@ data class TestLayoutConfiguration(
         ),
         parcel.readInt(),
         parcel.readByte() != 0.toByte(),
-        FocusableDirection.values()[parcel.readInt()]
+        FocusableDirection.values()[parcel.readInt()],
+        parcel.readByte() != 0.toByte(),
+        parcel.readByte() != 0.toByte()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -59,6 +63,8 @@ data class TestLayoutConfiguration(
         parcel.writeInt(gravity)
         parcel.writeByte(if (reverseLayout) 1 else 0)
         parcel.writeInt(focusableDirection.ordinal)
+        parcel.writeByte(if (useCustomViewPool) 1 else 0)
+        parcel.writeByte(if (recycleChildrenOnDetach) 1 else 0)
     }
 
     override fun describeContents(): Int {
