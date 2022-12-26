@@ -16,7 +16,6 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
-import android.view.FocusFinder
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.FocusableDirection
@@ -27,8 +26,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
  * TODO: Add tests
  */
 internal class CircularFocusInterceptor(
-    private val layoutInfo: LayoutInfo,
-    private val focusFinder: FocusFinder = FocusFinder.getInstance()
+    private val layoutInfo: LayoutInfo
 ) : FocusInterceptor {
 
     override fun findFocus(
@@ -37,21 +35,12 @@ internal class CircularFocusInterceptor(
         position: Int,
         direction: Int
     ): View? {
-        val absoluteDirection = FocusDirection.getAbsoluteDirection(
-            direction = direction,
-            isVertical = layoutInfo.isVertical(),
-            isRTL = layoutInfo.isRTL()
-        )
         val focusDirection = FocusDirection.from(
             isVertical = layoutInfo.isVertical(),
             isRTL = layoutInfo.isRTL(),
-            direction = absoluteDirection
+            direction = direction
         ) ?: return null
-        val view = findFocus(position, focusDirection)
-        if (view != null) {
-            return view
-        }
-        return focusFinder.findNextFocus(recyclerView, focusedView, absoluteDirection)
+        return findFocus(position, focusDirection)
     }
 
     private fun findFocus(position: Int, direction: FocusDirection): View? {

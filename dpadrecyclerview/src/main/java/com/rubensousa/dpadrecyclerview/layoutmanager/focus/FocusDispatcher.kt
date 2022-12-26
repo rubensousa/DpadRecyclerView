@@ -17,7 +17,6 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
 import android.graphics.Rect
-import android.view.FocusFinder
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -44,15 +43,16 @@ internal class FocusDispatcher(
     // key - row / value - previous focused span
     private val focusedSpans = LinkedHashMap<Int, Int>()
     private val addFocusableChildrenRequest = AddFocusableChildrenRequest(layoutInfo)
-    private var focusInterceptor: FocusInterceptor = DefaultFocusInterceptor(
+    private val defaultFocusInterceptor = DefaultFocusInterceptor(
         layoutInfo, configuration
     )
+    private var focusInterceptor: FocusInterceptor = defaultFocusInterceptor
 
     fun updateFocusableDirection(direction: FocusableDirection) {
         focusInterceptor = when (direction) {
             FocusableDirection.CONTINUOUS -> ContinuousFocusInterceptor(layoutInfo)
             FocusableDirection.CIRCULAR -> CircularFocusInterceptor(layoutInfo)
-            FocusableDirection.STANDARD -> DefaultFocusInterceptor(layoutInfo, configuration)
+            FocusableDirection.STANDARD -> defaultFocusInterceptor
         }
     }
 
@@ -89,27 +89,38 @@ internal class FocusDispatcher(
             return focused
         }
 
-        var newFocusedView: View? = FocusFinder.getInstance().findNextFocus(
-            currentRecyclerView, focused, direction
+        var newFocusedView: View? = focusInterceptor.findFocus(
+            recyclerView, focused,
+            pivotSelector.position, direction
         )
-
 
         // If we found the view using our interceptor, return it immediately
         if (newFocusedView != null) {
             return newFocusedView
         }
 
+        // Check if we need to fallback to the default interceptor
+        if (focusInterceptor !== defaultFocusInterceptor) {
+            defaultFocusInterceptor.findFocus(
+                recyclerView, focused, pivotSelector.position, direction
+            )?.let { view ->
+                return view
+            }
+        }
+
+        // Get the new focus direction and exit early if none is valid
+        val focusDirection: FocusDirection = FocusDirection.from(
+            direction = direction,
+            isVertical = layoutInfo.isVertical(),
+            isRTL = layoutInfo.isRTL()
+        ) ?: return focused
+
+
         // If the parent RecyclerView does not allow focusing children,
         // just delegate focus to its parent
         if (currentRecyclerView.descendantFocusability == ViewGroup.FOCUS_BLOCK_DESCENDANTS) {
             return currentRecyclerView.parent?.focusSearch(focused, direction)
         }
-
-        val focusDirection: FocusDirection = FocusDirection.from(
-            direction = direction,
-            isVertical = layoutInfo.isVertical(),
-            isRTL = layoutInfo.isRTL()
-        ) ?: return null
 
         val isScrolling = currentRecyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
         when (focusDirection) {
