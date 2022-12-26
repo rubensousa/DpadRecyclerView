@@ -190,8 +190,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * Set whether the LayoutManager of this RecyclerView will recycle its children
      * when this RecyclerView is detached from the window.
      *
-     * If you are using a [RecyclerView.RecycledViewPool], it might be a good idea to set
-     * this flag to <code>true</code> so that views will be available to other RecyclerViews
+     * If you are re-using a [RecyclerView.RecycledViewPool], it might be a good idea to set
+     * this flag to **true** so that views will be available to other RecyclerViews
      * immediately.
      *
      * Since by default no extra space is laid out,
