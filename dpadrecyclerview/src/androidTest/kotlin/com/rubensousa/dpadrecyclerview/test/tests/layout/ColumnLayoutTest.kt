@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -217,8 +218,11 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
 
     private fun assertChildrenPositions() {
         waitForIdleScrollState()
+        waitForCondition { recyclerView ->
+            recyclerView.childCount == column.getNumberOfViewsInLayout()
+                    && !recyclerView.isLayoutRequested
+        }
         onRecyclerView("Assert children positions") { recyclerView ->
-            assertThat(recyclerView.childCount).isEqualTo(column.getNumberOfViewsInLayout())
             column.assertChildrenBounds(recyclerView)
         }
     }

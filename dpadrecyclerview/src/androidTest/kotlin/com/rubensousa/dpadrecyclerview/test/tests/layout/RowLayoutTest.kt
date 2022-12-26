@@ -27,15 +27,21 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import kotlin.math.max
 
 class RowLayoutTest : DpadRecyclerViewTest() {
+
+    @get:Rule
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration()
@@ -198,8 +204,11 @@ class RowLayoutTest : DpadRecyclerViewTest() {
 
     private fun assertChildrenPositions() {
         waitForIdleScrollState()
+        waitForCondition { recyclerView ->
+            recyclerView.childCount == row.getNumberOfViewsInLayout()
+                    && !recyclerView.isLayoutRequested
+        }
         onRecyclerView("Assert children positions") { recyclerView ->
-            assertThat(recyclerView.childCount).isEqualTo(row.getNumberOfViewsInLayout())
             row.assertChildrenBounds(recyclerView)
         }
     }
