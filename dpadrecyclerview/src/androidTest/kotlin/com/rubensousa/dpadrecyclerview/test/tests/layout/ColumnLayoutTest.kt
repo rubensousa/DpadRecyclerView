@@ -220,7 +220,7 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
         waitForIdleScrollState()
         val expectedChildren = column.getNumberOfViewsInLayout()
         waitForCondition("Waiting for children in layout: $expectedChildren") { recyclerView ->
-            recyclerView.childCount == expectedChildren
+            recyclerView.layoutManager?.childCount == expectedChildren
         }
         onRecyclerView("Assert children positions") { recyclerView ->
             column.assertChildrenBounds(recyclerView)
