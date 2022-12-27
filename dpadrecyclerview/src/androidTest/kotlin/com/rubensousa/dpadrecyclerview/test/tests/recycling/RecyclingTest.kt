@@ -82,7 +82,7 @@ class RecyclingTest : DpadRecyclerViewTest() {
 
         var numberOfChildren = 0
         onRecyclerView("Remove RecyclerView from window") { recyclerView ->
-            numberOfChildren = recyclerView.layoutManager!!.itemCount
+            numberOfChildren = recyclerView.layoutManager!!.childCount
 
             val parent = recyclerView.parent as ViewGroup
             parent.removeAllViews()
@@ -101,7 +101,7 @@ class RecyclingTest : DpadRecyclerViewTest() {
         )
 
         waitForCondition("Waiting for RecyclerView layout") { recyclerView ->
-            recyclerView.layoutManager!!.itemCount > 0 && !recyclerView.isLayoutRequested
+            recyclerView.layoutManager!!.childCount > 0 && !recyclerView.isLayoutRequested
         }
 
         onRecyclerView("Remove RecyclerView from window") { recyclerView ->
