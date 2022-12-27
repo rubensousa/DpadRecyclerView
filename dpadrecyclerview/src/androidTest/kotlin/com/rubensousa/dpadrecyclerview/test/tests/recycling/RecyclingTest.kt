@@ -77,7 +77,7 @@ class RecyclingTest : DpadRecyclerViewTest() {
         )
 
         waitForCondition("Waiting for RecyclerView layout") { recyclerView ->
-            recyclerView.layoutManager!!.itemCount > 0 && !recyclerView.isLayoutRequested
+            recyclerView.layoutManager!!.childCount > 0 && !recyclerView.isLayoutRequested
         }
 
         var numberOfChildren = 0
