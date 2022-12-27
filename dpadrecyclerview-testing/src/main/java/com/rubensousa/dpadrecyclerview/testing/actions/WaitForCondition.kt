@@ -25,10 +25,11 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 internal class WaitForCondition<T : View>(
+    description: String,
     private val condition: (view: T) -> Boolean,
     timeout: Long = 5,
     timeoutUnit: TimeUnit = TimeUnit.SECONDS
-) : DpadViewActions.DpadViewAction("Waiting for next view layout") {
+) : DpadViewActions.DpadViewAction(description) {
 
     private val waiter = ActionWaiter(timeout, timeoutUnit)
 

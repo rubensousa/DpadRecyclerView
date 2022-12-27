@@ -20,8 +20,9 @@ import android.view.FocusFinder
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
 import com.rubensousa.dpadrecyclerview.FocusableDirection
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.FocusDirection
 
 internal class DpadFocusManager(
     private val layout: DpadLayoutManager
@@ -78,52 +79,41 @@ internal class DpadFocusManager(
     // key - row / value - previous focused span
     private val focusedSpans = LinkedHashMap<Int, Int>()
 
+    private val focusFinder = FocusFinder.getInstance()
+
     fun onInterceptFocusSearch(recyclerView: RecyclerView, focused: View?, direction: Int): View? {
         if (isFocusSearchDisabled) {
             return focused
         }
-        val focusFinder = FocusFinder.getInstance()
         var result: View? = null
-        val movement: ScrollMovement? = ScrollMovementCalculator.calculate(
-            layout.isHorizontal(), layout.isRTL(), direction
+        val absoluteDirection: Int = FocusDirection.getAbsoluteDirection(
+            direction = direction,
+            isRTL = layout.isRTL(),
+            isVertical = layout.isVertical()
         )
-        if (direction == View.FOCUS_FORWARD || direction == View.FOCUS_BACKWARD) {
-            // convert direction to absolute direction and see if we have a view there and if not
-            // tell LayoutManager to add if it can.
-            if (layout.canScrollVertically()) {
-                val absDir = if (direction == View.FOCUS_FORWARD) {
-                    View.FOCUS_DOWN
-                } else {
-                    View.FOCUS_UP
-                }
-                result = focusFinder.findNextFocus(recyclerView, focused, absDir)
+        val focusDirection: FocusDirection = FocusDirection.from(
+            direction = direction,
+            isRTL = layout.isRTL(),
+            isVertical = layout.isVertical()
+        ) ?: return focused
+
+
+        when (focusableDirection) {
+            FocusableDirection.CIRCULAR -> {
+                result = focusCircular(focusDirection)
             }
-            if (layout.canScrollHorizontally()) {
-                val absDir = if ((direction == View.FOCUS_FORWARD) xor layout.isRTL()) {
-                    View.FOCUS_RIGHT
-                } else {
-                    View.FOCUS_LEFT
-                }
-                result = focusFinder.findNextFocus(recyclerView, focused, absDir)
+            FocusableDirection.CONTINUOUS -> {
+                result = focusContinuous(focusDirection)
             }
-        } else {
-            if (movement != null) {
-                when (focusableDirection) {
-                    FocusableDirection.CIRCULAR -> {
-                        result = focusCircular(movement)
-                    }
-                    FocusableDirection.CONTINUOUS -> {
-                        result = focusContinuous(movement)
-                    }
-                    else -> {
-                        // Do nothing
-                    }
-                }
-            }
-            if (result == null) {
-                result = focusFinder.findNextFocus(recyclerView, focused, direction)
+            else -> {
+                // Do nothing
             }
         }
+
+        if (result == null) {
+            result = focusFinder.findNextFocus(recyclerView, focused, absoluteDirection)
+        }
+
         if (result != null) {
             return result
         }
@@ -133,8 +123,8 @@ internal class DpadFocusManager(
         }
 
         val isScrolling = recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
-        when (movement) {
-            ScrollMovement.NEXT_ROW -> {
+        when (focusDirection) {
+            FocusDirection.NEXT_ITEM -> {
                 if (isScrolling || !focusOutBack) {
                     result = focused
                 }
@@ -142,7 +132,7 @@ internal class DpadFocusManager(
                     result = focused
                 }
             }
-            ScrollMovement.PREVIOUS_ROW -> {
+            FocusDirection.PREVIOUS_ITEM -> {
                 if (isScrolling || !focusOutFront) {
                     result = focused
                 }
@@ -150,12 +140,12 @@ internal class DpadFocusManager(
                     result = focused
                 }
             }
-            ScrollMovement.NEXT_COLUMN -> {
+            FocusDirection.NEXT_COLUMN -> {
                 if (isScrolling || !focusOutSideBack) {
                     result = focused
                 }
             }
-            ScrollMovement.PREVIOUS_COLUMN -> {
+            FocusDirection.PREVIOUS_COLUMN -> {
                 if (isScrolling || !focusOutSideFront) {
                     result = focused
                 }
@@ -234,10 +224,10 @@ internal class DpadFocusManager(
         direction: Int,
         focusableMode: Int
     ) {
-        val movement = ScrollMovementCalculator.calculate(
-            layout.isHorizontal(),
-            layout.isRTL(),
-            direction
+        val focusDirection: FocusDirection = FocusDirection.from(
+            direction = direction,
+            isVertical = layout.isVertical(),
+            isRTL = layout.isRTL()
         ) ?: return
         val focused = recyclerView.findFocus()
         // TODO Optimize
@@ -256,13 +246,14 @@ internal class DpadFocusManager(
             // no grid information, or no child, bail out.
             return
         }
-        if ((movement == ScrollMovement.NEXT_COLUMN || movement == ScrollMovement.PREVIOUS_COLUMN)
+        if ((focusDirection == FocusDirection.NEXT_COLUMN
+                    || focusDirection == FocusDirection.PREVIOUS_COLUMN)
             && layout.spanCount <= 1
         ) {
             // For single row, cannot navigate to previous/next row.
             return
         }
-        if (focusPreviousSpan(focusedPosition, movement, views, direction, focusableMode)) {
+        if (focusPreviousSpan(focusedPosition, focusDirection, views, direction, focusableMode)) {
             return
         }
         // Add focusables of neighbor depending on the focus search direction.
@@ -272,8 +263,8 @@ internal class DpadFocusManager(
             RecyclerView.NO_POSITION
         }
 
-        val inc = if (movement == ScrollMovement.NEXT_ROW
-            || movement == ScrollMovement.NEXT_COLUMN
+        val inc = if (focusDirection == FocusDirection.NEXT_ITEM
+            || focusDirection == FocusDirection.NEXT_COLUMN
         ) {
             1
         } else {
@@ -310,17 +301,17 @@ internal class DpadFocusManager(
             }
             val position = layout.getAdapterPositionOfChildAt(i)
             val childColumn = layout.getColumnIndex(position)
-            if (movement == ScrollMovement.NEXT_ROW) {
+            if (focusDirection == FocusDirection.NEXT_ITEM) {
                 // Add first focusable item on the same row
                 if (position > focusedPosition) {
                     child.addFocusables(views, direction, focusableMode)
                 }
-            } else if (movement == ScrollMovement.PREVIOUS_ROW) {
+            } else if (focusDirection == FocusDirection.PREVIOUS_ITEM) {
                 // Add first focusable item on the same row
                 if (position < focusedPosition) {
                     child.addFocusables(views, direction, focusableMode)
                 }
-            } else if (movement == ScrollMovement.NEXT_COLUMN) {
+            } else if (focusDirection == FocusDirection.NEXT_COLUMN) {
                 // Add all focusable items after this item whose row index is bigger
                 if (childColumn == focusedColumn) {
                     i += inc
@@ -329,7 +320,7 @@ internal class DpadFocusManager(
                     break
                 }
                 child.addFocusables(views, direction, focusableMode)
-            } else if (movement == ScrollMovement.PREVIOUS_COLUMN) {
+            } else if (focusDirection == FocusDirection.PREVIOUS_COLUMN) {
                 // Add all focusable items before this item whose column index is smaller
                 if (childColumn == focusedColumn) {
                     i += inc
@@ -345,18 +336,19 @@ internal class DpadFocusManager(
 
     private fun focusPreviousSpan(
         focusedPosition: Int,
-        movement: ScrollMovement,
+        focusDirection: FocusDirection,
         views: ArrayList<View>,
         direction: Int,
         focusableMode: Int
     ): Boolean {
         if (layout.spanCount == 1
-            || (movement != ScrollMovement.PREVIOUS_ROW && movement != ScrollMovement.NEXT_ROW)
+            || (focusDirection != FocusDirection.PREVIOUS_ITEM
+                    && focusDirection != FocusDirection.NEXT_ITEM)
         ) {
             return false
         }
         val row = layout.getRowIndex(focusedPosition)
-        val nextRow = if (movement == ScrollMovement.NEXT_ROW) {
+        val nextRow = if (focusDirection == FocusDirection.NEXT_ITEM) {
             row + 1
         } else {
             row - 1
@@ -364,7 +356,7 @@ internal class DpadFocusManager(
         var previousPosition = getPreviousSpanFocus(nextRow)
         if (previousPosition == RecyclerView.NO_POSITION || previousPosition >= layout.itemCount) {
             if (layout.spanSizeLookup.getSpanSize(focusedPosition) == layout.spanCount) {
-                previousPosition = if (movement == ScrollMovement.NEXT_ROW) {
+                previousPosition = if (focusDirection == FocusDirection.NEXT_ITEM) {
                     focusedPosition + 1
                 } else {
                     focusedPosition - 1
@@ -379,8 +371,8 @@ internal class DpadFocusManager(
         return true
     }
 
-    private fun focusCircular(movement: ScrollMovement): View? {
-        if (movement != ScrollMovement.PREVIOUS_COLUMN && movement != ScrollMovement.NEXT_COLUMN) {
+    private fun focusCircular(direction: FocusDirection): View? {
+        if (direction != FocusDirection.PREVIOUS_COLUMN && direction != FocusDirection.NEXT_COLUMN) {
             return null
         }
         val firstColumnIndex = layout.getColumnIndex(position)
@@ -392,7 +384,7 @@ internal class DpadFocusManager(
 
         val startRow = layout.getRowIndex(position)
 
-        var currentPosition = if (movement == ScrollMovement.NEXT_COLUMN) {
+        var currentPosition = if (direction == FocusDirection.NEXT_COLUMN) {
             position + 1
         } else {
             position - 1
@@ -407,7 +399,7 @@ internal class DpadFocusManager(
             if (currentView != null && currentView.isFocusable) {
                 return null
             }
-            if (movement == ScrollMovement.NEXT_COLUMN) {
+            if (direction == FocusDirection.NEXT_COLUMN) {
                 currentPosition++
             } else {
                 currentPosition--
@@ -416,7 +408,7 @@ internal class DpadFocusManager(
         }
 
         var circularPosition: Int
-        if (movement == ScrollMovement.NEXT_COLUMN) {
+        if (direction == FocusDirection.NEXT_COLUMN) {
             circularPosition = position - layout.spanCount + 1
             while (circularPosition <= position - 1) {
                 currentRow = layout.getRowIndex(circularPosition)
@@ -454,12 +446,12 @@ internal class DpadFocusManager(
         return view
     }
 
-    private fun focusContinuous(movement: ScrollMovement): View? {
-        if (movement != ScrollMovement.PREVIOUS_COLUMN && movement != ScrollMovement.NEXT_COLUMN) {
+    private fun focusContinuous(direction: FocusDirection): View? {
+        if (direction != FocusDirection.PREVIOUS_COLUMN && direction != FocusDirection.NEXT_COLUMN) {
             return null
         }
         val startRow = layout.getRowIndex(position)
-        var nextPosition = if (movement == ScrollMovement.NEXT_COLUMN) {
+        var nextPosition = if (direction == FocusDirection.NEXT_COLUMN) {
             position + 1
         } else {
             position - 1
@@ -472,7 +464,7 @@ internal class DpadFocusManager(
             if (nextView != null && nextView.isFocusable) {
                 return null
             }
-            if (movement == ScrollMovement.NEXT_COLUMN) {
+            if (direction == FocusDirection.NEXT_COLUMN) {
                 nextPosition++
             } else {
                 nextPosition--
@@ -488,7 +480,7 @@ internal class DpadFocusManager(
 
         // Now check if we still need to go deeper to find a focusable view
         while (targetView != null && !targetView.isFocusable) {
-            if (movement == ScrollMovement.NEXT_COLUMN) {
+            if (direction == FocusDirection.NEXT_COLUMN) {
                 nextPosition++
             } else {
                 nextPosition--
