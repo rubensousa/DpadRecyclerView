@@ -99,4 +99,5 @@ jobs:
           name: ${{ matrix.api-level }}-${{ matrix.arch }}-instrumentation-test-results
           path: |
             ./**/build/reports/androidTests/connected/**
+            ./**/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/**
         if: always()

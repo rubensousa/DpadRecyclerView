@@ -50,7 +50,7 @@ internal class SearchPivotSmoothScroller(
     }
 
     private var isCanceled = false
-    private val movements = ScrollMovements(layoutInfo)
+    private val movements = PendingScrollMovements(layoutInfo)
 
     init {
         targetPosition = UNDEFINED_TARGET

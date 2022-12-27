@@ -88,7 +88,7 @@ abstract class DpadRecyclerViewTest {
             themeResId = R.style.DpadRecyclerViewTestTheme
         ).also {
             fragmentScenario = it
-            waitForCondition { recyclerView -> !recyclerView.isLayoutRequested }
+            waitForCondition("Waiting for layout pass") { recyclerView -> !recyclerView.isLayoutRequested }
         }
     }
 

@@ -34,7 +34,7 @@ import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.focus.LayoutFocusFinder
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.FocusDispatcher
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
@@ -65,7 +65,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     private val layoutArchitect = LayoutArchitect(
         this, layoutAlignment, configuration, pivotSelector, scroller, layoutInfo
     )
-    private val focusFinder = LayoutFocusFinder(
+    private val focusDispatcher = FocusDispatcher(
         this, configuration, scroller, layoutInfo, pivotSelector
     )
     private val accessibilityHelper = LayoutAccessibilityHelper(
@@ -140,13 +140,13 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         pivotSelector.onLayoutChildren(state)
         // If we have focus, save it temporarily since the views will change and we might lose it
-        hadFocusBeforeLayout = recyclerView?.hasFocus() ?: false
+        hadFocusBeforeLayout = hasFocus()
         layoutArchitect.onLayoutChildren(recycler, state)
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
         if (hadFocusBeforeLayout) {
-            focusFinder.onFocusChanged(true)
+            focusDispatcher.onFocusChanged(true)
         }
         layoutArchitect.onLayoutCompleted(state)
         pivotSelector.onLayoutCompleted()
@@ -234,11 +234,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         child: View,
         focused: View?
     ): Boolean {
-        return focusFinder.onRequestChildFocus(parent, state, child, focused)
+        return focusDispatcher.onRequestChildFocus(child, focused)
     }
 
     override fun onInterceptFocusSearch(focused: View, direction: Int): View? {
-        return focusFinder.onInterceptFocusSearch(focused, direction)
+        return focusDispatcher.onInterceptFocusSearch(recyclerView, focused, direction)
     }
 
     override fun onAddFocusables(
@@ -247,7 +247,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         direction: Int,
         focusableMode: Int
     ): Boolean {
-        return focusFinder.onAddFocusables(recyclerView, views, direction, focusableMode)
+        return focusDispatcher.onAddFocusables(recyclerView, views, direction, focusableMode)
     }
 
     // Disabled since only this LayoutManager knows how to position views
@@ -308,7 +308,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun setRecyclerView(recyclerView: RecyclerView?) {
         this.recyclerView = recyclerView
-        focusFinder.setRecyclerView(recyclerView)
         layoutInfo.setRecyclerView(recyclerView)
         scroller.setRecyclerView(recyclerView)
         pivotSelector.setRecyclerView(recyclerView)
@@ -348,6 +347,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun setFocusableDirection(direction: FocusableDirection) {
         configuration.setFocusableDirection(direction)
+        focusDispatcher.updateFocusableDirection(direction)
     }
 
     override fun getFocusableDirection(): FocusableDirection = configuration.focusableDirection
@@ -395,10 +395,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun onRequestFocusInDescendants(
         direction: Int,
         previouslyFocusedRect: Rect?
-    ): Boolean = focusFinder.onRequestFocusInDescendants(direction, previouslyFocusedRect)
+    ): Boolean = focusDispatcher.onRequestFocusInDescendants(direction, previouslyFocusedRect)
 
     override fun onFocusChanged(gainFocus: Boolean) {
-        focusFinder.onFocusChanged(gainFocus)
+        focusDispatcher.onFocusChanged(gainFocus)
     }
 
     override fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {

@@ -19,7 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.max
 
-internal class ScrollMovements(
+internal class PendingScrollMovements(
     private val layoutInfo: LayoutInfo
 ) {
 
