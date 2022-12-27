@@ -431,6 +431,22 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun getCurrentSubPositions(): Int = pivotSelector.getCurrentSubPositions()
 
+    override fun findFirstVisibleItemPosition(): Int {
+        return layoutInfo.findFirstVisiblePosition()
+    }
+
+    override fun findFirstCompletelyVisibleItemPosition(): Int {
+        return layoutInfo.findFirstCompletelyVisiblePosition()
+    }
+
+    override fun findLastVisibleItemPosition(): Int {
+        return layoutInfo.findLastVisiblePosition()
+    }
+
+    override fun findLastCompletelyVisibleItemPosition(): Int {
+        return layoutInfo.findLastCompletelyVisiblePosition()
+    }
+
     override fun addOnLayoutCompletedListener(
         listener: DpadRecyclerView.OnLayoutCompletedListener
     ) {
