@@ -169,23 +169,24 @@ fun waitForAdapterUpdate(id: Int = R.id.recyclerView) {
 
 fun waitForAnimation() {
     waitForIdleScrollState()
-    waitForCondition { recyclerView ->
+    waitForCondition("Waiting for Animations") { recyclerView ->
         val isAnimationRunning = recyclerView.itemAnimator?.isRunning ?: false
         return@waitForCondition !isAnimationRunning
     }
 }
 
 fun waitForCondition(
-    id: Int = R.id.recyclerView,
+    description: String,
     condition: (recyclerView: DpadRecyclerView) -> Boolean
 ) {
-    Espresso.onView(ViewMatchers.withId(id)).perform(DpadViewActions.waitForCondition(condition))
+    Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
+        .perform(DpadViewActions.waitForCondition(description, condition))
 }
 
 fun onRecyclerView(
-    label: String,
+    description: String,
     id: Int = R.id.recyclerView,
     action: (recyclerView: DpadRecyclerView) -> Unit
 ) {
-    Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.execute(label, action))
+    Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.execute(description, action))
 }

@@ -54,11 +54,12 @@ object DpadViewActions {
 
     @JvmStatic
     fun <T : View> waitForCondition(
+        description: String,
         condition: (view: T) -> Boolean,
         timeout: Long = 5,
         timeoutUnit: TimeUnit = TimeUnit.SECONDS
     ): ViewAction {
-        return WaitForCondition(condition, timeout, timeoutUnit)
+        return WaitForCondition(description, condition, timeout, timeoutUnit)
     }
 
     private class RequestFocusAction : DpadViewAction("Requesting view focus") {

@@ -91,7 +91,7 @@ class SelectionTest : DpadRecyclerViewTest() {
             fragment.clearAdapter()
         }
 
-        waitForCondition { recyclerView -> recyclerView.childCount == 0 }
+        waitForCondition("Waiting for view removal") { recyclerView -> recyclerView.childCount == 0 }
 
         assertFocusAndSelection(position = RecyclerView.NO_POSITION)
 
