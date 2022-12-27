@@ -362,4 +362,12 @@ internal class LayoutInfo(
         return newPosition < minOldPosition || newPosition > maxOldPosition
     }
 
+    fun getRemainingScroll(state: RecyclerView.State): Int {
+        return if (isVertical()) {
+            state.remainingScrollVertical
+        } else {
+            state.remainingScrollHorizontal
+        }
+    }
+
 }

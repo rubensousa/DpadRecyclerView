@@ -1,0 +1,169 @@
+/*
+ * Copyright 2022 Rúben Sousa
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout
+
+import android.graphics.Rect
+import android.util.Log
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.recyclerview.widget.RecyclerView.Recycler
+import androidx.recyclerview.widget.RecyclerView.State
+
+/**
+ * General layout algorithm:
+ * 1. Layout the view at the selected position (pivot) and align it to the keyline
+ * 2. Starting from the bottom/end of the selected view,
+ * fill towards the top/start until there's no more space
+ * 3. Starting from the top/end of the selected view,
+ * fill towards the top/start until there's no more space
+ */
+internal abstract class StructureArchitect(
+    protected val layoutManager: LayoutManager,
+    protected val layoutInfo: LayoutInfo,
+    private val childRecycler: ChildRecycler,
+    private val onChildLayoutListener: OnChildLayoutListener
+) {
+
+    companion object {
+        const val TAG = "StructureArchitect"
+    }
+
+    private val viewBounds = Rect()
+
+    /**
+     * Places the pivot in the correct layout position and returns its bounds via [bounds]
+     */
+    protected abstract fun addPivot(view: View, bounds: Rect, layoutState: LayoutState)
+
+    /**
+     * Places [view] at the end of the current layout and returns its bounds via [bounds]
+     * @return layout space filled by this view
+     */
+    protected abstract fun appendView(view: View, bounds: Rect, layoutState: LayoutState): Int
+
+    /**
+     * Places [view] at the start of the current layout and returns its bounds via [bounds]
+     * @return layout space filled by this view
+     */
+    protected abstract fun prependView(view: View, bounds: Rect, layoutState: LayoutState): Int
+
+    fun layoutPivot(
+        layoutState: LayoutState,
+        recycler: Recycler,
+        position: Int,
+        state: State
+    ): View {
+        val view = recycler.getViewForPosition(position)
+        layoutManager.addView(view)
+        onChildLayoutListener.onChildCreated(view, state)
+        layoutManager.measureChildWithMargins(view, 0, 0)
+
+        // Place the pivot in its keyline position
+        addPivot(view, viewBounds, layoutState)
+
+        // Trigger a new layout pass for the pivot view
+        performLayout(view, viewBounds)
+
+        if (layoutInfo.isVertical()) {
+            layoutState.updateWindow(start = viewBounds.top, end = viewBounds.bottom)
+        } else {
+            layoutState.updateWindow(start = viewBounds.left, end = viewBounds.right)
+        }
+
+        Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
+
+        // Move the pivot by the remaining scroll
+        // so that it slides in correctly after the layout is done
+        offsetBy(layoutState, -layoutInfo.getRemainingScroll(state))
+
+        onChildLayoutListener.onChildLaidOut(view, state)
+        return view
+    }
+
+    fun layoutEdge(
+        layoutState: LayoutState,
+        recycler: RecyclerView.Recycler,
+        state: State
+    ) {
+        var remainingSpace = layoutState.fillSpace
+        // Start by recycling children that moved out of bounds
+        childRecycler.recycleByLayoutState(recycler, layoutState)
+
+        val isAppending = layoutState.isLayingOutEnd()
+
+        // Keep appending or prepending views until we run out of fill space or items
+        while (shouldContinueLayout(remainingSpace, layoutState, state)) {
+            val view = layoutState.getNextView(recycler) ?: break
+            if (!layoutState.isUsingScrap()) {
+                if (isAppending) {
+                    layoutManager.addView(view)
+                } else {
+                    layoutManager.addView(view, 0)
+                }
+            } else if (isAppending) {
+                layoutManager.addDisappearingView(view)
+            } else {
+                layoutManager.addDisappearingView(view, 0)
+            }
+
+            onChildLayoutListener.onChildCreated(view, state)
+            layoutManager.measureChildWithMargins(view, 0, 0)
+
+            val viewSpace = if (isAppending) {
+                appendView(view, viewBounds, layoutState)
+            } else {
+                prependView(view, viewBounds, layoutState)
+            }
+
+            performLayout(view, viewBounds)
+
+            if (isAppending) {
+                layoutState.appendWindow(viewSpace)
+            } else {
+                layoutState.prependWindow(viewSpace)
+            }
+            Log.i(
+                TAG,
+                "Laid out view ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds"
+            )
+            remainingSpace -= viewSpace
+            childRecycler.recycleByLayoutState(recycler, layoutState)
+            onChildLayoutListener.onChildLaidOut(view, state)
+        }
+    }
+
+    private fun offsetBy(layoutState: LayoutState, offset: Int) {
+        layoutInfo.orientationHelper.offsetChildren(-offset)
+        layoutState.offsetWindow(-offset)
+    }
+
+    private fun performLayout(view: View, bounds: Rect) {
+        layoutManager.layoutDecoratedWithMargins(
+            view, bounds.left, bounds.top, bounds.right, bounds.bottom
+        )
+    }
+
+    private fun shouldContinueLayout(
+        remainingSpace: Int,
+        layoutState: LayoutState,
+        state: State
+    ): Boolean {
+        return layoutState.hasMoreItems(state) && (remainingSpace > 0 || layoutState.isInfinite())
+    }
+
+}
