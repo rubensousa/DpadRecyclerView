@@ -23,11 +23,9 @@ import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -70,7 +68,7 @@ class RowLayoutTest : DpadRecyclerViewTest() {
     fun setup() {
         launchFragment()
         val recyclerViewBounds = getRecyclerViewBounds()
-        val itemViewBounds = getItemViewBounds(position = 0)
+        val itemViewBounds = getRelativeItemViewBounds(position = 0)
         itemWidth = itemViewBounds.width()
         itemHeight = itemViewBounds.height()
         row = LayoutRow(
@@ -201,10 +199,12 @@ class RowLayoutTest : DpadRecyclerViewTest() {
 
     private fun assertChildrenPositions() {
         waitForIdleScrollState()
-        val expectedChildren = row.getNumberOfViewsInLayout()
-        waitForCondition("Waiting for children in layout: $expectedChildren") { recyclerView ->
-            recyclerView.layoutManager?.childCount == expectedChildren
+        val expectedChildCount = row.getNumberOfViewsInLayout()
+        var childCount = 0
+        onRecyclerView("Getting child count") { recyclerView ->
+            childCount = recyclerView.layoutManager?.childCount ?: 0
         }
+        assertThat(childCount).isEqualTo(expectedChildCount)
         onRecyclerView("Assert children positions") { recyclerView ->
             row.assertChildrenBounds(recyclerView)
         }
