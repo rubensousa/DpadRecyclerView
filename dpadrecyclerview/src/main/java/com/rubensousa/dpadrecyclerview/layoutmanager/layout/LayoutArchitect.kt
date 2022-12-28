@@ -311,9 +311,6 @@ internal class LayoutArchitect(
         layoutCalculator.updateLayoutStateForScroll(layoutState, state, scrollOffset)
         structureArchitect.layoutEdge(layoutState, recycler, state)
 
-        // Recycle children in the opposite direction of layout
-        // to be sure we don't have any extra views
-        childRecycler.recycleByLayoutState(recycler, layoutState)
         return scrollOffset
     }
 

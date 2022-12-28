@@ -145,6 +145,10 @@ internal abstract class StructureArchitect(
             childRecycler.recycleByLayoutState(recycler, layoutState)
             onChildLayoutListener.onChildLaidOut(view, state)
         }
+
+        // Recycle children in the opposite direction of layout
+        // to be sure we don't have any extra views
+        childRecycler.recycleByLayoutState(recycler, layoutState)
     }
 
     private fun offsetBy(layoutState: LayoutState, offset: Int) {
