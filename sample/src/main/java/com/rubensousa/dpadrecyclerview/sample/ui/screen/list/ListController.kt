@@ -213,6 +213,9 @@ class ListController(private val fragment: Fragment) {
                 subPosition: Int
             ) {
                 Timber.d("Aligned: $position, $subPosition")
+                Timber.d("FirstVisibleItemPosition: ${recyclerView.findFirstVisibleItemPosition()}")
+                Timber.d("FirstLastVisibleItemPosition: ${recyclerView.findLastVisibleItemPosition()}")
+
             }
         })
     }

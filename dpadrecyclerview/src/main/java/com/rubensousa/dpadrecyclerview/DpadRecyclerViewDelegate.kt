@@ -428,6 +428,22 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         requireLayout().setChildrenDrawingOrderEnabled(enabled)
     }
 
+    fun findFirstVisibleItemPosition(): Int {
+        return requireLayout().findFirstVisibleItemPosition()
+    }
+
+    fun findFirstCompletelyVisibleItemPosition(): Int {
+        return requireLayout().findFirstCompletelyVisibleItemPosition()
+    }
+
+    fun findLastVisibleItemPosition(): Int {
+        return requireLayout().findLastVisibleItemPosition()
+    }
+
+    fun findLastCompletelyVisibleItemPosition(): Int {
+        return requireLayout().findLastCompletelyVisibleItemPosition()
+    }
+
     fun setRecycleChildrenOnDetach(recycle: Boolean) {
         requireLayout().setRecycleChildrenOnDetach(recycle)
     }
