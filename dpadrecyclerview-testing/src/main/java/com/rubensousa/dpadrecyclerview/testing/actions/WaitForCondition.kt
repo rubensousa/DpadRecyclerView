@@ -43,6 +43,7 @@ internal class WaitForCondition<T : View>(
                 .withViewDescription(HumanReadables.describe(view))
                 .build()
         }
+        uiController.loopMainThreadForAtLeast(300L)
     }
 
     class ConditionIdleResource<T : View>(

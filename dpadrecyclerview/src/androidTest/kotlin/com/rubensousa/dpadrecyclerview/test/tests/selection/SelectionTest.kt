@@ -27,7 +27,6 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertViewHolderSelected
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
@@ -91,8 +90,6 @@ class SelectionTest : DpadRecyclerViewTest() {
             fragment.clearAdapter()
         }
 
-        waitForCondition("Waiting for view removal") { recyclerView -> recyclerView.childCount == 0 }
-
         assertFocusAndSelection(position = RecyclerView.NO_POSITION)
 
         assertThat(getSelectionEvents()).isEqualTo(
@@ -122,13 +119,11 @@ class SelectionTest : DpadRecyclerViewTest() {
     fun testSelectionEventsAreDispatchedAfterRecreation() {
         launchFragment()
 
-        assertSelectedPosition(position = 0)
-        assertFocusPosition(position = 0)
+        assertFocusAndSelection(position = 0)
 
         recreateFragment()
 
-        assertSelectedPosition(position = 0)
-        assertFocusPosition(position = 0)
+        assertFocusAndSelection(position = 0)
 
         assertThat(getSelectionEvents()).isEqualTo(
             listOf(DpadSelectionEvent(position = 0))

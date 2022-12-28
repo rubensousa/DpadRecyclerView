@@ -21,8 +21,6 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
-import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
@@ -55,8 +53,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         launchFragment()
 
         repeat(5) { index ->
-            assertFocusPosition(position = index)
-            assertSelectedPosition(position = index)
+            assertFocusAndSelection(position = index)
             pressDown()
         }
     }
@@ -67,8 +64,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
 
         pressUp()
 
-        assertFocusPosition(position = 0)
-        assertSelectedPosition(position = 0)
+        assertFocusAndSelection(position = 0)
     }
 
     @Test
@@ -77,13 +73,11 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
 
         val lastPosition = selectLastPosition()
 
-        assertFocusPosition(position = lastPosition)
-        assertSelectedPosition(position = lastPosition)
+        assertFocusAndSelection(position = lastPosition)
 
         pressDown()
 
-        assertFocusPosition(position = lastPosition)
-        assertSelectedPosition(position = lastPosition)
+        assertFocusAndSelection(position = lastPosition)
     }
 
     @Test
@@ -92,8 +86,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         launchFragment(getDefaultAdapterConfiguration().copy(focusEvery = increment))
 
         repeat(5) { index ->
-            assertFocusPosition(position = increment * index)
-            assertSelectedPosition(position = increment * index)
+            assertFocusAndSelection(position = increment * index)
             pressDown()
         }
     }
@@ -110,10 +103,8 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         )
 
         repeat(5) { index ->
-            assertFocusPosition(position = increment * index)
-            assertSelectedPosition(position = increment * index)
+            assertFocusAndSelection(position = increment * index)
             pressDown()
-            waitForIdleScrollState()
         }
 
     }

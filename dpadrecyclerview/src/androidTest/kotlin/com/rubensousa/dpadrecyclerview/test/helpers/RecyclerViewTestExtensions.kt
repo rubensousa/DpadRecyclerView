@@ -170,9 +170,9 @@ fun waitForAdapterUpdate(id: Int = R.id.recyclerView) {
 }
 
 fun waitForAnimation() {
-    waitForIdleScrollState()
     waitForCondition("Waiting for Animations") { recyclerView ->
         val hasPendingAdapterUpdates = recyclerView.hasPendingAdapterUpdates()
+                && recyclerView.adapter != null
         val isAnimationRunning = recyclerView.itemAnimator?.isRunning ?: false
         return@waitForCondition !isAnimationRunning && !hasPendingAdapterUpdates
     }
