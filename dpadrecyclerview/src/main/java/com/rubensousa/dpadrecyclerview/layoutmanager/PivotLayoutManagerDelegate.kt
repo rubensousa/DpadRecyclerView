@@ -114,4 +114,6 @@ interface PivotLayoutManagerDelegate {
 
     fun findLastCompletelyVisibleItemPosition(): Int
 
+    fun setRecycleChildrenOnDetach(recycle: Boolean)
+
 }

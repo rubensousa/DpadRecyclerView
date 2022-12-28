@@ -121,10 +121,20 @@ internal class LayoutArchitect(
         }
 
         val extraLayoutSpace = max(0, endOffset - startOffset)
-        layoutCalculator.updateForEndPreLayout(layoutState, extraLayoutSpace, lastPosition, lastView)
+        layoutCalculator.updateForEndPreLayout(
+            layoutState,
+            extraLayoutSpace,
+            lastPosition,
+            lastView
+        )
         rowArchitect.layout(layoutState, recycler, state)
 
-        layoutCalculator.updateForStartPreLayout(layoutState, extraLayoutSpace, firstPosition, firstView)
+        layoutCalculator.updateForStartPreLayout(
+            layoutState,
+            extraLayoutSpace,
+            firstPosition,
+            firstView
+        )
         rowArchitect.layout(layoutState, recycler, state)
 
         Log.i(TAG, "PreLayoutFinished")
@@ -320,6 +330,10 @@ internal class LayoutArchitect(
         // Now layout the next views and recycle the ones we don't need along the way
         layoutCalculator.updateLayoutStateForScroll(layoutState, state, scrollOffset)
         rowArchitect.layout(layoutState, recycler, state)
+
+        // Recycle children in the opposite direction of layout
+        // to be sure we don't have any extra views
+        childRecycler.recycleByLayoutState(recycler, layoutState)
         return scrollOffset
     }
 

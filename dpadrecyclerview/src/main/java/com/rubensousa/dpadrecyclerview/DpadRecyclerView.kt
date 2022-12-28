@@ -188,6 +188,24 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Set whether the LayoutManager of this RecyclerView will recycle its children
+     * when this RecyclerView is detached from the window.
+     *
+     * If you are re-using a [RecyclerView.RecycledViewPool], it might be a good idea to set
+     * this flag to **true** so that views will be available to other RecyclerViews
+     * immediately.
+     *
+     * Since by default no extra space is laid out,
+     * enabling this flag will only produce a different result
+     * if a new extra space configuration is passed through [setExtraLayoutSpaceStrategy].
+     *
+     * @param recycle Whether children should be recycled in detach or not.
+     */
+    fun setRecycleChildrenOnDetach(recycle: Boolean) {
+        delegate.setRecycleChildrenOnDetach(recycle)
+    }
+
+    /**
      * Controls the return value of [View.hasOverlappingRendering].
      * @param enabled true if overlapping rendering is enabled. Default is true
      */

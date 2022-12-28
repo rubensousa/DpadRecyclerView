@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
 import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
@@ -35,6 +36,8 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         private const val ARG_LAYOUT_CONFIG = "layout_config"
         private const val ARG_ADAPTER_CONFIG = "adapter_config"
 
+        var viewPool = UnboundViewPool()
+
         fun getArgs(
             layoutConfig: TestLayoutConfiguration,
             adapterConfig: TestAdapterConfiguration = TestAdapterConfiguration()
@@ -44,6 +47,11 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
             bundle.putParcelable(ARG_ADAPTER_CONFIG, adapterConfig)
             return bundle
         }
+
+        fun installViewPool(viewPool: UnboundViewPool) {
+            this.viewPool = viewPool
+        }
+
     }
 
     private val selectionEvents = ArrayList<DpadSelectionEvent>()
@@ -56,6 +64,10 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         val layoutConfig = args.getParcelable<TestLayoutConfiguration>(ARG_LAYOUT_CONFIG)!!
         val adapterConfig = args.getParcelable<TestAdapterConfiguration>(ARG_ADAPTER_CONFIG)!!
         val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
+        if (layoutConfig.useCustomViewPool) {
+            recyclerView.setRecycledViewPool(viewPool)
+        }
+        recyclerView.setRecycleChildrenOnDetach(layoutConfig.recycleChildrenOnDetach)
         recyclerView.setFocusableDirection(layoutConfig.focusableDirection)
         recyclerView.setGravity(layoutConfig.gravity)
         recyclerView.setSpanCount(layoutConfig.spans)

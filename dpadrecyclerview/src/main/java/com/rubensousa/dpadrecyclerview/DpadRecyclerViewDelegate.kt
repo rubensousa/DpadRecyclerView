@@ -444,4 +444,8 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         return requireLayout().findLastCompletelyVisibleItemPosition()
     }
 
+    fun setRecycleChildrenOnDetach(recycle: Boolean) {
+        requireLayout().setRecycleChildrenOnDetach(recycle)
+    }
+
 }
