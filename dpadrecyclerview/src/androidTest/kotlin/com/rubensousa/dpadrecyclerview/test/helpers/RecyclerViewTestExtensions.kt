@@ -85,6 +85,8 @@ fun assertItemAtPosition(position: Int, item: Int) {
 }
 
 fun assertFocusAndSelection(position: Int, subPosition: Int = 0, id: Int = R.id.recyclerView) {
+    waitForIdleScrollState()
+    waitForAnimation()
     assertSelectedPosition(position, subPosition, id)
     assertFocusPosition(position, subPosition, id)
 }
@@ -129,7 +131,7 @@ fun getRelativeItemViewBounds(position: Int, id: Int = R.id.recyclerView): Rect 
     Espresso.onView(ViewMatchers.withId(id))
         .perform(
             DpadRecyclerViewActions.waitForIdleScroll(),
-            DpadRecyclerViewActions.getItemViewBounds(position, rect)
+            DpadRecyclerViewActions.getRelativeItemViewBounds(position, rect)
         )
     return rect
 }
@@ -170,8 +172,9 @@ fun waitForAdapterUpdate(id: Int = R.id.recyclerView) {
 fun waitForAnimation() {
     waitForIdleScrollState()
     waitForCondition("Waiting for Animations") { recyclerView ->
+        val hasPendingAdapterUpdates = recyclerView.hasPendingAdapterUpdates()
         val isAnimationRunning = recyclerView.itemAnimator?.isRunning ?: false
-        return@waitForCondition !isAnimationRunning
+        return@waitForCondition !isAnimationRunning && !hasPendingAdapterUpdates
     }
 }
 
