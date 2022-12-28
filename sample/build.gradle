@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace 'com.rubensousa.dpadrecyclerview.sample'
     compileSdk versions.compileSdkVersion
     defaultConfig {
         applicationId "com.rubensousa.dpadrecyclerview.sample"
@@ -32,6 +33,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+
 }
 
 dependencies {
