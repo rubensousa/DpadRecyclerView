@@ -26,16 +26,20 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertItemAtPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForAnimation
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.test.tests.layout.LayoutColumn
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class VerticalMutationTest : DpadRecyclerViewTest() {
+
+    @get:Rule
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
@@ -82,7 +86,6 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.removeAt(0)
         }
-        waitForAnimation()
         assertFocusAndSelection(0)
         assertItemAtPosition(position = 0, item = 1)
 
@@ -111,7 +114,6 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.removeAt(1)
         }
-        waitForAnimation()
         assertFocusAndSelection(0)
         assertItemAtPosition(position = 0, item = 0)
 
@@ -139,8 +141,6 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.removeAt(lastPosition)
         }
-        waitForAnimation()
-        waitForIdleScrollState()
         assertFocusAndSelection(lastPosition - 1)
 
         assertThat(getSelectionEvents()).isEqualTo(
@@ -158,8 +158,6 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.move(from = 0, to = 1)
         }
-        waitForAnimation()
-        assertFocusAndSelection(1)
         assertItemAtPosition(position = 1, item = 0)
 
         val newViewBounds = getRelativeItemViewBounds(position = 1)
@@ -179,7 +177,6 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.move(from = 3, to = 4)
         }
-        waitForAnimation()
         assertFocusAndSelection(pivotPosition)
         assertItemAtPosition(position = 3, item = 4)
         assertItemAtPosition(position = 4, item = 3)
@@ -199,7 +196,6 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
             adapter.addAt(item = -1, index = currentPivotPosition - 1)
         }
         currentPivotPosition++
-        waitForAnimation()
         assertFocusAndSelection(currentPivotPosition)
 
         assertItemAtPosition(position = currentPivotPosition, item = 5)
@@ -221,7 +217,6 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
             adapter.addAt(item = -1, index = currentPivotPosition)
         }
         currentPivotPosition++
-        waitForAnimation()
         assertFocusAndSelection(currentPivotPosition)
 
         assertItemAtPosition(position = currentPivotPosition, item = 5)
@@ -240,7 +235,6 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.addAt(item = -1, index = originalPivotPosition + 1)
         }
-        waitForAnimation()
         assertFocusAndSelection(originalPivotPosition)
 
         assertItemAtPosition(position = originalPivotPosition, item = 5)

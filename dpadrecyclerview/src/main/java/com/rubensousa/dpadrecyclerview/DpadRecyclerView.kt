@@ -26,6 +26,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
 
@@ -184,6 +185,24 @@ open class DpadRecyclerView @JvmOverloads constructor(
      */
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
         delegate.setExtraLayoutSpaceStrategy(strategy)
+    }
+
+    /**
+     * Set whether the LayoutManager of this RecyclerView will recycle its children
+     * when this RecyclerView is detached from the window.
+     *
+     * If you are re-using a [RecyclerView.RecycledViewPool], it might be a good idea to set
+     * this flag to **true** so that views will be available to other RecyclerViews
+     * immediately.
+     *
+     * Since by default no extra space is laid out,
+     * enabling this flag will only produce a different result
+     * if a new extra space configuration is passed through [setExtraLayoutSpaceStrategy].
+     *
+     * @param recycle Whether children should be recycled in detach or not.
+     */
+    fun setRecycleChildrenOnDetach(recycle: Boolean) {
+        delegate.setRecycleChildrenOnDetach(recycle)
     }
 
     /**
@@ -439,6 +458,46 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * or 0 if there's none. See [DpadViewHolder.getAlignments]
      */
     fun getCurrentSubPositions() = delegate.getCurrentSubPositions()
+
+    /**
+     * Similar to [LinearLayoutManager.findFirstVisibleItemPosition]
+     *
+     * @return The adapter position of the first visible item or [RecyclerView.NO_POSITION] if
+     * there aren't any visible items
+     */
+    fun findFirstVisibleItemPosition(): Int {
+        return delegate.findFirstVisibleItemPosition()
+    }
+
+    /**
+     * Similar to [LinearLayoutManager.findFirstCompletelyVisibleItemPosition]
+     *
+     * @return The adapter position of the first fully visible item or [RecyclerView.NO_POSITION] if
+     * there aren't any fully visible items
+     */
+    fun findFirstCompletelyVisibleItemPosition(): Int {
+        return delegate.findFirstCompletelyVisibleItemPosition()
+    }
+
+    /**
+     * Similar to [LinearLayoutManager.findLastVisibleItemPosition]
+     *
+     * @return The adapter position of the last visible item or [RecyclerView.NO_POSITION] if
+     * there aren't any visible items
+     */
+    fun findLastVisibleItemPosition(): Int {
+        return delegate.findLastVisibleItemPosition()
+    }
+
+    /**
+     * Similar to [LinearLayoutManager.findLastCompletelyVisibleItemPosition]
+     *
+     * @return The adapter position of the last fully visible item or [RecyclerView.NO_POSITION] if
+     * there aren't any fully visible items
+     */
+    fun findLastCompletelyVisibleItemPosition(): Int {
+        return delegate.findLastCompletelyVisibleItemPosition()
+    }
 
     /**
      * Registers a callback to be invoked when an item has been selected

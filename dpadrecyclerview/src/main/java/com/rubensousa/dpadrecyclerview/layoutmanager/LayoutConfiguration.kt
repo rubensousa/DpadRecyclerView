@@ -110,11 +110,18 @@ internal class LayoutConfiguration(properties: Properties) {
     var extraLayoutSpaceStrategy: ExtraLayoutSpaceStrategy? = null
         private set
 
+    var recycleChildrenOnDetach: Boolean = false
+        private set
+
     init {
         setSpanCount(properties.spanCount)
         setOrientation(properties.orientation)
         setReverseLayout(properties.reverseLayout)
         setStackFromEnd(properties.stackFromEnd)
+    }
+
+    fun setRecycleChildrenOnDetach(recycle: Boolean) {
+        recycleChildrenOnDetach = recycle
     }
 
     fun setFocusSearchDisabled(isDisabled: Boolean) {

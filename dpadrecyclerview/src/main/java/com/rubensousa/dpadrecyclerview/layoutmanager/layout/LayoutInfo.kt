@@ -299,6 +299,73 @@ internal class LayoutInfo(
         return getAdapterPositionOf(child)
     }
 
+    fun findFirstVisiblePosition(): Int {
+        return findFirstChildWithinParentBounds(
+            startIndex = 0,
+            endIndex = layout.childCount,
+            onlyCompletelyVisible = false
+        )
+    }
+
+    fun findFirstCompletelyVisiblePosition(): Int {
+        return findFirstChildWithinParentBounds(
+            startIndex = 0,
+            endIndex = layout.childCount,
+            onlyCompletelyVisible = true
+        )
+    }
+
+    fun findLastVisiblePosition(): Int {
+        return findFirstChildWithinParentBounds(
+            startIndex = layout.childCount - 1,
+            endIndex = -1,
+            onlyCompletelyVisible = false
+        )
+    }
+
+    fun findLastCompletelyVisiblePosition(): Int {
+        return findFirstChildWithinParentBounds(
+            startIndex = layout.childCount - 1,
+            endIndex = -1,
+            onlyCompletelyVisible = true
+        )
+    }
+
+    /**
+     * @param startIndex index at which the search should start
+     * @param endIndex index at which the search should stop (not inclusive)
+     * @param onlyCompletelyVisible true if we should only find views completely visible
+     */
+    private fun findFirstChildWithinParentBounds(
+        startIndex: Int,
+        endIndex: Int,
+        onlyCompletelyVisible: Boolean
+    ): Int {
+        val increment = if (startIndex < endIndex) 1 else -1
+        var currentIndex = startIndex
+        val parentStart = orientationHelper.startAfterPadding
+        val parentEnd = orientationHelper.endAfterPadding
+        while (currentIndex != endIndex) {
+            val child = layout.getChildAt(currentIndex) ?: continue
+            val childStart = getDecoratedStart(child)
+            val childEnd = getDecoratedEnd(child)
+            val isChildCompletelyVisible = childStart >= parentStart && childEnd <= parentEnd
+            if (onlyCompletelyVisible) {
+                if (isChildCompletelyVisible) {
+                    return getLayoutPositionOf(child)
+                }
+            } else {
+                val isClippedAtStart = childEnd >= parentStart && childStart <= parentStart
+                val isClippedAtEnd = childStart <= parentEnd && childEnd >= parentEnd
+                if (isChildCompletelyVisible || isClippedAtEnd || isClippedAtStart) {
+                    return getLayoutPositionOf(child)
+                }
+            }
+            currentIndex += increment
+        }
+        return RecyclerView.NO_POSITION
+    }
+
     fun getChildViewHolder(view: View): ViewHolder? {
         return recyclerView?.getChildViewHolder(view)
     }

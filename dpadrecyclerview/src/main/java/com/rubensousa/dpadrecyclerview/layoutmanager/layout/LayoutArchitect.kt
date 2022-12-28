@@ -310,6 +310,10 @@ internal class LayoutArchitect(
         // Now layout the next views and recycle the ones we don't need along the way
         layoutCalculator.updateLayoutStateForScroll(layoutState, state, scrollOffset)
         structureArchitect.layoutEdge(layoutState, recycler, state)
+
+        // Recycle children in the opposite direction of layout
+        // to be sure we don't have any extra views
+        childRecycler.recycleByLayoutState(recycler, layoutState)
         return scrollOffset
     }
 

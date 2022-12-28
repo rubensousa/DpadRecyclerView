@@ -106,5 +106,14 @@ interface PivotLayoutManagerDelegate {
 
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?)
 
-}
+    fun findFirstVisibleItemPosition(): Int
 
+    fun findFirstCompletelyVisibleItemPosition(): Int
+
+    fun findLastVisibleItemPosition(): Int
+
+    fun findLastCompletelyVisibleItemPosition(): Int
+
+    fun setRecycleChildrenOnDetach(recycle: Boolean)
+
+}
