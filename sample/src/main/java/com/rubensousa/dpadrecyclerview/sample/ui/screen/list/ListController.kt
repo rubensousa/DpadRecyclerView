@@ -34,14 +34,14 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListModel
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListPlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.NestedListAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
 import timber.log.Timber
 
 class ListController(private val fragment: Fragment) {
 
     private var selectedPosition = RecyclerView.NO_POSITION
-    private val loadingAdapter = ListPlaceholderAdapter()
+    private val loadingAdapter = PlaceholderAdapter()
     private val scrollStateHolder = DpadStateHolder()
     private val nestedListAdapter = NestedListAdapter(scrollStateHolder,
         object : ItemViewHolder.ItemClickListener {

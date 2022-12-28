@@ -44,6 +44,10 @@ class MainFragment : Fragment(R.layout.screen_main) {
                 title = "List -> Detail"
             ),
             ScreenDestination(
+                direction = MainFragmentDirections.openStandardGrid(),
+                title = "Standard grid"
+            ),
+            ScreenDestination(
                 direction = MainFragmentDirections.openHorizontalLeanback(),
                 title = "Horizontal Leanback"
             )

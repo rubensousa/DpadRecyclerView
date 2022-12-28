@@ -22,11 +22,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.sample.R
 
-class ListPlaceholderAdapter(
+class PlaceholderAdapter(
     private val items: Int = 1,
     private val layoutId: Int = R.layout.adapter_list_placeholder,
     private val focusPlaceholders: Boolean = false
-) : RecyclerView.Adapter<ListPlaceholderAdapter.VH>() {
+) : RecyclerView.Adapter<PlaceholderAdapter.VH>() {
 
     private var show = false
 
