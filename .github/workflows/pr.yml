@@ -7,6 +7,7 @@ on:
       - '**.MD'
     branches:
       - 'master'
+      - 'pivotlayoutmanager'
 
 concurrency:
   group: build-${{ github.event.pull_request.number || github.ref }}
@@ -76,8 +77,8 @@ jobs:
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
           force-avd-creation: false
+          disable-animations: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
           script: echo "Generated AVD snapshot for caching."
 
       - name: UI tests
@@ -88,9 +89,9 @@ jobs:
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
           force-avd-creation: false
-          emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedCheck
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: ./gradlew connectedCheck --info
 
       - name: Upload results
         uses: actions/upload-artifact@v3
@@ -98,4 +99,5 @@ jobs:
           name: ${{ matrix.api-level }}-${{ matrix.arch }}-instrumentation-test-results
           path: |
             ./**/build/reports/androidTests/connected/**
+            ./**/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/**
         if: always()
