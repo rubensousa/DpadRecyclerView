@@ -92,6 +92,10 @@ internal class SearchPivotSmoothScroller(
     }
 
     fun onChildCreated(child: View) {
+        // Do nothing if we don't have pending moves or if we have multiple spans
+        if (layoutInfo.isGrid() || !movements.hasPendingMoves()) {
+            return
+        }
         val viewHolder = layoutInfo.getChildViewHolder(child) ?: return
         val adapterPosition = viewHolder.absoluteAdapterPosition
         Log.i(TAG, "View attached: $adapterPosition")
@@ -105,14 +109,66 @@ internal class SearchPivotSmoothScroller(
     }
 
     fun onChildLaidOut(view: View) {
-        val viewHolder = layoutInfo.getChildViewHolder(view)
-        if (viewHolder?.absoluteAdapterPosition == pivotSelector.position) {
-            listener.onPivotLaidOut(view)
+        if (layoutInfo.isGrid()) {
+            consumeGridMoves()
+        } else {
+            val viewHolder = layoutInfo.getChildViewHolder(view)
+            if (viewHolder?.absoluteAdapterPosition == pivotSelector.position) {
+                listener.onPivotLaidOut(view)
+            }
         }
         if (movements.shouldStopScrolling() && isRunning) {
             Log.i(TAG, "Requested stop scrolling")
             targetPosition = pivotSelector.position
             stop()
+        }
+    }
+
+    private fun consumeGridMoves() {
+        if (!movements.hasPendingMoves()) {
+            return
+        }
+        val currentPosition = pivotSelector.position
+        var focusedColumn = if (currentPosition != RecyclerView.NO_POSITION) {
+            layoutInfo.getStartColumnIndex(currentPosition)
+        } else {
+            RecyclerView.NO_POSITION
+        }
+        var targetPosition = currentPosition
+        var targetView: View? = null
+
+        // Start searching for the new view in the same column
+        val childCount = layoutInfo.getChildCount()
+        var i = 0
+        val moves = movements.pendingMoves
+        while (i < childCount && moves != 0) {
+            val childIndex = if (moves > 0) {
+                i
+            } else {
+                childCount - 1 - i
+            }
+            i++
+            val child = layoutInfo.getChildAt(childIndex)
+            if (child == null || !layoutInfo.isViewFocusable(child)) {
+                continue
+            }
+            val childPosition = layoutInfo.getAdapterPositionOf(child)
+            val columnIndex = layoutInfo.getStartColumnIndex(childPosition)
+            if (focusedColumn == RecyclerView.NO_POSITION) {
+                targetPosition = childPosition
+                targetView = child
+                focusedColumn = columnIndex
+            } else if (columnIndex == focusedColumn) {
+                // TODO Support different span sizes
+                targetPosition = childPosition
+                targetView = child
+                movements.consume()
+            }
+        }
+
+        if (targetView != null) {
+            pivotSelector.update(position = targetPosition, subPosition = 0)
+            listener.onPivotLaidOut(targetView)
         }
     }
 

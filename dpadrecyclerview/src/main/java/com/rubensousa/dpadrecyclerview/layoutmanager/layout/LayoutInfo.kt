@@ -97,6 +97,8 @@ internal class LayoutInfo(
 
     fun getSpanCount() = configuration.spanCount
 
+    fun isGrid() = configuration.spanCount > 1
+
     fun getSpanSize(position: Int): Int {
         return configuration.spanSizeLookup.getSpanSize(position)
     }
