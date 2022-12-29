@@ -77,8 +77,8 @@ jobs:
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
           force-avd-creation: false
-          emulator-options: -no-snapshot-load -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: echo "Generated AVD snapshot for caching."
 
       - name: UI tests
@@ -89,9 +89,9 @@ jobs:
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
           force-avd-creation: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew connectedCheck
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: ./gradlew connectedCheck --info
 
       - name: Upload results
         uses: actions/upload-artifact@v3

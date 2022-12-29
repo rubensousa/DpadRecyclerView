@@ -102,12 +102,6 @@ class RowLayoutTest : DpadRecyclerViewTest() {
         }
 
         assertChildrenPositions()
-
-        repeat(1) {
-            scrollLeft()
-        }
-
-        assertChildrenPositions()
     }
 
     @Test
