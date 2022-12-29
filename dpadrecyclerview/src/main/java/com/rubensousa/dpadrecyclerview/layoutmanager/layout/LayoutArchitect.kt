@@ -375,7 +375,7 @@ internal class LayoutArchitect(
             val position = layoutManager.getPosition(child)
             val left = layoutManager.getDecoratedLeft(child)
             val top = layoutManager.getDecoratedTop(child)
-            val right = layoutManager.getDecoratedLeft(child)
+            val right = layoutManager.getDecoratedRight(child)
             val bottom = layoutManager.getDecoratedBottom(child)
             Log.i(TAG, "View $position: [$left, $top, $right, $bottom]")
         }
