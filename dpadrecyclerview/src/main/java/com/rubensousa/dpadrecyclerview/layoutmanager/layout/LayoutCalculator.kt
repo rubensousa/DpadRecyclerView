@@ -108,20 +108,20 @@ internal class LayoutCalculator(private val layoutInfo: LayoutInfo) {
     }
 
     fun updateLayoutStateForExtraLayoutEnd(layoutState: LayoutState, state: State) {
-        val view = layoutInfo.getChildClosestToEnd() ?: return
         layoutState.apply {
             setEndDirection()
             updateExtraLayoutSpace(layoutState, state)
+            val view = layoutInfo.getChildClosestToEnd() ?: return
             setCheckpoint(layoutInfo.getDecoratedEnd(view))
             updateLayoutStateForExtraLayout(this, view)
         }
     }
 
     fun updateLayoutStateForExtraLayoutStart(layoutState: LayoutState, state: State) {
-        val view = layoutInfo.getChildClosestToStart() ?: return
         layoutState.apply {
             setStartDirection()
             updateExtraLayoutSpace(layoutState, state)
+            val view = layoutInfo.getChildClosestToStart() ?: return
             setCheckpoint(layoutInfo.getDecoratedStart(view))
             updateLayoutStateForExtraLayout(this, view)
         }

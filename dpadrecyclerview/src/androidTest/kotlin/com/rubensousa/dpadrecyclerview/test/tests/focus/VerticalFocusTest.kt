@@ -28,14 +28,9 @@ import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressUp
-import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
-import org.junit.Rule
 import org.junit.Test
 
 class VerticalFocusTest : DpadRecyclerViewTest() {
-
-    @get:Rule
-    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(

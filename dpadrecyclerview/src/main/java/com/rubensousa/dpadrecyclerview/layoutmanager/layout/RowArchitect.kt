@@ -17,160 +17,70 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import androidx.recyclerview.widget.RecyclerView.Recycler
-import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 
-/**
- * Layout algorithm:
- * 1. Layout the view at the selected position (pivot) and align it
- * 2. Starting from the bottom/end of the selected view,
- * fill towards the top/start until there's no more space
- * 3. Starting from the top/end of the selected view,
- * fill towards the top/start until there's no more space
- *
- * - [layoutPivot] - creates the pivot view and aligns it based on the alignment configuration
- */
 internal class RowArchitect(
-    private val layoutManager: LayoutManager,
+    layoutManager: LayoutManager,
+    layoutInfo: LayoutInfo,
+    childRecycler: ChildRecycler,
+    onChildLayoutListener: OnChildLayoutListener,
     private val layoutAlignment: LayoutAlignment,
-    private val layoutInfo: LayoutInfo,
-    private val configuration: LayoutConfiguration,
-    private val childRecycler: ChildRecycler,
-    private val onChildLayoutListener: OnChildLayoutListener
-) {
+    private val configuration: LayoutConfiguration
+) : StructureArchitect(layoutManager, layoutInfo, childRecycler, onChildLayoutListener) {
 
     companion object {
         const val TAG = "RowArchitect"
     }
 
-    private val viewBounds = Rect()
-
-    fun layoutPivot(
-        layoutState: LayoutState,
-        recycler: Recycler,
-        position: Int,
-        state: State
-    ): View {
-        val view = recycler.getViewForPosition(position)
-        layoutManager.addView(view)
-        onChildLayoutListener.onChildCreated(view, state)
-        layoutManager.measureChildWithMargins(view, 0, 0)
+    override fun addPivot(view: View, bounds: Rect, layoutState: LayoutState) {
         val size = layoutInfo.getMeasuredSize(view)
         val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
         val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
         val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
-        if (configuration.isVertical()) {
-            viewBounds.top = headOffset
-            viewBounds.bottom = tailOffset
-            applyHorizontalGravity(view, viewBounds)
+        if (layoutInfo.isVertical()) {
+            bounds.top = headOffset
+            bounds.bottom = tailOffset
+            applyHorizontalGravity(view, bounds)
         } else {
-            viewBounds.left = headOffset
-            viewBounds.right = tailOffset
-            applyVerticalGravity(view, viewBounds)
-        }
-        layoutView(view, viewBounds)
-        Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
-        layoutState.updateWindow(headOffset, tailOffset)
-        return view
-    }
-
-    fun layout(layoutState: LayoutState, recycler: Recycler, state: State): Int {
-        return if (layoutState.isLayingOutEnd()) {
-            layoutEnd(layoutState, recycler, state)
-        } else {
-            layoutStart(layoutState, recycler, state)
+            bounds.left = headOffset
+            bounds.right = tailOffset
+            applyVerticalGravity(view, bounds)
         }
     }
 
-    fun layoutEnd(layoutState: LayoutState, recycler: Recycler, state: State): Int {
-        var remainingSpace = layoutState.fillSpace
-        childRecycler.recycleByLayoutState(recycler, layoutState)
-        while (shouldContinueLayout(remainingSpace, layoutState, state)) {
-            val view = layoutState.getNextView(recycler) ?: break // No more views to layout, exit
-            if (!layoutState.isUsingScrap()) {
-                layoutManager.addView(view)
-            } else {
-                layoutManager.addDisappearingView(view)
-            }
-            onChildLayoutListener.onChildCreated(view, state)
-            layoutManager.measureChildWithMargins(view, 0, 0)
-            val decoratedSize = layoutInfo.getDecoratedSize(view)
-
-            if (configuration.isVertical()) {
-                // We need to align this view to an edge or center it, depending on the gravity set
-                applyHorizontalGravity(view, viewBounds)
-                viewBounds.top = layoutState.checkpoint
-                viewBounds.bottom = viewBounds.top + decoratedSize
-            } else {
-                applyVerticalGravity(view, viewBounds)
-                viewBounds.left = layoutState.checkpoint
-                viewBounds.right = viewBounds.left + decoratedSize
-            }
-            layoutView(view, viewBounds)
-            Log.i(TAG, "Laid end view ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
-            val spaceFilled = getSpaceFilled(viewBounds)
-            layoutState.appendWindow(spaceFilled)
-            remainingSpace -= spaceFilled
-            childRecycler.recycleByLayoutState(recycler, layoutState)
-            onChildLayoutListener.onChildLaidOut(view, state)
-        }
-        return layoutState.fillSpace - remainingSpace
-    }
-
-    fun layoutStart(layoutState: LayoutState, recycler: Recycler, state: State): Int {
-        var remainingSpace = layoutState.fillSpace
-        childRecycler.recycleByLayoutState(recycler, layoutState)
-        while (shouldContinueLayout(remainingSpace, layoutState, state)) {
-            val view = layoutState.getNextView(recycler) ?: break // No more views to layout, exit
-            if (!layoutState.isUsingScrap()) {
-                layoutManager.addView(view, 0)
-            } else {
-                layoutManager.addDisappearingView(view, 0)
-            }
-            onChildLayoutListener.onChildCreated(view, state)
-            layoutManager.measureChildWithMargins(view, 0, 0)
-            val decoratedSize = layoutInfo.getDecoratedSize(view)
-
-            if (configuration.isVertical()) {
-                applyHorizontalGravity(view, viewBounds)
-                viewBounds.bottom = layoutState.checkpoint
-                viewBounds.top = viewBounds.bottom - decoratedSize
-            } else {
-                applyVerticalGravity(view, viewBounds)
-                viewBounds.right = layoutState.checkpoint
-                viewBounds.left = viewBounds.right - decoratedSize
-            }
-            layoutView(view, viewBounds)
-            Log.i(TAG, "Laid start view ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
-            val spaceFilled = getSpaceFilled(viewBounds)
-            layoutState.prependWindow(spaceFilled)
-            remainingSpace -= spaceFilled
-            childRecycler.recycleByLayoutState(recycler, layoutState)
-            onChildLayoutListener.onChildLaidOut(view, state)
-        }
-        return layoutState.fillSpace - remainingSpace
-    }
-
-    private fun getSpaceFilled(viewBounds: Rect): Int {
+    override fun appendView(view: View, bounds: Rect, layoutState: LayoutState): Int {
+        val decoratedSize = layoutInfo.getDecoratedSize(view)
         return if (layoutInfo.isVertical()) {
-            viewBounds.height()
+            // We need to align this view to an edge or center it, depending on the gravity set
+            applyHorizontalGravity(view, bounds)
+            bounds.top = layoutState.checkpoint
+            bounds.bottom = bounds.top + decoratedSize
+            bounds.height()
         } else {
-            viewBounds.width()
+            applyVerticalGravity(view, bounds)
+            bounds.left = layoutState.checkpoint
+            bounds.right = bounds.left + decoratedSize
+            bounds.width()
         }
     }
 
-    private fun shouldContinueLayout(
-        remainingSpace: Int,
-        layoutState: LayoutState,
-        state: State
-    ): Boolean {
-        return layoutState.hasMoreItems(state) && (remainingSpace > 0 || layoutState.isInfinite())
+    override fun prependView(view: View, bounds: Rect, layoutState: LayoutState): Int {
+        val decoratedSize = layoutInfo.getDecoratedSize(view)
+        return if (layoutInfo.isVertical()) {
+            applyHorizontalGravity(view, bounds)
+            bounds.bottom = layoutState.checkpoint
+            bounds.top = bounds.bottom - decoratedSize
+            bounds.height()
+        } else {
+            applyVerticalGravity(view, bounds)
+            bounds.right = layoutState.checkpoint
+            bounds.left = bounds.right - decoratedSize
+            bounds.width()
+        }
     }
 
     private fun applyHorizontalGravity(view: View, bounds: Rect) {
@@ -195,7 +105,7 @@ internal class RowArchitect(
             }
             else -> { // Fallback to left gravity since this is the default expected behavior
                 bounds.left = layoutManager.paddingLeft
-                bounds.right = viewBounds.left + layoutInfo.getPerpendicularDecoratedSize(view)
+                bounds.right = bounds.left + layoutInfo.getPerpendicularDecoratedSize(view)
             }
         }
 
@@ -215,76 +125,9 @@ internal class RowArchitect(
             }
             else -> {  // Fallback to top gravity since this is the default expected behavior
                 bounds.top = layoutManager.paddingTop
-                bounds.bottom = viewBounds.top + layoutInfo.getPerpendicularDecoratedSize(view)
+                bounds.bottom = bounds.top + layoutInfo.getPerpendicularDecoratedSize(view)
             }
         }
     }
-
-    private fun layoutView(view: View, bounds: Rect) {
-        layoutManager.layoutDecoratedWithMargins(
-            view, bounds.left, bounds.top, bounds.right, bounds.bottom
-        )
-    }
-
-  /*  @Deprecated("Needs to use the new layout state class")
-    fun layoutChunk(
-        recycler: RecyclerView.Recycler,
-        layoutState: LinearLayoutState,
-        result: LayoutResult
-    ) {
-        val view = layoutState.next(recycler)
-        Log.d(TAG, "LayoutChunk requested for: $layoutState")
-        if (view == null) {
-            // if we are laying out views in scrap, this may return null which means there is
-            // no more items to layout.
-            Log.d(TAG, "LayoutChunk finished for: $layoutState")
-            result.finished = true
-            return
-        }
-        val params = view.layoutParams as RecyclerView.LayoutParams
-        if (layoutState.scrappedViews == null) {
-            if (layoutState.reverseLayout == layoutState.isLayingOutStart()) {
-                layoutManager.addView(view)
-            } else {
-                layoutManager.addView(view, 0)
-            }
-        } else if (layoutState.reverseLayout == layoutState.isLayingOutStart()) {
-            layoutManager.addDisappearingView(view)
-        } else {
-            layoutManager.addDisappearingView(view, 0)
-        }
-        layoutManager.measureChildWithMargins(view, 0, 0)
-        result.consumed = layoutInfo.getDecoratedSize(view)
-
-        if (configuration.isVertical()) {
-            // We need to align this view to an edge or center it, depending on the gravity set
-            applyHorizontalGravity(view, viewBounds)
-            if (layoutState.isLayingOutStart()) {
-                viewBounds.bottom = layoutState.offset
-                viewBounds.top = layoutState.offset - result.consumed
-            } else {
-                viewBounds.top = layoutState.offset
-                viewBounds.bottom = layoutState.offset + result.consumed
-            }
-        } else {
-            // We need to align this view to an edge or center it, depending on the gravity set
-            applyVerticalGravity(view, viewBounds)
-            if (layoutState.isLayingOutStart()) {
-                viewBounds.right = layoutState.offset
-                viewBounds.left = layoutState.offset - result.consumed
-            } else {
-                viewBounds.left = layoutState.offset
-                viewBounds.right = layoutState.offset + result.consumed
-            }
-        }
-        // We calculate everything with View's bounding box (which includes decor and margins)
-        // To calculate correct layout position, we subtract margins.
-        layoutView(view, viewBounds)
-
-        // Consume the available space if the view is not removed OR changed
-        if (params.isItemRemoved || params.isItemChanged) {
-            result.ignoreConsumed = true
-        }
-    }*/
 
 }
