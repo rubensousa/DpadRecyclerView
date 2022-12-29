@@ -347,6 +347,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun setSpanCount(spanCount: Int) {
         configuration.setSpanCount(spanCount)
+        layoutArchitect.updateStructure()
         requestLayout()
     }
 

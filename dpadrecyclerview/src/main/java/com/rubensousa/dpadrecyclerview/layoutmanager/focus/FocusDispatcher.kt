@@ -320,7 +320,7 @@ internal class FocusDispatcher(
                 continue
             }
             val position = layoutInfo.getAdapterPositionOfChildAt(index)
-            val childColumn = layoutInfo.getColumnIndex(position)
+            val childColumn = layoutInfo.getStartColumnIndex(position)
             if (request.focusDirection == FocusDirection.NEXT_ITEM) {
                 // Add first focusable item on the same row
                 if (position > request.focusedAdapterPosition) {
@@ -427,7 +427,7 @@ internal class FocusDispatcher(
             this.focusedAdapterPosition = focusedAdapterPosition
             this.focusDirection = focusDirection
             this.focusedColumn = if (focusedChild != null) {
-                layoutInfo.getColumnIndex(focusedAdapterPosition)
+                layoutInfo.getStartColumnIndex(focusedAdapterPosition)
             } else {
                 RecyclerView.NO_POSITION
             }

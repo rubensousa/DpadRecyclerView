@@ -111,6 +111,14 @@ internal class LayoutState {
         window.endOffset = end
     }
 
+    fun updateWindowStart(start: Int) {
+        window.startOffset = start
+    }
+
+    fun updateWindowEnd(end: Int) {
+        window.endOffset = end
+    }
+
     fun offsetWindow(offset: Int) {
         window.offset(offset)
     }
@@ -123,6 +131,14 @@ internal class LayoutState {
     fun prependWindow(offset: Int) {
         window.prepend(offset)
         checkpoint -= offset
+    }
+
+    fun increaseStartOffset(size: Int) {
+        window.startOffset += size
+    }
+
+    fun decreaseEndOffset(size: Int) {
+        window.endOffset -= size
     }
 
     fun hasMoreItems(state: RecyclerView.State): Boolean {
@@ -199,14 +215,6 @@ internal class LayoutState {
         checkpoint = 0
         window.startOffset = 0
         window.endOffset = 0
-    }
-
-    fun increaseStartOffset(size: Int) {
-        window.startOffset += size
-    }
-
-    fun decreaseEndOffset(size: Int) {
-        window.endOffset -= size
     }
 
     override fun toString(): String {

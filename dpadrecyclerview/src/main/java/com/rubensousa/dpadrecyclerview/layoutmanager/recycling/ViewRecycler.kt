@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.recycling
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
 
-internal class ChildRecycler(
-    private val layoutManager: RecyclerView.LayoutManager,
-    private val layoutInfo: LayoutInfo,
-    private val configuration: LayoutConfiguration
+internal abstract class ViewRecycler(
+    protected val layoutManager: RecyclerView.LayoutManager,
+    protected val layoutInfo: LayoutInfo,
+    protected val configuration: LayoutConfiguration
 ) {
 
-    companion object {
-        const val TAG = "ChildRecycler"
-    }
+    protected abstract fun updateLayoutState(
+        recycled: View,
+        position: Int,
+        size: Int,
+        layoutState: LayoutState
+    )
 
     fun recycleByLayoutState(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
         if (!layoutState.isRecyclingEnabled || layoutState.isInfinite()) {
@@ -113,17 +118,17 @@ internal class ChildRecycler(
         }
     }
 
-    private fun recycleViewAt(index: Int, recycler: Recycler, layoutState: LayoutState) {
+    private fun recycleViewAt(
+        index: Int,
+        recycler: RecyclerView.Recycler,
+        layoutState: LayoutState
+    ) {
         val view = layoutManager.getChildAt(index)
         if (view != null) {
+            val position = layoutInfo.getLayoutPositionOf(view)
             layoutManager.removeAndRecycleViewAt(index, recycler)
             val size = layoutInfo.getDecoratedSize(view)
-            if (layoutState.isLayingOutEnd()) {
-                layoutState.increaseStartOffset(size)
-            } else {
-                layoutState.decreaseEndOffset(size)
-            }
+            updateLayoutState(view, position, size, layoutState)
         }
     }
-
 }

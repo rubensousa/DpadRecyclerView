@@ -26,6 +26,8 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.GridRecycler
+import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.RowRecycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 import kotlin.math.max
 import kotlin.math.min
@@ -46,17 +48,39 @@ internal class LayoutArchitect(
 
     private val layoutState = LayoutState()
     private val layoutCalculator = LayoutCalculator(layoutInfo)
-    private val childRecycler = ChildRecycler(layoutManager, layoutInfo, configuration)
     private val childLayoutListener = ChildLayoutListener()
-    private var structureArchitect: StructureArchitect = RowArchitect(
-        layoutManager,
-        layoutInfo,
-        childRecycler,
-        childLayoutListener,
-        layoutAlignment,
-        configuration
-    )
+    private var structureArchitect: StructureArchitect = createStructureArchitect()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
+    private var currentSpanCount = configuration.spanCount
+
+    fun updateStructure() {
+        if (currentSpanCount == configuration.spanCount) {
+            return
+        }
+        structureArchitect = createStructureArchitect()
+        currentSpanCount = configuration.spanCount
+    }
+
+    private fun createStructureArchitect(): StructureArchitect {
+        return if (configuration.spanCount > 1) {
+            GridArchitect(
+                layoutManager,
+                layoutInfo,
+                GridRecycler(layoutManager, layoutInfo, configuration),
+                childLayoutListener,
+                layoutAlignment
+            )
+        } else {
+            RowArchitect(
+                layoutManager,
+                layoutInfo,
+                RowRecycler(layoutManager, layoutInfo, configuration),
+                childLayoutListener,
+                layoutAlignment,
+                configuration
+            )
+        }
+    }
 
     /**
      * There's different stages of layout:
@@ -160,7 +184,7 @@ internal class LayoutArchitect(
         // We might have views we no longer need after aligning the pivot,
         // so recycle them if we're not running animations
         if (!state.willRunSimpleAnimations() && !state.willRunPredictiveAnimations()) {
-            removeInvisibleViews(recycler)
+            structureArchitect.removeInvisibleViews(recycler, layoutState)
         }
 
         logChildren()
@@ -172,12 +196,6 @@ internal class LayoutArchitect(
 
         layoutCalculator.updateLayoutStateForExtraLayoutEnd(layoutState, state)
         structureArchitect.layoutEdge(layoutState, recycler, state)
-    }
-
-    private fun removeInvisibleViews(recycler: Recycler) {
-        layoutState.setRecyclingEnabled(true)
-        childRecycler.recycleFromStart(recycler, layoutState)
-        childRecycler.recycleFromEnd(recycler, layoutState)
     }
 
     /**

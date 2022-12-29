@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
+import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.ViewRecycler
 
 /**
  * General layout algorithm:
@@ -35,7 +36,7 @@ import androidx.recyclerview.widget.RecyclerView.State
 internal abstract class StructureArchitect(
     protected val layoutManager: LayoutManager,
     protected val layoutInfo: LayoutInfo,
-    private val childRecycler: ChildRecycler,
+    private val viewRecycler: ViewRecycler,
     private val onChildLayoutListener: OnChildLayoutListener
 ) {
 
@@ -48,19 +49,34 @@ internal abstract class StructureArchitect(
     /**
      * Places the pivot in the correct layout position and returns its bounds via [bounds]
      */
-    protected abstract fun addPivot(view: View, bounds: Rect, layoutState: LayoutState)
+    protected abstract fun addPivot(
+        view: View,
+        position: Int,
+        bounds: Rect,
+        layoutState: LayoutState
+    )
 
     /**
      * Places [view] at the end of the current layout and returns its bounds via [bounds]
-     * @return layout space filled by this view
+     * @return layout space consumed by this view
      */
-    protected abstract fun appendView(view: View, bounds: Rect, layoutState: LayoutState): Int
+    protected abstract fun appendView(
+        view: View,
+        position: Int,
+        bounds: Rect,
+        layoutState: LayoutState
+    ): Int
 
     /**
      * Places [view] at the start of the current layout and returns its bounds via [bounds]
-     * @return layout space filled by this view
+     * @return layout space consumed by this view
      */
-    protected abstract fun prependView(view: View, bounds: Rect, layoutState: LayoutState): Int
+    protected abstract fun prependView(
+        view: View,
+        position: Int,
+        bounds: Rect,
+        layoutState: LayoutState
+    ): Int
 
     fun layoutPivot(
         layoutState: LayoutState,
@@ -74,18 +90,13 @@ internal abstract class StructureArchitect(
         layoutManager.measureChildWithMargins(view, 0, 0)
 
         // Place the pivot in its keyline position
-        addPivot(view, viewBounds, layoutState)
+        addPivot(view, position, viewBounds, layoutState)
 
         // Trigger a new layout pass for the pivot view
         performLayout(view, viewBounds)
 
-        if (layoutInfo.isVertical()) {
-            layoutState.updateWindow(start = viewBounds.top, end = viewBounds.bottom)
-        } else {
-            layoutState.updateWindow(start = viewBounds.left, end = viewBounds.right)
-        }
-
         Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
+        viewBounds.setEmpty()
 
         // Move the pivot by the remaining scroll
         // so that it slides in correctly after the layout is done
@@ -102,12 +113,13 @@ internal abstract class StructureArchitect(
     ) {
         var remainingSpace = layoutState.fillSpace
         // Start by recycling children that moved out of bounds
-        childRecycler.recycleByLayoutState(recycler, layoutState)
+        viewRecycler.recycleByLayoutState(recycler, layoutState)
 
         val isAppending = layoutState.isLayingOutEnd()
 
         // Keep appending or prepending views until we run out of fill space or items
         while (shouldContinueLayout(remainingSpace, layoutState, state)) {
+            val currentPosition = layoutState.currentPosition
             val view = layoutState.getNextView(recycler) ?: break
             if (!layoutState.isUsingScrap()) {
                 if (isAppending) {
@@ -124,31 +136,33 @@ internal abstract class StructureArchitect(
             onChildLayoutListener.onChildCreated(view, state)
             layoutManager.measureChildWithMargins(view, 0, 0)
 
-            val viewSpace = if (isAppending) {
-                appendView(view, viewBounds, layoutState)
+            val consumedSpace = if (isAppending) {
+                appendView(view, currentPosition, viewBounds, layoutState)
             } else {
-                prependView(view, viewBounds, layoutState)
+                prependView(view, currentPosition, viewBounds, layoutState)
             }
 
             performLayout(view, viewBounds)
 
-            if (isAppending) {
-                layoutState.appendWindow(viewSpace)
-            } else {
-                layoutState.prependWindow(viewSpace)
-            }
             Log.i(
                 TAG,
                 "Laid out view ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds"
             )
-            remainingSpace -= viewSpace
-            childRecycler.recycleByLayoutState(recycler, layoutState)
+            viewBounds.setEmpty()
+            remainingSpace -= consumedSpace
+            viewRecycler.recycleByLayoutState(recycler, layoutState)
             onChildLayoutListener.onChildLaidOut(view, state)
         }
 
         // Recycle children in the opposite direction of layout
         // to be sure we don't have any extra views
-        childRecycler.recycleByLayoutState(recycler, layoutState)
+        viewRecycler.recycleByLayoutState(recycler, layoutState)
+    }
+
+    fun removeInvisibleViews(recycler: Recycler, layoutState: LayoutState) {
+        layoutState.setRecyclingEnabled(true)
+        viewRecycler.recycleFromStart(recycler, layoutState)
+        viewRecycler.recycleFromEnd(recycler, layoutState)
     }
 
     private fun offsetBy(layoutState: LayoutState, offset: Int) {

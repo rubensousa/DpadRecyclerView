@@ -95,21 +95,27 @@ internal class LayoutInfo(
         this.recyclerView = recyclerView
     }
 
+    fun getSpanCount() = configuration.spanCount
+
     fun getSpanSize(position: Int): Int {
         return configuration.spanSizeLookup.getSpanSize(position)
     }
 
-    fun getColumnIndex(position: Int): Int {
+    fun getStartColumnIndex(position: Int): Int {
         return configuration.spanSizeLookup.getSpanIndex(position, configuration.spanCount)
     }
 
     fun getEndColumnIndex(position: Int): Int {
-        return getColumnIndex(position) + configuration.spanSizeLookup.getSpanSize(position) - 1
+        return getStartColumnIndex(position) + configuration.spanSizeLookup.getSpanSize(position) - 1
     }
 
     fun getRowIndex(position: Int): Int {
         return configuration.spanSizeLookup
             .getSpanGroupIndex(position, configuration.spanCount)
+    }
+
+    fun isPositionAtLastColumn(position: Int): Boolean {
+        return getEndColumnIndex(position) == configuration.spanCount - 1
     }
 
     fun getAdapterPositionOfChildAt(index: Int): Int {

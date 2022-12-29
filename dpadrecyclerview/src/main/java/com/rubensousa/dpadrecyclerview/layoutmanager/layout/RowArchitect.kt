@@ -22,21 +22,22 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.RowRecycler
 
 internal class RowArchitect(
     layoutManager: LayoutManager,
     layoutInfo: LayoutInfo,
-    childRecycler: ChildRecycler,
+    rowRecycler: RowRecycler,
     onChildLayoutListener: OnChildLayoutListener,
     private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration
-) : StructureArchitect(layoutManager, layoutInfo, childRecycler, onChildLayoutListener) {
+) : StructureArchitect(layoutManager, layoutInfo, rowRecycler, onChildLayoutListener) {
 
     companion object {
         const val TAG = "RowArchitect"
     }
 
-    override fun addPivot(view: View, bounds: Rect, layoutState: LayoutState) {
+    override fun addPivot(view: View, position: Int, bounds: Rect, layoutState: LayoutState) {
         val size = layoutInfo.getMeasuredSize(view)
         val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
         val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
@@ -50,11 +51,18 @@ internal class RowArchitect(
             bounds.right = tailOffset
             applyVerticalGravity(view, bounds)
         }
+
+        layoutState.updateWindow(start = headOffset, end = tailOffset)
     }
 
-    override fun appendView(view: View, bounds: Rect, layoutState: LayoutState): Int {
+    override fun appendView(
+        view: View,
+        position: Int,
+        bounds: Rect,
+        layoutState: LayoutState
+    ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
-        return if (layoutInfo.isVertical()) {
+        val consumedSpace = if (layoutInfo.isVertical()) {
             // We need to align this view to an edge or center it, depending on the gravity set
             applyHorizontalGravity(view, bounds)
             bounds.top = layoutState.checkpoint
@@ -66,11 +74,18 @@ internal class RowArchitect(
             bounds.right = bounds.left + decoratedSize
             bounds.width()
         }
+        layoutState.appendWindow(consumedSpace)
+        return consumedSpace
     }
 
-    override fun prependView(view: View, bounds: Rect, layoutState: LayoutState): Int {
+    override fun prependView(
+        view: View,
+        position: Int,
+        bounds: Rect,
+        layoutState: LayoutState
+    ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
-        return if (layoutInfo.isVertical()) {
+        val consumedSpace = if (layoutInfo.isVertical()) {
             applyHorizontalGravity(view, bounds)
             bounds.bottom = layoutState.checkpoint
             bounds.top = bounds.bottom - decoratedSize
@@ -81,6 +96,8 @@ internal class RowArchitect(
             bounds.left = bounds.right - decoratedSize
             bounds.width()
         }
+        layoutState.prependWindow(consumedSpace)
+        return consumedSpace
     }
 
     private fun applyHorizontalGravity(view: View, bounds: Rect) {
