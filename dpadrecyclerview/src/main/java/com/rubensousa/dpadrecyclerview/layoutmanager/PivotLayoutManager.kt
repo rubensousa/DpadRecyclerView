@@ -42,7 +42,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 /**
  * Successor of DpadLayoutManager built from scratch for performance optimizations
  * and to support more features.
- * Currently only supports a single row.
  */
 class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     PivotLayoutManagerDelegate {
