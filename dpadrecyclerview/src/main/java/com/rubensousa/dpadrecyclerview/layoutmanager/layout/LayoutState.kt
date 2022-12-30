@@ -72,6 +72,7 @@ internal class LayoutState {
         private set
 
     // Pixel offset where layout should start
+    // For grids, this only serves as an indicator of where the next/previous row should be laid out
     var checkpoint: Int = 0
         private set
 
@@ -121,6 +122,7 @@ internal class LayoutState {
 
     fun offsetWindow(offset: Int) {
         window.offset(offset)
+        checkpoint += offset
     }
 
     fun appendWindow(offset: Int) {

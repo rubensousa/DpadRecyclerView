@@ -100,7 +100,7 @@ internal abstract class StructureArchitect(
 
         // Move the pivot by the remaining scroll
         // so that it slides in correctly after the layout is done
-        offsetBy(layoutState, -layoutInfo.getRemainingScroll(state))
+        offsetBy(-layoutInfo.getRemainingScroll(state), layoutState)
 
         onChildLayoutListener.onChildLaidOut(view, state)
         return view
@@ -165,9 +165,22 @@ internal abstract class StructureArchitect(
         viewRecycler.recycleFromEnd(recycler, layoutState)
     }
 
-    private fun offsetBy(layoutState: LayoutState, offset: Int) {
+    fun offsetBy(offset: Int, layoutState: LayoutState) {
         layoutInfo.orientationHelper.offsetChildren(-offset)
         layoutState.offsetWindow(-offset)
+    }
+
+    fun logChildren() {
+        Log.i(TAG, "Children laid out:")
+        for (i in 0 until layoutManager.childCount) {
+            val child = layoutManager.getChildAt(i)!!
+            val position = layoutManager.getPosition(child)
+            val left = layoutManager.getDecoratedLeft(child)
+            val top = layoutManager.getDecoratedTop(child)
+            val right = layoutManager.getDecoratedRight(child)
+            val bottom = layoutManager.getDecoratedBottom(child)
+            Log.i(TAG, "View $position: [$left, $top, $right, $bottom]")
+        }
     }
 
     private fun performLayout(view: View, bounds: Rect) {

@@ -123,7 +123,7 @@ internal class LayoutArchitect(
             return
         }
         Log.i(TAG, "PreLayoutStart")
-        logChildren()
+        structureArchitect.logChildren()
 
         val firstView = layoutInfo.getChildAt(0) ?: return
         val lastView = layoutInfo.getChildAt(childCount - 1) ?: return
@@ -145,18 +145,18 @@ internal class LayoutArchitect(
         }
 
         val extraLayoutSpace = max(0, endOffset - startOffset)
-        layoutCalculator.updateForEndPreLayout(
-            layoutState, extraLayoutSpace, lastPosition, lastView
-        )
-        structureArchitect.layoutEdge(layoutState, recycler, state)
-
         layoutCalculator.updateForStartPreLayout(
             layoutState, extraLayoutSpace, firstPosition, firstView
         )
         structureArchitect.layoutEdge(layoutState, recycler, state)
 
+        layoutCalculator.updateForEndPreLayout(
+            layoutState, extraLayoutSpace, lastPosition, lastView
+        )
+        structureArchitect.layoutEdge(layoutState, recycler, state)
+
         Log.i(TAG, "PreLayoutFinished")
-        logChildren()
+        structureArchitect.logChildren()
     }
 
     private fun predictiveLayoutPass(recycler: Recycler, state: State) {
@@ -165,12 +165,12 @@ internal class LayoutArchitect(
 
         val pivotView = structureArchitect.layoutPivot(layoutState, recycler, pivotPosition, state)
 
-        // Layout views after the pivot
-        layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotPosition)
-        structureArchitect.layoutEdge(layoutState, recycler, state)
-
         // Layout views before the pivot
         layoutCalculator.updateLayoutStateBeforePivot(layoutState, pivotPosition)
+        structureArchitect.layoutEdge(layoutState, recycler, state)
+
+        // Layout views after the pivot
+        layoutCalculator.updateLayoutStateAfterPivot(layoutState, pivotPosition)
         structureArchitect.layoutEdge(layoutState, recycler, state)
 
         layoutForPredictiveAnimations(recycler, state)
@@ -187,7 +187,7 @@ internal class LayoutArchitect(
             structureArchitect.removeInvisibleViews(recycler, layoutState)
         }
 
-        logChildren()
+        structureArchitect.logChildren()
     }
 
     private fun layoutExtraSpace(recycler: Recycler, state: State) {
@@ -323,18 +323,13 @@ internal class LayoutArchitect(
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
 
         // Offset views immediately
-        offsetBy(scrollOffset)
+        structureArchitect.offsetBy(scrollOffset, layoutState)
 
         // Now layout the next views and recycle the ones we don't need along the way
         layoutCalculator.updateLayoutStateForScroll(layoutState, state, scrollOffset)
         structureArchitect.layoutEdge(layoutState, recycler, state)
 
         return scrollOffset
-    }
-
-    private fun offsetBy(offset: Int) {
-        layoutInfo.orientationHelper.offsetChildren(-offset)
-        layoutState.offsetWindow(-offset)
     }
 
     // TODO
@@ -368,27 +363,14 @@ internal class LayoutArchitect(
         }
     }
 
-    private fun logChildren() {
-        Log.i(TAG, "Children laid out:")
-        for (i in 0 until layoutManager.childCount) {
-            val child = layoutManager.getChildAt(i)!!
-            val position = layoutManager.getPosition(child)
-            val left = layoutManager.getDecoratedLeft(child)
-            val top = layoutManager.getDecoratedTop(child)
-            val right = layoutManager.getDecoratedRight(child)
-            val bottom = layoutManager.getDecoratedBottom(child)
-            Log.i(TAG, "View $position: [$left, $top, $right, $bottom]")
-        }
-    }
-
     private inner class ChildLayoutListener : OnChildLayoutListener {
         override fun onChildCreated(view: View, state: State) {
             scroller.onChildCreated(view)
         }
 
         override fun onChildLaidOut(view: View, state: State) {
-            layoutAlignment.updateScrollLimits()
             scroller.onChildLaidOut(view)
+            layoutAlignment.updateScrollLimits()
         }
     }
 

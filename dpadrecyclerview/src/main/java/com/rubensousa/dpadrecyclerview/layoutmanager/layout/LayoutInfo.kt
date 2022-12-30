@@ -37,8 +37,14 @@ internal class LayoutInfo(
     val orientation: Int
         get() = configuration.orientation
 
+
     var orientationHelper: OrientationHelper = OrientationHelper.createOrientationHelper(
         layout, configuration.orientation
+    )
+        private set
+
+    var secondaryOrientationHelper = OrientationHelper.createOrientationHelper(
+        layout, getOppositeOrientation()
     )
         private set
 
@@ -54,6 +60,7 @@ internal class LayoutInfo(
     var hasLaidOutViews = false
         private set
 
+
     private var recyclerView: RecyclerView? = null
 
     fun getConfiguration() = configuration
@@ -67,6 +74,9 @@ internal class LayoutInfo(
     fun updateOrientation() {
         orientationHelper = OrientationHelper.createOrientationHelper(
             layout, configuration.orientation
+        )
+        secondaryOrientationHelper = OrientationHelper.createOrientationHelper(
+            layout, getOppositeOrientation()
         )
     }
 
@@ -179,9 +189,15 @@ internal class LayoutInfo(
 
     fun getStartAfterPadding() = orientationHelper.startAfterPadding
 
+    fun getSecondaryStartAfterPadding() = secondaryOrientationHelper.startAfterPadding
+
     fun getEndAfterPadding() = orientationHelper.endAfterPadding
 
+    fun getSecondaryEndAfterPadding() = secondaryOrientationHelper.endAfterPadding
+
     fun getTotalSpace(): Int = orientationHelper.totalSpace
+
+    fun getSecondaryTotalSpace(): Int = secondaryOrientationHelper.totalSpace
 
     fun getDecoratedStart(view: View): Int {
         return orientationHelper.getDecoratedStart(view)
@@ -445,4 +461,11 @@ internal class LayoutInfo(
         }
     }
 
+    private fun getOppositeOrientation() : Int {
+        return if (configuration.isVertical()) {
+            RecyclerView.HORIZONTAL
+        } else {
+            RecyclerView.VERTICAL
+        }
+    }
 }
