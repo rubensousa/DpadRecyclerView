@@ -38,42 +38,58 @@ internal class GridArchitect(
     }
 
     private val numberOfSpans = layoutInfo.getSpanCount()
-    private val rowSizes = IntArray(numberOfSpans)
-    private var maxRowSize = 0
-    private var startSpanIndex = RecyclerView.NO_POSITION
-    private var endSpanIndex = RecyclerView.NO_POSITION
+    private val startRow = Row(numberOfSpans, layoutInfo.getSecondaryTotalSpace())
+    private val endRow = Row(numberOfSpans, layoutInfo.getSecondaryTotalSpace())
+
+    override fun updateConfiguration() {
+        startRow.width = layoutInfo.getSecondaryTotalSpace()
+        endRow.width = layoutInfo.getSecondaryTotalSpace()
+    }
+
+    override fun offsetBy(offset: Int, layoutState: LayoutState) {
+        super.offsetBy(offset, layoutState)
+        startRow.offsetBy(-offset)
+        endRow.offsetBy(-offset)
+    }
 
     override fun addPivot(view: View, position: Int, bounds: Rect, layoutState: LayoutState) {
-        resetRowSizes()
-
+        startRow.reset()
+        endRow.reset()
         val size = layoutInfo.getMeasuredSize(view)
         val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
         val head = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
         val tail = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
         val decoratedSize = tail - head
-
-        startSpanIndex = layoutInfo.getStartColumnIndex(position)
         val spanSize = layoutInfo.getSpanSize(position)
-        endSpanIndex = startSpanIndex + spanSize - 1
 
-        val spanSpace = getSpanSpace()
+        startRow.startSpanIndex = layoutInfo.getStartColumnIndex(position)
+        startRow.endSpanIndex = startRow.startSpanIndex + spanSize - 1
 
         if (layoutInfo.isVertical()) {
             bounds.top = head
             bounds.bottom = tail
-            bounds.left = spanSpace * startSpanIndex
-            bounds.right = bounds.left + spanSpace
+            bounds.left = startRow.getSpanSpace() * startRow.startSpanIndex
+            bounds.right = bounds.left + startRow.getSpanSpace()
         } else {
             bounds.left = head
             bounds.right = tail
-            bounds.top = spanSpace * startSpanIndex
-            bounds.bottom = bounds.left + spanSpace
+            bounds.top = startRow.getSpanSpace() * startRow.startSpanIndex
+            bounds.bottom = bounds.top + startRow.getSpanSpace()
         }
 
         layoutState.updateWindow(head, head)
 
-        // Fill the row sizes with the pivot size
-        updateRowSizes(decoratedSize, startSpanIndex, spanSize)
+        // At this stage, both start and end rows are the same
+        endRow.startSpanIndex = startRow.startSpanIndex
+        endRow.endSpanIndex = startRow.endSpanIndex
+
+        // Place both rows at the correct top position
+        startRow.offsetBy(head)
+        endRow.offsetBy(head)
+
+        // Set the default height of both rows to the size of the pivot for now
+        startRow.updateHeight(decoratedSize, startRow.startSpanIndex, spanSize)
+        endRow.updateHeight(decoratedSize, startRow.startSpanIndex, spanSize)
     }
 
     override fun appendView(
@@ -84,7 +100,7 @@ internal class GridArchitect(
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
         val consumedSpace = if (layoutInfo.isVertical()) {
-            appendVertical(decoratedSize, position, bounds, layoutState)
+            appendToHorizontalRow(decoratedSize, position, bounds, layoutState)
         } else {
             // TODO
             0
@@ -93,47 +109,35 @@ internal class GridArchitect(
         return consumedSpace
     }
 
-    /**
-     *
-     * @return vertical space consumed (if new row was inserted or row size changed)
-     */
-    private fun appendVertical(
-        size: Int,
+    private fun appendToHorizontalRow(
+        viewSize: Int,
         position: Int,
         bounds: Rect,
         layoutState: LayoutState
     ): Int {
-        var newSpace = 0
+        var consumedSpace = 0
 
-        bounds.top = layoutState.checkpoint
-        bounds.bottom = bounds.top + size
-
-        val viewSpanSize = layoutInfo.getSpanSize(position)
-        val spanWidth = getSpanSpace()
+        val spanSize = layoutInfo.getSpanSize(position)
 
         // Check if we can place the element in the current row
-        if (endSpanIndex + viewSpanSize < numberOfSpans) {
-            bounds.left = spanWidth * (endSpanIndex + 1)
-            endSpanIndex += viewSpanSize
+        if (endRow.fitsEnd(spanSize)) {
+            bounds.top = endRow.top
+            bounds.left = endRow.append(viewSize, spanSize)
             // If this is the last span, consume the total space
-            if (endSpanIndex == numberOfSpans - 1) {
-                newSpace = max(size, maxRowSize)
-                resetRowSizes()
-            } else {
-                newSpace = max(0, size - maxRowSize)
+            if (endRow.isEndComplete()) {
+                consumedSpace = endRow.consume()
             }
         } else {
             // Otherwise place it in the next row
-            startSpanIndex = 0
-            endSpanIndex = viewSpanSize - 1
+            endRow.moveToNextRow(viewSize, spanSize, newTop = layoutState.checkpoint)
+            bounds.top = layoutState.checkpoint
             bounds.left = layoutInfo.getSecondaryStartAfterPadding()
         }
 
-        bounds.right = bounds.left + spanWidth * viewSpanSize
+        bounds.bottom = bounds.top + viewSize
+        bounds.right = bounds.left + endRow.getSpanSpace() * spanSize
 
-        updateRowSizes(size, endSpanIndex, viewSpanSize)
-
-        return newSpace
+        return consumedSpace
     }
 
     override fun prependView(
@@ -144,7 +148,7 @@ internal class GridArchitect(
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
         val consumedSpace = if (layoutInfo.isVertical()) {
-            prependVertical(decoratedSize, position, bounds, layoutState)
+            prependToHorizontalRow(decoratedSize, position, bounds, layoutState)
         } else {
             // TODO
             0
@@ -153,59 +157,130 @@ internal class GridArchitect(
         return consumedSpace
     }
 
-    private fun prependVertical(
-        size: Int,
+    private fun prependToHorizontalRow(
+        viewSize: Int,
         position: Int,
         bounds: Rect,
-        layoutState: LayoutState
+        layoutState: LayoutState,
     ): Int {
-        var newSpace = 0
+        var consumedSpace = 0
 
-        bounds.bottom = layoutState.checkpoint
-        bounds.top = bounds.bottom - size
-
-        val viewSpanSize = layoutInfo.getSpanSize(position)
-        val spanWidth = getSpanSpace()
+        val spanSize = layoutInfo.getSpanSize(position)
 
         // Check if we can place the element in the current row
-        if (startSpanIndex - viewSpanSize >= 0) {
-            bounds.right = spanWidth * startSpanIndex
-            startSpanIndex -= viewSpanSize
+        if (startRow.fitsStart(spanSize)) {
+            bounds.left = startRow.prepend(viewSize, spanSize)
+            bounds.bottom = startRow.top + startRow.height
+
             // If this is the first span, consume the total space
-            if (startSpanIndex == 0) {
-                newSpace = max(size, maxRowSize)
-                resetRowSizes()
-            } else {
-                newSpace = max(0, size - maxRowSize)
+            if (startRow.isStartComplete()) {
+                consumedSpace = startRow.consume()
             }
         } else {
             // Otherwise move it to the previous row
+            startRow.moveToPreviousRow(
+                viewSize, spanSize,
+                newTop = layoutState.checkpoint - viewSize
+            )
+            bounds.bottom = layoutState.checkpoint
+            bounds.left = startRow.getSpanSpace() * startRow.startSpanIndex
+        }
+
+        bounds.top = bounds.bottom - viewSize
+        bounds.right = bounds.left + startRow.getSpanSpace() * spanSize
+
+        return consumedSpace
+    }
+
+    class Row(
+        private val numberOfSpans: Int,
+        var width: Int
+    ) {
+
+        var startSpanIndex = RecyclerView.NO_POSITION
+        var endSpanIndex = RecyclerView.NO_POSITION
+
+        var height = 0
+            private set
+
+        var top = 0
+            private set
+
+        private val heights = IntArray(numberOfSpans)
+
+        fun offsetBy(offset: Int) {
+            top += offset
+        }
+
+        fun fitsEnd(spanSize: Int): Boolean {
+            return endSpanIndex + spanSize < numberOfSpans
+        }
+
+        fun isEndComplete(): Boolean {
+            return endSpanIndex == numberOfSpans - 1
+        }
+
+        fun isStartComplete(): Boolean {
+            return startSpanIndex == 0
+        }
+
+        fun fitsStart(spanSize: Int): Boolean {
+            return startSpanIndex - spanSize >= 0
+        }
+
+        fun getSpanSpace(): Int {
+            return width / numberOfSpans
+        }
+
+        fun append(viewSize: Int, spanSize: Int): Int {
+            val viewSpanIndex = endSpanIndex + 1
+            val viewStart = getSpanSpace() * viewSpanIndex
+            updateHeight(viewSize, viewSpanIndex, spanSize)
+            endSpanIndex += spanSize
+            return viewStart
+        }
+
+        fun prepend(viewSize: Int, spanSize: Int): Int {
+            startSpanIndex -= spanSize
+            updateHeight(viewSize, startSpanIndex, spanSize)
+            return getSpanSpace() * startSpanIndex
+        }
+
+        fun moveToNextRow(viewSize: Int, spanSize: Int, newTop: Int) {
+            consume()
+            startSpanIndex = 0
+            endSpanIndex = spanSize - 1
+            top = newTop
+            updateHeight(viewSize, startSpanIndex, spanSize)
+        }
+
+        fun moveToPreviousRow(viewSize: Int, spanSize: Int, newTop: Int) {
+            consume()
             endSpanIndex = numberOfSpans - 1
-            bounds.right =  layoutInfo.getSecondaryEndAfterPadding()
-            startSpanIndex = endSpanIndex + 1 - viewSpanSize
+            startSpanIndex = endSpanIndex + 1 - spanSize
+            top = newTop
+            updateHeight(viewSize, startSpanIndex, spanSize)
         }
 
-        bounds.left = bounds.right - spanWidth * viewSpanSize
-
-        updateRowSizes(size, startSpanIndex, viewSpanSize)
-
-        return newSpace
-    }
-
-    private fun getSpanSpace(): Int {
-        return layoutInfo.getSecondaryTotalSpace() / numberOfSpans
-    }
-
-    private fun updateRowSizes(size: Int, startSpanIndex: Int, spanSize: Int) {
-        maxRowSize = max(size, maxRowSize)
-        for (i in startSpanIndex until startSpanIndex + spanSize) {
-            rowSizes[i] = size
+        fun consume(): Int {
+            heights.fill(0)
+            val previousHeight = height
+            height = 0
+            return previousHeight
         }
-    }
 
-    private fun resetRowSizes() {
-        rowSizes.fill(0)
-        maxRowSize = 0
+        fun reset() {
+            consume()
+            top = 0
+        }
+
+        fun updateHeight(viewSize: Int, spanIndex: Int, spanSize: Int) {
+            height = max(viewSize, height)
+            for (i in spanIndex until spanIndex + spanSize) {
+                heights[i] = viewSize
+            }
+        }
+
     }
 
 

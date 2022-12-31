@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
+import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.ViewRecycler
 
 /**
@@ -42,6 +43,7 @@ internal abstract class StructureArchitect(
 
     companion object {
         const val TAG = "StructureArchitect"
+        private val DEBUG = BuildConfig.DEBUG
     }
 
     private val viewBounds = Rect()
@@ -78,6 +80,12 @@ internal abstract class StructureArchitect(
         layoutState: LayoutState
     ): Int
 
+
+    /**
+     * Used to update any internal layout state before onLayoutChildren starts its job
+     */
+    open fun updateConfiguration() {}
+
     fun layoutPivot(
         layoutState: LayoutState,
         recycler: Recycler,
@@ -95,7 +103,9 @@ internal abstract class StructureArchitect(
         // Trigger a new layout pass for the pivot view
         performLayout(view, viewBounds)
 
-        Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds")
+        if (DEBUG) {
+            Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
+        }
         viewBounds.setEmpty()
 
         // Move the pivot by the remaining scroll
@@ -144,10 +154,9 @@ internal abstract class StructureArchitect(
 
             performLayout(view, viewBounds)
 
-            Log.i(
-                TAG,
-                "Laid out view ${layoutInfo.getLayoutPositionOf(view)} with bounds: $viewBounds"
-            )
+            if (DEBUG) {
+                Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
+            }
             viewBounds.setEmpty()
             remainingSpace -= consumedSpace
             viewRecycler.recycleByLayoutState(recycler, layoutState)
@@ -165,7 +174,7 @@ internal abstract class StructureArchitect(
         viewRecycler.recycleFromEnd(recycler, layoutState)
     }
 
-    fun offsetBy(offset: Int, layoutState: LayoutState) {
+    open fun offsetBy(offset: Int, layoutState: LayoutState) {
         layoutInfo.orientationHelper.offsetChildren(-offset)
         layoutState.offsetWindow(-offset)
     }

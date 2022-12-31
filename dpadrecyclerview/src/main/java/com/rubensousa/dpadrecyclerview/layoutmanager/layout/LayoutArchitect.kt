@@ -91,7 +91,10 @@ internal class LayoutArchitect(
      * 3. Views cleared: just remove all views
      */
     fun onLayoutChildren(recycler: Recycler, state: State) {
-        Log.i(TAG, "OnLayoutChildren: $state")
+        if (DEBUG) {
+            Log.i(TAG, "OnLayoutChildren: $state")
+        }
+        structureArchitect.updateConfiguration()
         layoutInfo.setLayoutInProgress()
         layoutAlignment.update()
         layoutCalculator.init(layoutState, state)
@@ -122,8 +125,10 @@ internal class LayoutArchitect(
         if (childCount == 0) {
             return
         }
-        Log.i(TAG, "PreLayoutStart")
-        structureArchitect.logChildren()
+        if (DEBUG) {
+            Log.i(TAG, "PreLayoutStart")
+            structureArchitect.logChildren()
+        }
 
         val firstView = layoutInfo.getChildAt(0) ?: return
         val lastView = layoutInfo.getChildAt(childCount - 1) ?: return
@@ -155,8 +160,10 @@ internal class LayoutArchitect(
         )
         structureArchitect.layoutEdge(layoutState, recycler, state)
 
-        Log.i(TAG, "PreLayoutFinished")
-        structureArchitect.logChildren()
+        if (DEBUG) {
+            Log.i(TAG, "PreLayoutFinished")
+            structureArchitect.logChildren()
+        }
     }
 
     private fun predictiveLayoutPass(recycler: Recycler, state: State) {
@@ -187,7 +194,9 @@ internal class LayoutArchitect(
             structureArchitect.removeInvisibleViews(recycler, layoutState)
         }
 
-        structureArchitect.logChildren()
+        if (DEBUG) {
+            structureArchitect.logChildren()
+        }
     }
 
     private fun layoutExtraSpace(recycler: Recycler, state: State) {
