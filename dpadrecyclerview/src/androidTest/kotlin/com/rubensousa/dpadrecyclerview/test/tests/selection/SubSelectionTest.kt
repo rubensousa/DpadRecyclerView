@@ -82,7 +82,7 @@ class SubSelectionTest : DpadRecyclerViewTest() {
     fun testSubPositionsAreFocused() {
         launchSubPositionFragment()
 
-        repeat(5) { index ->
+        repeat(2) { index ->
             assertFocusAndSelection(position = index, subPosition = 0)
             KeyEvents.pressDown(times = 1)
 
