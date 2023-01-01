@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.recycling
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewRecycler
 
-internal class RowRecycler(
+internal class LinearRecycler(
     layoutManager: RecyclerView.LayoutManager,
     layoutInfo: LayoutInfo,
     configuration: LayoutConfiguration

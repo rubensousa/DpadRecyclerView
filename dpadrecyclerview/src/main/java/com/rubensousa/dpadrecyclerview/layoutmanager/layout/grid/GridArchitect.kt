@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 
 import android.graphics.Rect
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.GridRecycler
-import kotlin.math.max
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureArchitect
 
 // TODO Add a second pass to adjust view heights based on row size
 internal class GridArchitect(
@@ -38,8 +39,8 @@ internal class GridArchitect(
     }
 
     private val numberOfSpans = layoutInfo.getSpanCount()
-    private val startRow = Row(numberOfSpans, layoutInfo.getSecondaryTotalSpace())
-    private val endRow = Row(numberOfSpans, layoutInfo.getSecondaryTotalSpace())
+    private val startRow = GridRow(numberOfSpans, layoutInfo.getSecondaryTotalSpace())
+    private val endRow = GridRow(numberOfSpans, layoutInfo.getSecondaryTotalSpace())
 
     override fun updateConfiguration() {
         startRow.width = layoutInfo.getSecondaryTotalSpace()
@@ -48,8 +49,8 @@ internal class GridArchitect(
 
     override fun offsetBy(offset: Int, layoutState: LayoutState) {
         super.offsetBy(offset, layoutState)
-        startRow.offsetBy(-offset)
-        endRow.offsetBy(-offset)
+        startRow.setTop(layoutState.getStartOffset())
+        endRow.setTop(layoutState.getEndOffset())
     }
 
     override fun addPivot(view: View, position: Int, bounds: Rect, layoutState: LayoutState) {
@@ -84,8 +85,8 @@ internal class GridArchitect(
         endRow.endSpanIndex = startRow.endSpanIndex
 
         // Place both rows at the correct top position
-        startRow.offsetBy(head)
-        endRow.offsetBy(head)
+        startRow.setTop(head)
+        endRow.setTop(head)
 
         // Set the default height of both rows to the size of the pivot for now
         startRow.updateHeight(decoratedSize, startRow.startSpanIndex, spanSize)
@@ -190,97 +191,6 @@ internal class GridArchitect(
         bounds.right = bounds.left + startRow.getSpanSpace() * spanSize
 
         return consumedSpace
-    }
-
-    class Row(
-        private val numberOfSpans: Int,
-        var width: Int
-    ) {
-
-        var startSpanIndex = RecyclerView.NO_POSITION
-        var endSpanIndex = RecyclerView.NO_POSITION
-
-        var height = 0
-            private set
-
-        var top = 0
-            private set
-
-        private val heights = IntArray(numberOfSpans)
-
-        fun offsetBy(offset: Int) {
-            top += offset
-        }
-
-        fun fitsEnd(spanSize: Int): Boolean {
-            return endSpanIndex + spanSize < numberOfSpans
-        }
-
-        fun isEndComplete(): Boolean {
-            return endSpanIndex == numberOfSpans - 1
-        }
-
-        fun isStartComplete(): Boolean {
-            return startSpanIndex == 0
-        }
-
-        fun fitsStart(spanSize: Int): Boolean {
-            return startSpanIndex - spanSize >= 0
-        }
-
-        fun getSpanSpace(): Int {
-            return width / numberOfSpans
-        }
-
-        fun append(viewSize: Int, spanSize: Int): Int {
-            val viewSpanIndex = endSpanIndex + 1
-            val viewStart = getSpanSpace() * viewSpanIndex
-            updateHeight(viewSize, viewSpanIndex, spanSize)
-            endSpanIndex += spanSize
-            return viewStart
-        }
-
-        fun prepend(viewSize: Int, spanSize: Int): Int {
-            startSpanIndex -= spanSize
-            updateHeight(viewSize, startSpanIndex, spanSize)
-            return getSpanSpace() * startSpanIndex
-        }
-
-        fun moveToNextRow(viewSize: Int, spanSize: Int, newTop: Int) {
-            consume()
-            startSpanIndex = 0
-            endSpanIndex = spanSize - 1
-            top = newTop
-            updateHeight(viewSize, startSpanIndex, spanSize)
-        }
-
-        fun moveToPreviousRow(viewSize: Int, spanSize: Int, newTop: Int) {
-            consume()
-            endSpanIndex = numberOfSpans - 1
-            startSpanIndex = endSpanIndex + 1 - spanSize
-            top = newTop
-            updateHeight(viewSize, startSpanIndex, spanSize)
-        }
-
-        fun consume(): Int {
-            heights.fill(0)
-            val previousHeight = height
-            height = 0
-            return previousHeight
-        }
-
-        fun reset() {
-            consume()
-            top = 0
-        }
-
-        fun updateHeight(viewSize: Int, spanIndex: Int, spanSize: Int) {
-            height = max(viewSize, height)
-            for (i in spanIndex until spanIndex + spanSize) {
-                heights[i] = viewSize
-            }
-        }
-
     }
 
 

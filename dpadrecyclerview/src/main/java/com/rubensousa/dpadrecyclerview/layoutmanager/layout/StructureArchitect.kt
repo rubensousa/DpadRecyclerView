@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.BuildConfig
-import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.ViewRecycler
 
 /**
  * General layout algorithm:

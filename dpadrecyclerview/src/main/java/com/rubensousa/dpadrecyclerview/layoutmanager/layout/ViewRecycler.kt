@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.recycling
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
 
 internal abstract class ViewRecycler(
     protected val layoutManager: RecyclerView.LayoutManager,

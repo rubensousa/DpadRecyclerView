@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 
 import android.graphics.Rect
 import android.view.Gravity
@@ -22,16 +22,19 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.RowRecycler
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureArchitect
 
-internal class RowArchitect(
+internal class LinearArchitect(
     layoutManager: LayoutManager,
     layoutInfo: LayoutInfo,
-    rowRecycler: RowRecycler,
+    linearRecycler: LinearRecycler,
     onChildLayoutListener: OnChildLayoutListener,
     private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration
-) : StructureArchitect(layoutManager, layoutInfo, rowRecycler, onChildLayoutListener) {
+) : StructureArchitect(layoutManager, layoutInfo, linearRecycler, onChildLayoutListener) {
 
     companion object {
         const val TAG = "RowArchitect"

@@ -26,8 +26,10 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.GridRecycler
-import com.rubensousa.dpadrecyclerview.layoutmanager.recycling.RowRecycler
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid.GridArchitect
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid.GridRecycler
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearArchitect
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearRecycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 import kotlin.math.max
 import kotlin.math.min
@@ -71,10 +73,10 @@ internal class LayoutArchitect(
                 layoutAlignment
             )
         } else {
-            RowArchitect(
+            LinearArchitect(
                 layoutManager,
                 layoutInfo,
-                RowRecycler(layoutManager, layoutInfo, configuration),
+                LinearRecycler(layoutManager, layoutInfo, configuration),
                 childLayoutListener,
                 layoutAlignment,
                 configuration
