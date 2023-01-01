@@ -158,7 +158,10 @@ internal abstract class StructureArchitect(
             }
             viewBounds.setEmpty()
             remainingSpace -= consumedSpace
-            viewRecycler.recycleByLayoutState(recycler, layoutState)
+            // We don't need to recycle if we didn't consume any space
+            if (consumedSpace > 0) {
+                viewRecycler.recycleByLayoutState(recycler, layoutState)
+            }
             onChildLayoutListener.onChildLaidOut(view, state)
         }
 
