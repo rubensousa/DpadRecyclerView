@@ -49,13 +49,11 @@ internal class GridArchitect(
 
     override fun offsetBy(offset: Int, layoutState: LayoutState) {
         super.offsetBy(offset, layoutState)
-        startRow.setTop(layoutState.getStartOffset())
-        endRow.setTop(layoutState.getEndOffset())
+        startRow.offsetBy(-offset)
+        endRow.offsetBy(-offset)
     }
 
     override fun addPivot(view: View, position: Int, bounds: Rect, layoutState: LayoutState) {
-        startRow.reset()
-        endRow.reset()
         val size = layoutInfo.getMeasuredSize(view)
         val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
         val head = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
@@ -63,34 +61,29 @@ internal class GridArchitect(
         val decoratedSize = tail - head
         val spanSize = layoutInfo.getSpanSize(position)
 
-        startRow.startSpanIndex = layoutInfo.getStartColumnIndex(position)
-        startRow.endSpanIndex = startRow.startSpanIndex + spanSize - 1
+        startRow.init(
+            newTop = head,
+            viewSize = decoratedSize,
+            spanIndex = layoutInfo.getStartColumnIndex(position),
+            spanSize = spanSize
+        )
 
         if (layoutInfo.isVertical()) {
             bounds.top = head
             bounds.bottom = tail
-            bounds.left = startRow.getSpanSpace() * startRow.startSpanIndex
-            bounds.right = bounds.left + startRow.getSpanSpace()
+            bounds.left = startRow.getStartOffset()
+            bounds.right = startRow.getEndOffset()
         } else {
             bounds.left = head
             bounds.right = tail
-            bounds.top = startRow.getSpanSpace() * startRow.startSpanIndex
-            bounds.bottom = bounds.top + startRow.getSpanSpace()
+            bounds.top = startRow.getStartOffset()
+            bounds.bottom = startRow.getEndOffset()
         }
 
         layoutState.updateWindow(head, head)
 
         // At this stage, both start and end rows are the same
-        endRow.startSpanIndex = startRow.startSpanIndex
-        endRow.endSpanIndex = startRow.endSpanIndex
-
-        // Place both rows at the correct top position
-        startRow.setTop(head)
-        endRow.setTop(head)
-
-        // Set the default height of both rows to the size of the pivot for now
-        startRow.updateHeight(decoratedSize, startRow.startSpanIndex, spanSize)
-        endRow.updateHeight(decoratedSize, startRow.startSpanIndex, spanSize)
+        endRow.initFrom(startRow)
     }
 
     override fun appendView(
@@ -136,7 +129,7 @@ internal class GridArchitect(
         }
 
         bounds.bottom = bounds.top + viewSize
-        bounds.right = bounds.left + endRow.getSpanSpace() * spanSize
+        bounds.right = endRow.getEndOffset()
 
         return consumedSpace
     }
@@ -184,7 +177,7 @@ internal class GridArchitect(
                 newTop = layoutState.checkpoint - viewSize
             )
             bounds.bottom = layoutState.checkpoint
-            bounds.left = startRow.getSpanSpace() * startRow.startSpanIndex
+            bounds.left = startRow.getStartOffset()
         }
 
         bounds.top = bounds.bottom - viewSize

@@ -21,72 +21,116 @@ import kotlin.math.max
 
 internal class GridRow(
     private val numberOfSpans: Int,
+    // This is the primary space, which would be height for horizontal grids
     var width: Int
 ) {
 
-    var startSpanIndex = RecyclerView.NO_POSITION
-    var endSpanIndex = RecyclerView.NO_POSITION
+    var startIndex = RecyclerView.NO_POSITION
+        private set
 
+    var endIndex = RecyclerView.NO_POSITION
+        private set
+
+    // This is the secondary space, which would be width for horizontal grids
     var height = 0
         private set
 
+    // For horizontal grids, this would be the start
     var top = 0
         private set
 
     private val heights = IntArray(numberOfSpans)
 
-    fun setTop(top: Int) {
-        this.top = top
+    fun init(newTop: Int, viewSize: Int, spanIndex: Int, spanSize: Int) {
+        heights.fill(0)
+        height = 0
+        top = newTop
+        startIndex = spanIndex
+        endIndex = startIndex + spanSize - 1
+        updateHeight(viewSize, startIndex, spanSize)
+    }
+
+    fun initFrom(row: GridRow) {
+        heights.fill(0)
+        height = 0
+        startIndex = row.startIndex
+        endIndex = row.endIndex
+        height = row.height
+        top = row.top
+        val spanSize = endIndex - startIndex + 1
+        updateHeight(height, startIndex, spanSize)
+    }
+
+    fun offsetBy(offset: Int) {
+        top += offset
     }
 
     fun fitsEnd(spanSize: Int): Boolean {
-        return endSpanIndex + spanSize < numberOfSpans
+        return endIndex + spanSize < numberOfSpans
     }
 
     fun isEndComplete(): Boolean {
-        return endSpanIndex == numberOfSpans - 1
+        return endIndex == numberOfSpans - 1
     }
 
     fun isStartComplete(): Boolean {
-        return startSpanIndex == 0
+        return startIndex == 0
     }
 
     fun fitsStart(spanSize: Int): Boolean {
-        return startSpanIndex - spanSize >= 0
+        return startIndex - spanSize >= 0
     }
 
     fun getSpanSpace(): Int {
         return width / numberOfSpans
     }
 
+    fun getHeightAt(spanIndex: Int): Int {
+        return heights[spanIndex]
+    }
+
+    fun getStartOffset(): Int {
+        return startIndex * getSpanSpace()
+    }
+
+    fun getEndOffset(): Int {
+        return (endIndex + 1) * getSpanSpace()
+    }
+
     fun append(viewSize: Int, spanSize: Int): Int {
-        val viewSpanIndex = endSpanIndex + 1
+        if (!fitsEnd(spanSize)) {
+            return -1
+        }
+        val viewSpanIndex = endIndex + 1
         val viewStart = getSpanSpace() * viewSpanIndex
         updateHeight(viewSize, viewSpanIndex, spanSize)
-        endSpanIndex += spanSize
+        endIndex += spanSize
         return viewStart
     }
 
     fun prepend(viewSize: Int, spanSize: Int): Int {
-        startSpanIndex -= spanSize
-        updateHeight(viewSize, startSpanIndex, spanSize)
-        return getSpanSpace() * startSpanIndex
+        if (!fitsStart(spanSize)) {
+            return -1
+        }
+        startIndex -= spanSize
+        updateHeight(viewSize, startIndex, spanSize)
+        return getSpanSpace() * startIndex
     }
 
     fun moveToNextRow(viewSize: Int, spanSize: Int, newTop: Int) {
         consume()
-        startSpanIndex = 0
-        endSpanIndex = spanSize - 1
+        startIndex = 0
+        endIndex = spanSize - 1
         top = newTop
-        updateHeight(viewSize, startSpanIndex, spanSize)
+        updateHeight(viewSize, startIndex, spanSize)
     }
 
     fun moveToPreviousRow(viewSize: Int, spanSize: Int, newTop: Int) {
         consume()
-        endSpanIndex = numberOfSpans - 1
-        startSpanIndex = endSpanIndex + 1 - spanSize
+        endIndex = numberOfSpans - 1
+        startIndex = endIndex + 1 - spanSize
         top = newTop
-        updateHeight(viewSize, startSpanIndex, spanSize)
+        updateHeight(viewSize, startIndex, spanSize)
     }
 
     fun consume(): Int {
@@ -96,16 +140,49 @@ internal class GridRow(
         return previousHeight
     }
 
-    fun reset() {
-        consume()
-        top = 0
-    }
-
-    fun updateHeight(viewSize: Int, spanIndex: Int, spanSize: Int) {
+    private fun updateHeight(viewSize: Int, spanIndex: Int, spanSize: Int) {
         height = max(viewSize, height)
         for (i in spanIndex until spanIndex + spanSize) {
             heights[i] = viewSize
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is GridRow) {
+            return false
+        }
+        if (numberOfSpans != other.numberOfSpans || width != other.width) {
+            return false
+        }
+        for (i in 0 until numberOfSpans) {
+            if (getHeightAt(i) != other.getHeightAt(i)) {
+                return false
+            }
+        }
+        return startIndex == other.startIndex
+                && endIndex == other.endIndex
+                && top == other.top
+                && height == other.height
+    }
+
+    override fun hashCode(): Int {
+        var result = numberOfSpans
+        result = 31 * result + width
+        result = 31 * result + startIndex
+        result = 31 * result + endIndex
+        result = 31 * result + height
+        result = 31 * result + top
+        result = 31 * result + heights.contentHashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "GridRow(startIndex=$startIndex, " +
+                "endIndex=$endIndex, " +
+                "height=$height, " +
+                "top=$top, " +
+                "heights=${heights.contentToString()})"
+    }
+
 
 }
