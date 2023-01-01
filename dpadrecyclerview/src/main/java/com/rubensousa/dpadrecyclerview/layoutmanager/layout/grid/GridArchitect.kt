@@ -38,19 +38,20 @@ internal class GridArchitect(
         const val TAG = "GridArchitect"
     }
 
-    private val numberOfSpans = layoutInfo.getSpanCount()
-    private val startRow = GridRow(numberOfSpans, layoutInfo.getSecondaryTotalSpace())
-    private val endRow = GridRow(numberOfSpans, layoutInfo.getSecondaryTotalSpace())
+    private val grid = Grid(
+        numberOfSpans = layoutInfo.getSpanCount(),
+        width = layoutInfo.getSecondaryTotalSpace(),
+        rowStart = layoutInfo.getSecondaryStartAfterPadding(),
+        rowEnd = layoutInfo.getSecondaryEndAfterPadding()
+    )
 
     override fun updateConfiguration() {
-        startRow.width = layoutInfo.getSecondaryTotalSpace()
-        endRow.width = layoutInfo.getSecondaryTotalSpace()
+        grid.updateWidth(layoutInfo.getSecondaryTotalSpace())
     }
 
     override fun offsetBy(offset: Int, layoutState: LayoutState) {
         super.offsetBy(offset, layoutState)
-        startRow.offsetBy(-offset)
-        endRow.offsetBy(-offset)
+        grid.offsetBy(-offset)
     }
 
     override fun addPivot(view: View, position: Int, bounds: Rect, layoutState: LayoutState) {
@@ -61,7 +62,7 @@ internal class GridArchitect(
         val decoratedSize = tail - head
         val spanSize = layoutInfo.getSpanSize(position)
 
-        startRow.init(
+        grid.init(
             newTop = head,
             viewSize = decoratedSize,
             spanIndex = layoutInfo.getStartColumnIndex(position),
@@ -71,19 +72,16 @@ internal class GridArchitect(
         if (layoutInfo.isVertical()) {
             bounds.top = head
             bounds.bottom = tail
-            bounds.left = startRow.getStartOffset()
-            bounds.right = startRow.getEndOffset()
+            bounds.left = grid.getTopRowStartOffset()
+            bounds.right = grid.getTopRowEndOffset()
         } else {
             bounds.left = head
             bounds.right = tail
-            bounds.top = startRow.getStartOffset()
-            bounds.bottom = startRow.getEndOffset()
+            bounds.top = grid.getTopRowStartOffset()
+            bounds.bottom = grid.getTopRowEndOffset()
         }
 
         layoutState.updateWindow(head, head)
-
-        // At this stage, both start and end rows are the same
-        endRow.initFrom(startRow)
     }
 
     override fun appendView(
@@ -94,43 +92,14 @@ internal class GridArchitect(
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
         val consumedSpace = if (layoutInfo.isVertical()) {
-            appendToHorizontalRow(decoratedSize, position, bounds, layoutState)
+            grid.appendHorizontally(
+                decoratedSize, layoutInfo.getSpanSize(position), bounds, layoutState.checkpoint
+            )
         } else {
             // TODO
             0
         }
         layoutState.appendWindow(consumedSpace)
-        return consumedSpace
-    }
-
-    private fun appendToHorizontalRow(
-        viewSize: Int,
-        position: Int,
-        bounds: Rect,
-        layoutState: LayoutState
-    ): Int {
-        var consumedSpace = 0
-
-        val spanSize = layoutInfo.getSpanSize(position)
-
-        // Check if we can place the element in the current row
-        if (endRow.fitsEnd(spanSize)) {
-            bounds.top = endRow.top
-            bounds.left = endRow.append(viewSize, spanSize)
-            // If this is the last span, consume the total space
-            if (endRow.isEndComplete()) {
-                consumedSpace = endRow.consume()
-            }
-        } else {
-            // Otherwise place it in the next row
-            endRow.moveToNextRow(viewSize, spanSize, newTop = layoutState.checkpoint)
-            bounds.top = layoutState.checkpoint
-            bounds.left = layoutInfo.getSecondaryStartAfterPadding()
-        }
-
-        bounds.bottom = bounds.top + viewSize
-        bounds.right = endRow.getEndOffset()
-
         return consumedSpace
     }
 
@@ -142,7 +111,9 @@ internal class GridArchitect(
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
         val consumedSpace = if (layoutInfo.isVertical()) {
-            prependToHorizontalRow(decoratedSize, position, bounds, layoutState)
+            grid.prependHorizontally(
+                decoratedSize, layoutInfo.getSpanSize(position), bounds, layoutState.checkpoint
+            )
         } else {
             // TODO
             0
@@ -150,41 +121,5 @@ internal class GridArchitect(
         layoutState.prependWindow(consumedSpace)
         return consumedSpace
     }
-
-    private fun prependToHorizontalRow(
-        viewSize: Int,
-        position: Int,
-        bounds: Rect,
-        layoutState: LayoutState,
-    ): Int {
-        var consumedSpace = 0
-
-        val spanSize = layoutInfo.getSpanSize(position)
-
-        // Check if we can place the element in the current row
-        if (startRow.fitsStart(spanSize)) {
-            bounds.left = startRow.prepend(viewSize, spanSize)
-            bounds.bottom = startRow.top + startRow.height
-
-            // If this is the first span, consume the total space
-            if (startRow.isStartComplete()) {
-                consumedSpace = startRow.consume()
-            }
-        } else {
-            // Otherwise move it to the previous row
-            startRow.moveToPreviousRow(
-                viewSize, spanSize,
-                newTop = layoutState.checkpoint - viewSize
-            )
-            bounds.bottom = layoutState.checkpoint
-            bounds.left = startRow.getStartOffset()
-        }
-
-        bounds.top = bounds.bottom - viewSize
-        bounds.right = bounds.left + startRow.getSpanSpace() * spanSize
-
-        return consumedSpace
-    }
-
 
 }

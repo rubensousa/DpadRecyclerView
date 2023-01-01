@@ -233,6 +233,7 @@ internal class LayoutArchitect(
             } else {
                 LayoutDirection.END
             }
+            // TODO This is not correct for grids
             if (direction == LayoutDirection.START) {
                 scrapExtraStart += layoutInfo.getDecoratedSize(scrap.itemView)
             } else {

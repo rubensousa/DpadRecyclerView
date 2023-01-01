@@ -76,7 +76,7 @@ class GridRowTest {
     }
 
     @Test
-    fun `init from copies the state of another row`() {
+    fun `constructor copies the state of another row`() {
         val startRow = createRow()
         startRow.init(
             newTop = defaultTop,
@@ -84,8 +84,7 @@ class GridRowTest {
             spanIndex = 1,
             spanSize = 2
         )
-        val endRow = createRow()
-        endRow.initFrom(startRow)
+        val endRow = GridRow(startRow)
 
         assertThat(endRow.top).isEqualTo(startRow.top)
         assertThat(endRow.height).isEqualTo(startRow.height)

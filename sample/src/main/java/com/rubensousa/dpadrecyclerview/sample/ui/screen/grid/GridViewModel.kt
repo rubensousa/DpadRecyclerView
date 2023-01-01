@@ -13,7 +13,7 @@ class GridViewModel : ViewModel() {
     private val list = ArrayList<Int>()
     private val listLiveData = MutableLiveData<MutableList<Int>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
-    private val pageSize = 500
+    private val pageSize = 10
 
     val loadingState: LiveData<Boolean> = loadingStateLiveData
     val listState: LiveData<MutableList<Int>> = listLiveData

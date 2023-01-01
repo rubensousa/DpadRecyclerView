@@ -41,16 +41,7 @@ internal class GridRow(
 
     private val heights = IntArray(numberOfSpans)
 
-    fun init(newTop: Int, viewSize: Int, spanIndex: Int, spanSize: Int) {
-        heights.fill(0)
-        height = 0
-        top = newTop
-        startIndex = spanIndex
-        endIndex = startIndex + spanSize - 1
-        updateHeight(viewSize, startIndex, spanSize)
-    }
-
-    fun initFrom(row: GridRow) {
+    constructor(row: GridRow) : this(row.numberOfSpans, row.width) {
         heights.fill(0)
         height = 0
         startIndex = row.startIndex
@@ -59,6 +50,15 @@ internal class GridRow(
         top = row.top
         val spanSize = endIndex - startIndex + 1
         updateHeight(height, startIndex, spanSize)
+    }
+
+    fun init(newTop: Int, viewSize: Int, spanIndex: Int, spanSize: Int) {
+        heights.fill(0)
+        height = 0
+        top = newTop
+        startIndex = spanIndex
+        endIndex = startIndex + spanSize - 1
+        updateHeight(viewSize, startIndex, spanSize)
     }
 
     fun offsetBy(offset: Int) {
@@ -117,16 +117,18 @@ internal class GridRow(
         return getSpanSpace() * startIndex
     }
 
-    fun moveToNextRow(viewSize: Int, spanSize: Int, newTop: Int) {
-        consume()
+    fun next(viewSize: Int, spanSize: Int, newTop: Int) {
+        heights.fill(0)
+        height = 0
         startIndex = 0
         endIndex = spanSize - 1
         top = newTop
         updateHeight(viewSize, startIndex, spanSize)
     }
 
-    fun moveToPreviousRow(viewSize: Int, spanSize: Int, newTop: Int) {
-        consume()
+    fun previous(viewSize: Int, spanSize: Int, newTop: Int) {
+        heights.fill(0)
+        height = 0
         endIndex = numberOfSpans - 1
         startIndex = endIndex + 1 - spanSize
         top = newTop

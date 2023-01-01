@@ -102,14 +102,14 @@ internal abstract class StructureArchitect(
         // Trigger a new layout pass for the pivot view
         performLayout(view, viewBounds)
 
+        // Move the pivot by the remaining scroll
+        // so that it slides in correctly after the layout is done
+        offsetBy(-layoutInfo.getRemainingScroll(state), layoutState)
+
         if (DEBUG) {
             Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
         }
         viewBounds.setEmpty()
-
-        // Move the pivot by the remaining scroll
-        // so that it slides in correctly after the layout is done
-        offsetBy(-layoutInfo.getRemainingScroll(state), layoutState)
 
         onChildLayoutListener.onChildLaidOut(view, state)
         return view
@@ -176,6 +176,13 @@ internal abstract class StructureArchitect(
     open fun offsetBy(offset: Int, layoutState: LayoutState) {
         layoutInfo.orientationHelper.offsetChildren(-offset)
         layoutState.offsetWindow(-offset)
+        if (DEBUG) {
+            if (layoutInfo.isVertical()) {
+                viewBounds.offset(0, -offset)
+            } else {
+                viewBounds.offset(-offset, 0)
+            }
+        }
     }
 
     fun logChildren() {
