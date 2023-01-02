@@ -16,3 +16,4 @@ rootProject.name = "DpadRecyclerView"
 include ':sample'
 include ':dpadrecyclerview'
 include ':dpadrecyclerview-testing'
+include ':dpadrecyclerview-test-fixtures'

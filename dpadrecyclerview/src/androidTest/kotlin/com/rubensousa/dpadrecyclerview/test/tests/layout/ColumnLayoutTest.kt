@@ -27,6 +27,9 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
+import com.rubensousa.dpadrecyclerview.testfixtures.LayoutColumn
+import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
+import com.rubensousa.dpadrecyclerview.testfixtures.ViewItem
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
@@ -77,7 +80,7 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
 
         val lastVisibleView = scrollDown()
         val bounds = getRelativeItemViewBounds(position = lastViewPosition + 1)
-        assertThat(bounds).isEqualTo(lastVisibleView.bounds)
+        assertThat(bounds).isEqualTo(lastVisibleView.bounds.asRect())
     }
 
     @Test
@@ -224,7 +227,7 @@ class ColumnLayoutTest : DpadRecyclerViewTest() {
         }
         assertThat(childCount).isEqualTo(expectedChildCount)
         onRecyclerView("Assert children positions") { recyclerView ->
-            column.assertChildrenBounds(recyclerView)
+            LayoutManagerAssertions.assertChildrenBounds(recyclerView.layoutManager!!, column)
         }
     }
 

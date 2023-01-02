@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.tests.layout
+package com.rubensousa.dpadrecyclerview.testfixtures
 
-import android.graphics.Rect
 import androidx.collection.CircularArray
-import androidx.core.view.children
-import androidx.recyclerview.widget.OrientationHelper
-import androidx.recyclerview.widget.RecyclerView
-import com.google.common.truth.Truth
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 
 abstract class LayoutMatrix(val width: Int, val height: Int) {
 
     companion object {
-        val EMPTY_INSETS = Rect()
+        val EMPTY_INSETS = ViewBounds()
     }
 
     private val circularArray = CircularArray<ViewItem>()
@@ -72,22 +68,6 @@ abstract class LayoutMatrix(val width: Int, val height: Int) {
 
     fun clear() {
         circularArray.clear()
-    }
-
-    fun assertChildrenBounds(recyclerView: RecyclerView) {
-        val horizontalHelper = OrientationHelper.createHorizontalHelper(recyclerView.layoutManager)
-        val verticalHelper = OrientationHelper.createVerticalHelper(recyclerView.layoutManager)
-        recyclerView.children.forEachIndexed { index, view ->
-            val viewItem = getViewAt(index)
-            Truth.assertThat(horizontalHelper.getDecoratedStart(view))
-                .isEqualTo(viewItem.getDecoratedLeft())
-            Truth.assertThat(horizontalHelper.getDecoratedEnd(view))
-                .isEqualTo(viewItem.getDecoratedRight())
-            Truth.assertThat(verticalHelper.getDecoratedStart(view))
-                .isEqualTo(viewItem.getDecoratedTop())
-            Truth.assertThat(verticalHelper.getDecoratedEnd(view))
-                .isEqualTo(viewItem.getDecoratedBottom())
-        }
     }
 
     protected fun append(item: ViewItem) {

@@ -34,6 +34,7 @@ android {
 
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        unitTests.returnDefaultValues = true
     }
 
     compileOptions {
@@ -58,10 +59,12 @@ dependencies {
     testImplementation "junit:junit:$testVersions.junit"
     testImplementation "com.google.truth:truth:$testVersions.truth"
     testImplementation  "io.mockk:mockk:$testVersions.mockk"
+    testImplementation project (':dpadrecyclerview-test-fixtures')
     debugImplementation "androidx.fragment:fragment-testing-manifest:$versions.fragment"
     //noinspection FragmentGradleConfiguration
     androidTestImplementation "androidx.fragment:fragment-testing:$versions.fragment"
     androidTestImplementation project (':dpadrecyclerview-testing')
+    androidTestImplementation project (':dpadrecyclerview-test-fixtures')
     androidTestImplementation "androidx.test:core-ktx:$testVersions.testCore"
     androidTestImplementation "androidx.test:runner:$testVersions.runner"
     androidTestImplementation "androidx.test:rules:$testVersions.testCore"

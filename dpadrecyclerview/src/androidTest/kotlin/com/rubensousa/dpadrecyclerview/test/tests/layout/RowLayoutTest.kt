@@ -28,6 +28,9 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
+import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
+import com.rubensousa.dpadrecyclerview.testfixtures.LayoutRow
+import com.rubensousa.dpadrecyclerview.testfixtures.ViewItem
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.Before
@@ -79,7 +82,7 @@ class RowLayoutTest : DpadRecyclerViewTest() {
 
         val lastVisibleView = scrollRight()
         val bounds = getRelativeItemViewBounds(position = lastViewPosition + 1)
-        assertThat(bounds).isEqualTo(lastVisibleView.bounds)
+        assertThat(bounds).isEqualTo(lastVisibleView.bounds.asRect())
     }
 
     @Test
@@ -195,7 +198,7 @@ class RowLayoutTest : DpadRecyclerViewTest() {
         }
         assertThat(childCount).isEqualTo(expectedChildCount)
         onRecyclerView("Assert children positions") { recyclerView ->
-            row.assertChildrenBounds(recyclerView)
+            LayoutManagerAssertions.assertChildrenBounds(recyclerView.layoutManager!!, row)
         }
     }
 

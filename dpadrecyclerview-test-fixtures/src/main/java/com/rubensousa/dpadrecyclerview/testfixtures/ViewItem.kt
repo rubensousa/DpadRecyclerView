@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.tests.layout
+package com.rubensousa.dpadrecyclerview.testfixtures
 
-import android.graphics.Rect
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 
 data class ViewItem(
-    val bounds: Rect,
-    val insets: Rect
+    val bounds: ViewBounds,
+    val insets: ViewBounds
 ) {
 
     fun getLeft() = bounds.left
@@ -28,23 +28,23 @@ data class ViewItem(
     fun getRight() = bounds.right
     fun getBottom() = bounds.bottom
 
-    fun getWidth() = bounds.width()
-    fun getHeight() = bounds.height()
+    fun getWidth() = bounds.width
+    fun getHeight() = bounds.height
 
     fun getDecoratedLeft() = bounds.left - insets.left
     fun getDecoratedTop() = bounds.top - insets.top
     fun getDecoratedRight() = bounds.right + insets.right
     fun getDecoratedBottom() = bounds.bottom + insets.bottom
 
-    fun getDecoratedWidth() = bounds.width() + insets.left + insets.right
-    fun getDecoratedHeight() = bounds.height() + insets.top + insets.bottom
+    fun getDecoratedWidth() = bounds.width + insets.left + insets.right
+    fun getDecoratedHeight() = bounds.height + insets.top + insets.bottom
 
     fun offsetHorizontally(offset: Int) {
-        bounds.offset(offset, 0)
+        bounds.offsetHorizontal(offset)
     }
 
     fun offsetVertically(offset: Int) {
-        bounds.offset(0, offset)
+        bounds.offsetVertical(offset)
     }
 
 }

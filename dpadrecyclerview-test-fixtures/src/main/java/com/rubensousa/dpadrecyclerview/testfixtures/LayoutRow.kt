@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.tests.layout
+package com.rubensousa.dpadrecyclerview.testfixtures
 
-import android.graphics.Rect
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 
-class LayoutColumn(width: Int, height: Int) : LayoutMatrix(width, height) {
+class LayoutRow(width: Int, height: Int) : LayoutMatrix(width, height) {
 
     override fun scrollBy(offset: Int) {
         forEachView { view ->
-            view.offsetVertically(offset)
+            view.offsetHorizontally(offset)
         }
     }
 
@@ -30,7 +30,7 @@ class LayoutColumn(width: Int, height: Int) : LayoutMatrix(width, height) {
         fillSpace: Int,
         itemWidth: Int,
         itemHeight: Int,
-        insets: Rect = EMPTY_INSETS
+        insets: ViewBounds = EMPTY_INSETS
     ): List<ViewItem> {
         val views = fill(fillSpace, itemWidth, itemHeight, insets, false)
         recycleStart(getExtraLayoutSpaceStart())
@@ -42,11 +42,11 @@ class LayoutColumn(width: Int, height: Int) : LayoutMatrix(width, height) {
         fillSpace: Int,
         itemWidth: Int,
         itemHeight: Int,
-        insets: Rect = EMPTY_INSETS
+        insets: ViewBounds = EMPTY_INSETS
     ): List<ViewItem> {
         val views = fill(fillSpace, itemWidth, itemHeight, insets, true)
-        recycleEnd(getExtraLayoutSpaceEnd())
         recycleStart(getExtraLayoutSpaceStart())
+        recycleEnd(getExtraLayoutSpaceEnd())
         return views
     }
 
@@ -55,7 +55,7 @@ class LayoutColumn(width: Int, height: Int) : LayoutMatrix(width, height) {
         val childCount = getNumberOfViewsInLayout()
         for (i in 0 until childCount) {
             val child = getViewAt(i)
-            if (child.getDecoratedBottom() > limit) {
+            if (child.getDecoratedRight() > limit) {
                 recycleFromStart(i)
                 return
             }
@@ -63,11 +63,11 @@ class LayoutColumn(width: Int, height: Int) : LayoutMatrix(width, height) {
     }
 
     fun recycleEnd(extraLayoutSpaceEnd: Int) {
-        val limit = height + extraLayoutSpaceEnd
+        val limit = width + extraLayoutSpaceEnd
         val childCount = getNumberOfViewsInLayout()
         for (i in childCount - 1 downTo 0) {
             val child = getViewAt(i)
-            if (child.getDecoratedTop() < limit) {
+            if (child.getDecoratedLeft() < limit) {
                 recycleFromEnd(childCount - 1 - i)
                 return
             }
@@ -78,7 +78,7 @@ class LayoutColumn(width: Int, height: Int) : LayoutMatrix(width, height) {
         fillSpace: Int,
         itemWidth: Int,
         itemHeight: Int,
-        insets: Rect,
+        insets: ViewBounds,
         append: Boolean
     ): List<ViewItem> {
         val views = ArrayList<ViewItem>()
@@ -90,36 +90,44 @@ class LayoutColumn(width: Int, height: Int) : LayoutMatrix(width, height) {
                 prepend(itemWidth, itemHeight, insets)
             }
             views.add(viewItem)
-            remainingSpace -= viewItem.getDecoratedHeight()
+            remainingSpace -= viewItem.getDecoratedWidth()
         }
         return views
     }
 
-    fun append(itemWidth: Int, itemHeight: Int, insets: Rect = EMPTY_INSETS): ViewItem {
+    fun append(itemWidth: Int, itemHeight: Int, insets: ViewBounds = EMPTY_INSETS): ViewItem {
         val lastItem = getLastView()
-        val bounds = Rect()
+        val bounds = ViewBounds()
 
         if (lastItem != null) {
-            bounds.left = 0
-            bounds.top = lastItem.getDecoratedBottom()
-            bounds.right = itemWidth
-            bounds.bottom = bounds.top + itemHeight
+            bounds.left = lastItem.getDecoratedRight()
+            bounds.top = 0
+            bounds.right = bounds.left + itemWidth
+            bounds.bottom = itemHeight
         } else {
             bounds.right = itemWidth
             bounds.bottom = itemHeight
         }
 
-        val newItem = ViewItem(bounds = bounds, insets = insets)
+        val newItem = ViewItem(
+            bounds = bounds,
+            insets = insets
+        )
         append(newItem)
         return newItem
     }
 
-    fun prepend(itemWidth: Int, itemHeight: Int, insets: Rect = EMPTY_INSETS): ViewItem {
+    fun prepend(itemWidth: Int, itemHeight: Int, insets: ViewBounds = EMPTY_INSETS): ViewItem {
         val firstItem = getFirstView()
             ?: throw IllegalStateException("Can't prepend when layout is empty")
-        val top = firstItem.getDecoratedTop()
+        val right = firstItem.getDecoratedLeft()
         val item = ViewItem(
-            bounds = Rect(0, top - itemHeight, itemWidth, top),
+            bounds = ViewBounds(
+                left = right - itemWidth,
+                top = 0,
+                right = right,
+                bottom = itemHeight
+            ),
             insets = insets
         )
         prepend(item)

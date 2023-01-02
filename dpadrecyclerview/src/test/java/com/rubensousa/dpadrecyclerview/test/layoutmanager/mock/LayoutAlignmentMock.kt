@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
-/**
- * Defines the direction in which the adapter is traversed
- */
-internal enum class ItemDirection(val value: Int) {
-    HEAD(-1),
-    TAIL(1)
+import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import io.mockk.every
+import io.mockk.mockk
+
+internal class LayoutAlignmentMock(private val parentKeyline: Int) {
+
+    private val mock = mockk<LayoutAlignment>()
+
+    init {
+        every { mock.calculateScrollForAlignment(any()) }.answers { 0 }
+        every { mock.calculateViewCenterForLayout(any()) }.answers { parentKeyline }
+    }
+
+    fun get(): LayoutAlignment = mock
+
 }
