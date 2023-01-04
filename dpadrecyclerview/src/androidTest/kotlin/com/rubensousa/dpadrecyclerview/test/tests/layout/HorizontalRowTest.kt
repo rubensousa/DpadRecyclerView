@@ -28,16 +28,15 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
+import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
-import com.rubensousa.dpadrecyclerview.testfixtures.LayoutRow
-import com.rubensousa.dpadrecyclerview.testfixtures.ViewItem
+import com.rubensousa.dpadrecyclerview.testfixtures.RowLayout
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.Before
 import org.junit.Test
-import kotlin.math.max
 
-class RowLayoutTest : DpadRecyclerViewTest() {
+class HorizontalRowTest : DpadRecyclerViewTest() {
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration()
@@ -58,7 +57,7 @@ class RowLayoutTest : DpadRecyclerViewTest() {
         )
     }
 
-    private lateinit var row: LayoutRow
+    private lateinit var row: RowLayout
     private var itemWidth: Int = 0
     private var itemHeight: Int = 0
 
@@ -69,31 +68,37 @@ class RowLayoutTest : DpadRecyclerViewTest() {
         val itemViewBounds = getRelativeItemViewBounds(position = 0)
         itemWidth = itemViewBounds.width()
         itemHeight = itemViewBounds.height()
-        row = LayoutRow(
-            width = recyclerViewBounds.width(),
-            height = recyclerViewBounds.height()
+        row = RowLayout(
+            LayoutConfig(
+                parentWidth = recyclerViewBounds.width(),
+                parentHeight = recyclerViewBounds.height(),
+                viewWidth = itemViewBounds.width(),
+                viewHeight = itemViewBounds.height(),
+                defaultItemCount = 1000,
+                parentKeyline = 0,
+                childKeyline = 0.0f
+            )
         )
+        row.init(position = 0)
     }
 
     @Test
     fun testNewViewIsLaidOutInDirectionOfScroll() {
-        appendPage()
-        val lastViewPosition = row.getNumberOfViewsInLayout() - 1
+        val lastViewPosition = row.getChildCount() - 1
 
-        val lastVisibleView = scrollRight()
+        scrollRight()
+        val lastVisibleView = row.getLastView()!!
         val bounds = getRelativeItemViewBounds(position = lastViewPosition + 1)
         assertThat(bounds).isEqualTo(lastVisibleView.bounds.asRect())
     }
 
     @Test
     fun testExtraSpaceIsNotLaidOutAfterFirstLayout() {
-        appendPage()
         assertChildrenPositions()
     }
 
     @Test
     fun testNoExtraSpaceIsAddedWhenScrollingByDefault() {
-        appendPage()
 
         repeat(1) {
             scrollRight()
@@ -104,25 +109,22 @@ class RowLayoutTest : DpadRecyclerViewTest() {
 
     @Test
     fun testExtraLayoutSpaceIsAddedAtEnd() {
-        appendPage()
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
                 override fun calculateExtraLayoutSpace(
                     state: RecyclerView.State,
                     extraLayoutSpace: IntArray
                 ) {
-                    extraLayoutSpace[1] = row.width
+                    extraLayoutSpace[1] = row.getSize()
                 }
             })
         }
-        row.setExtraLayoutSpace(end = row.width)
-        appendPage()
+        row.setExtraLayoutSpace(end = row.getSize())
         assertChildrenPositions()
     }
 
     @Test
     fun testExtraLayoutSpaceIsAddedAtStart() {
-        appendPage()
         repeat(10) {
             scrollRight()
         }
@@ -132,18 +134,16 @@ class RowLayoutTest : DpadRecyclerViewTest() {
                     state: RecyclerView.State,
                     extraLayoutSpace: IntArray
                 ) {
-                    extraLayoutSpace[0] = recyclerView.width
+                    extraLayoutSpace[0] = row.getSize()
                 }
             })
         }
-        row.setExtraLayoutSpace(start = row.width)
-        prependPage()
+        row.setExtraLayoutSpace(start = row.getSize())
         assertChildrenPositions()
     }
 
     @Test
     fun testRequestLayoutDuringScrollStillAlignsViews() {
-        appendPage()
         repeat(5) {
             scrollRight()
             onRecyclerView("RequestLayout") { recyclerView ->
@@ -153,45 +153,19 @@ class RowLayoutTest : DpadRecyclerViewTest() {
         assertChildrenPositions()
     }
 
-    private fun prependPage() {
-        row.prepend(row.width, itemWidth, itemHeight)
-    }
-
-    private fun appendPage() {
-        row.append(row.width, itemWidth, itemHeight)
-    }
-
-    private fun scrollLeft(
-        extraLayoutSpaceStart: Int = 0,
-        extraLayoutSpaceEnd: Int = 0
-    ): ViewItem {
+    private fun scrollLeft() {
         KeyEvents.pressLeft()
-        row.setExtraLayoutSpace(extraLayoutSpaceStart, extraLayoutSpaceEnd)
-        row.scrollBy(itemWidth)
-        val newView = row.prepend(itemWidth, itemHeight)
-        val availableScrollSpace = max(0, -row.getFirstView()!!.getDecoratedLeft())
-        val extraFillSpace = extraLayoutSpaceStart - availableScrollSpace
-        row.prepend(extraFillSpace, itemWidth, itemHeight)
-        return newView
+        row.scrollLeft()
     }
 
-    private fun scrollRight(
-        extraLayoutSpaceStart: Int = 0,
-        extraLayoutSpaceEnd: Int = 0,
-    ): ViewItem {
+    private fun scrollRight() {
         KeyEvents.pressRight()
-        row.setExtraLayoutSpace(extraLayoutSpaceStart, extraLayoutSpaceEnd)
-        row.scrollBy(-itemWidth)
-        val newView = row.append(itemWidth, itemHeight)
-        val availableScrollSpace = max(0, row.getLastView()!!.getDecoratedRight() - row.width)
-        val extraFillSpace = max(0, extraLayoutSpaceEnd - availableScrollSpace)
-        row.append(extraFillSpace, itemWidth, itemHeight)
-        return newView
+        row.scrollRight()
     }
 
     private fun assertChildrenPositions() {
         waitForIdleScrollState()
-        val expectedChildCount = row.getNumberOfViewsInLayout()
+        val expectedChildCount = row.getChildCount()
         var childCount = 0
         onRecyclerView("Getting child count") { recyclerView ->
             childCount = recyclerView.layoutManager?.childCount ?: 0

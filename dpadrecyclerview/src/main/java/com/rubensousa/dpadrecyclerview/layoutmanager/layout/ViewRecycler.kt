@@ -18,12 +18,10 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
 internal abstract class ViewRecycler(
     protected val layoutManager: RecyclerView.LayoutManager,
     protected val layoutInfo: LayoutInfo,
-    protected val configuration: LayoutConfiguration
 ) {
 
     protected abstract fun updateLayoutState(
@@ -46,10 +44,10 @@ internal abstract class ViewRecycler(
 
     fun recycleFromStart(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
         val limit = -layoutState.extraLayoutSpaceStart
-        val childCount = layoutManager.childCount
-        if (configuration.reverseLayout) {
+        val childCount = layoutInfo.getChildCount()
+        if (layoutState.reverseLayout) {
             for (i in childCount - 1 downTo 0) {
-                val child = layoutManager.getChildAt(i) ?: continue
+                val child = layoutInfo.getChildAt(i) ?: continue
                 if (layoutInfo.getDecoratedEnd(child) > limit
                     || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
                 ) {
@@ -59,7 +57,7 @@ internal abstract class ViewRecycler(
             }
         } else {
             for (i in 0 until childCount) {
-                val child = layoutManager.getChildAt(i) ?: continue
+                val child = layoutInfo.getChildAt(i) ?: continue
                 if (layoutInfo.getDecoratedEnd(child) > limit
                     || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
                 ) {
@@ -72,10 +70,10 @@ internal abstract class ViewRecycler(
 
     fun recycleFromEnd(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
         val limit = layoutInfo.orientationHelper.end + layoutState.extraLayoutSpaceEnd
-        val childCount = layoutManager.childCount
-        if (configuration.reverseLayout) {
+        val childCount = layoutInfo.getChildCount()
+        if (layoutState.reverseLayout) {
             for (i in 0 until childCount) {
-                val child = layoutManager.getChildAt(i) ?: continue
+                val child = layoutInfo.getChildAt(i) ?: continue
                 if (layoutInfo.getDecoratedStart(child) < limit
                     || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
                 ) {
@@ -85,7 +83,7 @@ internal abstract class ViewRecycler(
             }
         } else {
             for (i in childCount - 1 downTo 0) {
-                val child = layoutManager.getChildAt(i) ?: continue
+                val child = layoutInfo.getChildAt(i) ?: continue
                 if (layoutInfo.getDecoratedStart(child) < limit
                     || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
                 ) {
@@ -121,10 +119,10 @@ internal abstract class ViewRecycler(
         recycler: RecyclerView.Recycler,
         layoutState: LayoutState
     ) {
-        val view = layoutManager.getChildAt(index)
+        val view = layoutInfo.getChildAt(index)
         if (view != null) {
             val position = layoutInfo.getLayoutPositionOf(view)
-            layoutManager.removeAndRecycleViewAt(index, recycler)
+            layoutManager.removeAndRecycleView(view, recycler)
             val size = layoutInfo.getDecoratedSize(view)
             updateLayoutState(view, position, size, layoutState)
         }

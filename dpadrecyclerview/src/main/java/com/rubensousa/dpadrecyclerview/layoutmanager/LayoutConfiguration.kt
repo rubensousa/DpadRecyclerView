@@ -92,9 +92,6 @@ internal class LayoutConfiguration(properties: Properties) {
     var isSmoothFocusChangesEnabled = true
         private set
 
-    var extraLayoutSpace: Int = 0
-        private set
-
     var stackFromEnd = false
         private set
 
@@ -163,10 +160,6 @@ internal class LayoutConfiguration(properties: Properties) {
     fun isHorizontal() = orientation == RecyclerView.HORIZONTAL
 
     fun isVertical() = orientation == RecyclerView.VERTICAL
-
-    fun setExtraLayoutSpace(value: Int) {
-        extraLayoutSpace = value
-    }
 
     fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
         focusOutFront = throughFront

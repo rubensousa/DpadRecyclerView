@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.layoutmanager
+package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import io.mockk.every
 import io.mockk.mockk
 
-class RecyclerViewStateMock {
+class ViewHolderMock(itemView: View) {
 
-    private val mock = mockk<RecyclerView.State>()
-    var hasTargetScrollPosition = false
-    var isPreLayout = false
+    private val mock = mockk<RecyclerView.ViewHolder>()
 
     init {
-        every { mock.hasTargetScrollPosition() }.answers { hasTargetScrollPosition }
-        every { mock.isPreLayout }.answers { isPreLayout }
+        every { mock.itemView }.answers { itemView }
     }
 
-    fun get(): RecyclerView.State = mock
+    fun get(): RecyclerView.ViewHolder = mock
 
 }

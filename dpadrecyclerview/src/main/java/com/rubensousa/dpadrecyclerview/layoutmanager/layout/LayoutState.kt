@@ -16,16 +16,18 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
+import android.view.Gravity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * Adapted from LinearLayoutManager
  * Holds information required for the next layout
  */
 internal class LayoutState {
 
+    // TODO Remove: our source of truth should be the views added to the layout
     private val window = LayoutWindow()
+    // TODO Adjust by making it mutable
     private val scrap = LayoutScrap()
 
     // The current direction of the layout stage
@@ -76,16 +78,27 @@ internal class LayoutState {
     var checkpoint: Int = 0
         private set
 
+    var gravity: Int = Gravity.START
+        private set
+
+    var isVertical: Boolean = true
+        private set
+
+    fun init(
+        isPreLayout: Boolean,
+        gravity: Int,
+        isVertical: Boolean,
+        reverseLayout: Boolean
+    ) {
+        this.isPreLayout = isPreLayout
+        this.reverseLayout = reverseLayout
+        this.gravity = gravity
+        this.isVertical = isVertical
+        isRecyclingEnabled = false
+    }
+
     fun setCurrentPosition(position: Int) {
         currentPosition = position
-    }
-
-    fun setPreLayout(isPreLayout: Boolean) {
-        this.isPreLayout = isPreLayout
-    }
-
-    fun setReverseLayout(enabled: Boolean) {
-        reverseLayout = enabled
     }
 
     fun setRecyclingEnabled(enabled: Boolean) {
@@ -135,11 +148,11 @@ internal class LayoutState {
         checkpoint -= offset
     }
 
-    fun increaseStartOffset(size: Int) {
+    fun increaseWindowStart(size: Int) {
         window.startOffset += size
     }
 
-    fun decreaseEndOffset(size: Int) {
+    fun decreaseWindowEnd(size: Int) {
         window.endOffset -= size
     }
 
@@ -230,6 +243,31 @@ internal class LayoutState {
     }
 
     fun isUsingScrap(): Boolean = scrap.exists()
+
+
+    /**
+     * Direction in which the layout is being filled.
+     * These are absolute directions, so it doesn't consider RTL at all
+     */
+    internal enum class LayoutDirection(val value: Int) {
+        /**
+         * Either left in horizontal or top in vertical
+         */
+        START(-1),
+
+        /**
+         * Either right in horizontal or bottom in vertical
+         */
+        END(1)
+    }
+
+    /**
+     * Defines the direction in which the adapter is traversed
+     */
+    internal enum class ItemDirection(val value: Int) {
+        HEAD(-1),
+        TAIL(1)
+    }
 
     /**
      * Represents the current layout structure

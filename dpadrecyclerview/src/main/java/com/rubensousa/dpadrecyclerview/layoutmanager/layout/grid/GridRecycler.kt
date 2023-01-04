@@ -18,16 +18,14 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewRecycler
 
 internal class GridRecycler(
     layoutManager: RecyclerView.LayoutManager,
-    layoutInfo: LayoutInfo,
-    configuration: LayoutConfiguration
-) : ViewRecycler(layoutManager, layoutInfo, configuration) {
+    layoutInfo: LayoutInfo
+) : ViewRecycler(layoutManager, layoutInfo) {
 
     override fun updateLayoutState(
         recycled: View,
@@ -39,11 +37,11 @@ internal class GridRecycler(
         // just update the offsets if the view is using the spans at the edges
         if (layoutState.isLayingOutEnd()) {
             if (layoutInfo.getStartColumnIndex(position) == 0) {
-                layoutState.increaseStartOffset(size)
+                layoutState.increaseWindowStart(size)
             }
         } else {
             if (layoutInfo.isPositionAtLastColumn(position)) {
-                layoutState.decreaseEndOffset(size)
+                layoutState.decreaseWindowEnd(size)
             }
         }
     }

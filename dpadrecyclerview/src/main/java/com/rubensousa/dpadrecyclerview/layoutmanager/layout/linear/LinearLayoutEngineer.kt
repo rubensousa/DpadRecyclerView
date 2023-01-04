@@ -16,43 +16,62 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 
-import android.graphics.Rect
 import android.view.Gravity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureArchitect
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewRecycler
 
-internal class LinearArchitect(
+/**
+ * General layout algorithm:
+ * 1. Layout the view at the selected position (pivot) and align it to the keyline
+ * 2. Starting from the bottom/end of the selected view,
+ * fill towards the top/start until there's no more space
+ * 3. Starting from the top/end of the selected view,
+ * fill towards the top/start until there's no more space
+ */
+internal class LinearLayoutEngineer(
     layoutManager: LayoutManager,
     layoutInfo: LayoutInfo,
-    linearRecycler: LinearRecycler,
+    layoutAlignment: LayoutAlignment,
     onChildLayoutListener: OnChildLayoutListener,
-    private val layoutAlignment: LayoutAlignment,
-    private val configuration: LayoutConfiguration
-) : StructureArchitect(layoutManager, layoutInfo, linearRecycler, onChildLayoutListener) {
+) : StructureEngineer(layoutManager, layoutInfo, layoutAlignment, onChildLayoutListener) {
 
     companion object {
         const val TAG = "RowArchitect"
     }
 
-    override fun addPivot(view: View, position: Int, bounds: Rect, layoutState: LayoutState) {
+    private val architect = LinearLayoutArchitect(layoutInfo)
+    private val recycler = LinearRecycler(layoutManager, layoutInfo)
+
+    override fun getArchitect(): LayoutArchitect = architect
+
+    override fun getViewRecycler(): ViewRecycler = recycler
+
+    override fun placePivot(
+        view: View,
+        position: Int,
+        bounds: ViewBounds,
+        layoutState: LayoutState
+    ) {
         val size = layoutInfo.getMeasuredSize(view)
         val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
         val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
         val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
-        if (layoutInfo.isVertical()) {
+        if (layoutState.isVertical) {
             bounds.top = headOffset
             bounds.bottom = tailOffset
-            applyHorizontalGravity(view, bounds)
+            applyHorizontalGravity(view, bounds, layoutState)
         } else {
             bounds.left = headOffset
             bounds.right = tailOffset
-            applyVerticalGravity(view, bounds)
+            applyVerticalGravity(view, bounds, layoutState)
         }
 
         layoutState.updateWindow(start = headOffset, end = tailOffset)
@@ -61,21 +80,21 @@ internal class LinearArchitect(
     override fun appendView(
         view: View,
         position: Int,
-        bounds: Rect,
+        bounds: ViewBounds,
         layoutState: LayoutState
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
-        val consumedSpace = if (layoutInfo.isVertical()) {
+        val consumedSpace = if (layoutState.isVertical) {
             // We need to align this view to an edge or center it, depending on the gravity set
-            applyHorizontalGravity(view, bounds)
+            applyHorizontalGravity(view, bounds, layoutState)
             bounds.top = layoutState.checkpoint
             bounds.bottom = bounds.top + decoratedSize
-            bounds.height()
+            bounds.height
         } else {
-            applyVerticalGravity(view, bounds)
+            applyVerticalGravity(view, bounds, layoutState)
             bounds.left = layoutState.checkpoint
             bounds.right = bounds.left + decoratedSize
-            bounds.width()
+            bounds.width
         }
         layoutState.appendWindow(consumedSpace)
         return consumedSpace
@@ -84,33 +103,33 @@ internal class LinearArchitect(
     override fun prependView(
         view: View,
         position: Int,
-        bounds: Rect,
+        bounds: ViewBounds,
         layoutState: LayoutState
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
-        val consumedSpace = if (layoutInfo.isVertical()) {
-            applyHorizontalGravity(view, bounds)
+        val consumedSpace = if (layoutState.isVertical) {
+            applyHorizontalGravity(view, bounds, layoutState)
             bounds.bottom = layoutState.checkpoint
             bounds.top = bounds.bottom - decoratedSize
-            bounds.height()
+            bounds.height
         } else {
-            applyVerticalGravity(view, bounds)
+            applyVerticalGravity(view, bounds, layoutState)
             bounds.right = layoutState.checkpoint
             bounds.left = bounds.right - decoratedSize
-            bounds.width()
+            bounds.width
         }
         layoutState.prependWindow(consumedSpace)
         return consumedSpace
     }
 
-    private fun applyHorizontalGravity(view: View, bounds: Rect) {
-        val horizontalGravity = if (configuration.reverseLayout) {
+    private fun applyHorizontalGravity(view: View, bounds: ViewBounds, layoutState: LayoutState) {
+        val horizontalGravity = if (layoutState.reverseLayout) {
             Gravity.getAbsoluteGravity(
-                configuration.gravity.and(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK),
+                layoutState.gravity.and(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK),
                 View.LAYOUT_DIRECTION_RTL
             )
         } else {
-            configuration.gravity.and(Gravity.HORIZONTAL_GRAVITY_MASK)
+            layoutState.gravity.and(Gravity.HORIZONTAL_GRAVITY_MASK)
         }
         when (horizontalGravity) {
             Gravity.CENTER, Gravity.CENTER_HORIZONTAL -> {
@@ -131,8 +150,8 @@ internal class LinearArchitect(
 
     }
 
-    private fun applyVerticalGravity(view: View, bounds: Rect) {
-        when (configuration.gravity.and(Gravity.VERTICAL_GRAVITY_MASK)) {
+    private fun applyVerticalGravity(view: View, bounds: ViewBounds, layoutState: LayoutState) {
+        when (layoutState.gravity.and(Gravity.VERTICAL_GRAVITY_MASK)) {
             Gravity.CENTER, Gravity.CENTER_VERTICAL -> {
                 val height = layoutInfo.getPerpendicularDecoratedSize(view)
                 bounds.top = layoutManager.height / 2 - height / 2

@@ -35,8 +35,8 @@ import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.focus.FocusDispatcher
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PivotLayout
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
 /**
@@ -57,7 +57,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     private val scroller = LayoutScroller(
         this, layoutInfo, layoutAlignment, configuration, pivotSelector
     )
-    private val layoutArchitect = LayoutArchitect(
+    private val pivotLayout = PivotLayout(
         this, layoutAlignment, configuration, pivotSelector, scroller, layoutInfo
     )
     private val focusDispatcher = FocusDispatcher(
@@ -136,14 +136,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         pivotSelector.onLayoutChildren(state)
         // If we have focus, save it temporarily since the views will change and we might lose it
         hadFocusBeforeLayout = hasFocus()
-        layoutArchitect.onLayoutChildren(recycler, state)
+        pivotLayout.onLayoutChildren(recycler, state)
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
         if (hadFocusBeforeLayout) {
             focusDispatcher.onFocusChanged(true)
         }
-        layoutArchitect.onLayoutCompleted(state)
+        pivotLayout.onLayoutCompleted(state)
         pivotSelector.onLayoutCompleted()
         hadFocusBeforeLayout = false
     }
@@ -154,27 +154,27 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         state: RecyclerView.State?,
         layoutPrefetchRegistry: LayoutPrefetchRegistry
     ) {
-        layoutArchitect.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
+        pivotLayout.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
     }
 
     override fun collectInitialPrefetchPositions(
         adapterItemCount: Int,
         layoutPrefetchRegistry: LayoutPrefetchRegistry
     ) {
-        layoutArchitect.collectInitialPrefetchPositions(adapterItemCount, layoutPrefetchRegistry)
+        pivotLayout.collectInitialPrefetchPositions(adapterItemCount, layoutPrefetchRegistry)
     }
 
     override fun scrollHorizontallyBy(
         dx: Int,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
-    ): Int = layoutArchitect.scrollHorizontallyBy(dx, recycler, state)
+    ): Int = pivotLayout.scrollHorizontallyBy(dx, recycler, state)
 
     override fun scrollVerticallyBy(
         dy: Int,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
-    ): Int = layoutArchitect.scrollVerticallyBy(dy, recycler, state)
+    ): Int = pivotLayout.scrollVerticallyBy(dy, recycler, state)
 
     override fun scrollToPosition(position: Int) {
         scroller.scrollToPosition(position)
@@ -218,7 +218,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         newAdapter: RecyclerView.Adapter<*>?
     ) {
         if (oldAdapter != null) {
-            layoutArchitect.reset()
+            pivotLayout.reset()
             pivotSelector.clear()
         }
     }
@@ -346,7 +346,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun setSpanCount(spanCount: Int) {
         configuration.setSpanCount(spanCount)
-        layoutArchitect.updateStructure()
+        pivotLayout.updateStructure()
         requestLayout()
     }
 
@@ -458,17 +458,17 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun addOnLayoutCompletedListener(
         listener: DpadRecyclerView.OnLayoutCompletedListener
     ) {
-        layoutArchitect.addOnLayoutCompletedListener(listener)
+        pivotLayout.addOnLayoutCompletedListener(listener)
     }
 
     override fun removeOnLayoutCompletedListener(
         listener: DpadRecyclerView.OnLayoutCompletedListener
     ) {
-        layoutArchitect.removeOnLayoutCompletedListener(listener)
+        pivotLayout.removeOnLayoutCompletedListener(listener)
     }
 
     override fun clearOnLayoutCompletedListeners() {
-        layoutArchitect.clearOnLayoutCompletedListeners()
+        pivotLayout.clearOnLayoutCompletedListeners()
     }
 
     internal fun getConfiguration(): LayoutConfiguration = configuration

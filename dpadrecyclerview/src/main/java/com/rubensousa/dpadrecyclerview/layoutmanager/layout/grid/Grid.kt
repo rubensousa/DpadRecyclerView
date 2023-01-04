@@ -16,30 +16,28 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 
-import android.graphics.Rect
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 import kotlin.math.max
 
 // TODO check if we need to include top and bottom paddings
-internal class Grid(
-    numberOfSpans: Int,
-    private var width: Int,
-    private var rowStart: Int,
-    private var rowEnd: Int
-) {
+internal class Grid(numberOfSpans: Int) {
 
-    private var topRow = GridRow(numberOfSpans, width)
+    private var topRow = GridRow(numberOfSpans, width = 0)
     private var bottomRow = topRow
+    private var rowStart: Int = 0
+    private var rowEnd: Int = 0
 
-    fun init(newTop: Int, viewSize: Int, spanIndex: Int, spanSize: Int) {
+    fun init(width: Int, start: Int, end: Int) {
+        rowStart = start
+        rowEnd = end
+        topRow.width = width
+        bottomRow.width = width
+    }
+
+    fun placePivot(newTop: Int, viewSize: Int, spanIndex: Int, spanSize: Int) {
         topRow.init(newTop, viewSize, spanIndex, spanSize)
         // At this stage, both top and bottom rows are the same
         bottomRow = topRow
-    }
-
-    fun updateWidth(newWidth: Int) {
-        width = newWidth
-        topRow.width = newWidth
-        bottomRow.width = newWidth
     }
 
     fun offsetBy(offset: Int) {
@@ -59,7 +57,7 @@ internal class Grid(
     fun appendHorizontally(
         viewSize: Int,
         spanSize: Int,
-        bounds: Rect,
+        bounds: ViewBounds,
         bottomRowOffset: Int
     ): Int {
         var newSpace = 0
@@ -90,7 +88,7 @@ internal class Grid(
     fun prependHorizontally(
         viewSize: Int,
         spanSize: Int,
-        bounds: Rect,
+        bounds: ViewBounds,
         topRowOffset: Int
     ): Int {
         if (topRow.fitsStart(spanSize)) {

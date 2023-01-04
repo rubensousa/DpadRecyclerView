@@ -15,13 +15,39 @@ def projectSrcDirs = ["src/main/java", "src/main/kotlin"]
 
 task createJacocoTestReport(
         type: JacocoReport,
-        dependsOn: ['testDebugUnitTest', 'createDebugAndroidTestCoverageReport']
+        dependsOn: ['testDebugUnitTest']
 ) {
     group = "Reporting"
     description = "Combines coverage of unit tests and instrumented tests"
 
     reports {
         html.destination file("../test_coverage/${project.name}")
+    }
+
+    def exclusions = [
+            '**/*_Impl*',
+            '**/*_Impl*.class'
+    ]
+
+    def kotlinTree = fileTree(dir: "$project.buildDir/tmp/kotlin-classes/debug", excludes: exclusions)
+    classDirectories.setFrom(files([kotlinTree]))
+    sourceDirectories.setFrom(files(projectSrcDirs))
+    executionData.setFrom(fileTree(
+            dir: "$project.buildDir", includes: [
+            "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+    ]))
+}
+
+
+task createJacocoCombinedTestReport(
+        type: JacocoReport,
+        dependsOn: ['testDebugUnitTest', 'createDebugAndroidTestCoverageReport']
+) {
+    group = "Reporting"
+    description = "Combines coverage of unit tests and instrumented tests"
+
+    reports {
+        html.destination file("../combined_test_coverage/${project.name}")
     }
 
     def exclusions = [

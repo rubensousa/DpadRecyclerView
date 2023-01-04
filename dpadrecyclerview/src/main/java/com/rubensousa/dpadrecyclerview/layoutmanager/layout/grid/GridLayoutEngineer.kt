@@ -16,45 +16,61 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 
-import android.graphics.Rect
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureArchitect
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewRecycler
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutArchitect
 
 // TODO Add a second pass to adjust view heights based on row size
-internal class GridArchitect(
+internal class GridLayoutEngineer(
     layoutManager: LayoutManager,
     layoutInfo: LayoutInfo,
-    gridRecycler: GridRecycler,
-    onChildLayoutListener: OnChildLayoutListener,
-    private val layoutAlignment: LayoutAlignment
-) : StructureArchitect(layoutManager, layoutInfo, gridRecycler, onChildLayoutListener) {
+    layoutAlignment: LayoutAlignment,
+    onChildLayoutListener: OnChildLayoutListener
+) : StructureEngineer(layoutManager, layoutInfo, layoutAlignment, onChildLayoutListener) {
 
     companion object {
         const val TAG = "GridArchitect"
     }
 
-    private val grid = Grid(
-        numberOfSpans = layoutInfo.getSpanCount(),
-        width = layoutInfo.getSecondaryTotalSpace(),
-        rowStart = layoutInfo.getSecondaryStartAfterPadding(),
-        rowEnd = layoutInfo.getSecondaryEndAfterPadding()
-    )
+    private val architect = LinearLayoutArchitect(layoutInfo)
+    private val recycler = GridRecycler(layoutManager, layoutInfo)
+    private val grid = Grid(numberOfSpans = layoutInfo.getSpanCount())
 
-    override fun updateConfiguration() {
-        grid.updateWidth(layoutInfo.getSecondaryTotalSpace())
+    override fun getArchitect(): LayoutArchitect = architect
+
+    override fun getViewRecycler(): ViewRecycler = recycler
+
+    override fun init(
+        layoutState: LayoutState,
+        recyclerViewState: RecyclerView.State
+    ) {
+        grid.init(
+            width = layoutInfo.getSecondaryTotalSpace(),
+            start = layoutInfo.getSecondaryStartAfterPadding(),
+            end = layoutInfo.getSecondaryEndAfterPadding()
+        )
     }
 
-    override fun offsetBy(offset: Int, layoutState: LayoutState) {
-        super.offsetBy(offset, layoutState)
-        grid.offsetBy(-offset)
+    override fun offsetChildren(offset: Int, layoutState: LayoutState) {
+        super.offsetChildren(offset, layoutState)
+        grid.offsetBy(offset)
     }
 
-    override fun addPivot(view: View, position: Int, bounds: Rect, layoutState: LayoutState) {
+    override fun placePivot(
+        view: View,
+        position: Int,
+        bounds: ViewBounds,
+        layoutState: LayoutState
+    ) {
         val size = layoutInfo.getMeasuredSize(view)
         val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
         val head = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
@@ -62,7 +78,7 @@ internal class GridArchitect(
         val decoratedSize = tail - head
         val spanSize = layoutInfo.getSpanSize(position)
 
-        grid.init(
+        grid.placePivot(
             newTop = head,
             viewSize = decoratedSize,
             spanIndex = layoutInfo.getStartColumnIndex(position),
@@ -87,7 +103,7 @@ internal class GridArchitect(
     override fun appendView(
         view: View,
         position: Int,
-        bounds: Rect,
+        bounds: ViewBounds,
         layoutState: LayoutState
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
@@ -106,7 +122,7 @@ internal class GridArchitect(
     override fun prependView(
         view: View,
         position: Int,
-        bounds: Rect,
+        bounds: ViewBounds,
         layoutState: LayoutState
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)

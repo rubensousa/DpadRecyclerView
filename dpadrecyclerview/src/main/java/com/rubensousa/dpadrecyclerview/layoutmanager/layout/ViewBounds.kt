@@ -21,7 +21,7 @@ import android.graphics.Rect
 /**
  * Replaces Rect for unit testing purposes
  */
-class ViewBounds(
+data class ViewBounds(
     var left: Int = 0,
     var top: Int = 0,
     var right: Int = 0,
@@ -51,24 +51,6 @@ class ViewBounds(
         right += dx
     }
 
-    fun previousVertical(size: Int): ViewBounds {
-        return ViewBounds(
-            left = left,
-            top = top - size,
-            right = right,
-            bottom = top
-        )
-    }
-
-    fun nextVertical(size: Int): ViewBounds {
-        return ViewBounds(
-            left = left,
-            top = bottom,
-            right = right,
-            bottom = bottom + size
-        )
-    }
-
     fun asRect(): Rect {
         return Rect(left, top, right, bottom)
     }
@@ -78,5 +60,16 @@ class ViewBounds(
                 "height=$height, width=$width)"
     }
 
+}
 
+fun List<ViewBounds>.offsetVerticallyBy(offset: Int): List<ViewBounds> {
+    return List(size) { index ->
+        this[index].copy().also { bounds -> bounds.offsetVertical(offset) }
+    }
+}
+
+fun List<ViewBounds>.offsetHorizontallyBy(offset: Int): List<ViewBounds> {
+    return List(size) { index ->
+        this[index].copy().also { bounds -> bounds.offsetHorizontal(offset) }
+    }
 }

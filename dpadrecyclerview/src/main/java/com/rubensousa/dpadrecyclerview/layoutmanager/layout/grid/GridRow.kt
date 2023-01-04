@@ -135,13 +135,6 @@ internal class GridRow(
         updateHeight(viewSize, startIndex, spanSize)
     }
 
-    fun consume(): Int {
-        heights.fill(0)
-        val previousHeight = height
-        height = 0
-        return previousHeight
-    }
-
     private fun updateHeight(viewSize: Int, spanIndex: Int, spanSize: Int) {
         height = max(viewSize, height)
         for (i in spanIndex until spanIndex + spanSize) {

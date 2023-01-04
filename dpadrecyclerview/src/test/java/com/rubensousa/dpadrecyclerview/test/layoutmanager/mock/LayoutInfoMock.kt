@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.layoutmanager
+package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import io.mockk.every
 import io.mockk.mockk
 
-internal class LayoutInfoMock(private val configuration: LayoutConfiguration) {
+internal class LayoutInfoMock(
+    private val configuration: LayoutConfiguration
+) {
 
     private val mock = mockk<LayoutInfo>()
     var isScrolling = false

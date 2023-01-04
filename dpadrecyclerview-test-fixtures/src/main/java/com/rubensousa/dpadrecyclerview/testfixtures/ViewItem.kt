@@ -19,17 +19,28 @@ package com.rubensousa.dpadrecyclerview.testfixtures
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 
 data class ViewItem(
+    val position: Int,
     val bounds: ViewBounds,
-    val insets: ViewBounds
+    val insets: ViewBounds,
 ) {
 
-    fun getLeft() = bounds.left
-    fun getTop() = bounds.top
-    fun getRight() = bounds.right
-    fun getBottom() = bounds.bottom
+    val left: Int
+        get() = bounds.left
 
-    fun getWidth() = bounds.width
-    fun getHeight() = bounds.height
+    val top: Int
+        get() = bounds.top
+
+    val right: Int
+        get() = bounds.right
+
+    val bottom: Int
+        get() = bounds.bottom
+
+    val width: Int
+        get() = bounds.width
+
+    val height: Int
+        get() = bounds.height
 
     fun getDecoratedLeft() = bounds.left - insets.left
     fun getDecoratedTop() = bounds.top - insets.top
@@ -38,6 +49,15 @@ data class ViewItem(
 
     fun getDecoratedWidth() = bounds.width + insets.left + insets.right
     fun getDecoratedHeight() = bounds.height + insets.top + insets.bottom
+
+    fun getDecoratedBounds(): ViewBounds {
+        return ViewBounds(
+            getDecoratedLeft(),
+            getDecoratedTop(),
+            getDecoratedRight(),
+            getDecoratedBottom()
+        )
+    }
 
     fun offsetHorizontally(offset: Int) {
         bounds.offsetHorizontal(offset)

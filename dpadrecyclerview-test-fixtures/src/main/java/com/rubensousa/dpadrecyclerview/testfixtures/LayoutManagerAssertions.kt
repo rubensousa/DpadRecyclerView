@@ -19,25 +19,35 @@ package com.rubensousa.dpadrecyclerview.testfixtures
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 
 object LayoutManagerAssertions {
 
     fun assertChildrenBounds(layoutManager: LayoutManager, matrix: LayoutMatrix) {
+        assertChildrenBounds(
+            layoutManager,
+            matrix.getChildren().map { viewItem ->
+                viewItem.getDecoratedBounds()
+            }
+        )
+    }
+
+    fun assertChildrenBounds(layoutManager: LayoutManager, bounds: List<ViewBounds>) {
         val horizontalHelper = OrientationHelper.createHorizontalHelper(layoutManager)
         val verticalHelper = OrientationHelper.createVerticalHelper(layoutManager)
-        assertThat(layoutManager.childCount).isEqualTo(matrix.getViewsInLayout().size)
+        assertThat(layoutManager.childCount).isEqualTo(bounds.size)
 
         for (i in 0 until layoutManager.childCount) {
             val view = layoutManager.getChildAt(i)!!
-            val viewItem = matrix.getViewAt(i)
+            val viewBounds = bounds[i]
             assertThat(horizontalHelper.getDecoratedStart(view))
-                .isEqualTo(viewItem.getDecoratedLeft())
+                .isEqualTo(viewBounds.left)
             assertThat(horizontalHelper.getDecoratedEnd(view))
-                .isEqualTo(viewItem.getDecoratedRight())
+                .isEqualTo(viewBounds.right)
             assertThat(verticalHelper.getDecoratedStart(view))
-                .isEqualTo(viewItem.getDecoratedTop())
+                .isEqualTo(viewBounds.top)
             assertThat(verticalHelper.getDecoratedEnd(view))
-                .isEqualTo(viewItem.getDecoratedBottom())
+                .isEqualTo(viewBounds.bottom)
         }
     }
 

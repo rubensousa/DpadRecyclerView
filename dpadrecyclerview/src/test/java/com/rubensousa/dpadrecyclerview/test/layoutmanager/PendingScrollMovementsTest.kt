@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.PendingScrollMovements
+import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutInfoMock
 import org.junit.Before
 import org.junit.Test
 
@@ -119,13 +120,23 @@ class PendingScrollMovementsTest {
     @Test
     fun `shouldScrollToView returns true if view is in scrolling direction or is already the pivot`() {
         scrollMovements.increase()
-        assertThat(scrollMovements.shouldScrollToView(viewPosition = 5, pivotPosition = 6)).isFalse()
+        assertThat(
+            scrollMovements.shouldScrollToView(
+                viewPosition = 5,
+                pivotPosition = 6
+            )
+        ).isFalse()
         assertThat(scrollMovements.shouldScrollToView(viewPosition = 7, pivotPosition = 6)).isTrue()
         assertThat(scrollMovements.shouldScrollToView(viewPosition = 6, pivotPosition = 6)).isTrue()
 
         scrollMovements.decrease()
         scrollMovements.decrease()
-        assertThat(scrollMovements.shouldScrollToView(viewPosition = 7, pivotPosition = 6)).isFalse()
+        assertThat(
+            scrollMovements.shouldScrollToView(
+                viewPosition = 7,
+                pivotPosition = 6
+            )
+        ).isFalse()
         assertThat(scrollMovements.shouldScrollToView(viewPosition = 5, pivotPosition = 6)).isTrue()
         assertThat(scrollMovements.shouldScrollToView(viewPosition = 6, pivotPosition = 6)).isTrue()
     }

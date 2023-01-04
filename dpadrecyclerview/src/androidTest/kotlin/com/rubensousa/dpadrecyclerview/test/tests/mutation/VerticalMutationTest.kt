@@ -23,12 +23,10 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertItemAtPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
-import com.rubensousa.dpadrecyclerview.test.tests.layout.LayoutColumn
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
@@ -55,21 +53,15 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         )
     }
 
-    private lateinit var column: LayoutColumn
     private var itemWidth: Int = 0
     private var itemHeight: Int = 0
 
     @Before
     fun setup() {
         launchFragment()
-        val recyclerViewBounds = getRecyclerViewBounds()
         val itemViewBounds = getRelativeItemViewBounds(position = 0)
         itemWidth = itemViewBounds.width()
         itemHeight = itemViewBounds.height()
-        column = LayoutColumn(
-            width = recyclerViewBounds.width(),
-            height = recyclerViewBounds.height()
-        )
     }
 
     @Test

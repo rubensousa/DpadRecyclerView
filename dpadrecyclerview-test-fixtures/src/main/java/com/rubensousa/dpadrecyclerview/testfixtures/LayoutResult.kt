@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout
+package com.rubensousa.dpadrecyclerview.testfixtures
 
-/**
- * Direction in which the layout is being filled.
- * These are absolute directions, so it doesn't consider RTL at all
- */
-internal enum class LayoutDirection(val value: Int) {
+data class LayoutResult(
+    val views: List<ViewItem>,
+    val consumedSpace: Int,
     /**
-     * Either left in horizontal or top in vertical
+     * Will be true if the View that was laid out was removed or changed
      */
-    START(-1),
-
-    /**
-     * Either right in horizontal or bottom in vertical
-     */
-    END(1)
-}
+    val skipConsumption: Boolean
+)
