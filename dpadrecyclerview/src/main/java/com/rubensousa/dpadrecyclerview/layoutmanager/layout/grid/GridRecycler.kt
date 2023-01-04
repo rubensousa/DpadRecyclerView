@@ -19,7 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewRecycler
 
 internal class GridRecycler(
@@ -31,17 +31,17 @@ internal class GridRecycler(
         recycled: View,
         position: Int,
         size: Int,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ) {
         // Whenever a view is recycled,
         // just update the offsets if the view is using the spans at the edges
-        if (layoutState.isLayingOutEnd()) {
+        if (layoutRequest.isLayingOutEnd()) {
             if (layoutInfo.getStartColumnIndex(position) == 0) {
-                layoutState.increaseWindowStart(size)
+                layoutRequest.increaseWindowStart(size)
             }
         } else {
             if (layoutInfo.isPositionAtLastColumn(position)) {
-                layoutState.decreaseWindowEnd(size)
+                layoutRequest.decreaseWindowEnd(size)
             }
         }
     }

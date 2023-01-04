@@ -46,7 +46,7 @@ internal class PivotLayout(
         private val DEBUG = BuildConfig.DEBUG
     }
 
-    private val layoutState = LayoutState()
+    private val layoutRequest = LayoutRequest()
     private val childLayoutListener = ChildLayoutListener()
     private var structureEngineer = createStructureEngineer()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
@@ -76,13 +76,13 @@ internal class PivotLayout(
         if (DEBUG) {
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")
         }
-        layoutState.init(
+        layoutRequest.init(
             isPreLayout = state.isPreLayout,
             gravity = configuration.gravity,
             isVertical = configuration.isVertical(),
             reverseLayout = configuration.reverseLayout
         )
-        structureEngineer.init(layoutState, state)
+        structureEngineer.init(layoutRequest, state)
         layoutInfo.setLayoutInProgress()
         layoutAlignment.update()
 
@@ -117,7 +117,7 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
-        structureEngineer.prelayout(pivotPosition, layoutState, recycler, recyclerViewState)
+        structureEngineer.prelayout(pivotPosition, layoutRequest, recycler, recyclerViewState)
 
         if (DEBUG) {
             Log.i(TAG, "PreLayoutFinished")
@@ -131,7 +131,7 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
-        structureEngineer.layout(pivotSelector.position, layoutState, recycler, recyclerViewState)
+        structureEngineer.layout(pivotSelector.position, layoutRequest, recycler, recyclerViewState)
 
         if (DEBUG) {
             Log.i(TAG, "LayoutFinished")
@@ -140,7 +140,7 @@ internal class PivotLayout(
     }
 
     fun reset() {
-        layoutState.clear()
+        layoutRequest.clear()
     }
 
     fun onLayoutCompleted(state: State) {
@@ -194,7 +194,7 @@ internal class PivotLayout(
             return 0
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
-        structureEngineer.scrollBy(scrollOffset, layoutState, recycler, state)
+        structureEngineer.scrollBy(scrollOffset, layoutRequest, recycler, state)
         return scrollOffset
     }
 

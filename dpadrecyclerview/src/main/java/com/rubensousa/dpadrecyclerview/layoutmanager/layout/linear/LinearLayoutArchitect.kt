@@ -19,7 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -29,44 +29,44 @@ import kotlin.math.max
 internal class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(layoutInfo) {
 
     override fun updateLayoutStateForPredictiveStart(
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         anchorPosition: Int
     ) {
-        layoutState.apply {
+        layoutRequest.apply {
             setStartDirection()
             setRecyclingEnabled(false)
             setCurrentPosition(anchorPosition)
-            setCheckpoint(layoutState.getStartOffset())
-            setFillSpace(layoutState.extraLayoutSpaceStart)
+            setCheckpoint(layoutRequest.getStartOffset())
+            setFillSpace(layoutRequest.extraLayoutSpaceStart)
             updateCurrentPositionFromScrap()
         }
     }
 
-    override fun updateLayoutStateForPredictiveEnd(layoutState: LayoutState, anchorPosition: Int) {
-        layoutState.apply {
+    override fun updateLayoutStateForPredictiveEnd(layoutRequest: LayoutRequest, anchorPosition: Int) {
+        layoutRequest.apply {
             setEndDirection()
             setRecyclingEnabled(false)
             setCurrentPosition(anchorPosition)
-            setCheckpoint(layoutState.getEndOffset())
-            setFillSpace(layoutState.extraLayoutSpaceEnd)
+            setCheckpoint(layoutRequest.getEndOffset())
+            setFillSpace(layoutRequest.extraLayoutSpaceEnd)
             updateCurrentPositionFromScrap()
         }
     }
 
-    override fun updateForExtraLayoutEnd(layoutState: LayoutState, recyclerViewState: State) {
-        layoutState.apply {
+    override fun updateForExtraLayoutEnd(layoutRequest: LayoutRequest, recyclerViewState: State) {
+        layoutRequest.apply {
             setEndDirection()
-            updateExtraLayoutSpace(layoutState, recyclerViewState)
+            updateExtraLayoutSpace(layoutRequest, recyclerViewState)
             val view = layoutInfo.getChildClosestToEnd() ?: return
             setCheckpoint(layoutInfo.getDecoratedEnd(view))
             updateLayoutStateForExtraLayout(this, view)
         }
     }
 
-    override fun updateForExtraLayoutStart(layoutState: LayoutState, recyclerViewState: State) {
-        layoutState.apply {
+    override fun updateForExtraLayoutStart(layoutRequest: LayoutRequest, recyclerViewState: State) {
+        layoutRequest.apply {
             setStartDirection()
-            updateExtraLayoutSpace(layoutState, recyclerViewState)
+            updateExtraLayoutSpace(layoutRequest, recyclerViewState)
             val view = layoutInfo.getChildClosestToStart() ?: return
             setCheckpoint(layoutInfo.getDecoratedStart(view))
             updateLayoutStateForExtraLayout(this, view)
@@ -74,22 +74,22 @@ internal class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(l
     }
 
     override fun updateLayoutStateForScroll(
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recyclerViewState: State,
         offset: Int
     ) {
         if (offset > 0) {
-            layoutState.setEndDirection()
+            layoutRequest.setEndDirection()
         } else {
-            layoutState.setStartDirection()
+            layoutRequest.setStartDirection()
         }
 
-        updateExtraLayoutSpace(layoutState, recyclerViewState)
+        updateExtraLayoutSpace(layoutRequest, recyclerViewState)
 
         // Enable recycling since we might add new views now
-        layoutState.setRecyclingEnabled(true)
+        layoutRequest.setRecyclingEnabled(true)
 
-        val view = if (layoutState.isLayingOutEnd()) {
+        val view = if (layoutRequest.isLayingOutEnd()) {
             layoutInfo.getChildClosestToEnd()
         } else {
             layoutInfo.getChildClosestToStart()
@@ -98,31 +98,31 @@ internal class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(l
             return
         }
         // Start layout from the next position of the child closest to the edge
-        layoutState.setCurrentPosition(
-            layoutInfo.getLayoutPositionOf(view) + layoutState.direction.value
+        layoutRequest.setCurrentPosition(
+            layoutInfo.getLayoutPositionOf(view) + layoutRequest.direction.value
         )
 
         // We need to at least fill the next scroll target
         val requiredSpace = abs(offset)
 
-        if (layoutState.isLayingOutEnd()) {
-            layoutState.apply {
+        if (layoutRequest.isLayingOutEnd()) {
+            layoutRequest.apply {
                 setCheckpoint(layoutInfo.getDecoratedEnd(view))
                 // The available scroll space starts from the checkpoint until the actual edge
                 setAvailableScrollSpace(
                     max(0, checkpoint - layoutInfo.getEndAfterPadding())
                 )
                 // Remove availableScrollSpace since that space is already filled
-                val fill = requiredSpace + layoutState.extraLayoutSpaceEnd - availableScrollSpace
+                val fill = requiredSpace + layoutRequest.extraLayoutSpaceEnd - availableScrollSpace
                 setFillSpace(max(0, fill))
             }
         } else {
-            layoutState.apply {
+            layoutRequest.apply {
                 setCheckpoint(layoutInfo.getDecoratedStart(view))
                 setAvailableScrollSpace(
                     max(0, layoutInfo.getStartAfterPadding() - checkpoint)
                 )
-                val fill = requiredSpace + layoutState.extraLayoutSpaceStart - availableScrollSpace
+                val fill = requiredSpace + layoutRequest.extraLayoutSpaceStart - availableScrollSpace
                 setFillSpace(max(0, fill))
             }
         }

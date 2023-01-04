@@ -23,7 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Holds information required for the next layout
  */
-internal class LayoutState {
+internal class LayoutRequest {
 
     // TODO Remove: our source of truth should be the views added to the layout
     private val window = LayoutWindow()

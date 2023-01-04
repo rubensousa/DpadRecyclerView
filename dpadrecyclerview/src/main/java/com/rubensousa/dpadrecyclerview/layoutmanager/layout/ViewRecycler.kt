@@ -28,30 +28,30 @@ internal abstract class ViewRecycler(
         recycled: View,
         position: Int,
         size: Int,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     )
 
-    fun recycleByLayoutState(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
-        if (!layoutState.isRecyclingEnabled || layoutState.isInfinite()) {
+    fun recycleByLayoutState(recycler: RecyclerView.Recycler, layoutRequest: LayoutRequest) {
+        if (!layoutRequest.isRecyclingEnabled || layoutRequest.isInfinite()) {
             return
         }
-        if (layoutState.isLayingOutStart()) {
-            recycleFromEnd(recycler, layoutState)
+        if (layoutRequest.isLayingOutStart()) {
+            recycleFromEnd(recycler, layoutRequest)
         } else {
-            recycleFromStart(recycler, layoutState)
+            recycleFromStart(recycler, layoutRequest)
         }
     }
 
-    fun recycleFromStart(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
-        val limit = -layoutState.extraLayoutSpaceStart
+    fun recycleFromStart(recycler: RecyclerView.Recycler, layoutRequest: LayoutRequest) {
+        val limit = -layoutRequest.extraLayoutSpaceStart
         val childCount = layoutInfo.getChildCount()
-        if (layoutState.reverseLayout) {
+        if (layoutRequest.reverseLayout) {
             for (i in childCount - 1 downTo 0) {
                 val child = layoutInfo.getChildAt(i) ?: continue
                 if (layoutInfo.getDecoratedEnd(child) > limit
                     || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
                 ) {
-                    recycle(recycler, childCount - 1, i, layoutState)
+                    recycle(recycler, childCount - 1, i, layoutRequest)
                     return
                 }
             }
@@ -61,23 +61,23 @@ internal abstract class ViewRecycler(
                 if (layoutInfo.getDecoratedEnd(child) > limit
                     || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
                 ) {
-                    recycle(recycler, 0, i, layoutState)
+                    recycle(recycler, 0, i, layoutRequest)
                     return
                 }
             }
         }
     }
 
-    fun recycleFromEnd(recycler: RecyclerView.Recycler, layoutState: LayoutState) {
-        val limit = layoutInfo.orientationHelper.end + layoutState.extraLayoutSpaceEnd
+    fun recycleFromEnd(recycler: RecyclerView.Recycler, layoutRequest: LayoutRequest) {
+        val limit = layoutInfo.orientationHelper.end + layoutRequest.extraLayoutSpaceEnd
         val childCount = layoutInfo.getChildCount()
-        if (layoutState.reverseLayout) {
+        if (layoutRequest.reverseLayout) {
             for (i in 0 until childCount) {
                 val child = layoutInfo.getChildAt(i) ?: continue
                 if (layoutInfo.getDecoratedStart(child) < limit
                     || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
                 ) {
-                    recycle(recycler, 0, i, layoutState)
+                    recycle(recycler, 0, i, layoutRequest)
                     return
                 }
             }
@@ -87,7 +87,7 @@ internal abstract class ViewRecycler(
                 if (layoutInfo.getDecoratedStart(child) < limit
                     || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
                 ) {
-                    recycle(recycler, childCount - 1, i, layoutState)
+                    recycle(recycler, childCount - 1, i, layoutRequest)
                     return
                 }
             }
@@ -98,18 +98,18 @@ internal abstract class ViewRecycler(
         recycler: RecyclerView.Recycler,
         startIndex: Int,
         endIndex: Int,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ) {
         if (startIndex == endIndex) {
             return
         }
         if (endIndex > startIndex) {
             for (i in endIndex - 1 downTo startIndex) {
-                recycleViewAt(i, recycler, layoutState)
+                recycleViewAt(i, recycler, layoutRequest)
             }
         } else {
             for (i in startIndex downTo endIndex + 1) {
-                recycleViewAt(i, recycler, layoutState)
+                recycleViewAt(i, recycler, layoutRequest)
             }
         }
     }
@@ -117,14 +117,14 @@ internal abstract class ViewRecycler(
     private fun recycleViewAt(
         index: Int,
         recycler: RecyclerView.Recycler,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ) {
         val view = layoutInfo.getChildAt(index)
         if (view != null) {
             val position = layoutInfo.getLayoutPositionOf(view)
             layoutManager.removeAndRecycleView(view, recycler)
             val size = layoutInfo.getDecoratedSize(view)
-            updateLayoutState(view, position, size, layoutState)
+            updateLayoutState(view, position, size, layoutRequest)
         }
     }
 }

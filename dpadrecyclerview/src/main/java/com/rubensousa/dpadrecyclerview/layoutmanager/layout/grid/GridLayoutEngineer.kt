@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
@@ -50,7 +50,7 @@ internal class GridLayoutEngineer(
     override fun getViewRecycler(): ViewRecycler = recycler
 
     override fun init(
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recyclerViewState: RecyclerView.State
     ) {
         grid.init(
@@ -60,8 +60,8 @@ internal class GridLayoutEngineer(
         )
     }
 
-    override fun offsetChildren(offset: Int, layoutState: LayoutState) {
-        super.offsetChildren(offset, layoutState)
+    override fun offsetChildren(offset: Int, layoutRequest: LayoutRequest) {
+        super.offsetChildren(offset, layoutRequest)
         grid.offsetBy(offset)
     }
 
@@ -69,7 +69,7 @@ internal class GridLayoutEngineer(
         view: View,
         position: Int,
         bounds: ViewBounds,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ) {
         val size = layoutInfo.getMeasuredSize(view)
         val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
@@ -97,25 +97,25 @@ internal class GridLayoutEngineer(
             bounds.bottom = grid.getTopRowEndOffset()
         }
 
-        layoutState.updateWindow(head, head)
+        layoutRequest.updateWindow(head, head)
     }
 
     override fun appendView(
         view: View,
         position: Int,
         bounds: ViewBounds,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
         val consumedSpace = if (layoutInfo.isVertical()) {
             grid.appendHorizontally(
-                decoratedSize, layoutInfo.getSpanSize(position), bounds, layoutState.checkpoint
+                decoratedSize, layoutInfo.getSpanSize(position), bounds, layoutRequest.checkpoint
             )
         } else {
             // TODO
             0
         }
-        layoutState.appendWindow(consumedSpace)
+        layoutRequest.appendWindow(consumedSpace)
         return consumedSpace
     }
 
@@ -123,18 +123,18 @@ internal class GridLayoutEngineer(
         view: View,
         position: Int,
         bounds: ViewBounds,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
         val consumedSpace = if (layoutInfo.isVertical()) {
             grid.prependHorizontally(
-                decoratedSize, layoutInfo.getSpanSize(position), bounds, layoutState.checkpoint
+                decoratedSize, layoutInfo.getSpanSize(position), bounds, layoutRequest.checkpoint
             )
         } else {
             // TODO
             0
         }
-        layoutState.prependWindow(consumedSpace)
+        layoutRequest.prependWindow(consumedSpace)
         return consumedSpace
     }
 

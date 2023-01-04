@@ -19,7 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutState
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewRecycler
 
 internal class LinearRecycler(
@@ -31,13 +31,13 @@ internal class LinearRecycler(
         recycled: View,
         position: Int,
         size: Int,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ) {
         // Whenever a view is recycled, update the offsets based on its size
-        if (layoutState.isLayingOutEnd()) {
-            layoutState.increaseWindowStart(size)
+        if (layoutRequest.isLayingOutEnd()) {
+            layoutRequest.increaseWindowStart(size)
         } else {
-            layoutState.decreaseWindowEnd(size)
+            layoutRequest.decreaseWindowEnd(size)
         }
     }
 

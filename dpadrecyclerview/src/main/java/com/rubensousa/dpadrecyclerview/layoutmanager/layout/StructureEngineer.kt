@@ -44,7 +44,7 @@ internal abstract class StructureEngineer(
     /**
      * Used to update any internal layout state before onLayoutChildren starts its job
      */
-    open fun init(layoutState: LayoutState, recyclerViewState: State) {
+    open fun init(layoutRequest: LayoutRequest, recyclerViewState: State) {
 
     }
 
@@ -59,7 +59,7 @@ internal abstract class StructureEngineer(
         view: View,
         position: Int,
         bounds: ViewBounds,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     )
 
     /**
@@ -70,7 +70,7 @@ internal abstract class StructureEngineer(
         view: View,
         position: Int,
         bounds: ViewBounds,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ): Int
 
     /**
@@ -81,7 +81,7 @@ internal abstract class StructureEngineer(
         view: View,
         position: Int,
         bounds: ViewBounds,
-        layoutState: LayoutState
+        layoutRequest: LayoutRequest
     ): Int
 
 
@@ -92,7 +92,7 @@ internal abstract class StructureEngineer(
      */
     fun prelayout(
         pivotPosition: Int,
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recycler: Recycler,
         recyclerViewState: State
     ) {
@@ -119,19 +119,19 @@ internal abstract class StructureEngineer(
         val extraLayoutSpace = max(0, endOffset - startOffset)
         val architect = getArchitect()
         architect.updateForStartPreLayout(
-            layoutState, extraLayoutSpace, firstPosition, firstView
+            layoutRequest, extraLayoutSpace, firstPosition, firstView
         )
-        layoutEdge(layoutState, recycler, recyclerViewState)
+        layoutEdge(layoutRequest, recycler, recyclerViewState)
 
         architect.updateForEndPreLayout(
-            layoutState, extraLayoutSpace, lastPosition, lastView
+            layoutRequest, extraLayoutSpace, lastPosition, lastView
         )
-        layoutEdge(layoutState, recycler, recyclerViewState)
+        layoutEdge(layoutRequest, recycler, recyclerViewState)
     }
 
     fun layout(
         pivotPosition: Int,
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recycler: Recycler,
         recyclerViewState: State
     ) {
@@ -140,50 +140,50 @@ internal abstract class StructureEngineer(
         layoutManager.detachAndScrapAttachedViews(recycler)
 
         val architect = getArchitect()
-        val pivotView = layoutPivot(layoutState, recycler, pivotPosition, recyclerViewState)
+        val pivotView = layoutPivot(layoutRequest, recycler, pivotPosition, recyclerViewState)
 
         // Layout views before the pivot
-        architect.updateLayoutStateBeforePivot(layoutState, pivotPosition)
-        layoutEdge(layoutState, recycler, recyclerViewState)
+        architect.updateLayoutStateBeforePivot(layoutRequest, pivotPosition)
+        layoutEdge(layoutRequest, recycler, recyclerViewState)
 
         // Layout views after the pivot
-        architect.updateLayoutStateAfterPivot(layoutState, pivotPosition)
-        layoutEdge(layoutState, recycler, recyclerViewState)
+        architect.updateLayoutStateAfterPivot(layoutRequest, pivotPosition)
+        layoutEdge(layoutRequest, recycler, recyclerViewState)
 
-        layoutForPredictiveAnimations(architect, layoutState, recycler, recyclerViewState)
+        layoutForPredictiveAnimations(architect, layoutRequest, recycler, recyclerViewState)
 
         // Now that all views are laid out, make sure the pivot is still in the correct position
-        alignPivot(pivotView, layoutState, recycler, recyclerViewState)
+        alignPivot(pivotView, layoutRequest, recycler, recyclerViewState)
 
         // Layout extra space if user requested it
-        layoutExtraSpace(architect, layoutState, recycler, recyclerViewState)
+        layoutExtraSpace(architect, layoutRequest, recycler, recyclerViewState)
 
         // We might have views we no longer need after aligning the pivot,
         // so recycle them if we're not running animations
         if (!recyclerViewState.willRunSimpleAnimations()
             && !recyclerViewState.willRunPredictiveAnimations()
         ) {
-            removeInvisibleViews(recycler, layoutState)
+            removeInvisibleViews(recycler, layoutRequest)
         }
     }
 
     fun scrollBy(
         offset: Int,
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recycler: Recycler,
         recyclerViewState: State
     ) {
         val architect = getArchitect()
         // Offset views immediately
-        offsetChildren(-offset, layoutState)
+        offsetChildren(-offset, layoutRequest)
 
         // Now layout the next views and recycle the ones we don't need along the way
-        architect.updateLayoutStateForScroll(layoutState, recyclerViewState, offset)
-        layoutEdge(layoutState, recycler, recyclerViewState)
+        architect.updateLayoutStateForScroll(layoutRequest, recyclerViewState, offset)
+        layoutEdge(layoutRequest, recycler, recyclerViewState)
     }
 
     private fun layoutPivot(
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recycler: Recycler,
         position: Int,
         state: State
@@ -194,7 +194,7 @@ internal abstract class StructureEngineer(
         layoutManager.measureChildWithMargins(view, 0, 0)
 
         // Place the pivot in its keyline position
-        placePivot(view, position, viewBounds, layoutState)
+        placePivot(view, position, viewBounds, layoutRequest)
 
         // Trigger a new layout pass for the pivot view
         performLayout(view, viewBounds)
@@ -210,22 +210,22 @@ internal abstract class StructureEngineer(
     }
 
     private fun layoutEdge(
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recycler: RecyclerView.Recycler,
         state: State
     ) {
-        var remainingSpace = layoutState.fillSpace
+        var remainingSpace = layoutRequest.fillSpace
         // Start by recycling children that moved out of bounds
         val viewRecycler = getViewRecycler()
-        viewRecycler.recycleByLayoutState(recycler, layoutState)
+        viewRecycler.recycleByLayoutState(recycler, layoutRequest)
 
-        val isAppending = layoutState.isLayingOutEnd()
+        val isAppending = layoutRequest.isLayingOutEnd()
 
         // Keep appending or prepending views until we run out of fill space or items
-        while (shouldContinueLayout(remainingSpace, layoutState, state)) {
-            val currentPosition = layoutState.currentPosition
-            val view = layoutState.getNextView(recycler) ?: break
-            if (!layoutState.isUsingScrap()) {
+        while (shouldContinueLayout(remainingSpace, layoutRequest, state)) {
+            val currentPosition = layoutRequest.currentPosition
+            val view = layoutRequest.getNextView(recycler) ?: break
+            if (!layoutRequest.isUsingScrap()) {
                 if (isAppending) {
                     layoutManager.addView(view)
                 } else {
@@ -241,9 +241,9 @@ internal abstract class StructureEngineer(
             layoutManager.measureChildWithMargins(view, 0, 0)
 
             val consumedSpace = if (isAppending) {
-                appendView(view, currentPosition, viewBounds, layoutState)
+                appendView(view, currentPosition, viewBounds, layoutRequest)
             } else {
-                prependView(view, currentPosition, viewBounds, layoutState)
+                prependView(view, currentPosition, viewBounds, layoutRequest)
             }
 
             performLayout(view, viewBounds)
@@ -257,27 +257,27 @@ internal abstract class StructureEngineer(
             remainingSpace -= consumedSpace
             // We don't need to recycle if we didn't consume any space
             if (consumedSpace > 0) {
-                viewRecycler.recycleByLayoutState(recycler, layoutState)
+                viewRecycler.recycleByLayoutState(recycler, layoutRequest)
             }
             onChildLayoutListener.onChildLaidOut(view, state)
         }
 
         // Recycle children in the opposite direction of layout
         // to be sure we don't have any extra views
-        viewRecycler.recycleByLayoutState(recycler, layoutState)
+        viewRecycler.recycleByLayoutState(recycler, layoutRequest)
     }
 
-    private fun removeInvisibleViews(recycler: Recycler, layoutState: LayoutState) {
-        layoutState.setRecyclingEnabled(true)
+    private fun removeInvisibleViews(recycler: Recycler, layoutRequest: LayoutRequest) {
+        layoutRequest.setRecyclingEnabled(true)
         getViewRecycler().apply {
-            recycleFromStart(recycler, layoutState)
-            recycleFromEnd(recycler, layoutState)
+            recycleFromStart(recycler, layoutRequest)
+            recycleFromEnd(recycler, layoutRequest)
         }
     }
 
-    open fun offsetChildren(offset: Int, layoutState: LayoutState) {
+    open fun offsetChildren(offset: Int, layoutRequest: LayoutRequest) {
         layoutInfo.orientationHelper.offsetChildren(offset)
-        layoutState.offsetWindow(offset)
+        layoutRequest.offsetWindow(offset)
         if (DEBUG) {
             if (layoutInfo.isVertical()) {
                 viewBounds.offsetVertical(offset)
@@ -302,7 +302,7 @@ internal abstract class StructureEngineer(
 
     private fun alignPivot(
         pivotView: View,
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recycler: Recycler, state:
         State
     ) {
@@ -310,20 +310,20 @@ internal abstract class StructureEngineer(
         val remainingScroll = layoutInfo.getRemainingScroll(state)
         // Offset all views by the existing remaining scroll so that they're still scrolled
         // to their final locations when RecyclerView resumes scrolling
-        scrollBy(scrollOffset - remainingScroll, layoutState, recycler, state)
+        scrollBy(scrollOffset - remainingScroll, layoutRequest, recycler, state)
     }
 
     private fun layoutExtraSpace(
         architect: LayoutArchitect,
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recycler: Recycler,
         recyclerViewState: State
     ) {
-        architect.updateForExtraLayoutStart(layoutState, recyclerViewState)
-        layoutEdge(layoutState, recycler, recyclerViewState)
+        architect.updateForExtraLayoutStart(layoutRequest, recyclerViewState)
+        layoutEdge(layoutRequest, recycler, recyclerViewState)
 
-        architect.updateForExtraLayoutEnd(layoutState, recyclerViewState)
-        layoutEdge(layoutState, recycler, recyclerViewState)
+        architect.updateForExtraLayoutEnd(layoutRequest, recyclerViewState)
+        layoutEdge(layoutRequest, recycler, recyclerViewState)
     }
 
     /**
@@ -332,7 +332,7 @@ internal abstract class StructureEngineer(
      */
     private fun layoutForPredictiveAnimations(
         architect: LayoutArchitect,
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         recycler: Recycler,
         state: State
     ) {
@@ -350,31 +350,31 @@ internal abstract class StructureEngineer(
                 continue
             }
             val position = scrap.layoutPosition
-            val direction = if (position < firstChildPosition != layoutState.reverseLayout) {
-                LayoutState.LayoutDirection.START
+            val direction = if (position < firstChildPosition != layoutRequest.reverseLayout) {
+                LayoutRequest.LayoutDirection.START
             } else {
-                LayoutState.LayoutDirection.END
+                LayoutRequest.LayoutDirection.END
             }
             // TODO This is not correct for grids
-            if (direction == LayoutState.LayoutDirection.START) {
+            if (direction == LayoutRequest.LayoutDirection.START) {
                 scrapExtraStart += layoutInfo.getDecoratedSize(scrap.itemView)
             } else {
                 scrapExtraEnd += layoutInfo.getDecoratedSize(scrap.itemView)
             }
         }
 
-        layoutState.setExtraLayoutSpaceStart(scrapExtraStart)
-        layoutState.setExtraLayoutSpaceEnd(scrapExtraEnd)
-        layoutState.setScrap(recycler.scrapList)
+        layoutRequest.setExtraLayoutSpaceStart(scrapExtraStart)
+        layoutRequest.setExtraLayoutSpaceEnd(scrapExtraEnd)
+        layoutRequest.setScrap(recycler.scrapList)
 
         if (scrapExtraStart > 0) {
             val anchor = layoutInfo.getChildClosestToStart()
             if (anchor != null) {
                 architect.updateLayoutStateForPredictiveStart(
-                    layoutState,
+                    layoutRequest,
                     layoutManager.getPosition(anchor)
                 )
-                layoutEdge(layoutState, recycler, state)
+                layoutEdge(layoutRequest, recycler, state)
             }
         }
 
@@ -382,14 +382,14 @@ internal abstract class StructureEngineer(
             val anchor = layoutInfo.getChildClosestToEnd()
             if (anchor != null) {
                 architect.updateLayoutStateForPredictiveEnd(
-                    layoutState,
+                    layoutRequest,
                     layoutManager.getPosition(anchor)
                 )
-                layoutEdge(layoutState, recycler, state)
+                layoutEdge(layoutRequest, recycler, state)
             }
         }
 
-        layoutState.setScrap(null)
+        layoutRequest.setScrap(null)
     }
 
     private fun performLayout(view: View, bounds: ViewBounds) {
@@ -400,10 +400,10 @@ internal abstract class StructureEngineer(
 
     private fun shouldContinueLayout(
         remainingSpace: Int,
-        layoutState: LayoutState,
+        layoutRequest: LayoutRequest,
         state: State
     ): Boolean {
-        return layoutState.hasMoreItems(state) && (remainingSpace > 0 || layoutState.isInfinite())
+        return layoutRequest.hasMoreItems(state) && (remainingSpace > 0 || layoutRequest.isInfinite())
     }
 
 }
