@@ -164,11 +164,13 @@ internal abstract class StructureEngineer(
     ): Int {
         val architect = getArchitect()
 
-        // Offset views immediately
+        // Update the layout request for scrolling before offsetting the views
+        architect.updateLayoutStateForScroll(layoutRequest, recyclerViewState, offset)
+
+        // Now offset the views and the next layout checkpoint
         offsetChildren(-offset, layoutRequest)
 
-        // Now layout the next views and recycle the ones we don't need along the way
-        architect.updateLayoutStateForScroll(layoutRequest, recyclerViewState, offset)
+        // Layout the next views and recycle the ones we don't need along the way
         layout(layoutRequest, recycler, recyclerViewState)
 
         return offset
@@ -243,6 +245,7 @@ internal abstract class StructureEngineer(
 
     open fun offsetChildren(offset: Int, layoutRequest: LayoutRequest) {
         layoutInfo.orientationHelper.offsetChildren(offset)
+        layoutRequest.offsetCheckpoint(offset)
     }
 
     fun logChildren() {
