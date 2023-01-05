@@ -42,7 +42,7 @@ internal class PivotLayout(
 ) {
 
     companion object {
-        const val TAG = "LayoutArchitect"
+        const val TAG = "PivotLayout"
         private val DEBUG = BuildConfig.DEBUG
     }
 
@@ -80,7 +80,8 @@ internal class PivotLayout(
             isPreLayout = state.isPreLayout,
             gravity = configuration.gravity,
             isVertical = configuration.isVertical(),
-            reverseLayout = configuration.reverseLayout
+            reverseLayout = configuration.reverseLayout,
+            infinite = layoutInfo.isInfinite()
         )
         structureEngineer.init(layoutRequest, state)
         layoutInfo.setLayoutInProgress()
@@ -117,7 +118,7 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
-        structureEngineer.prelayout(pivotPosition, layoutRequest, recycler, recyclerViewState)
+        structureEngineer.preLayoutChildren(pivotPosition, layoutRequest, recycler, recyclerViewState)
 
         if (DEBUG) {
             Log.i(TAG, "PreLayoutFinished")
@@ -131,7 +132,7 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
-        structureEngineer.layout(pivotSelector.position, layoutRequest, recycler, recyclerViewState)
+        structureEngineer.layoutChildren(pivotSelector.position, layoutRequest, recycler, recyclerViewState)
 
         if (DEBUG) {
             Log.i(TAG, "LayoutFinished")
@@ -194,8 +195,7 @@ internal class PivotLayout(
             return 0
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
-        structureEngineer.scrollBy(scrollOffset, layoutRequest, recycler, state)
-        return scrollOffset
+        return   structureEngineer.scrollBy(scrollOffset, layoutRequest, recycler, state)
     }
 
     // TODO
@@ -241,11 +241,12 @@ internal class PivotLayout(
     }
 
     private inner class ChildLayoutListener : OnChildLayoutListener {
-        override fun onChildCreated(view: View, state: State) {
+        override fun onChildCreated(view: View) {
             scroller.onChildCreated(view)
+            layoutAlignment.updateScrollLimits()
         }
 
-        override fun onChildLaidOut(view: View, state: State) {
+        override fun onChildLaidOut(view: View) {
             scroller.onChildLaidOut(view)
             layoutAlignment.updateScrollLimits()
         }

@@ -86,12 +86,6 @@ class LinearLayoutEngineerVerticalTest {
 
         assertThat(listener.created).hasSize(3)
         assertThat(listener.laidOut).hasSize(3)
-
-        assertThat(layoutRequest.getStartOffset())
-            .isEqualTo(column.getFirstView()!!.getDecoratedTop())
-
-        assertThat(layoutRequest.getEndOffset())
-            .isEqualTo(column.getLastView()!!.getDecoratedBottom())
     }
 
     @Test
@@ -123,7 +117,7 @@ class LinearLayoutEngineerVerticalTest {
     }
 
     private fun layout(pivotPosition: Int) {
-        engineer.layout(
+        engineer.layoutChildren(
             pivotPosition,
             layoutRequest,
             recyclerMock.get(),
@@ -137,11 +131,11 @@ class LinearLayoutEngineerVerticalTest {
         val created = ArrayList<View>()
         val laidOut = ArrayList<View>()
 
-        override fun onChildCreated(view: View, state: RecyclerView.State) {
+        override fun onChildCreated(view: View) {
             created.add(view)
         }
 
-        override fun onChildLaidOut(view: View, state: RecyclerView.State) {
+        override fun onChildLaidOut(view: View) {
             laidOut.add(view)
         }
 

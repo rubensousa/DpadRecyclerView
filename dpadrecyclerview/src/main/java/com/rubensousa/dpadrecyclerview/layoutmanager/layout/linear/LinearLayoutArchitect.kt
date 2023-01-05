@@ -36,18 +36,21 @@ internal class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(l
             setStartDirection()
             setRecyclingEnabled(false)
             setCurrentPosition(anchorPosition)
-            setCheckpoint(layoutRequest.getStartOffset())
+            setCheckpoint(getLayoutStart())
             setFillSpace(layoutRequest.extraLayoutSpaceStart)
             updateCurrentPositionFromScrap()
         }
     }
 
-    override fun updateLayoutStateForPredictiveEnd(layoutRequest: LayoutRequest, anchorPosition: Int) {
+    override fun updateLayoutStateForPredictiveEnd(
+        layoutRequest: LayoutRequest,
+        anchorPosition: Int
+    ) {
         layoutRequest.apply {
             setEndDirection()
             setRecyclingEnabled(false)
             setCurrentPosition(anchorPosition)
-            setCheckpoint(layoutRequest.getEndOffset())
+            setCheckpoint(getLayoutEnd())
             setFillSpace(layoutRequest.extraLayoutSpaceEnd)
             updateCurrentPositionFromScrap()
         }
@@ -122,10 +125,22 @@ internal class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(l
                 setAvailableScrollSpace(
                     max(0, layoutInfo.getStartAfterPadding() - checkpoint)
                 )
-                val fill = requiredSpace + layoutRequest.extraLayoutSpaceStart - availableScrollSpace
+                val fill =
+                    requiredSpace + layoutRequest.extraLayoutSpaceStart - availableScrollSpace
                 setFillSpace(max(0, fill))
             }
         }
     }
+
+    open fun getLayoutStart(): Int {
+        val firstView = layoutInfo.getChildClosestToStart() ?: return 0
+        return layoutInfo.getDecoratedStart(firstView)
+    }
+
+    open fun getLayoutEnd(): Int {
+        val lastView = layoutInfo.getChildClosestToEnd() ?: return 0
+        return layoutInfo.getDecoratedEnd(lastView)
+    }
+
 
 }

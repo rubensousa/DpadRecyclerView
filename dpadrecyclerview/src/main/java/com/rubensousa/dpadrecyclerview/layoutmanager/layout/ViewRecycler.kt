@@ -19,20 +19,20 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-internal abstract class ViewRecycler(
+internal open class ViewRecycler(
     protected val layoutManager: RecyclerView.LayoutManager,
     protected val layoutInfo: LayoutInfo,
 ) {
 
-    protected abstract fun updateLayoutState(
+    open fun updateLayoutState(
         recycled: View,
         position: Int,
         size: Int,
         layoutRequest: LayoutRequest
-    )
+    ) {}
 
-    fun recycleByLayoutState(recycler: RecyclerView.Recycler, layoutRequest: LayoutRequest) {
-        if (!layoutRequest.isRecyclingEnabled || layoutRequest.isInfinite()) {
+    fun recycleByLayoutRequest(recycler: RecyclerView.Recycler, layoutRequest: LayoutRequest) {
+        if (!layoutRequest.isRecyclingEnabled || layoutRequest.isInfinite) {
             return
         }
         if (layoutRequest.isLayingOutStart()) {

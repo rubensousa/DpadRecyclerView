@@ -16,7 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.testfixtures
 
-data class LayoutResult(
+data class LayoutBlockResult(
     val views: List<ViewItem>,
     val consumedSpace: Int,
     /**

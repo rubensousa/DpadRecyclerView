@@ -18,7 +18,7 @@ package com.rubensousa.dpadrecyclerview.testfixtures
 
 import androidx.recyclerview.widget.RecyclerView
 
-class LayoutRequest {
+class LayoutBlockRequest {
     /**
      * Coordinate from where to start the layout
      */

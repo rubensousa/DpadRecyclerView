@@ -31,15 +31,20 @@ internal abstract class StructureEngineer(
     protected val layoutManager: LayoutManager,
     protected val layoutInfo: LayoutInfo,
     protected val layoutAlignment: LayoutAlignment,
-    private val onChildLayoutListener: OnChildLayoutListener
+    protected val onChildLayoutListener: OnChildLayoutListener
 ) {
 
     companion object {
         const val TAG = "StructureEngineer"
-        private val DEBUG = BuildConfig.DEBUG
+
+        @JvmStatic
+        protected val DEBUG = BuildConfig.DEBUG
     }
 
-    private var viewBounds = ViewBounds()
+    // Holds the bounds of the view to be laid out
+    protected val viewBounds = ViewBounds()
+    private val viewRecycler = ViewRecycler(layoutManager, layoutInfo)
+    private val layoutResult = LayoutResult()
 
     /**
      * Used to update any internal layout state before onLayoutChildren starts its job
@@ -49,8 +54,6 @@ internal abstract class StructureEngineer(
     }
 
     protected abstract fun getArchitect(): LayoutArchitect
-
-    protected abstract fun getViewRecycler(): ViewRecycler
 
     /**
      * Places the pivot in the correct layout position and returns its bounds via [bounds]
@@ -63,34 +66,20 @@ internal abstract class StructureEngineer(
     )
 
     /**
-     * Places [view] at the end of the current layout and returns its bounds via [bounds]
-     * @return layout space consumed by this view
+     * Places one or multiple views at the end/start of the current layout
      */
-    protected abstract fun appendView(
-        view: View,
-        position: Int,
-        bounds: ViewBounds,
-        layoutRequest: LayoutRequest
-    ): Int
-
-    /**
-     * Places [view] at the start of the current layout and returns its bounds via [bounds]
-     * @return layout space consumed by this view
-     */
-    protected abstract fun prependView(
-        view: View,
-        position: Int,
-        bounds: ViewBounds,
-        layoutRequest: LayoutRequest
-    ): Int
-
+    protected abstract fun layoutBlock(
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        layoutResult: LayoutResult
+    )
 
     /**
      * Make sure all children are in their initial positions before the real layout pass.
      * Also layout more views if needed so that they correctly appear in the next pass
      * instead of fading in.
      */
-    fun prelayout(
+    fun preLayoutChildren(
         pivotPosition: Int,
         layoutRequest: LayoutRequest,
         recycler: Recycler,
@@ -121,15 +110,15 @@ internal abstract class StructureEngineer(
         architect.updateForStartPreLayout(
             layoutRequest, extraLayoutSpace, firstPosition, firstView
         )
-        layoutEdge(layoutRequest, recycler, recyclerViewState)
+        layout(layoutRequest, recycler, recyclerViewState)
 
         architect.updateForEndPreLayout(
             layoutRequest, extraLayoutSpace, lastPosition, lastView
         )
-        layoutEdge(layoutRequest, recycler, recyclerViewState)
+        layout(layoutRequest, recycler, recyclerViewState)
     }
 
-    fun layout(
+    fun layoutChildren(
         pivotPosition: Int,
         layoutRequest: LayoutRequest,
         recycler: Recycler,
@@ -140,15 +129,15 @@ internal abstract class StructureEngineer(
         layoutManager.detachAndScrapAttachedViews(recycler)
 
         val architect = getArchitect()
-        val pivotView = layoutPivot(layoutRequest, recycler, pivotPosition, recyclerViewState)
+        val pivotView = layoutPivot(layoutRequest, recycler, pivotPosition)
 
         // Layout views before the pivot
-        architect.updateLayoutStateBeforePivot(layoutRequest, pivotPosition)
-        layoutEdge(layoutRequest, recycler, recyclerViewState)
+        architect.updateLayoutStateBeforePivot(layoutRequest, pivotView, pivotPosition)
+        layout(layoutRequest, recycler, recyclerViewState)
 
         // Layout views after the pivot
-        architect.updateLayoutStateAfterPivot(layoutRequest, pivotPosition)
-        layoutEdge(layoutRequest, recycler, recyclerViewState)
+        architect.updateLayoutStateAfterPivot(layoutRequest, pivotView, pivotPosition)
+        layout(layoutRequest, recycler, recyclerViewState)
 
         layoutForPredictiveAnimations(architect, layoutRequest, recycler, recyclerViewState)
 
@@ -172,25 +161,23 @@ internal abstract class StructureEngineer(
         layoutRequest: LayoutRequest,
         recycler: Recycler,
         recyclerViewState: State
-    ) {
+    ): Int {
         val architect = getArchitect()
+
         // Offset views immediately
         offsetChildren(-offset, layoutRequest)
 
         // Now layout the next views and recycle the ones we don't need along the way
         architect.updateLayoutStateForScroll(layoutRequest, recyclerViewState, offset)
-        layoutEdge(layoutRequest, recycler, recyclerViewState)
+        layout(layoutRequest, recycler, recyclerViewState)
+
+        return offset
     }
 
-    private fun layoutPivot(
-        layoutRequest: LayoutRequest,
-        recycler: Recycler,
-        position: Int,
-        state: State
-    ): View {
+    private fun layoutPivot(layoutRequest: LayoutRequest, recycler: Recycler, position: Int): View {
         val view = recycler.getViewForPosition(position)
         layoutManager.addView(view)
-        onChildLayoutListener.onChildCreated(view, state)
+        onChildLayoutListener.onChildCreated(view)
         layoutManager.measureChildWithMargins(view, 0, 0)
 
         // Place the pivot in its keyline position
@@ -205,86 +192,57 @@ internal abstract class StructureEngineer(
 
         viewBounds.setEmpty()
 
-        onChildLayoutListener.onChildLaidOut(view, state)
+        onChildLayoutListener.onChildLaidOut(view)
         return view
     }
 
-    private fun layoutEdge(
-        layoutRequest: LayoutRequest,
-        recycler: RecyclerView.Recycler,
-        state: State
-    ) {
+    /**
+     * @return new space added to the layout
+     */
+    private fun layout(layoutRequest: LayoutRequest, recycler: Recycler, state: State): Int {
         var remainingSpace = layoutRequest.fillSpace
-        // Start by recycling children that moved out of bounds
-        val viewRecycler = getViewRecycler()
-        viewRecycler.recycleByLayoutState(recycler, layoutRequest)
+        layoutResult.reset()
 
-        val isAppending = layoutRequest.isLayingOutEnd()
+        // Start by recycling children that moved out of bounds
+        viewRecycler.recycleByLayoutRequest(recycler, layoutRequest)
 
         // Keep appending or prepending views until we run out of fill space or items
         while (shouldContinueLayout(remainingSpace, layoutRequest, state)) {
-            val currentPosition = layoutRequest.currentPosition
-            val view = layoutRequest.getNextView(recycler) ?: break
-            if (!layoutRequest.isUsingScrap()) {
-                if (isAppending) {
-                    layoutManager.addView(view)
-                } else {
-                    layoutManager.addView(view, 0)
-                }
-            } else if (isAppending) {
-                layoutManager.addDisappearingView(view)
-            } else {
-                layoutManager.addDisappearingView(view, 0)
+            layoutBlock(layoutRequest, recycler, layoutResult)
+
+            layoutRequest.offsetCheckpoint(
+                layoutResult.consumedSpace * layoutRequest.direction.value
+            )
+
+            if (!layoutResult.skipConsumption) {
+                remainingSpace -= layoutResult.consumedSpace
             }
 
-            onChildLayoutListener.onChildCreated(view, state)
-            layoutManager.measureChildWithMargins(view, 0, 0)
-
-            val consumedSpace = if (isAppending) {
-                appendView(view, currentPosition, viewBounds, layoutRequest)
-            } else {
-                prependView(view, currentPosition, viewBounds, layoutRequest)
+            /**
+             * We don't need to recycle if we didn't consume any space.
+             * If we consumed space, we need to recycle children in the opposite direction of layout
+             */
+            if (layoutResult.consumedSpace > 0) {
+                viewRecycler.recycleByLayoutRequest(recycler, layoutRequest)
             }
 
-            performLayout(view, viewBounds)
-
-            if (DEBUG) {
-                Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
-            }
-            viewBounds.setEmpty()
-
-            // TODO Check if view was removed or changed before consuming this space
-            remainingSpace -= consumedSpace
-            // We don't need to recycle if we didn't consume any space
-            if (consumedSpace > 0) {
-                viewRecycler.recycleByLayoutState(recycler, layoutRequest)
-            }
-            onChildLayoutListener.onChildLaidOut(view, state)
+            layoutResult.reset()
         }
 
-        // Recycle children in the opposite direction of layout
-        // to be sure we don't have any extra views
-        viewRecycler.recycleByLayoutState(recycler, layoutRequest)
+        // Recycle once again after layout is done
+        viewRecycler.recycleByLayoutRequest(recycler, layoutRequest)
+
+        return layoutRequest.fillSpace - remainingSpace
     }
 
     private fun removeInvisibleViews(recycler: Recycler, layoutRequest: LayoutRequest) {
         layoutRequest.setRecyclingEnabled(true)
-        getViewRecycler().apply {
-            recycleFromStart(recycler, layoutRequest)
-            recycleFromEnd(recycler, layoutRequest)
-        }
+        viewRecycler.recycleFromStart(recycler, layoutRequest)
+        viewRecycler.recycleFromEnd(recycler, layoutRequest)
     }
 
     open fun offsetChildren(offset: Int, layoutRequest: LayoutRequest) {
         layoutInfo.orientationHelper.offsetChildren(offset)
-        layoutRequest.offsetWindow(offset)
-        if (DEBUG) {
-            if (layoutInfo.isVertical()) {
-                viewBounds.offsetVertical(offset)
-            } else {
-                viewBounds.offsetHorizontal(offset)
-            }
-        }
     }
 
     fun logChildren() {
@@ -320,10 +278,10 @@ internal abstract class StructureEngineer(
         recyclerViewState: State
     ) {
         architect.updateForExtraLayoutStart(layoutRequest, recyclerViewState)
-        layoutEdge(layoutRequest, recycler, recyclerViewState)
+        layout(layoutRequest, recycler, recyclerViewState)
 
         architect.updateForExtraLayoutEnd(layoutRequest, recyclerViewState)
-        layoutEdge(layoutRequest, recycler, recyclerViewState)
+        layout(layoutRequest, recycler, recyclerViewState)
     }
 
     /**
@@ -374,7 +332,7 @@ internal abstract class StructureEngineer(
                     layoutRequest,
                     layoutManager.getPosition(anchor)
                 )
-                layoutEdge(layoutRequest, recycler, state)
+                layout(layoutRequest, recycler, state)
             }
         }
 
@@ -385,14 +343,37 @@ internal abstract class StructureEngineer(
                     layoutRequest,
                     layoutManager.getPosition(anchor)
                 )
-                layoutEdge(layoutRequest, recycler, state)
+                layout(layoutRequest, recycler, state)
             }
         }
 
         layoutRequest.setScrap(null)
     }
 
-    private fun performLayout(view: View, bounds: ViewBounds) {
+    protected fun addView(view: View, layoutRequest: LayoutRequest) {
+        if (!layoutRequest.isUsingScrap()) {
+            if (layoutRequest.isLayingOutEnd()) {
+                layoutManager.addView(view)
+            } else {
+                layoutManager.addView(view, 0)
+            }
+        } else if (layoutRequest.isLayingOutEnd()) {
+            layoutManager.addDisappearingView(view)
+        } else {
+            layoutManager.addDisappearingView(view, 0)
+        }
+        onChildLayoutListener.onChildCreated(view)
+    }
+
+    /**
+     * Views that were removed or changed won't count for the consumed space logic inside [layout]
+     */
+    protected fun shouldSkipSpaceOf(view: View): Boolean {
+        val layoutParams = view.layoutParams as RecyclerView.LayoutParams
+        return layoutParams.isItemRemoved || layoutParams.isItemChanged
+    }
+
+    protected fun performLayout(view: View, bounds: ViewBounds) {
         layoutManager.layoutDecoratedWithMargins(
             view, bounds.left, bounds.top, bounds.right, bounds.bottom
         )
@@ -403,7 +384,7 @@ internal abstract class StructureEngineer(
         layoutRequest: LayoutRequest,
         state: State
     ): Boolean {
-        return layoutRequest.hasMoreItems(state) && (remainingSpace > 0 || layoutRequest.isInfinite())
+        return layoutRequest.hasMoreItems(state) && (remainingSpace > 0 || layoutRequest.isInfinite)
     }
 
 }

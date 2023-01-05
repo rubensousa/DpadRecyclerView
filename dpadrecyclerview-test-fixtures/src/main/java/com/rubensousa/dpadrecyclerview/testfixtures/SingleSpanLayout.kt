@@ -73,14 +73,14 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
         }
     }
 
-    override fun layoutBlock(request: LayoutRequest): LayoutResult {
+    override fun layoutBlock(request: LayoutBlockRequest): LayoutBlockResult {
         val view = if (request.isTowardsEnd()) {
             append(request.position, request.checkpoint)
         } else {
             prepend(request.position, request.checkpoint)
         }
         request.position += request.direction
-        return LayoutResult(
+        return LayoutBlockResult(
             views = listOf(view),
             consumedSpace = if (isVertical()) {
                 view.getDecoratedHeight()

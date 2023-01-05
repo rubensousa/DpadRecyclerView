@@ -419,6 +419,10 @@ internal class LayoutInfo(
         }
     }
 
+    fun isInfinite(): Boolean {
+        return orientationHelper.mode == View.MeasureSpec.UNSPECIFIED && orientationHelper.end == 0
+    }
+
     fun isRemoved(viewHolder: ViewHolder): Boolean {
         val layoutParams = viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
         return layoutParams.isItemRemoved
@@ -461,7 +465,7 @@ internal class LayoutInfo(
         }
     }
 
-    private fun getOppositeOrientation() : Int {
+    private fun getOppositeOrientation(): Int {
         return if (configuration.isVertical()) {
             RecyclerView.HORIZONTAL
         } else {

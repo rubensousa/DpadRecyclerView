@@ -16,9 +16,20 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-import android.view.View
+class LayoutResult {
+    /**
+     * New space added to the layout
+     */
+    var consumedSpace: Int = 0
 
-internal interface OnChildLayoutListener {
-    fun onChildCreated(view: View)
-    fun onChildLaidOut(view: View)
+    /**
+     * Will be true if the View that was laid out was removed or changed
+     */
+    var skipConsumption: Boolean = false
+
+    fun reset() {
+        consumedSpace = 0
+        skipConsumption = false
+    }
+
 }

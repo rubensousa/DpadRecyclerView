@@ -23,10 +23,10 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewRecycler
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutArchitect
 
 // TODO Add a second pass to adjust view heights based on row size
@@ -38,16 +38,13 @@ internal class GridLayoutEngineer(
 ) : StructureEngineer(layoutManager, layoutInfo, layoutAlignment, onChildLayoutListener) {
 
     companion object {
-        const val TAG = "GridArchitect"
+        const val TAG = "GridLayoutEngineer"
     }
 
     private val architect = LinearLayoutArchitect(layoutInfo)
-    private val recycler = GridRecycler(layoutManager, layoutInfo)
     private val grid = Grid(numberOfSpans = layoutInfo.getSpanCount())
 
     override fun getArchitect(): LayoutArchitect = architect
-
-    override fun getViewRecycler(): ViewRecycler = recycler
 
     override fun init(
         layoutRequest: LayoutRequest,
@@ -96,11 +93,17 @@ internal class GridLayoutEngineer(
             bounds.top = grid.getTopRowStartOffset()
             bounds.bottom = grid.getTopRowEndOffset()
         }
-
-        layoutRequest.updateWindow(head, head)
     }
 
-    override fun appendView(
+    override fun layoutBlock(
+        layoutRequest: LayoutRequest,
+        recycler: RecyclerView.Recycler,
+        layoutResult: LayoutResult
+    ) {
+
+    }
+
+    private fun appendView(
         view: View,
         position: Int,
         bounds: ViewBounds,
@@ -115,11 +118,11 @@ internal class GridLayoutEngineer(
             // TODO
             0
         }
-        layoutRequest.appendWindow(consumedSpace)
+       // layoutRequest.appendWindow(consumedSpace)
         return consumedSpace
     }
 
-    override fun prependView(
+    private fun prependView(
         view: View,
         position: Int,
         bounds: ViewBounds,
@@ -134,7 +137,7 @@ internal class GridLayoutEngineer(
             // TODO
             0
         }
-        layoutRequest.prependWindow(consumedSpace)
+      //  layoutRequest.prependWindow(consumedSpace)
         return consumedSpace
     }
 

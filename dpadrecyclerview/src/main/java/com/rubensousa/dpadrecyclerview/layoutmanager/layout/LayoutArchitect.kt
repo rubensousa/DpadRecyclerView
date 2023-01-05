@@ -24,16 +24,26 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
 
     private val extraLayoutSpace = IntArray(2)
 
-    abstract fun updateLayoutStateForPredictiveStart(layoutRequest: LayoutRequest, anchorPosition: Int)
-    abstract fun updateLayoutStateForPredictiveEnd(layoutRequest: LayoutRequest, anchorPosition: Int)
+    abstract fun updateLayoutStateForPredictiveStart(
+        layoutRequest: LayoutRequest,
+        anchorPosition: Int
+    )
+
+    abstract fun updateLayoutStateForPredictiveEnd(
+        layoutRequest: LayoutRequest,
+        anchorPosition: Int
+    )
+
     abstract fun updateForExtraLayoutEnd(
         layoutRequest: LayoutRequest,
         recyclerViewState: RecyclerView.State
     )
+
     abstract fun updateForExtraLayoutStart(
         layoutRequest: LayoutRequest,
         recyclerViewState: RecyclerView.State
     )
+
     abstract fun updateLayoutStateForScroll(
         layoutRequest: LayoutRequest,
         recyclerViewState: RecyclerView.State,
@@ -74,29 +84,37 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         }
     }
 
-    fun updateLayoutStateAfterPivot(layoutRequest: LayoutRequest, pivotPosition: Int) {
-        layoutRequest.apply {
-            setEndDirection()
-            setCurrentPosition(pivotPosition + 1)
-            setCheckpoint(layoutRequest.getEndOffset())
-            setAvailableScrollSpace(0)
-            val endFillSpace = max(
-                0, layoutInfo.getEndAfterPadding() - layoutRequest.getEndOffset()
-            )
-            setFillSpace(layoutRequest.extraLayoutSpaceEnd + endFillSpace)
-        }
-    }
-
-    fun updateLayoutStateBeforePivot(layoutRequest: LayoutRequest, pivotPosition: Int) {
+    fun updateLayoutStateBeforePivot(
+        layoutRequest: LayoutRequest,
+        pivotView: View,
+        pivotPosition: Int
+    ) {
         layoutRequest.apply {
             setStartDirection()
             setCurrentPosition(pivotPosition - 1)
-            setCheckpoint(layoutRequest.getStartOffset())
+            setCheckpoint(layoutInfo.getDecoratedStart(pivotView))
             setAvailableScrollSpace(0)
             val startFillSpace = max(
-                0, layoutRequest.getStartOffset() - layoutInfo.getStartAfterPadding()
+                0, checkpoint - layoutInfo.getStartAfterPadding()
             )
-            setFillSpace(layoutRequest.extraLayoutSpaceStart + startFillSpace)
+            setFillSpace(startFillSpace + layoutRequest.extraLayoutSpaceStart)
+        }
+    }
+
+    fun updateLayoutStateAfterPivot(
+        layoutRequest: LayoutRequest,
+        pivotView: View,
+        pivotPosition: Int
+    ) {
+        layoutRequest.apply {
+            setEndDirection()
+            setCurrentPosition(pivotPosition + 1)
+            setCheckpoint(layoutInfo.getDecoratedEnd(pivotView))
+            setAvailableScrollSpace(0)
+            val endFillSpace = max(
+                0, layoutInfo.getEndAfterPadding() - checkpoint
+            )
+            setFillSpace(endFillSpace + layoutRequest.extraLayoutSpaceEnd)
         }
     }
 

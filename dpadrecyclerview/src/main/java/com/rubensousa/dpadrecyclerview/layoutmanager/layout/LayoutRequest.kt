@@ -25,8 +25,6 @@ import androidx.recyclerview.widget.RecyclerView
  */
 internal class LayoutRequest {
 
-    // TODO Remove: our source of truth should be the views added to the layout
-    private val window = LayoutWindow()
     // TODO Adjust by making it mutable
     private val scrap = LayoutScrap()
 
@@ -84,16 +82,22 @@ internal class LayoutRequest {
     var isVertical: Boolean = true
         private set
 
+    // true if WRAP_CONTENT is used and we need to layout everything
+    var isInfinite: Boolean = false
+        private set
+
     fun init(
         isPreLayout: Boolean,
         gravity: Int,
         isVertical: Boolean,
-        reverseLayout: Boolean
+        reverseLayout: Boolean,
+        infinite: Boolean
     ) {
         this.isPreLayout = isPreLayout
         this.reverseLayout = reverseLayout
         this.gravity = gravity
         this.isVertical = isVertical
+        this.isInfinite = infinite
         isRecyclingEnabled = false
     }
 
@@ -109,51 +113,12 @@ internal class LayoutRequest {
         fillSpace = space
     }
 
-    fun getStartOffset() = window.startOffset
-
-    fun getEndOffset() = window.endOffset
-
-    // true if WRAP_CONTENT is used and we need to layout everything
-    fun isInfinite() = window.isInfinite
-
     fun setCheckpoint(offset: Int) {
         checkpoint = offset
     }
 
-    fun updateWindow(start: Int, end: Int) {
-        window.startOffset = start
-        window.endOffset = end
-    }
-
-    fun updateWindowStart(start: Int) {
-        window.startOffset = start
-    }
-
-    fun updateWindowEnd(end: Int) {
-        window.endOffset = end
-    }
-
-    fun offsetWindow(offset: Int) {
-        window.offset(offset)
+    fun offsetCheckpoint(offset: Int) {
         checkpoint += offset
-    }
-
-    fun appendWindow(offset: Int) {
-        window.append(offset)
-        checkpoint += offset
-    }
-
-    fun prependWindow(offset: Int) {
-        window.prepend(offset)
-        checkpoint -= offset
-    }
-
-    fun increaseWindowStart(size: Int) {
-        window.startOffset += size
-    }
-
-    fun decreaseWindowEnd(size: Int) {
-        window.endOffset -= size
     }
 
     fun hasMoreItems(state: RecyclerView.State): Boolean {
@@ -166,6 +131,7 @@ internal class LayoutRequest {
      *
      * @return The next element that we should layout.
      */
+    // TODO Move this to another class
     fun getNextView(recycler: RecyclerView.Recycler): View? {
         if (scrap.exists()) {
             val scrapView = scrap.getNextScrapView()
@@ -228,13 +194,10 @@ internal class LayoutRequest {
         extraLayoutSpaceStart = 0
         fillSpace = 0
         checkpoint = 0
-        window.startOffset = 0
-        window.endOffset = 0
     }
 
     override fun toString(): String {
-        return "LayoutState(window=$window, " +
-                "direction=$direction, " +
+        return "LayoutState(direction=$direction, " +
                 "fillSpace=$fillSpace, " +
                 "currentPosition=$currentPosition, " +
                 "isPreLayout=$isPreLayout, " +
@@ -267,44 +230,6 @@ internal class LayoutRequest {
     internal enum class ItemDirection(val value: Int) {
         HEAD(-1),
         TAIL(1)
-    }
-
-    /**
-     * Represents the current layout structure
-     */
-    private inner class LayoutWindow {
-
-        /**
-         * Current start position of the laid out views
-         */
-        var startOffset = 0
-
-        /**
-         * Current end position of the laid out views
-         */
-        var endOffset = 0
-
-        /**
-         * Used when there is no limit in how many views can be laid out.
-         */
-        var isInfinite = false
-
-        fun append(offset: Int) {
-            endOffset += offset
-        }
-
-        fun prepend(offset: Int) {
-            startOffset -= offset
-        }
-
-        fun offset(offset: Int) {
-            startOffset += offset
-            endOffset += offset
-        }
-
-        override fun toString(): String {
-            return "LayoutWindow(startOffset=$startOffset, endOffset=$endOffset, isInfinite=$isInfinite)"
-        }
     }
 
     /**

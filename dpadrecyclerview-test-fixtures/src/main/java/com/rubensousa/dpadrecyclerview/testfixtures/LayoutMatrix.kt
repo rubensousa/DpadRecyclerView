@@ -28,14 +28,14 @@ abstract class LayoutMatrix(
     var selectedPosition = RecyclerView.NO_POSITION
         private set
 
-    protected val layoutRequest = LayoutRequest()
+    protected val layoutRequest = LayoutBlockRequest()
     private var itemCount: Int = config.defaultItemCount
     private val views = CircularArray<ViewItem>()
     private var extraLayoutSpaceStart = 0
     private var extraLayoutSpaceEnd = 0
 
     abstract fun isVertical(): Boolean
-    abstract fun layoutBlock(request: LayoutRequest): LayoutResult
+    abstract fun layoutBlock(request: LayoutBlockRequest): LayoutBlockResult
     abstract fun scrollBy(offset: Int)
     abstract fun getLayoutStartOffset(): Int
     abstract fun getLayoutEndOffset(): Int
@@ -203,7 +203,7 @@ abstract class LayoutMatrix(
         fill(layoutRequest)
     }
 
-    protected fun fill(request: LayoutRequest) {
+    protected fun fill(request: LayoutBlockRequest) {
         var remainingSpace = request.space
         while (canContinueLayout(remainingSpace, request)) {
             val result = layoutBlock(request)
@@ -232,7 +232,7 @@ abstract class LayoutMatrix(
         selectedPosition = RecyclerView.NO_POSITION
     }
 
-    private fun canContinueLayout(remainingSpace: Int, request: LayoutRequest): Boolean {
+    private fun canContinueLayout(remainingSpace: Int, request: LayoutBlockRequest): Boolean {
         return remainingSpace > 0 && request.position >= 0 && request.position < itemCount
     }
 

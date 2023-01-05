@@ -16,17 +16,19 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 
+import android.util.Log
 import android.view.Gravity
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewRecycler
 
 /**
  * General layout algorithm:
@@ -44,15 +46,12 @@ internal class LinearLayoutEngineer(
 ) : StructureEngineer(layoutManager, layoutInfo, layoutAlignment, onChildLayoutListener) {
 
     companion object {
-        const val TAG = "RowArchitect"
+        const val TAG = "LinearLayoutEngineer"
     }
 
     private val architect = LinearLayoutArchitect(layoutInfo)
-    private val recycler = LinearRecycler(layoutManager, layoutInfo)
 
     override fun getArchitect(): LayoutArchitect = architect
-
-    override fun getViewRecycler(): ViewRecycler = recycler
 
     override fun placePivot(
         view: View,
@@ -73,56 +72,70 @@ internal class LinearLayoutEngineer(
             bounds.right = tailOffset
             applyVerticalGravity(view, bounds, layoutRequest)
         }
-
-        layoutRequest.updateWindow(start = headOffset, end = tailOffset)
     }
 
-    override fun appendView(
-        view: View,
-        position: Int,
-        bounds: ViewBounds,
-        layoutRequest: LayoutRequest
-    ): Int {
+    override fun layoutBlock(
+        layoutRequest: LayoutRequest,
+        recycler: RecyclerView.Recycler,
+        layoutResult: LayoutResult
+    ) {
+        // Exit early if we're out of views to layout
+        val view = layoutRequest.getNextView(recycler) ?: return
+        addView(view, layoutRequest)
+        layoutManager.measureChildWithMargins(view, 0, 0)
+
+        layoutResult.consumedSpace = if (layoutRequest.isLayingOutEnd()) {
+            append(view, viewBounds, layoutRequest)
+        } else {
+            prepend(view, viewBounds, layoutRequest)
+        }
+
+        if (DEBUG) {
+            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
+        }
+
+        layoutResult.skipConsumption = shouldSkipSpaceOf(view)
+
+        performLayout(view, viewBounds)
+        viewBounds.setEmpty()
+        onChildLayoutListener.onChildLaidOut(view)
+    }
+
+    private fun append(view: View, bounds: ViewBounds, layoutRequest: LayoutRequest): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
-        val consumedSpace = if (layoutRequest.isVertical) {
+        if (layoutRequest.isVertical) {
             // We need to align this view to an edge or center it, depending on the gravity set
             applyHorizontalGravity(view, bounds, layoutRequest)
             bounds.top = layoutRequest.checkpoint
             bounds.bottom = bounds.top + decoratedSize
-            bounds.height
         } else {
             applyVerticalGravity(view, bounds, layoutRequest)
             bounds.left = layoutRequest.checkpoint
             bounds.right = bounds.left + decoratedSize
-            bounds.width
         }
-        layoutRequest.appendWindow(consumedSpace)
-        return consumedSpace
+        return decoratedSize
     }
 
-    override fun prependView(
-        view: View,
-        position: Int,
-        bounds: ViewBounds,
-        layoutRequest: LayoutRequest
-    ): Int {
+    private fun prepend(view: View, bounds: ViewBounds, layoutRequest: LayoutRequest): Int {
         val decoratedSize = layoutInfo.getDecoratedSize(view)
-        val consumedSpace = if (layoutRequest.isVertical) {
+        if (layoutRequest.isVertical) {
             applyHorizontalGravity(view, bounds, layoutRequest)
             bounds.bottom = layoutRequest.checkpoint
             bounds.top = bounds.bottom - decoratedSize
-            bounds.height
+
         } else {
             applyVerticalGravity(view, bounds, layoutRequest)
             bounds.right = layoutRequest.checkpoint
             bounds.left = bounds.right - decoratedSize
-            bounds.width
         }
-        layoutRequest.prependWindow(consumedSpace)
-        return consumedSpace
+        return decoratedSize
     }
 
-    private fun applyHorizontalGravity(view: View, bounds: ViewBounds, layoutRequest: LayoutRequest) {
+    private fun applyHorizontalGravity(
+        view: View,
+        bounds: ViewBounds,
+        layoutRequest: LayoutRequest
+    ) {
         val horizontalGravity = if (layoutRequest.reverseLayout) {
             Gravity.getAbsoluteGravity(
                 layoutRequest.gravity.and(Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK),
