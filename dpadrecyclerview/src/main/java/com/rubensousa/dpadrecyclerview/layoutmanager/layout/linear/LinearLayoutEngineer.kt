@@ -21,6 +21,7 @@ import android.view.Gravity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
@@ -77,6 +78,7 @@ internal class LinearLayoutEngineer(
     override fun layoutBlock(
         layoutRequest: LayoutRequest,
         recycler: RecyclerView.Recycler,
+        state: State,
         layoutResult: LayoutResult
     ) {
         // Exit early if we're out of views to layout
@@ -94,7 +96,9 @@ internal class LinearLayoutEngineer(
             Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
         }
 
-        layoutResult.skipConsumption = shouldSkipSpaceOf(view)
+        if (shouldSkipSpaceOf(view)) {
+            layoutResult.skipConsumption = true
+        }
 
         performLayout(view, viewBounds)
         viewBounds.setEmpty()

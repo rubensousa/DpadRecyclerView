@@ -42,6 +42,7 @@ import com.rubensousa.dpadrecyclerview.internal.ScrollAlignment
 /**
  * A [GridLayoutManager] that supports DPAD navigation
  */
+@Deprecated("Replaced by PivotLayoutManager")
 internal class DpadLayoutManager(context: Context, properties: Properties) : GridLayoutManager(
     context,
     properties.spanCount,

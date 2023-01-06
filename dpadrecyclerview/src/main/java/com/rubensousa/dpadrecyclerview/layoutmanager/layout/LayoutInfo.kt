@@ -113,6 +113,10 @@ internal class LayoutInfo(
         return configuration.spanSizeLookup.getSpanSize(position)
     }
 
+    fun getCachedSpanIndex(position: Int): Int {
+        return configuration.spanSizeLookup.getCachedSpanIndex(position, configuration.spanCount)
+    }
+
     fun getStartColumnIndex(position: Int): Int {
         return configuration.spanSizeLookup.getSpanIndex(position, configuration.spanCount)
     }
@@ -279,10 +283,6 @@ internal class LayoutInfo(
             }
         }
         return RecyclerView.NO_POSITION
-    }
-
-    fun isWrapContent(): Boolean {
-        return orientationHelper.mode == View.MeasureSpec.UNSPECIFIED && orientationHelper.end == 0
     }
 
     fun getChildClosestToStart(): View? {
@@ -463,6 +463,13 @@ internal class LayoutInfo(
         } else {
             state.remainingScrollHorizontal
         }
+    }
+
+    fun getDecorationInsets(view: View, rect: Rect) {
+        rect.left = layout.getLeftDecorationWidth(view)
+        rect.top = layout.getTopDecorationHeight(view)
+        rect.right = layout.getRightDecorationWidth(view)
+        rect.bottom = layout.getBottomDecorationHeight(view)
     }
 
     private fun getOppositeOrientation(): Int {

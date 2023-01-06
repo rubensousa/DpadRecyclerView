@@ -20,10 +20,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class DpadLayoutParams : GridLayoutManager.LayoutParams {
+class DpadLayoutParams : RecyclerView.LayoutParams {
 
     // TODO For custom placement
     var leftInset = 0
@@ -41,6 +40,12 @@ class DpadLayoutParams : GridLayoutManager.LayoutParams {
     var alignY = 0
         private set
 
+    var spanSize = 1
+        private set
+
+    var spanIndex = 0
+        private set
+
     private var alignmentPositions: IntArray? = null
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
@@ -49,6 +54,14 @@ class DpadLayoutParams : GridLayoutManager.LayoutParams {
     constructor(source: ViewGroup.LayoutParams) : super(source)
     constructor(source: RecyclerView.LayoutParams) : super(source)
     constructor(source: DpadLayoutParams) : super(source)
+
+    internal fun setSpanSize(size: Int) {
+        spanSize = size
+    }
+
+    internal fun setSpanIndex(index: Int) {
+        spanIndex = index
+    }
 
     fun getOpticalLeft(view: View): Int {
         return view.left + leftInset

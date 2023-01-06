@@ -76,13 +76,6 @@ internal class PivotLayout(
         if (DEBUG) {
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")
         }
-        layoutRequest.init(
-            isPreLayout = state.isPreLayout,
-            gravity = configuration.gravity,
-            isVertical = configuration.isVertical(),
-            reverseLayout = configuration.reverseLayout,
-            infinite = layoutInfo.isInfinite()
-        )
         structureEngineer.init(layoutRequest, state)
         layoutInfo.setLayoutInProgress()
         layoutAlignment.update()
@@ -118,7 +111,12 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
-        structureEngineer.preLayoutChildren(pivotPosition, layoutRequest, recycler, recyclerViewState)
+        structureEngineer.preLayoutChildren(
+            pivotPosition,
+            layoutRequest,
+            recycler,
+            recyclerViewState
+        )
 
         if (DEBUG) {
             Log.i(TAG, "PreLayoutFinished")
@@ -132,7 +130,9 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
-        structureEngineer.layoutChildren(pivotSelector.position, layoutRequest, recycler, recyclerViewState)
+        structureEngineer.layoutChildren(
+            pivotSelector.position, layoutRequest, recycler, recyclerViewState
+        )
 
         if (DEBUG) {
             Log.i(TAG, "LayoutFinished")
@@ -195,7 +195,7 @@ internal class PivotLayout(
             return 0
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
-        return   structureEngineer.scrollBy(scrollOffset, layoutRequest, recycler, state)
+        return structureEngineer.scrollBy(scrollOffset, layoutRequest, recycler, state)
     }
 
     // TODO
@@ -243,7 +243,6 @@ internal class PivotLayout(
     private inner class ChildLayoutListener : OnChildLayoutListener {
         override fun onChildCreated(view: View) {
             scroller.onChildCreated(view)
-            layoutAlignment.updateScrollLimits()
         }
 
         override fun onChildLaidOut(view: View) {

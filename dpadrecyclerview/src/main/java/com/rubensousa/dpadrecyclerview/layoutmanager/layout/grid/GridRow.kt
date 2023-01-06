@@ -20,9 +20,9 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 
 internal class GridRow(
-    private val numberOfSpans: Int,
+    val numberOfSpans: Int,
     // This is the primary space, which would be height for horizontal grids
-    var width: Int
+    private var width: Int
 ) {
 
     var startIndex = RecyclerView.NO_POSITION
@@ -40,6 +40,7 @@ internal class GridRow(
         private set
 
     private val heights = IntArray(numberOfSpans)
+    private val spanBorders = IntArray(numberOfSpans + 1) { 0 }
 
     constructor(row: GridRow) : this(row.numberOfSpans, row.width) {
         heights.fill(0)
@@ -59,6 +60,42 @@ internal class GridRow(
         startIndex = spanIndex
         endIndex = startIndex + spanSize - 1
         updateHeight(viewSize, startIndex, spanSize)
+    }
+
+    fun setWidth(newWidth: Int) {
+        width = newWidth
+        spanBorders[0] = 0
+        val sizePerSpan: Int = newWidth / numberOfSpans
+        val sizePerSpanRemainder: Int = newWidth % numberOfSpans
+        var consumedPixels = 0
+        var additionalSize = 0
+        for (i in 1..numberOfSpans) {
+            var itemSize = sizePerSpan
+            additionalSize += sizePerSpanRemainder
+            if (additionalSize > 0 && numberOfSpans - additionalSize < sizePerSpanRemainder) {
+                itemSize += 1
+                additionalSize -= numberOfSpans
+            }
+            consumedPixels += itemSize
+            spanBorders[i] = consumedPixels
+        }
+    }
+
+    fun getSpanBorder(index: Int): Int {
+        return spanBorders[index]
+    }
+
+    fun getSpaceForSpanRange(
+        startSpan: Int,
+        spanSize: Int,
+        isVerticalRTL: Boolean
+    ): Int {
+        return if (isVerticalRTL) {
+            (spanBorders[numberOfSpans - startSpan]
+                    - spanBorders[numberOfSpans - startSpan - spanSize])
+        } else {
+            spanBorders[startSpan + spanSize] - spanBorders[startSpan]
+        }
     }
 
     fun offsetBy(offset: Int) {

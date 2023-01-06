@@ -49,7 +49,21 @@ internal abstract class StructureEngineer(
     /**
      * Used to update any internal layout state before onLayoutChildren starts its job
      */
-    open fun init(layoutRequest: LayoutRequest, recyclerViewState: State) {
+    open fun init(layoutRequest: LayoutRequest, state: State) {
+        layoutRequest.init(
+            isPreLayout = state.isPreLayout,
+            gravity = layoutInfo.getConfiguration().gravity,
+            isVertical = layoutInfo.isVertical(),
+            reverseLayout = layoutInfo.getConfiguration().reverseLayout,
+            infinite = layoutInfo.isInfinite()
+        )
+    }
+
+    open fun onPreLayout() {
+
+    }
+
+    open fun onLayoutChildrenFinished() {
 
     }
 
@@ -71,6 +85,7 @@ internal abstract class StructureEngineer(
     protected abstract fun layoutBlock(
         layoutRequest: LayoutRequest,
         recycler: Recycler,
+        state: State,
         layoutResult: LayoutResult
     )
 
@@ -85,6 +100,7 @@ internal abstract class StructureEngineer(
         recycler: Recycler,
         recyclerViewState: State
     ) {
+        onPreLayout()
         val childCount = layoutInfo.getChildCount()
         val firstView = layoutInfo.getChildAt(0) ?: return
         val lastView = layoutInfo.getChildAt(childCount - 1) ?: return
@@ -154,6 +170,8 @@ internal abstract class StructureEngineer(
         ) {
             removeInvisibleViews(recycler, layoutRequest)
         }
+
+        onLayoutChildrenFinished()
     }
 
     fun scrollBy(
@@ -210,7 +228,7 @@ internal abstract class StructureEngineer(
 
         // Keep appending or prepending views until we run out of fill space or items
         while (shouldContinueLayout(remainingSpace, layoutRequest, state)) {
-            layoutBlock(layoutRequest, recycler, layoutResult)
+            layoutBlock(layoutRequest, recycler, state, layoutResult)
 
             layoutRequest.offsetCheckpoint(
                 layoutResult.consumedSpace * layoutRequest.direction.value
@@ -243,7 +261,7 @@ internal abstract class StructureEngineer(
         viewRecycler.recycleFromEnd(recycler, layoutRequest)
     }
 
-    open fun offsetChildren(offset: Int, layoutRequest: LayoutRequest) {
+    private fun offsetChildren(offset: Int, layoutRequest: LayoutRequest) {
         layoutInfo.orientationHelper.offsetChildren(offset)
         layoutRequest.offsetCheckpoint(offset)
     }
