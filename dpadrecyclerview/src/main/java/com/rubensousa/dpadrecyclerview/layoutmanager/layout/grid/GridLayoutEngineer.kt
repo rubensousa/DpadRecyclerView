@@ -51,7 +51,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutArchitect
 
 internal class GridLayoutEngineer(
     layoutManager: LayoutManager,
@@ -65,20 +64,22 @@ internal class GridLayoutEngineer(
     }
 
     private val insets = Rect()
-    private val architect = LinearLayoutArchitect(layoutInfo)
     private val preLayoutSpanSizeCache = SparseIntArray()
     private val preLayoutSpanIndexCache = SparseIntArray()
     private val rowViews = Array<View?>(layoutInfo.getSpanCount()) { null }
-    private val layoutRow = GridRow(
+    private val startRow = GridRow(
         numberOfSpans = layoutInfo.getSpanCount(),
         width = layoutInfo.getSecondaryTotalSpace()
     )
+    private val endRow = GridRow(startRow)
+    private val architect = GridLayoutArchitect(layoutInfo, startRow, endRow)
 
     override fun getArchitect(): LayoutArchitect = architect
 
     override fun init(layoutRequest: LayoutRequest, state: State) {
         super.init(layoutRequest, state)
-        layoutRow.setWidth(layoutInfo.getSecondaryTotalSpace())
+        endRow.setWidth(layoutInfo.getSecondaryTotalSpace())
+        startRow.setWidth(layoutInfo.getSecondaryTotalSpace())
     }
 
     override fun onPreLayout() {
@@ -101,24 +102,33 @@ internal class GridLayoutEngineer(
         val tail = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
         val decoratedSize = tail - head
         val spanSize = layoutInfo.getSpanSize(position)
+        val spanIndex = layoutInfo.getStartColumnIndex(position)
+        val params = layoutInfo.getLayoutParams(view)
+        params.updateSpan(index = spanIndex, size = spanSize)
 
-        layoutRow.init(
-            newTop = head,
+       /** startRow.init(
+            newOffset = head,
             viewSize = decoratedSize,
-            spanIndex = layoutInfo.getStartColumnIndex(position),
+            spanIndex = spanIndex,
             spanSize = spanSize
         )
+        endRow.init(
+            newOffset = head,
+            viewSize = decoratedSize,
+            spanIndex = spanIndex,
+            spanSize = spanSize
+        ) */
 
         if (layoutRequest.isVertical) {
             bounds.top = head
             bounds.bottom = tail
-            bounds.left = layoutRow.getStartOffset()
-            bounds.right = layoutRow.getEndOffset()
+            bounds.left = startRow.getSpanStartOffset()
+            bounds.right = startRow.getSpanEndOffset()
         } else {
             bounds.left = head
             bounds.right = tail
-            bounds.top = layoutRow.getStartOffset()
-            bounds.bottom = layoutRow.getEndOffset()
+            bounds.top = startRow.getSpanStartOffset()
+            bounds.bottom = startRow.getSpanEndOffset()
         }
     }
 
@@ -148,10 +158,15 @@ internal class GridLayoutEngineer(
         val viewCount = getViewsForRow(layoutRequest, recycler, state, fillSpanCount)
         assignSpans(recycler, state, viewCount, layoutRequest.itemDirection)
 
-        val rowHeight = fillRow(viewCount, layoutRequest)
+        val row = if (layoutRequest.isLayingOutEnd()) {
+            endRow
+        } else {
+            startRow
+        }
+        val rowHeight = fillRow(viewCount, row, layoutRequest)
         layoutResult.consumedSpace = rowHeight
-        reMeasureChildren(viewCount, rowHeight)
-        layoutRow(viewCount, rowHeight, layoutRequest, layoutResult)
+        reMeasureChildren(row, viewCount)
+        layoutResult.skipConsumption = layoutRow(viewCount, row, layoutRequest)
     }
 
     /**
@@ -159,35 +174,42 @@ internal class GridLayoutEngineer(
      */
     private fun fillRow(
         viewCount: Int,
+        row: GridRow,
         layoutRequest: LayoutRequest
     ): Int {
         val secondarySpecMode = layoutInfo.orientationHelper.modeInOther
         repeat(viewCount) { index ->
-            val view = rowViews[index]!!
-            addView(view, layoutRequest)
+            val view = getRowViewAt(index)
             val layoutParams = layoutInfo.getLayoutParams(view)
+            if (layoutRequest.isLayingOutEnd() && !row.fitsEnd(layoutParams.spanSize)) {
+                return row.height
+            }
+            if (layoutRequest.isLayingOutStart() && !row.fitsStart(layoutParams.spanSize)) {
+                return row.height
+            }
+            addView(view, layoutRequest)
 
             layoutManager.calculateItemDecorationsForChild(view, insets)
 
-            measureChild(view, layoutParams, secondarySpecMode, alreadyMeasured = false)
+            measureChild(view, row, layoutParams, secondarySpecMode, alreadyMeasured = false)
 
             val decoratedSize = layoutInfo.getDecoratedSize(view)
             if (layoutRequest.isLayingOutEnd()) {
-                layoutRow.append(decoratedSize, layoutParams.spanSize)
+                row.append(decoratedSize, layoutParams.viewLayoutPosition, layoutParams.spanSize)
             } else {
-                layoutRow.prepend(decoratedSize, layoutParams.spanSize)
+                row.prepend(decoratedSize,layoutParams.viewLayoutPosition, layoutParams.spanSize)
             }
         }
-        return layoutRow.height
+        return row.height
     }
 
     private fun layoutRow(
         viewCount: Int,
-        rowHeight: Int,
-        layoutRequest: LayoutRequest,
-        layoutResult: LayoutResult
-    ) {
-        updateLayoutBounds(layoutRequest, rowHeight, viewBounds)
+        row: GridRow,
+        layoutRequest: LayoutRequest
+    ): Boolean {
+        var skipConsumption = false
+        updateLayoutBounds(layoutRequest, row, viewBounds)
 
         for (i in 0 until viewCount) {
             val view = getRowViewAt(i)
@@ -195,18 +217,18 @@ internal class GridLayoutEngineer(
             val perpendicularSize = layoutInfo.getPerpendicularDecoratedSize(view)
             if (layoutRequest.isVertical) {
                 if (layoutInfo.isRTL()) {
-                    viewBounds.right = layoutManager.paddingLeft + layoutRow.getSpanBorder(
-                        layoutRow.numberOfSpans - layoutParams.spanIndex
+                    viewBounds.right = layoutManager.paddingLeft + row.getSpanBorder(
+                        row.numberOfSpans - layoutParams.spanIndex
                     )
                     viewBounds.left = viewBounds.right - perpendicularSize
                 } else {
-                    viewBounds.left = layoutManager.paddingLeft + layoutRow.getSpanBorder(
+                    viewBounds.left = layoutManager.paddingLeft + row.getSpanBorder(
                         layoutParams.spanIndex
                     )
                     viewBounds.right = viewBounds.left + perpendicularSize
                 }
             } else {
-                viewBounds.top = layoutManager.paddingTop + layoutRow.getSpanBorder(
+                viewBounds.top = layoutManager.paddingTop + row.getSpanBorder(
                     layoutParams.spanIndex
                 )
                 viewBounds.bottom = viewBounds.top + perpendicularSize
@@ -215,21 +237,24 @@ internal class GridLayoutEngineer(
             performLayout(view, viewBounds)
 
             if (shouldSkipSpaceOf(view)) {
-                layoutResult.skipConsumption = true
+                skipConsumption = true
             }
 
             onChildLayoutListener.onChildLaidOut(view)
         }
 
+        viewBounds.setEmpty()
         // Clear view references since we no longer need them
         rowViews.fill(null)
+        return skipConsumption
     }
 
     private fun updateLayoutBounds(
         layoutRequest: LayoutRequest,
-        rowHeight: Int,
+        row: GridRow,
         viewBounds: ViewBounds
     ) {
+        val rowHeight = row.height
         if (layoutRequest.isVertical) {
             if (layoutRequest.isLayingOutStart()) {
                 viewBounds.bottom = layoutRequest.checkpoint
@@ -252,17 +277,18 @@ internal class GridLayoutEngineer(
     /**
      * Views that don't have the height of the row need to be re-measured
      */
-    private fun reMeasureChildren(viewCount: Int, rowHeight: Int) {
+    private fun reMeasureChildren(row: GridRow, viewCount: Int) {
+        val rowHeight = row.height
         for (i in 0 until viewCount) {
             val view = getRowViewAt(i)
             val layoutParams = layoutInfo.getLayoutParams(view)
-            if (layoutRow.getHeightAt(layoutParams.spanIndex) != rowHeight) {
+            if (row.getHeightAt(layoutParams.spanIndex) != rowHeight) {
                 layoutInfo.getDecorationInsets(view, insets)
                 val verticalInsets = (insets.top + insets.bottom
                         + layoutParams.topMargin + layoutParams.bottomMargin)
                 val horizontalInsets = (insets.left + insets.right
                         + layoutParams.leftMargin + layoutParams.rightMargin)
-                val totalSpaceInOther = layoutRow.getSpaceForSpanRange(
+                val totalSpaceInOther = row.getSpaceForSpanRange(
                     startSpan = layoutParams.spanIndex,
                     spanSize = layoutParams.spanSize,
                     isVerticalRTL = layoutInfo.isVertical() && layoutInfo.isRTL()
@@ -297,6 +323,7 @@ internal class GridLayoutEngineer(
 
     private fun measureChild(
         view: View,
+        row: GridRow,
         layoutParams: DpadLayoutParams,
         secondarySpecMode: Int,
         alreadyMeasured: Boolean
@@ -305,7 +332,7 @@ internal class GridLayoutEngineer(
                 + layoutParams.topMargin + layoutParams.bottomMargin)
         val horizontalInsets = (insets.left + insets.right
                 + layoutParams.leftMargin + layoutParams.rightMargin)
-        val availableSpaceInOther = layoutRow.getSpaceForSpanRange(
+        val availableSpaceInOther = row.getSpaceForSpanRange(
             startSpan = layoutParams.spanIndex,
             spanSize = layoutParams.spanSize,
             isVerticalRTL = layoutInfo.isVertical() && layoutInfo.isRTL()
@@ -357,7 +384,7 @@ internal class GridLayoutEngineer(
         state: State
     ): Int {
         return if (request.itemDirection == LayoutRequest.ItemDirection.TAIL) {
-            layoutRow.numberOfSpans
+            startRow.numberOfSpans - startRow.startIndex
         } else {
             val spanIndex = getSpanIndex(recycler, state, request.currentPosition)
             val spanSize = getSpanSize(recycler, state, request.currentPosition)
@@ -376,10 +403,10 @@ internal class GridLayoutEngineer(
         while (isRowIncomplete(viewCount, layoutRequest, state, remainingSpans)) {
             val position = layoutRequest.currentPosition
             val spanSize = getSpanSize(recycler, state, position)
-            if (spanSize > layoutRow.numberOfSpans) {
+            if (spanSize > startRow.numberOfSpans) {
                 throw IllegalArgumentException(
                     "Item at position $position requires $spanSize, " +
-                            "but spanCount is ${layoutRow.numberOfSpans}"
+                            "but spanCount is ${startRow.numberOfSpans}"
                 )
             }
             remainingSpans -= spanSize
@@ -400,7 +427,7 @@ internal class GridLayoutEngineer(
         state: State,
         remainingSpans: Int
     ): Boolean {
-        return viewCount < layoutRow.numberOfSpans
+        return viewCount < startRow.numberOfSpans
                 && layoutRequest.hasMoreItems(state)
                 && remainingSpans > 0
     }
@@ -432,8 +459,10 @@ internal class GridLayoutEngineer(
         while (i != end) {
             val view = getRowViewAt(i)
             val params = layoutInfo.getLayoutParams(view)
-            params.setSpanSize(getSpanSize(recycler, state, layoutInfo.getLayoutPositionOf(view)))
-            params.setSpanIndex(span)
+            params.updateSpan(
+                index = span,
+                size = getSpanSize(recycler, state, layoutInfo.getLayoutPositionOf(view))
+            )
             span += params.spanSize
             i += increment
         }

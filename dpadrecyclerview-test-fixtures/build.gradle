@@ -3,6 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+apply from: "$rootProject.projectDir/gradle/coverage.gradle"
+
 android {
     namespace 'com.rubensousa.dpadrecyclerview.testfixtures'
     compileSdk versions.compileSdkVersion

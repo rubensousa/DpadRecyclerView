@@ -36,9 +36,17 @@ class LayoutBlockRequest {
         private set
 
     /**
+     * Adapter item direction: 1 -> towards end, -1 -> towards start
+     */
+    var itemDirection = 1
+        private set
+
+    /**
      * Total space to be laid out
      */
     var space: Int = 0
+
+    fun isItemTowardsEnd() = itemDirection == 1
 
     fun setTowardsEnd() {
         direction = 1
@@ -50,11 +58,21 @@ class LayoutBlockRequest {
 
     fun isTowardsEnd() = direction > 0
 
+    fun isTowardsStart() = direction < 0
+
     fun reset() {
         setTowardsEnd()
         checkpoint = 0
         position = RecyclerView.NO_POSITION
         space = 0
     }
+
+    override fun toString(): String {
+        return "LayoutBlockRequest(checkpoint=$checkpoint, " +
+                "position=$position, " +
+                "direction=$direction, " +
+                "space=$space)"
+    }
+
 
 }

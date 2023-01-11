@@ -35,11 +35,15 @@ abstract class LayoutMatrix(
     private var extraLayoutSpaceEnd = 0
 
     abstract fun isVertical(): Boolean
-    abstract fun layoutBlock(request: LayoutBlockRequest): LayoutBlockResult
     abstract fun scrollBy(offset: Int)
     abstract fun getLayoutStartOffset(): Int
     abstract fun getLayoutEndOffset(): Int
-    abstract fun getViewCenter(view: ViewItem): Int
+
+    protected abstract fun initializeLayout(pivotPosition: Int)
+    protected abstract fun layoutBlock(request: LayoutBlockRequest): LayoutBlockResult
+    protected abstract fun layoutExtraStart()
+    protected abstract fun layoutExtraEnd()
+    protected abstract fun getViewCenter(view: ViewItem): Int
 
     /**
      * Starts the layout with the view at [position] aligned in its final location
@@ -47,14 +51,7 @@ abstract class LayoutMatrix(
     fun init(position: Int) {
         clear()
         selectedPosition = position
-
-        val view = layoutPivot(position)
-
-        // Layout from the pivot until the start limit of the matrix
-        layoutFromPivotToStart(view)
-
-        // Layout from the pivot until the end limit of the matrix
-        layoutFromPivotToEnd(view)
+        initializeLayout(position)
     }
 
     fun getItemCount() = itemCount
@@ -103,6 +100,15 @@ abstract class LayoutMatrix(
         return views.get(index)
     }
 
+    fun findViewFromLayoutPosition(position: Int): ViewItem? {
+        views.forEach { view ->
+            if (view.position == position) {
+                return view
+            }
+        }
+        return null
+    }
+
     fun getChildCount(): Int {
         return views.size()
     }
@@ -139,70 +145,6 @@ abstract class LayoutMatrix(
         }
     }
 
-    private fun layoutPivot(pivotPosition: Int): ViewItem {
-        layoutRequest.reset()
-        layoutRequest.apply {
-            setTowardsEnd()
-            position = pivotPosition
-            checkpoint = 0
-            space = 1
-        }
-        val view = layoutBlock(layoutRequest).views.first()
-        views.addFirst(view)
-
-        // Align the pivot using the alignment configuration
-        val scrollOffset = getViewCenter(view) - config.parentKeyline
-        offsetChildren(-scrollOffset)
-
-        return view
-    }
-
-    private fun layoutExtraStart() {
-        val firstView = getFirstView() ?: return
-        layoutRequest.reset()
-        layoutRequest.apply {
-            setTowardsStart()
-            position = firstView.position - 1
-            checkpoint = getLayoutStartOffset()
-            space = max(0, checkpoint + extraLayoutSpaceStart)
-        }
-        fill(layoutRequest)
-    }
-
-    private fun layoutExtraEnd() {
-        val lastView = getLastView() ?: return
-        layoutRequest.reset()
-        layoutRequest.apply {
-            setTowardsEnd()
-            position = lastView.position + 1
-            checkpoint = getLayoutEndOffset()
-            space = max(0, getVisibleSpace() - checkpoint + extraLayoutSpaceEnd)
-        }
-        fill(layoutRequest)
-    }
-
-    private fun layoutFromPivotToStart(pivotView: ViewItem) {
-        layoutRequest.reset()
-        layoutRequest.apply {
-            setTowardsStart()
-            position = pivotView.position - 1
-            checkpoint = getDecoratedStart(pivotView)
-            space = max(0, checkpoint + extraLayoutSpaceStart)
-        }
-        fill(layoutRequest)
-    }
-
-    private fun layoutFromPivotToEnd(pivotView: ViewItem) {
-        layoutRequest.reset()
-        layoutRequest.apply {
-            setTowardsEnd()
-            position = pivotView.position + 1
-            checkpoint = getDecoratedEnd(pivotView)
-            space = max(0, getVisibleSpace() - checkpoint + extraLayoutSpaceEnd)
-        }
-        fill(layoutRequest)
-    }
-
     protected fun fill(request: LayoutBlockRequest) {
         var remainingSpace = request.space
         while (canContinueLayout(remainingSpace, request)) {
@@ -225,7 +167,7 @@ abstract class LayoutMatrix(
         }
     }
 
-    private fun clear() {
+    protected fun clear() {
         views.clear()
         extraLayoutSpaceEnd = 0
         extraLayoutSpaceStart = 0
@@ -252,12 +194,20 @@ abstract class LayoutMatrix(
         }
     }
 
-    private fun getVisibleSpace(): Int {
+    protected fun getVisibleSpace(): Int {
         return if (isVertical()) {
             config.parentHeight
         } else {
             config.parentWidth
         }
+    }
+
+    protected fun append(view: ViewItem) {
+        views.addLast(view)
+    }
+
+    protected fun prepend(view: ViewItem) {
+        views.addFirst(view)
     }
 
     protected fun recycleStart() {

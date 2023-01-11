@@ -26,7 +26,7 @@ import kotlin.math.max
 /**
  * Calculates the required amount for layout in both directions
  */
-internal class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(layoutInfo) {
+internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(layoutInfo) {
 
     override fun updateLayoutStateForPredictiveStart(
         layoutRequest: LayoutRequest,
@@ -110,7 +110,7 @@ internal class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(l
 
         if (layoutRequest.isLayingOutEnd()) {
             layoutRequest.apply {
-                setCheckpoint(layoutInfo.getDecoratedEnd(view))
+                setCheckpoint(getLayoutEnd())
                 // The available scroll space starts from the checkpoint until the actual edge
                 setAvailableScrollSpace(
                     max(0, checkpoint - layoutInfo.getEndAfterPadding())
@@ -121,7 +121,7 @@ internal class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchitect(l
             }
         } else {
             layoutRequest.apply {
-                setCheckpoint(layoutInfo.getDecoratedStart(view))
+                setCheckpoint(getLayoutStart())
                 setAvailableScrollSpace(
                     max(0, layoutInfo.getStartAfterPadding() - checkpoint)
                 )

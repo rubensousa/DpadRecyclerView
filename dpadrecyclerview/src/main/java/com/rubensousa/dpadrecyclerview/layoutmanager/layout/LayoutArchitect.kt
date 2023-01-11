@@ -84,7 +84,7 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         }
     }
 
-    fun updateLayoutStateBeforePivot(
+    open fun updateLayoutStateBeforePivot(
         layoutRequest: LayoutRequest,
         pivotView: View,
         pivotPosition: Int
@@ -101,7 +101,7 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         }
     }
 
-    fun updateLayoutStateAfterPivot(
+    open fun updateLayoutStateAfterPivot(
         layoutRequest: LayoutRequest,
         pivotView: View,
         pivotPosition: Int

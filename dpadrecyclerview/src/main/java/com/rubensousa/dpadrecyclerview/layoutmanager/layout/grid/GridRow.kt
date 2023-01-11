@@ -18,8 +18,9 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
+import kotlin.math.min
 
-internal class GridRow(
+class GridRow(
     val numberOfSpans: Int,
     // This is the primary space, which would be height for horizontal grids
     private var width: Int
@@ -35,31 +36,32 @@ internal class GridRow(
     var height = 0
         private set
 
-    // For horizontal grids, this would be the start
-    var top = 0
+    var startOffset = 0
+        private set
+
+    var endOffset = 0
         private set
 
     private val heights = IntArray(numberOfSpans)
+    private val positions = IntArray(numberOfSpans) { RecyclerView.NO_POSITION }
     private val spanBorders = IntArray(numberOfSpans + 1) { 0 }
 
     constructor(row: GridRow) : this(row.numberOfSpans, row.width) {
-        heights.fill(0)
-        height = 0
         startIndex = row.startIndex
         endIndex = row.endIndex
         height = row.height
-        top = row.top
-        val spanSize = endIndex - startIndex + 1
-        updateHeight(height, startIndex, spanSize)
+        startOffset = row.startOffset
+        endOffset = row.endOffset
+        for (i in 0 until numberOfSpans) {
+            heights[i] = row.getHeightAt(i)
+            positions[i] = row.getPositionAt(i)
+            spanBorders[i] = row.getSpanBorder(i)
+        }
+        spanBorders[numberOfSpans] = row.getSpanBorder(numberOfSpans)
     }
 
-    fun init(newTop: Int, viewSize: Int, spanIndex: Int, spanSize: Int) {
-        heights.fill(0)
-        height = 0
-        top = newTop
-        startIndex = spanIndex
-        endIndex = startIndex + spanSize - 1
-        updateHeight(viewSize, startIndex, spanSize)
+    init {
+        setWidth(width)
     }
 
     fun setWidth(newWidth: Int) {
@@ -81,6 +83,34 @@ internal class GridRow(
         }
     }
 
+    fun getWidth(): Int = width
+
+    fun isEmpty(): Boolean {
+        return startIndex == RecyclerView.NO_POSITION && endIndex == RecyclerView.NO_POSITION
+    }
+
+    fun getAvailableAppendSpans(): Int {
+        if (endIndex == RecyclerView.NO_POSITION) {
+            if (startIndex == RecyclerView.NO_POSITION) {
+                return numberOfSpans
+            }
+            return numberOfSpans - startIndex
+        }
+        // Spans: 3, filled: [X, -, -],
+        return numberOfSpans - endIndex - 1
+    }
+
+    fun getAvailablePrependSpans(): Int {
+        if (startIndex == RecyclerView.NO_POSITION) {
+            if (endIndex == RecyclerView.NO_POSITION) {
+                return numberOfSpans
+            }
+            return endIndex
+        }
+        // Spans: 3, filled: [X, -, -],
+        return startIndex
+    }
+
     fun getSpanBorder(index: Int): Int {
         return spanBorders[index]
     }
@@ -98,12 +128,23 @@ internal class GridRow(
         }
     }
 
-    fun offsetBy(offset: Int) {
-        top += offset
+    fun offsetBy(dy: Int) {
+        startOffset += dy
+        endOffset += dy
     }
 
     fun fitsEnd(spanSize: Int): Boolean {
+        if (endIndex == RecyclerView.NO_POSITION) {
+            return spanSize <= numberOfSpans
+        }
         return endIndex + spanSize < numberOfSpans
+    }
+
+    fun fitsStart(spanSize: Int): Boolean {
+        if (startIndex == RecyclerView.NO_POSITION) {
+            return spanSize <= numberOfSpans
+        }
+        return startIndex - spanSize >= 0
     }
 
     fun isEndComplete(): Boolean {
@@ -114,10 +155,6 @@ internal class GridRow(
         return startIndex == 0
     }
 
-    fun fitsStart(spanSize: Int): Boolean {
-        return startIndex - spanSize >= 0
-    }
-
     fun getSpanSpace(): Int {
         return width / numberOfSpans
     }
@@ -126,56 +163,103 @@ internal class GridRow(
         return heights[spanIndex]
     }
 
-    fun getStartOffset(): Int {
-        return startIndex * getSpanSpace()
+    fun getPositionAt(spanIndex: Int): Int {
+        return positions[spanIndex]
     }
 
-    fun getEndOffset(): Int {
-        return (endIndex + 1) * getSpanSpace()
-    }
-
-    fun append(viewSize: Int, spanSize: Int): Int {
-        if (!fitsEnd(spanSize)) {
-            return -1
+    fun getFirstPosition(): Int {
+        if (startIndex == RecyclerView.NO_POSITION) {
+            return RecyclerView.NO_POSITION
         }
+        return positions[startIndex]
+    }
+
+    fun getLastPosition(): Int {
+        if (endIndex == RecyclerView.NO_POSITION) {
+            return RecyclerView.NO_POSITION
+        }
+        return positions[endIndex]
+    }
+
+    fun getSpanStartOffset(): Int {
+        if (startIndex == RecyclerView.NO_POSITION) {
+            return 0
+        }
+        return getSpanBorder(startIndex)
+    }
+
+    fun getSpanEndOffset(): Int {
+        if (endIndex == RecyclerView.NO_POSITION) {
+            return 0
+        }
+        return getSpanBorder(endIndex + 1)
+    }
+
+    fun append(viewSize: Int, viewPosition: Int, spanSize: Int): Int {
         val viewSpanIndex = endIndex + 1
         val viewStart = getSpanSpace() * viewSpanIndex
-        updateHeight(viewSize, viewSpanIndex, spanSize)
+        updateSpans(viewSize, viewPosition, viewSpanIndex, spanSize)
+        endOffset = max(endOffset, startOffset + height)
         endIndex += spanSize
+        if (startIndex == RecyclerView.NO_POSITION) {
+            startIndex = 0
+        }
         return viewStart
     }
 
-    fun prepend(viewSize: Int, spanSize: Int): Int {
-        if (!fitsStart(spanSize)) {
-            return -1
+    fun prepend(viewSize: Int, viewPosition: Int, spanSize: Int): Int {
+        if (startIndex == RecyclerView.NO_POSITION) {
+            startIndex = numberOfSpans - spanSize
+        } else {
+            startIndex -= spanSize
         }
-        startIndex -= spanSize
-        updateHeight(viewSize, startIndex, spanSize)
+        updateSpans(viewSize, viewPosition, startIndex, spanSize)
+        startOffset = endOffset - height
+        if (endIndex == RecyclerView.NO_POSITION) {
+            endIndex = numberOfSpans - 1
+        }
         return getSpanSpace() * startIndex
     }
 
-    fun next(viewSize: Int, spanSize: Int, newTop: Int) {
-        heights.fill(0)
-        height = 0
-        startIndex = 0
-        endIndex = spanSize - 1
-        top = newTop
-        updateHeight(viewSize, startIndex, spanSize)
+    /**
+     * @return next item position
+     */
+    fun next(): Int {
+        val nextPosition = getPositionAt(numberOfSpans - 1) + 1
+        startOffset += height
+        endOffset = startOffset
+        resetSpans()
+        return nextPosition
     }
 
-    fun previous(viewSize: Int, spanSize: Int, newTop: Int) {
-        heights.fill(0)
-        height = 0
-        endIndex = numberOfSpans - 1
-        startIndex = endIndex + 1 - spanSize
-        top = newTop
-        updateHeight(viewSize, startIndex, spanSize)
+    fun previous(): Int {
+        val previousPosition = getPositionAt(0) - 1
+        endOffset = startOffset
+        resetSpans()
+        return previousPosition
     }
 
-    private fun updateHeight(viewSize: Int, spanIndex: Int, spanSize: Int) {
+    fun reset(keyline: Int) {
+        startOffset = keyline
+        endOffset = keyline
+        resetSpans()
+    }
+
+    private fun resetSpans() {
+        for (i in 0 until numberOfSpans) {
+            heights[i] = 0
+            positions[i] = RecyclerView.NO_POSITION
+        }
+        height = 0
+        startIndex = RecyclerView.NO_POSITION
+        endIndex = RecyclerView.NO_POSITION
+    }
+
+    private fun updateSpans(viewSize: Int, position: Int, spanIndex: Int, spanSize: Int) {
         height = max(viewSize, height)
         for (i in spanIndex until spanIndex + spanSize) {
             heights[i] = viewSize
+            positions[i] = position
         }
     }
 
@@ -187,13 +271,15 @@ internal class GridRow(
             return false
         }
         for (i in 0 until numberOfSpans) {
-            if (getHeightAt(i) != other.getHeightAt(i)) {
+            if (getHeightAt(i) != other.getHeightAt(i)
+                || getPositionAt(i) != other.getPositionAt(i)
+            ) {
                 return false
             }
         }
         return startIndex == other.startIndex
                 && endIndex == other.endIndex
-                && top == other.top
+                && startOffset == other.startOffset
                 && height == other.height
     }
 
@@ -203,8 +289,9 @@ internal class GridRow(
         result = 31 * result + startIndex
         result = 31 * result + endIndex
         result = 31 * result + height
-        result = 31 * result + top
+        result = 31 * result + startOffset
         result = 31 * result + heights.contentHashCode()
+        result = 31 * result + positions.contentHashCode()
         return result
     }
 
@@ -212,8 +299,10 @@ internal class GridRow(
         return "GridRow(startIndex=$startIndex, " +
                 "endIndex=$endIndex, " +
                 "height=$height, " +
-                "top=$top, " +
-                "heights=${heights.contentToString()})"
+                "startOffset=$startOffset, " +
+                "endOffset=$endOffset, " +
+                "heights=${heights.contentToString()}," +
+                "positions=${positions.contentToString()})"
     }
 
 

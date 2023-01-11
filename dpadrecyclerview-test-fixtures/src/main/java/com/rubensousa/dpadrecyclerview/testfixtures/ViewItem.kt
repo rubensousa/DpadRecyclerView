@@ -42,6 +42,12 @@ data class ViewItem(
     val height: Int
         get() = bounds.height
 
+    var spanIndex: Int = 0
+        private set
+
+    var spanSize: Int = 1
+        private set
+
     fun getDecoratedLeft() = bounds.left - insets.left
     fun getDecoratedTop() = bounds.top - insets.top
     fun getDecoratedRight() = bounds.right + insets.right
@@ -65,6 +71,18 @@ data class ViewItem(
 
     fun offsetVertically(offset: Int) {
         bounds.offsetVertical(offset)
+    }
+
+    fun updateSpan(index: Int, size: Int) {
+        spanIndex = index
+        spanSize = size
+    }
+
+    fun layout(layoutBounds: ViewBounds) {
+        bounds.left = layoutBounds.left
+        bounds.top = layoutBounds.top
+        bounds.right = layoutBounds.right
+        bounds.bottom = layoutBounds.bottom
     }
 
 }

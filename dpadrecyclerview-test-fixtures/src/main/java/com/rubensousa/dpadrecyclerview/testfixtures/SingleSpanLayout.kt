@@ -21,8 +21,59 @@ import kotlin.math.max
 
 abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
 
-    abstract fun append(position: Int, endOffset: Int): ViewItem
-    abstract fun prepend(position: Int, startOffset: Int): ViewItem
+    protected abstract fun append(position: Int, endOffset: Int): ViewItem
+    protected abstract fun prepend(position: Int, startOffset: Int): ViewItem
+
+    override fun initializeLayout(pivotPosition: Int) {
+        // Start by laying out the the pivot since all other items are laid out around it
+        val view = layoutPivot(pivotPosition)
+
+        // Layout from the pivot until the start limit of the matrix
+        layoutFromPivotToStart(view)
+
+        // Layout from the pivot until the end limit of the matrix
+        layoutFromPivotToEnd(view)
+    }
+
+    private fun layoutPivot(pivotPosition: Int): ViewItem {
+        layoutRequest.apply {
+            reset()
+            setTowardsEnd()
+            position = pivotPosition
+            checkpoint = (config.parentKeyline - config.childKeyline * getChildSize()).toInt()
+            space = 1
+        }
+        val view = layoutBlock(layoutRequest).views.first()
+        append(view)
+
+        // Align the pivot using the alignment configuration
+        val scrollOffset = getViewCenter(view) - config.parentKeyline
+        offsetChildren(-scrollOffset)
+
+        return view
+    }
+
+    private fun layoutFromPivotToStart(pivotView: ViewItem) {
+        layoutRequest.apply {
+            reset()
+            setTowardsStart()
+            position = pivotView.position - 1
+            checkpoint = getDecoratedStart(pivotView)
+            space = max(0, checkpoint + getExtraLayoutSpaceStart())
+        }
+        fill(layoutRequest)
+    }
+
+    private fun layoutFromPivotToEnd(pivotView: ViewItem) {
+        layoutRequest.reset()
+        layoutRequest.apply {
+            setTowardsEnd()
+            position = pivotView.position + 1
+            checkpoint = getDecoratedEnd(pivotView)
+            space = max(0, getVisibleSpace() - checkpoint + getExtraLayoutSpaceEnd())
+        }
+        fill(layoutRequest)
+    }
 
     override fun getLayoutStartOffset(): Int {
         val firstView = getFirstView() ?: return 0
@@ -40,6 +91,30 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
         } else {
             lastView.getDecoratedRight()
         }
+    }
+
+    override fun layoutExtraStart() {
+        val firstView = getFirstView() ?: return
+        layoutRequest.reset()
+        layoutRequest.apply {
+            setTowardsStart()
+            position = firstView.position - 1
+            checkpoint = getLayoutStartOffset()
+            space = max(0, checkpoint + getExtraLayoutSpaceStart())
+        }
+        fill(layoutRequest)
+    }
+
+    override fun layoutExtraEnd() {
+        val lastView = getLastView() ?: return
+        layoutRequest.reset()
+        layoutRequest.apply {
+            setTowardsEnd()
+            position = lastView.position + 1
+            checkpoint = getLayoutEndOffset()
+            space = max(0, getVisibleSpace() - checkpoint + getExtraLayoutSpaceEnd())
+        }
+        fill(layoutRequest)
     }
 
     override fun scrollBy(offset: Int) {
@@ -89,6 +164,14 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
             },
             skipConsumption = false
         )
+    }
+
+    private fun getChildSize(): Int {
+        return if (isVertical()) {
+            config.viewHeight
+        } else {
+            config.viewWidth
+        }
     }
 
 }

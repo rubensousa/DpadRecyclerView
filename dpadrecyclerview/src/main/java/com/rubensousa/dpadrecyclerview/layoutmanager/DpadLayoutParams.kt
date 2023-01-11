@@ -55,12 +55,9 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
     constructor(source: RecyclerView.LayoutParams) : super(source)
     constructor(source: DpadLayoutParams) : super(source)
 
-    internal fun setSpanSize(size: Int) {
-        spanSize = size
-    }
-
-    internal fun setSpanIndex(index: Int) {
+    internal fun updateSpan(index: Int, size: Int) {
         spanIndex = index
+        spanSize = size
     }
 
     fun getOpticalLeft(view: View): Int {
