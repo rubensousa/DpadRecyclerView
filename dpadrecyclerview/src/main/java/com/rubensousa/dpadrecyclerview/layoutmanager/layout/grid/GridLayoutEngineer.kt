@@ -282,7 +282,7 @@ internal class GridLayoutEngineer(
         for (i in 0 until viewCount) {
             val view = getRowViewAt(i)
             val layoutParams = layoutInfo.getLayoutParams(view)
-            if (row.getHeightAt(layoutParams.spanIndex) != rowHeight) {
+            if (layoutInfo.getDecoratedSize(view) != rowHeight) {
                 layoutInfo.getDecorationInsets(view, insets)
                 val verticalInsets = (insets.top + insets.bottom
                         + layoutParams.topMargin + layoutParams.bottomMargin)

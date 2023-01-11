@@ -36,8 +36,8 @@ class GridRowTest {
         assertThat(row.endIndex).isEqualTo(RecyclerView.NO_POSITION)
         assertThat(row.height).isEqualTo(0)
         assertThat(row.startOffset).isEqualTo(0)
-        repeat(5) { index ->
-            assertThat(row.getHeightAt(index)).isEqualTo(0)
+        repeat(defaultNumberOfSpans) { index ->
+            assertThat(row.getPositionAt(index)).isEqualTo(RecyclerView.NO_POSITION)
         }
     }
 
@@ -131,14 +131,16 @@ class GridRowTest {
 
         var viewLeft = row.append(viewSize = defaultViewSize, viewPosition = 0, spanSize = 1)
         assertThat(viewLeft).isEqualTo(0)
-        assertThat(row.getHeightAt(0)).isEqualTo(defaultViewSize)
+        assertThat(row.startIndex).isEqualTo(0)
+        assertThat(row.endIndex).isEqualTo(0)
         assertThat(row.height).isEqualTo(defaultViewSize)
 
         val newHeight = defaultViewSize + 50
         viewLeft = row.append(viewSize = newHeight, viewPosition = 1, spanSize = 1)
         assertThat(viewLeft).isEqualTo(row.getSpanSpace())
-        assertThat(row.getHeightAt(1)).isEqualTo(newHeight)
         assertThat(row.height).isEqualTo(newHeight)
+        assertThat(row.startIndex).isEqualTo(0)
+        assertThat(row.endIndex).isEqualTo(1)
     }
 
     @Test
@@ -147,13 +149,11 @@ class GridRowTest {
 
         var viewLeft = row.prepend(viewSize = defaultViewSize, viewPosition = 0, spanSize = 1)
         assertThat(viewLeft).isEqualTo(row.getSpanSpace() * (defaultNumberOfSpans - 1))
-        assertThat(row.getHeightAt(defaultNumberOfSpans - 1)).isEqualTo(defaultViewSize)
         assertThat(row.height).isEqualTo(defaultViewSize)
 
         val newHeight = defaultViewSize + 50
         viewLeft = row.prepend(viewSize = newHeight, viewPosition = 1, spanSize = 1)
         assertThat(viewLeft).isEqualTo(row.getSpanSpace() * (defaultNumberOfSpans - 2))
-        assertThat(row.getHeightAt(defaultNumberOfSpans - 2)).isEqualTo(newHeight)
         assertThat(row.height).isEqualTo(newHeight)
     }
 

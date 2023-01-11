@@ -18,7 +18,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
-import kotlin.math.min
 
 class GridRow(
     val numberOfSpans: Int,
@@ -42,7 +41,6 @@ class GridRow(
     var endOffset = 0
         private set
 
-    private val heights = IntArray(numberOfSpans)
     private val positions = IntArray(numberOfSpans) { RecyclerView.NO_POSITION }
     private val spanBorders = IntArray(numberOfSpans + 1) { 0 }
 
@@ -53,7 +51,6 @@ class GridRow(
         startOffset = row.startOffset
         endOffset = row.endOffset
         for (i in 0 until numberOfSpans) {
-            heights[i] = row.getHeightAt(i)
             positions[i] = row.getPositionAt(i)
             spanBorders[i] = row.getSpanBorder(i)
         }
@@ -159,10 +156,6 @@ class GridRow(
         return width / numberOfSpans
     }
 
-    fun getHeightAt(spanIndex: Int): Int {
-        return heights[spanIndex]
-    }
-
     fun getPositionAt(spanIndex: Int): Int {
         return positions[spanIndex]
     }
@@ -199,7 +192,7 @@ class GridRow(
         val viewSpanIndex = endIndex + 1
         val viewStart = getSpanSpace() * viewSpanIndex
         updateSpans(viewSize, viewPosition, viewSpanIndex, spanSize)
-        endOffset = max(endOffset, startOffset + height)
+        endOffset = startOffset + height
         endIndex += spanSize
         if (startIndex == RecyclerView.NO_POSITION) {
             startIndex = 0
@@ -224,7 +217,7 @@ class GridRow(
     /**
      * @return next item position
      */
-    fun next(): Int {
+    fun moveToNext(): Int {
         val nextPosition = getPositionAt(numberOfSpans - 1) + 1
         startOffset += height
         endOffset = startOffset
@@ -232,7 +225,10 @@ class GridRow(
         return nextPosition
     }
 
-    fun previous(): Int {
+    /**
+     * @return previous item position
+     */
+    fun moveToPrevious(): Int {
         val previousPosition = getPositionAt(0) - 1
         endOffset = startOffset
         resetSpans()
@@ -247,7 +243,6 @@ class GridRow(
 
     private fun resetSpans() {
         for (i in 0 until numberOfSpans) {
-            heights[i] = 0
             positions[i] = RecyclerView.NO_POSITION
         }
         height = 0
@@ -258,7 +253,6 @@ class GridRow(
     private fun updateSpans(viewSize: Int, position: Int, spanIndex: Int, spanSize: Int) {
         height = max(viewSize, height)
         for (i in spanIndex until spanIndex + spanSize) {
-            heights[i] = viewSize
             positions[i] = position
         }
     }
@@ -271,9 +265,7 @@ class GridRow(
             return false
         }
         for (i in 0 until numberOfSpans) {
-            if (getHeightAt(i) != other.getHeightAt(i)
-                || getPositionAt(i) != other.getPositionAt(i)
-            ) {
+            if (getPositionAt(i) != other.getPositionAt(i)) {
                 return false
             }
         }
@@ -290,7 +282,6 @@ class GridRow(
         result = 31 * result + endIndex
         result = 31 * result + height
         result = 31 * result + startOffset
-        result = 31 * result + heights.contentHashCode()
         result = 31 * result + positions.contentHashCode()
         return result
     }
@@ -301,7 +292,6 @@ class GridRow(
                 "height=$height, " +
                 "startOffset=$startOffset, " +
                 "endOffset=$endOffset, " +
-                "heights=${heights.contentToString()}," +
                 "positions=${positions.contentToString()})"
     }
 

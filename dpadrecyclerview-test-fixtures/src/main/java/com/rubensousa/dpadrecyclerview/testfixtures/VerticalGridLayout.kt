@@ -181,12 +181,12 @@ class VerticalGridLayout(
     private fun updateRow(request: LayoutBlockRequest): GridRow {
         return if (request.isTowardsEnd()) {
             if (endRow.isEndComplete()) {
-                endRow.next()
+                endRow.moveToNext()
             }
             endRow
         } else {
             if (startRow.isStartComplete()) {
-                startRow.previous()
+                startRow.moveToPrevious()
             }
             startRow
         }
@@ -308,7 +308,7 @@ class VerticalGridLayout(
         val rowHeight = row.height
         for (i in 0 until viewCount) {
             val view = getRowViewAt(i)
-            if (row.getHeightAt(view.spanIndex) != rowHeight) {
+            if (view.getDecoratedHeight() != rowHeight) {
                 if (isVertical()) {
                     view.bounds.bottom = view.bounds.top + rowHeight
                 } else if (isRTL) {
