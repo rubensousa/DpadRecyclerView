@@ -46,7 +46,6 @@ internal class PivotLayout(
         private val DEBUG = BuildConfig.DEBUG
     }
 
-    private val layoutRequest = LayoutRequest()
     private val childLayoutListener = ChildLayoutListener()
     private var structureEngineer = createStructureEngineer()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
@@ -76,7 +75,7 @@ internal class PivotLayout(
         if (DEBUG) {
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")
         }
-        structureEngineer.init(layoutRequest, state)
+        structureEngineer.onLayoutStarted(state)
         layoutInfo.setLayoutInProgress()
         layoutAlignment.update()
 
@@ -111,12 +110,7 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
-        structureEngineer.preLayoutChildren(
-            pivotPosition,
-            layoutRequest,
-            recycler,
-            recyclerViewState
-        )
+        structureEngineer.preLayoutChildren(pivotPosition, recycler, recyclerViewState)
 
         if (DEBUG) {
             Log.i(TAG, "PreLayoutFinished")
@@ -130,9 +124,7 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
-        structureEngineer.layoutChildren(
-            pivotSelector.position, layoutRequest, recycler, recyclerViewState
-        )
+        structureEngineer.layoutChildren(pivotSelector.position, recycler, recyclerViewState)
 
         if (DEBUG) {
             Log.i(TAG, "LayoutFinished")
@@ -141,7 +133,7 @@ internal class PivotLayout(
     }
 
     fun reset() {
-        layoutRequest.clear()
+        structureEngineer.clear()
     }
 
     fun onLayoutCompleted(state: State) {
@@ -195,7 +187,7 @@ internal class PivotLayout(
             return 0
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
-        return structureEngineer.scrollBy(scrollOffset, layoutRequest, recycler, state)
+        return structureEngineer.scrollBy(scrollOffset, recycler, state)
     }
 
     // TODO

@@ -196,6 +196,20 @@ internal class LayoutRequest {
         checkpoint = 0
     }
 
+    fun append(referencePosition: Int, block: LayoutRequest.() -> Unit) {
+        clear()
+        direction = LayoutDirection.END
+        currentPosition = referencePosition + itemDirection.value
+        block(this)
+    }
+
+    fun prepend(referencePosition: Int, block: LayoutRequest.() -> Unit) {
+        clear()
+        direction = LayoutDirection.START
+        currentPosition = referencePosition - itemDirection.value
+        block(this)
+    }
+
     override fun toString(): String {
         return "LayoutState(direction=$direction, " +
                 "fillSpace=$fillSpace, " +

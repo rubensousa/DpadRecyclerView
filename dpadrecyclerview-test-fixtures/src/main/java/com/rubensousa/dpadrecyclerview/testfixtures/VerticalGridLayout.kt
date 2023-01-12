@@ -379,7 +379,6 @@ class VerticalGridLayout(
         }
     }
 
-
     override fun getLayoutStartOffset(): Int = startRow.startOffset
 
     override fun getLayoutEndOffset(): Int = endRow.endOffset

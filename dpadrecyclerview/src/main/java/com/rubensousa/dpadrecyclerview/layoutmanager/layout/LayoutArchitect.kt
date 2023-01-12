@@ -36,17 +36,17 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
 
     abstract fun updateForExtraLayoutEnd(
         layoutRequest: LayoutRequest,
-        recyclerViewState: RecyclerView.State
+        state: RecyclerView.State
     )
 
     abstract fun updateForExtraLayoutStart(
         layoutRequest: LayoutRequest,
-        recyclerViewState: RecyclerView.State
+        state: RecyclerView.State
     )
 
     abstract fun updateLayoutStateForScroll(
         layoutRequest: LayoutRequest,
-        recyclerViewState: RecyclerView.State,
+        state: RecyclerView.State,
         offset: Int
     )
 
@@ -89,16 +89,6 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         pivotView: View,
         pivotPosition: Int
     ) {
-        layoutRequest.apply {
-            setStartDirection()
-            setCurrentPosition(pivotPosition - 1)
-            setCheckpoint(layoutInfo.getDecoratedStart(pivotView))
-            setAvailableScrollSpace(0)
-            val startFillSpace = max(
-                0, checkpoint - layoutInfo.getStartAfterPadding()
-            )
-            setFillSpace(startFillSpace + layoutRequest.extraLayoutSpaceStart)
-        }
     }
 
     open fun updateLayoutStateAfterPivot(
@@ -106,16 +96,7 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         pivotView: View,
         pivotPosition: Int
     ) {
-        layoutRequest.apply {
-            setEndDirection()
-            setCurrentPosition(pivotPosition + 1)
-            setCheckpoint(layoutInfo.getDecoratedEnd(pivotView))
-            setAvailableScrollSpace(0)
-            val endFillSpace = max(
-                0, layoutInfo.getEndAfterPadding() - checkpoint
-            )
-            setFillSpace(endFillSpace + layoutRequest.extraLayoutSpaceEnd)
-        }
+
     }
 
     protected fun updateLayoutStateForExtraLayout(layoutRequest: LayoutRequest, anchorView: View) {

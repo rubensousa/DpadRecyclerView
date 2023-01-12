@@ -79,6 +79,10 @@ internal class LayoutAlignment(
         return parentAlignment.calculateKeyline()
     }
 
+    fun getParentKeyline(): Int {
+        return parentAlignment.calculateKeyline()
+    }
+
     fun getViewAtSubPosition(view: View, subPosition: Int): View? {
         val viewHolder = layoutInfo.getChildViewHolder(view)
         val childAlignments = (viewHolder as? DpadViewHolder)?.getAlignments() ?: return null

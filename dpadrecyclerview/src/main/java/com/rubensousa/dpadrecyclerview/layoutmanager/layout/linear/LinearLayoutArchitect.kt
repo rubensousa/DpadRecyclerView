@@ -56,20 +56,20 @@ internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchit
         }
     }
 
-    override fun updateForExtraLayoutEnd(layoutRequest: LayoutRequest, recyclerViewState: State) {
+    override fun updateForExtraLayoutEnd(layoutRequest: LayoutRequest, state: State) {
         layoutRequest.apply {
             setEndDirection()
-            updateExtraLayoutSpace(layoutRequest, recyclerViewState)
+            updateExtraLayoutSpace(layoutRequest, state)
             val view = layoutInfo.getChildClosestToEnd() ?: return
             setCheckpoint(layoutInfo.getDecoratedEnd(view))
             updateLayoutStateForExtraLayout(this, view)
         }
     }
 
-    override fun updateForExtraLayoutStart(layoutRequest: LayoutRequest, recyclerViewState: State) {
+    override fun updateForExtraLayoutStart(layoutRequest: LayoutRequest, state: State) {
         layoutRequest.apply {
             setStartDirection()
-            updateExtraLayoutSpace(layoutRequest, recyclerViewState)
+            updateExtraLayoutSpace(layoutRequest, state)
             val view = layoutInfo.getChildClosestToStart() ?: return
             setCheckpoint(layoutInfo.getDecoratedStart(view))
             updateLayoutStateForExtraLayout(this, view)
@@ -78,7 +78,7 @@ internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchit
 
     override fun updateLayoutStateForScroll(
         layoutRequest: LayoutRequest,
-        recyclerViewState: State,
+        state: State,
         offset: Int
     ) {
         if (offset > 0) {
@@ -87,7 +87,7 @@ internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchit
             layoutRequest.setStartDirection()
         }
 
-        updateExtraLayoutSpace(layoutRequest, recyclerViewState)
+        updateExtraLayoutSpace(layoutRequest, state)
 
         // Enable recycling since we might add new views now
         layoutRequest.setRecyclingEnabled(true)

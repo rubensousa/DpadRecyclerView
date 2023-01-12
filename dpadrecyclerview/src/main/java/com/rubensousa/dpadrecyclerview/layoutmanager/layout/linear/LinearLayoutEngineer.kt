@@ -21,6 +21,7 @@ import android.view.Gravity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
@@ -30,6 +31,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
+import kotlin.math.max
 
 /**
  * General layout algorithm:
@@ -43,8 +45,8 @@ internal class LinearLayoutEngineer(
     layoutManager: LayoutManager,
     layoutInfo: LayoutInfo,
     layoutAlignment: LayoutAlignment,
-    onChildLayoutListener: OnChildLayoutListener,
-) : StructureEngineer(layoutManager, layoutInfo, layoutAlignment, onChildLayoutListener) {
+    private val onChildLayoutListener: OnChildLayoutListener,
+) : StructureEngineer(layoutManager, layoutInfo, layoutAlignment) {
 
     companion object {
         const val TAG = "LinearLayoutEngineer"
@@ -54,16 +56,38 @@ internal class LinearLayoutEngineer(
 
     override fun getArchitect(): LayoutArchitect = architect
 
-    override fun placePivot(
-        view: View,
-        position: Int,
-        bounds: ViewBounds,
-        layoutRequest: LayoutRequest
-    ) {
+    override fun initLayout(
+        pivotPosition: Int,
+        layoutRequest: LayoutRequest,
+        recycler: RecyclerView.Recycler,
+        state: State
+    ): View {
+        val pivotView = addPivot(pivotPosition, recycler)
+        updatePivotBounds(pivotView, viewBounds, layoutRequest)
+        layoutPivot(pivotView, viewBounds)
+        layoutFromPivotToStart(pivotView, pivotPosition, layoutRequest, recycler, state)
+        layoutFromPivotToEnd(pivotView, pivotPosition, layoutRequest, recycler, state)
+        return pivotView
+    }
+
+    private fun addPivot(pivotPosition: Int, recycler: Recycler): View {
+        val view = recycler.getViewForPosition(pivotPosition)
+        layoutManager.addView(view)
+        onChildLayoutListener.onChildCreated(view)
+        return view
+    }
+
+    /**
+     * Places the pivot in the correct layout position and returns its bounds via [bounds]
+     */
+    private fun updatePivotBounds(view: View, bounds: ViewBounds, layoutRequest: LayoutRequest) {
+        layoutManager.measureChildWithMargins(view, 0, 0)
         val size = layoutInfo.getMeasuredSize(view)
-        val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
+        val viewCenter = layoutAlignment.getParentKeyline()
         val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
         val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
+
+        // Place the pivot in its keyline position
         if (layoutRequest.isVertical) {
             bounds.top = headOffset
             bounds.bottom = tailOffset
@@ -75,6 +99,49 @@ internal class LinearLayoutEngineer(
         }
     }
 
+    private fun layoutPivot(view: View, bounds: ViewBounds) {
+        performLayout(view, bounds)
+        if (DEBUG) {
+            Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} at: $bounds")
+        }
+        bounds.setEmpty()
+        onChildLayoutListener.onChildLaidOut(view)
+    }
+
+    private fun layoutFromPivotToStart(
+        pivotView: View,
+        pivotPosition: Int,
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    ) {
+        layoutRequest.prepend(pivotPosition) {
+            setCheckpoint(layoutInfo.getDecoratedStart(pivotView))
+            val startFillSpace = max(
+                0, checkpoint - layoutInfo.getStartAfterPadding()
+            )
+            setFillSpace(startFillSpace + layoutRequest.extraLayoutSpaceStart)
+        }
+        fill(layoutRequest, recycler, state)
+    }
+
+    private fun layoutFromPivotToEnd(
+        pivotView: View,
+        pivotPosition: Int,
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    ) {
+        layoutRequest.append(pivotPosition) {
+            setCheckpoint(layoutInfo.getDecoratedEnd(pivotView))
+            val endFillSpace = max(
+                0, layoutInfo.getEndAfterPadding() - checkpoint
+            )
+            setFillSpace(endFillSpace + layoutRequest.extraLayoutSpaceEnd)
+        }
+        fill(layoutRequest, recycler, state)
+    }
+
     override fun layoutBlock(
         layoutRequest: LayoutRequest,
         recycler: RecyclerView.Recycler,
@@ -84,6 +151,7 @@ internal class LinearLayoutEngineer(
         // Exit early if we're out of views to layout
         val view = layoutRequest.getNextView(recycler) ?: return
         addView(view, layoutRequest)
+        onChildLayoutListener.onChildCreated(view)
         layoutManager.measureChildWithMargins(view, 0, 0)
 
         layoutResult.consumedSpace = if (layoutRequest.isLayingOutEnd()) {

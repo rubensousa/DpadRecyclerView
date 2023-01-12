@@ -51,13 +51,14 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
+import kotlin.math.max
 
 internal class GridLayoutEngineer(
     layoutManager: LayoutManager,
     layoutInfo: LayoutInfo,
     layoutAlignment: LayoutAlignment,
-    onChildLayoutListener: OnChildLayoutListener
-) : StructureEngineer(layoutManager, layoutInfo, layoutAlignment, onChildLayoutListener) {
+    private val onChildLayoutListener: OnChildLayoutListener
+) : StructureEngineer(layoutManager, layoutInfo, layoutAlignment) {
 
     companion object {
         const val TAG = "GridLayoutEngineer"
@@ -67,19 +68,89 @@ internal class GridLayoutEngineer(
     private val preLayoutSpanSizeCache = SparseIntArray()
     private val preLayoutSpanIndexCache = SparseIntArray()
     private val rowViews = Array<View?>(layoutInfo.getSpanCount()) { null }
+    private var pivotView: View? = null
     private val startRow = GridRow(
         numberOfSpans = layoutInfo.getSpanCount(),
         width = layoutInfo.getSecondaryTotalSpace()
     )
     private val endRow = GridRow(startRow)
     private val architect = GridLayoutArchitect(layoutInfo, startRow, endRow)
+    private var isLayingOutPivotRow = false
+    private var pivotLayoutPosition = RecyclerView.NO_POSITION
 
     override fun getArchitect(): LayoutArchitect = architect
 
-    override fun init(layoutRequest: LayoutRequest, state: State) {
-        super.init(layoutRequest, state)
+    override fun onLayoutStarted(state: State) {
+        super.onLayoutStarted(state)
         endRow.setWidth(layoutInfo.getSecondaryTotalSpace())
         startRow.setWidth(layoutInfo.getSecondaryTotalSpace())
+    }
+
+    override fun onChildrenOffset(offset: Int) {
+        super.onChildrenOffset(offset)
+        // TODO: Update row on offset change
+        startRow.offsetBy(offset)
+        endRow.offsetBy(offset)
+    }
+
+    override fun initLayout(
+        pivotPosition: Int,
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    ): View {
+        pivotLayoutPosition = pivotPosition
+        // Reset row states
+        startRow.reset(layoutAlignment.getParentKeyline())
+        endRow.reset(layoutAlignment.getParentKeyline())
+        val pivotView = layoutPivotRow(pivotPosition, layoutRequest, recycler, state)
+        layoutFromPivotToStart(layoutRequest, recycler, state)
+        layoutFromPivotToEnd(layoutRequest, recycler, state)
+        pivotLayoutPosition = RecyclerView.NO_POSITION
+        return pivotView
+    }
+
+    private fun layoutPivotRow(
+        pivotPosition: Int,
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    ): View {
+        isLayingOutPivotRow = true
+        val pivotSpanIndex = getSpanIndex(recycler, state, pivotPosition)
+        val firstSpanPosition = max(0, pivotPosition - pivotSpanIndex)
+        layoutRequest.append(firstSpanPosition) {
+            setCurrentPosition(firstSpanPosition)
+            setCheckpoint(layoutAlignment.getParentKeyline())
+            setFillSpace(1)
+        }
+        fill(layoutRequest, recycler, state)
+        isLayingOutPivotRow = false
+        return requireNotNull(pivotView)
+    }
+
+    private fun layoutFromPivotToStart(
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    ) {
+        layoutRequest.prepend(startRow.getFirstPosition()) {
+            setCheckpoint(getLayoutStartOffset())
+            setFillSpace(checkpoint)
+        }
+        fill(layoutRequest, recycler, state)
+    }
+
+    private fun layoutFromPivotToEnd(
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    ) {
+        layoutRequest.append(endRow.getLastPosition()) {
+            setCheckpoint(getLayoutEndOffset())
+            setFillSpace(max(0, layoutInfo.getEndAfterPadding() - checkpoint))
+        }
+        fill(layoutRequest, recycler, state)
     }
 
     override fun onPreLayout() {
@@ -88,48 +159,6 @@ internal class GridLayoutEngineer(
 
     override fun onLayoutChildrenFinished() {
         clearPreLayoutSpanMappingCache();
-    }
-
-    override fun placePivot(
-        view: View,
-        position: Int,
-        bounds: ViewBounds,
-        layoutRequest: LayoutRequest
-    ) {
-        val size = layoutInfo.getMeasuredSize(view)
-        val viewCenter = layoutAlignment.calculateViewCenterForLayout(view)
-        val head = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
-        val tail = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
-        val decoratedSize = tail - head
-        val spanSize = layoutInfo.getSpanSize(position)
-        val spanIndex = layoutInfo.getStartColumnIndex(position)
-        val params = layoutInfo.getLayoutParams(view)
-        params.updateSpan(index = spanIndex, size = spanSize)
-
-       /** startRow.init(
-            newOffset = head,
-            viewSize = decoratedSize,
-            spanIndex = spanIndex,
-            spanSize = spanSize
-        )
-        endRow.init(
-            newOffset = head,
-            viewSize = decoratedSize,
-            spanIndex = spanIndex,
-            spanSize = spanSize
-        ) */
-
-        if (layoutRequest.isVertical) {
-            bounds.top = head
-            bounds.bottom = tail
-            bounds.left = startRow.getSpanStartOffset()
-            bounds.right = startRow.getSpanEndOffset()
-        } else {
-            bounds.left = head
-            bounds.right = tail
-            bounds.top = startRow.getSpanStartOffset()
-            bounds.bottom = startRow.getSpanEndOffset()
-        }
     }
 
     /**
@@ -154,19 +183,34 @@ internal class GridLayoutEngineer(
         state: State,
         layoutResult: LayoutResult
     ) {
-        val fillSpanCount = calculateSpansToFill(layoutRequest, recycler, state)
+        val row = updateRow(layoutRequest)
+        val fillSpanCount = calculateSpansToFill(layoutRequest)
         val viewCount = getViewsForRow(layoutRequest, recycler, state, fillSpanCount)
         assignSpans(recycler, state, viewCount, layoutRequest.itemDirection)
 
-        val row = if (layoutRequest.isLayingOutEnd()) {
-            endRow
-        } else {
-            startRow
-        }
         val rowHeight = fillRow(viewCount, row, layoutRequest)
         layoutResult.consumedSpace = rowHeight
         reMeasureChildren(row, viewCount)
-        layoutResult.skipConsumption = layoutRow(viewCount, row, layoutRequest)
+
+        if (isLayingOutPivotRow) {
+            startRow.copy(endRow)
+        }
+
+        layoutResult.skipConsumption = layoutRow(viewCount, row, viewBounds, layoutRequest)
+    }
+
+    private fun updateRow(request: LayoutRequest): GridRow {
+        return if (request.isLayingOutEnd()) {
+            if (endRow.isEndComplete()) {
+                endRow.moveToNext()
+            }
+            endRow
+        } else {
+            if (startRow.isStartComplete()) {
+                startRow.moveToPrevious()
+            }
+            startRow
+        }
     }
 
     /**
@@ -188,6 +232,7 @@ internal class GridLayoutEngineer(
                 return row.height
             }
             addView(view, layoutRequest)
+            onChildLayoutListener.onChildCreated(view)
 
             layoutManager.calculateItemDecorationsForChild(view, insets)
 
@@ -197,7 +242,7 @@ internal class GridLayoutEngineer(
             if (layoutRequest.isLayingOutEnd()) {
                 row.append(decoratedSize, layoutParams.viewLayoutPosition, layoutParams.spanSize)
             } else {
-                row.prepend(decoratedSize,layoutParams.viewLayoutPosition, layoutParams.spanSize)
+                row.prepend(decoratedSize, layoutParams.viewLayoutPosition, layoutParams.spanSize)
             }
         }
         return row.height
@@ -206,44 +251,51 @@ internal class GridLayoutEngineer(
     private fun layoutRow(
         viewCount: Int,
         row: GridRow,
+        bounds: ViewBounds,
         layoutRequest: LayoutRequest
     ): Boolean {
         var skipConsumption = false
-        updateLayoutBounds(layoutRequest, row, viewBounds)
+        updateLayoutBounds(layoutRequest, row, bounds)
 
         for (i in 0 until viewCount) {
             val view = getRowViewAt(i)
             val layoutParams = layoutInfo.getLayoutParams(view)
+            if (isLayingOutPivotRow && layoutParams.viewLayoutPosition == pivotLayoutPosition) {
+                pivotView = view
+            }
             val perpendicularSize = layoutInfo.getPerpendicularDecoratedSize(view)
             if (layoutRequest.isVertical) {
                 if (layoutInfo.isRTL()) {
-                    viewBounds.right = layoutManager.paddingLeft + row.getSpanBorder(
+                    bounds.right = layoutManager.paddingLeft + row.getSpanBorder(
                         row.numberOfSpans - layoutParams.spanIndex
                     )
-                    viewBounds.left = viewBounds.right - perpendicularSize
+                    bounds.left = bounds.right - perpendicularSize
                 } else {
-                    viewBounds.left = layoutManager.paddingLeft + row.getSpanBorder(
+                    bounds.left = layoutManager.paddingLeft + row.getSpanBorder(
                         layoutParams.spanIndex
                     )
-                    viewBounds.right = viewBounds.left + perpendicularSize
+                    bounds.right = bounds.left + perpendicularSize
                 }
             } else {
-                viewBounds.top = layoutManager.paddingTop + row.getSpanBorder(
+                bounds.top = layoutManager.paddingTop + row.getSpanBorder(
                     layoutParams.spanIndex
                 )
-                viewBounds.bottom = viewBounds.top + perpendicularSize
+                bounds.bottom = bounds.top + perpendicularSize
             }
 
-            performLayout(view, viewBounds)
+            performLayout(view, bounds)
 
             if (shouldSkipSpaceOf(view)) {
                 skipConsumption = true
             }
-
-            onChildLayoutListener.onChildLaidOut(view)
         }
 
-        viewBounds.setEmpty()
+        bounds.setEmpty()
+        rowViews.forEach { view ->
+            if (view != null) {
+                onChildLayoutListener.onChildLaidOut(view)
+            }
+        }
         // Clear view references since we no longer need them
         rowViews.fill(null)
         return skipConsumption
@@ -252,24 +304,24 @@ internal class GridLayoutEngineer(
     private fun updateLayoutBounds(
         layoutRequest: LayoutRequest,
         row: GridRow,
-        viewBounds: ViewBounds
+        bounds: ViewBounds
     ) {
         val rowHeight = row.height
         if (layoutRequest.isVertical) {
             if (layoutRequest.isLayingOutStart()) {
-                viewBounds.bottom = layoutRequest.checkpoint
-                viewBounds.top = viewBounds.bottom - rowHeight
+                bounds.bottom = layoutRequest.checkpoint
+                bounds.top = bounds.bottom - rowHeight
             } else {
-                viewBounds.top = layoutRequest.checkpoint
-                viewBounds.bottom = viewBounds.top + rowHeight
+                bounds.top = layoutRequest.checkpoint
+                bounds.bottom = bounds.top + rowHeight
             }
         } else {
             if (layoutRequest.isLayingOutStart()) {
-                viewBounds.right = layoutRequest.checkpoint
-                viewBounds.left = viewBounds.right - rowHeight
+                bounds.right = layoutRequest.checkpoint
+                bounds.left = bounds.right - rowHeight
             } else {
-                viewBounds.left = layoutRequest.checkpoint
-                viewBounds.right = viewBounds.left + rowHeight
+                bounds.left = layoutRequest.checkpoint
+                bounds.right = bounds.left + rowHeight
             }
         }
     }
@@ -378,17 +430,11 @@ internal class GridLayoutEngineer(
         }
     }
 
-    private fun calculateSpansToFill(
-        request: LayoutRequest,
-        recycler: Recycler,
-        state: State
-    ): Int {
-        return if (request.itemDirection == LayoutRequest.ItemDirection.TAIL) {
-            startRow.numberOfSpans - startRow.startIndex
+    private fun calculateSpansToFill(request: LayoutRequest): Int {
+        return if (request.isLayingOutEnd()) {
+            endRow.getAvailableAppendSpans()
         } else {
-            val spanIndex = getSpanIndex(recycler, state, request.currentPosition)
-            val spanSize = getSpanSize(recycler, state, request.currentPosition)
-            spanIndex + spanSize
+            startRow.getAvailablePrependSpans()
         }
     }
 
@@ -556,5 +602,9 @@ internal class GridLayoutEngineer(
         }
         return false
     }
+
+    private fun getLayoutStartOffset(): Int = startRow.startOffset
+
+    private fun getLayoutEndOffset(): Int = endRow.endOffset
 
 }

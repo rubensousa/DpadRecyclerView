@@ -26,7 +26,7 @@ internal class LayoutAlignmentMock(private val parentKeyline: Int) {
 
     init {
         every { mock.calculateScrollForAlignment(any()) }.answers { 0 }
-        every { mock.calculateViewCenterForLayout(any()) }.answers { parentKeyline }
+        every { mock.getParentKeyline() }.answers { parentKeyline }
     }
 
     fun get(): LayoutAlignment = mock

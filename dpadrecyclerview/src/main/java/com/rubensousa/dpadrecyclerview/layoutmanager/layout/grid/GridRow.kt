@@ -45,6 +45,14 @@ class GridRow(
     private val spanBorders = IntArray(numberOfSpans + 1) { 0 }
 
     constructor(row: GridRow) : this(row.numberOfSpans, row.width) {
+        copy(row)
+    }
+
+    init {
+        setWidth(width)
+    }
+
+    fun copy(row: GridRow) {
         startIndex = row.startIndex
         endIndex = row.endIndex
         height = row.height
@@ -55,10 +63,6 @@ class GridRow(
             spanBorders[i] = row.getSpanBorder(i)
         }
         spanBorders[numberOfSpans] = row.getSpanBorder(numberOfSpans)
-    }
-
-    init {
-        setWidth(width)
     }
 
     fun setWidth(newWidth: Int) {

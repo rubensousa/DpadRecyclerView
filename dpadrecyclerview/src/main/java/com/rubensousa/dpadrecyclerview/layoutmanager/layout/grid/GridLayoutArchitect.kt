@@ -1,9 +1,10 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 
-import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutArchitect
+import kotlin.math.abs
 import kotlin.math.max
 
 internal class GridLayoutArchitect(
@@ -12,47 +13,43 @@ internal class GridLayoutArchitect(
     private val endRow: GridRow
 ) : LinearLayoutArchitect(layoutInfo) {
 
-    override fun updateLayoutStateBeforePivot(
+    override fun updateLayoutStateForScroll(
         layoutRequest: LayoutRequest,
-        pivotView: View,
-        pivotPosition: Int
+        state: RecyclerView.State,
+        offset: Int
     ) {
-        layoutRequest.apply {
-            setStartDirection()
-            setCurrentPosition(pivotPosition - 1)
-            setCheckpoint(getLayoutStart())
-            setAvailableScrollSpace(0)
-            val startFillSpace = max(
-                0, checkpoint - layoutInfo.getStartAfterPadding()
-            )
-            setFillSpace(startFillSpace + layoutRequest.extraLayoutSpaceStart)
+        updateExtraLayoutSpace(layoutRequest, state)
+        layoutRequest.setRecyclingEnabled(true)
+
+        val scrollDistance = abs(offset)
+
+        if (offset < 0) {
+            val checkpoint = if (startRow.isStartComplete()) {
+                startRow.startOffset
+            } else {
+                startRow.endOffset
+            }
+            layoutRequest.prepend(startRow.getFirstPosition()) {
+                setCheckpoint(checkpoint)
+                setAvailableScrollSpace(max(0, layoutInfo.getStartAfterPadding() - checkpoint))
+                setFillSpace(scrollDistance + extraLayoutSpaceStart - availableScrollSpace)
+            }
+        } else {
+            val checkpoint = if (endRow.isEndComplete()) {
+                endRow.endOffset
+            } else {
+                endRow.startOffset
+            }
+            layoutRequest.append(endRow.getLastPosition()) {
+                setCheckpoint(checkpoint)
+                setAvailableScrollSpace(max(0, checkpoint - layoutInfo.getEndAfterPadding()))
+                setFillSpace(scrollDistance + extraLayoutSpaceEnd - availableScrollSpace)
+            }
         }
     }
 
-    override fun updateLayoutStateAfterPivot(
-        layoutRequest: LayoutRequest,
-        pivotView: View,
-        pivotPosition: Int
-    ) {
-        layoutRequest.apply {
-            setEndDirection()
-            setCurrentPosition(pivotPosition + 1)
-            setCheckpoint(getLayoutEnd())
-            setAvailableScrollSpace(0)
-            val endFillSpace = max(
-                0, layoutInfo.getEndAfterPadding() - checkpoint
-            )
-            setFillSpace(endFillSpace + layoutRequest.extraLayoutSpaceEnd)
-        }
-    }
+    override fun getLayoutStart(): Int = startRow.startOffset
 
-
-    override fun getLayoutStart(): Int {
-        return startRow.startOffset
-    }
-
-    override fun getLayoutEnd(): Int {
-        return endRow.startOffset
-    }
+    override fun getLayoutEnd(): Int = endRow.endOffset
 
 }
