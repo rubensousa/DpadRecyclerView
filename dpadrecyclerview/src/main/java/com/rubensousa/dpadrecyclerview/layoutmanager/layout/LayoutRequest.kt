@@ -32,8 +32,12 @@ internal class LayoutRequest {
     var direction: LayoutDirection = LayoutDirection.END
         private set
 
-    // The current direction in which the adapter is traversed
-    var itemDirection = ItemDirection.TAIL
+    // The default direction in which the adapter is traversed
+    var defaultItemDirection = ItemDirection.TAIL
+        private set
+
+    // The direction in which the adapter is traversed for the current layout stage
+    var currentItemDirection = ItemDirection.TAIL
         private set
 
     // Number of pixels that we should fill, in the layout direction.
@@ -127,7 +131,7 @@ internal class LayoutRequest {
 
     /**
      * Gets the view for the next element that we should layout.
-     * Also updates current item index to the next item, based on the [itemDirection]
+     * Also updates current item index to the next item, based on the [defaultItemDirection]
      *
      * @return The next element that we should layout.
      */
@@ -141,7 +145,7 @@ internal class LayoutRequest {
             return scrapView
         }
         val view = recycler.getViewForPosition(currentPosition)
-        currentPosition += itemDirection.value
+        currentPosition += currentItemDirection.value
         return view
     }
 
@@ -167,20 +171,30 @@ internal class LayoutRequest {
 
     fun setStartDirection() {
         direction = LayoutDirection.START
-        itemDirection = if (reverseLayout) {
+        defaultItemDirection = if (reverseLayout) {
             ItemDirection.TAIL
         } else {
             ItemDirection.HEAD
         }
+        currentItemDirection = defaultItemDirection
     }
 
     fun setEndDirection() {
         direction = LayoutDirection.END
-        itemDirection = if (reverseLayout) {
+        defaultItemDirection = if (reverseLayout) {
             ItemDirection.HEAD
         } else {
             ItemDirection.TAIL
         }
+        currentItemDirection = defaultItemDirection
+    }
+
+    fun setCurrentItemDirectionEnd() {
+        currentItemDirection = ItemDirection.TAIL
+    }
+
+    fun setCurrentItemDirectionStart() {
+        currentItemDirection = ItemDirection.HEAD
     }
 
     fun setAvailableScrollSpace(space: Int) {
@@ -199,14 +213,14 @@ internal class LayoutRequest {
     fun append(referencePosition: Int, block: LayoutRequest.() -> Unit) {
         clear()
         direction = LayoutDirection.END
-        currentPosition = referencePosition + itemDirection.value
+        currentPosition = referencePosition + defaultItemDirection.value
         block(this)
     }
 
     fun prepend(referencePosition: Int, block: LayoutRequest.() -> Unit) {
         clear()
         direction = LayoutDirection.START
-        currentPosition = referencePosition - itemDirection.value
+        currentPosition = referencePosition - defaultItemDirection.value
         block(this)
     }
 
@@ -299,7 +313,7 @@ internal class LayoutRequest {
                 val view = viewHolder.itemView
                 val layoutParams = view.layoutParams as RecyclerView.LayoutParams
                 val distance =
-                    (layoutParams.viewLayoutPosition - currentPosition) * itemDirection.value
+                    (layoutParams.viewLayoutPosition - currentPosition) * defaultItemDirection.value
                 val skipView = view === ignoredView
                         || layoutParams.isItemRemoved
                         || distance < 0  // item is not in current direction

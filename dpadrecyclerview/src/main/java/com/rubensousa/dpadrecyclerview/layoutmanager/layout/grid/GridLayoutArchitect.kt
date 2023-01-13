@@ -7,49 +7,44 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutA
 import kotlin.math.abs
 import kotlin.math.max
 
-internal class GridLayoutArchitect(
-    layoutInfo: LayoutInfo,
-    private val startRow: GridRow,
-    private val endRow: GridRow
-) : LinearLayoutArchitect(layoutInfo) {
+internal class GridLayoutArchitect(layoutInfo: LayoutInfo) : LinearLayoutArchitect(layoutInfo) {
 
     override fun updateLayoutStateForScroll(
         layoutRequest: LayoutRequest,
         state: RecyclerView.State,
         offset: Int
     ) {
-        updateExtraLayoutSpace(layoutRequest, state)
         layoutRequest.setRecyclingEnabled(true)
 
         val scrollDistance = abs(offset)
 
         if (offset < 0) {
-            val checkpoint = if (startRow.isStartComplete()) {
-                startRow.startOffset
-            } else {
-                startRow.endOffset
-            }
-            layoutRequest.prepend(startRow.getFirstPosition()) {
-                setCheckpoint(checkpoint)
+            val view = layoutInfo.getChildClosestToStart() ?: return
+            layoutRequest.prepend(layoutInfo.getLayoutPositionOf(view)) {
+                if (defaultItemDirection == LayoutRequest.ItemDirection.TAIL) {
+                    setCurrentItemDirectionStart()
+                } else {
+                    setCurrentItemDirectionEnd()
+                }
+                setCheckpoint(layoutInfo.getDecoratedStart(view))
+                updateExtraLayoutSpace(layoutRequest, state)
                 setAvailableScrollSpace(max(0, layoutInfo.getStartAfterPadding() - checkpoint))
                 setFillSpace(scrollDistance + extraLayoutSpaceStart - availableScrollSpace)
             }
         } else {
-            val checkpoint = if (endRow.isEndComplete()) {
-                endRow.endOffset
-            } else {
-                endRow.startOffset
-            }
-            layoutRequest.append(endRow.getLastPosition()) {
-                setCheckpoint(checkpoint)
+            val view = layoutInfo.getChildClosestToEnd() ?: return
+            layoutRequest.append(layoutInfo.getLayoutPositionOf(view)) {
+                if (defaultItemDirection == LayoutRequest.ItemDirection.TAIL) {
+                    setCurrentItemDirectionEnd()
+                } else {
+                    setCurrentItemDirectionStart()
+                }
+                setCheckpoint(layoutInfo.getDecoratedEnd(view))
+                updateExtraLayoutSpace(layoutRequest, state)
                 setAvailableScrollSpace(max(0, checkpoint - layoutInfo.getEndAfterPadding()))
                 setFillSpace(scrollDistance + extraLayoutSpaceEnd - availableScrollSpace)
             }
         }
     }
-
-    override fun getLayoutStart(): Int = startRow.startOffset
-
-    override fun getLayoutEnd(): Int = endRow.endOffset
 
 }
