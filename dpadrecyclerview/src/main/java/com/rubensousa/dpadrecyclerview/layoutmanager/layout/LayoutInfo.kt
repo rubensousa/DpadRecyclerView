@@ -472,6 +472,16 @@ internal class LayoutInfo(
         rect.bottom = layout.getBottomDecorationHeight(view)
     }
 
+    fun getDecoratedBounds(view: View): ViewBounds {
+        val layoutParams = view.layoutParams as DpadLayoutParams
+        return ViewBounds(
+            left = layout.getDecoratedLeft(view) - layoutParams.leftMargin,
+            top = layout.getDecoratedTop(view) - layoutParams.topMargin,
+            right = layout.getDecoratedRight(view) + layoutParams.rightMargin,
+            bottom = layout.getDecoratedBottom(view) + layoutParams.bottomMargin
+        )
+    }
+
     private fun getOppositeOrientation(): Int {
         return if (configuration.isVertical()) {
             RecyclerView.HORIZONTAL

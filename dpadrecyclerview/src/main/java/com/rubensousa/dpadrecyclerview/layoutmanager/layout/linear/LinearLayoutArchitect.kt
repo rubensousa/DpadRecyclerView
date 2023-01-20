@@ -32,13 +32,10 @@ internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchit
         layoutRequest: LayoutRequest,
         anchorPosition: Int
     ) {
-        layoutRequest.apply {
-            setStartDirection()
+        layoutRequest.prepend(anchorPosition) {
             setRecyclingEnabled(false)
-            setCurrentPosition(anchorPosition)
             setCheckpoint(getLayoutStart())
             setFillSpace(layoutRequest.extraLayoutSpaceStart)
-            updateCurrentPositionFromScrap()
         }
     }
 
@@ -46,13 +43,10 @@ internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchit
         layoutRequest: LayoutRequest,
         anchorPosition: Int
     ) {
-        layoutRequest.apply {
-            setEndDirection()
+        layoutRequest.append(anchorPosition) {
             setRecyclingEnabled(false)
-            setCurrentPosition(anchorPosition)
             setCheckpoint(getLayoutEnd())
             setFillSpace(layoutRequest.extraLayoutSpaceEnd)
-            updateCurrentPositionFromScrap()
         }
     }
 
@@ -88,9 +82,6 @@ internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchit
         }
 
         updateExtraLayoutSpace(layoutRequest, state)
-
-        // Enable recycling since we might add new views now
-        layoutRequest.setRecyclingEnabled(true)
 
         val view = if (layoutRequest.isLayingOutEnd()) {
             layoutInfo.getChildClosestToEnd()

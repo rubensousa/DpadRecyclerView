@@ -62,8 +62,7 @@
         android:orientation="vertical"
         app:dpadRecyclerViewPivotLayoutManager="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/toggleGroup"
-        app:spanCount="5" />
+        app:layout_constraintStart_toEndOf="@id/toggleGroup" />
 
     <androidx.leanback.widget.VerticalGridView
         android:id="@+id/verticalGridView"

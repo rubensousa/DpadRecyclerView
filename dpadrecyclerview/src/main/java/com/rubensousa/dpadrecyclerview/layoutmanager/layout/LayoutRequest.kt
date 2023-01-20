@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import android.view.Gravity
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.math.max
 
 /**
  * Holds information required for the next layout
@@ -46,13 +47,6 @@ internal class LayoutRequest {
 
     // Current position on the adapter to get the next item.
     var currentPosition = 0
-        private set
-
-    /**
-     * When consuming [scrap], if this value is set to true,
-     * we skip removed views since they should not be laid out in post layout step.
-     */
-    var isPreLayout = false
         private set
 
     // True if we should start the layout from the opposite direction
@@ -91,18 +85,22 @@ internal class LayoutRequest {
         private set
 
     fun init(
-        isPreLayout: Boolean,
         gravity: Int,
         isVertical: Boolean,
         reverseLayout: Boolean,
         infinite: Boolean
     ) {
-        this.isPreLayout = isPreLayout
         this.reverseLayout = reverseLayout
         this.gravity = gravity
         this.isVertical = isVertical
         this.isInfinite = infinite
         isRecyclingEnabled = false
+        defaultItemDirection = if (reverseLayout) {
+            ItemDirection.HEAD
+        } else {
+            ItemDirection.TAIL
+        }
+        currentItemDirection = defaultItemDirection
     }
 
     fun setCurrentPosition(position: Int) {
@@ -114,7 +112,7 @@ internal class LayoutRequest {
     }
 
     fun setFillSpace(space: Int) {
-        fillSpace = space
+        fillSpace = max(0, space)
     }
 
     fun setCheckpoint(offset: Int) {
@@ -171,30 +169,12 @@ internal class LayoutRequest {
 
     fun setStartDirection() {
         direction = LayoutDirection.START
-        defaultItemDirection = if (reverseLayout) {
-            ItemDirection.TAIL
-        } else {
-            ItemDirection.HEAD
-        }
         currentItemDirection = defaultItemDirection
     }
 
     fun setEndDirection() {
         direction = LayoutDirection.END
-        defaultItemDirection = if (reverseLayout) {
-            ItemDirection.HEAD
-        } else {
-            ItemDirection.TAIL
-        }
         currentItemDirection = defaultItemDirection
-    }
-
-    fun setCurrentItemDirectionEnd() {
-        currentItemDirection = ItemDirection.TAIL
-    }
-
-    fun setCurrentItemDirectionStart() {
-        currentItemDirection = ItemDirection.HEAD
     }
 
     fun setAvailableScrollSpace(space: Int) {
@@ -210,25 +190,34 @@ internal class LayoutRequest {
         checkpoint = 0
     }
 
-    fun append(referencePosition: Int, block: LayoutRequest.() -> Unit) {
+    fun append(
+        referencePosition: Int,
+        itemDirection: ItemDirection = defaultItemDirection,
+        block: LayoutRequest.() -> Unit
+    ) {
         clear()
         direction = LayoutDirection.END
-        currentPosition = referencePosition + defaultItemDirection.value
+        currentItemDirection = itemDirection
+        currentPosition = referencePosition + currentItemDirection.value
         block(this)
     }
 
-    fun prepend(referencePosition: Int, block: LayoutRequest.() -> Unit) {
+    fun prepend(
+        referencePosition: Int,
+        itemDirection: ItemDirection = defaultItemDirection.opposite(),
+        block: LayoutRequest.() -> Unit
+    ) {
         clear()
         direction = LayoutDirection.START
-        currentPosition = referencePosition - defaultItemDirection.value
+        currentItemDirection = itemDirection
+        currentPosition = referencePosition + currentItemDirection.value
         block(this)
     }
 
     override fun toString(): String {
-        return "LayoutState(direction=$direction, " +
+        return "LayoutRequest(direction=$direction, " +
                 "fillSpace=$fillSpace, " +
                 "currentPosition=$currentPosition, " +
-                "isPreLayout=$isPreLayout, " +
                 "availableScrollSpace=$availableScrollSpace, " +
                 "checkpoint=$checkpoint, "
     }
@@ -257,8 +246,11 @@ internal class LayoutRequest {
      */
     internal enum class ItemDirection(val value: Int) {
         HEAD(-1),
-        TAIL(1)
+        TAIL(1);
+
+        fun opposite() = if (this == HEAD) TAIL else HEAD
     }
+
 
     /**
      * Holds views pending recycling or removal
@@ -285,6 +277,7 @@ internal class LayoutRequest {
                 if (!layoutParams.isItemRemoved
                     && currentPosition == layoutParams.viewLayoutPosition
                 ) {
+                    updateCurrentPositionFromScrap(view)
                     return view
                 }
             }
@@ -313,7 +306,7 @@ internal class LayoutRequest {
                 val view = viewHolder.itemView
                 val layoutParams = view.layoutParams as RecyclerView.LayoutParams
                 val distance =
-                    (layoutParams.viewLayoutPosition - currentPosition) * defaultItemDirection.value
+                    (layoutParams.viewLayoutPosition - currentPosition) * currentItemDirection.value
                 val skipView = view === ignoredView
                         || layoutParams.isItemRemoved
                         || distance < 0  // item is not in current direction

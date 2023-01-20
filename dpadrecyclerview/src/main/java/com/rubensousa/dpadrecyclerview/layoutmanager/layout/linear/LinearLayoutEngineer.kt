@@ -24,11 +24,11 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PreLayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 import kotlin.math.max
@@ -54,7 +54,13 @@ internal class LinearLayoutEngineer(
 
     private val architect = LinearLayoutArchitect(layoutInfo)
 
-    override fun getArchitect(): LayoutArchitect = architect
+    override fun updateLayoutRequestForScroll(
+        layoutRequest: LayoutRequest,
+        state: State,
+        scrollOffset: Int
+    ) {
+        architect.updateLayoutStateForScroll(layoutRequest, state, scrollOffset)
+    }
 
     override fun initLayout(
         pivotPosition: Int,
@@ -68,6 +74,108 @@ internal class LinearLayoutEngineer(
         layoutFromPivotToStart(pivotView, pivotPosition, layoutRequest, recycler, state)
         layoutFromPivotToEnd(pivotView, pivotPosition, layoutRequest, recycler, state)
         return pivotView
+    }
+
+    override fun preLayout(
+        preLayoutRequest: PreLayoutRequest,
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    ) {
+        val extraLayoutSpace = max(0, preLayoutRequest.endOffset - preLayoutRequest.startOffset)
+        val firstView = preLayoutRequest.firstView
+        if (firstView != null) {
+            layoutRequest.prepend(preLayoutRequest.firstPosition) {
+                setRecyclingEnabled(false)
+                setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+                setAvailableScrollSpace(
+                    architect.calculateAvailableScrollSpaceStart(extraLayoutSpace)
+                )
+                setFillSpace(extraLayoutSpace)
+            }
+            fill(layoutRequest, recycler, state)
+        }
+
+        val lastView = preLayoutRequest.lastView
+        if (lastView != null) {
+            layoutRequest.append(preLayoutRequest.lastPosition) {
+                setRecyclingEnabled(false)
+                setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+                setAvailableScrollSpace(
+                    architect.calculateAvailableScrollSpaceEnd(extraLayoutSpace)
+                )
+                setFillSpace(extraLayoutSpace)
+            }
+            fill(layoutRequest, recycler, state)
+        }
+    }
+
+    override fun predictiveLayout(
+        firstView: View,
+        lastView: View,
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    ) {
+        val firstViewPosition = layoutInfo.getLayoutPositionOf(firstView)
+        val scrapList = recycler.scrapList
+        var scrapExtraStart = 0
+        var scrapExtraEnd = 0
+        for (i in 0 until scrapList.size) {
+            val scrap = scrapList[i]
+            if (layoutInfo.isRemoved(scrap)) {
+                continue
+            }
+            val position = scrap.layoutPosition
+            val direction = if (position < firstViewPosition != layoutRequest.reverseLayout) {
+                LayoutRequest.LayoutDirection.START
+            } else {
+                LayoutRequest.LayoutDirection.END
+            }
+            if (direction == LayoutRequest.LayoutDirection.START) {
+                scrapExtraStart += layoutInfo.getDecoratedSize(scrap.itemView)
+            } else {
+                scrapExtraEnd += layoutInfo.getDecoratedSize(scrap.itemView)
+            }
+        }
+
+        layoutRequest.setExtraLayoutSpaceStart(scrapExtraStart)
+        layoutRequest.setExtraLayoutSpaceEnd(scrapExtraEnd)
+
+        if (scrapExtraStart > 0) {
+            val anchor = layoutInfo.getChildClosestToStart()
+            if (anchor != null) {
+                architect.updateLayoutStateForPredictiveStart(
+                    layoutRequest,
+                    layoutManager.getPosition(anchor)
+                )
+                fill(layoutRequest, recycler, state)
+            }
+        }
+
+        if (scrapExtraEnd > 0) {
+            val anchor = layoutInfo.getChildClosestToEnd()
+            if (anchor != null) {
+                architect.updateLayoutStateForPredictiveEnd(
+                    layoutRequest,
+                    layoutManager.getPosition(anchor)
+                )
+                fill(layoutRequest, recycler, state)
+            }
+        }
+    }
+
+    override fun layoutExtraSpace(
+        layoutRequest: LayoutRequest,
+        preLayoutRequest: PreLayoutRequest,
+        recycler: Recycler,
+        state: State
+    ) {
+        architect.updateForExtraLayoutStart(layoutRequest, state)
+        fill(layoutRequest, recycler, state)
+
+        architect.updateForExtraLayoutEnd(layoutRequest, state)
+        fill(layoutRequest, recycler, state)
     }
 
     private fun addPivot(pivotPosition: Int, recycler: Recycler): View {

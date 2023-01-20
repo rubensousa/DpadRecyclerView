@@ -25,7 +25,6 @@ import android.view.animation.Interpolator
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManagerDelegate
 
@@ -95,15 +94,7 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
             R.attr.dpadRecyclerViewStyle, 0
         )
         val properties = LayoutManager.getProperties(context, attrs, 0, 0)
-        val useNewLayoutManager = properties.spanCount == 1 || (
-                properties.spanCount > 1 && typedArray.getBoolean(
-                    R.styleable.DpadRecyclerView_dpadRecyclerViewPivotLayoutManager, false
-                ))
-        layoutManagerImpl = if (useNewLayoutManager) {
-            PivotLayoutManager(properties)
-        } else {
-            DpadLayoutManager(context, properties)
-        }
+        layoutManagerImpl = PivotLayoutManager(properties)
         val layout = layoutManagerImpl as PivotLayoutManagerDelegate
         layout.setFocusOutAllowed(
             throughFront = typedArray.getBoolean(
@@ -291,22 +282,7 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         }
         if (layoutManagerImpl is PivotLayoutManager) {
             val pivotLayoutManager = layoutManagerImpl as PivotLayoutManager
-            val configuration = pivotLayoutManager.getConfiguration()
-            val properties = LayoutManager.Properties()
-            properties.orientation = configuration.orientation
-            properties.spanCount = spans
-            properties.reverseLayout = configuration.reverseLayout
-            val dpadLayoutManager = DpadLayoutManager(recyclerView.context, properties)
-            dpadLayoutManager.setFocusableDirection(configuration.focusableDirection)
-            dpadLayoutManager.setGravity(configuration.gravity)
-            dpadLayoutManager.setAlignments(
-                pivotLayoutManager.getParentAlignment(),
-                pivotLayoutManager.getChildAlignment(),
-                false
-            )
-            recyclerView.layoutManager = dpadLayoutManager
-        } else {
-            requireLayout().setSpanCount(spans)
+            pivotLayoutManager.setSpanCount(spans)
         }
     }
 

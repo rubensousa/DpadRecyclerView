@@ -63,14 +63,6 @@ internal class PivotLayout(
         }
     }
 
-    /**
-     * There's different stages of layout:
-     * 1. First layout: just layout the pivot and then every view around it
-     * 2. Intermediate layout requests: Items were inserted/removed/updated.
-     * In this case, we need to update their layout positions.
-     * This step shouldn't interfere with ongoing scroll events
-     * 3. Views cleared: just remove all views
-     */
     fun onLayoutChildren(recycler: Recycler, state: State) {
         if (DEBUG) {
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")

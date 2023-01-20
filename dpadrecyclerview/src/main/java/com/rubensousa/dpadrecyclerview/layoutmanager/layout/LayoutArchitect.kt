@@ -50,55 +50,6 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         offset: Int
     )
 
-    fun updateForStartPreLayout(
-        layoutRequest: LayoutRequest,
-        extraLayoutSpace: Int,
-        minOldPosition: Int,
-        anchorView: View
-    ) {
-        layoutRequest.apply {
-            setStartDirection()
-            setExtraLayoutSpaceStart(extraLayoutSpace)
-            setRecyclingEnabled(false)
-            setCurrentPosition(minOldPosition + layoutRequest.currentItemDirection.value)
-            setCheckpoint(layoutInfo.getDecoratedStart(anchorView))
-            setAvailableScrollSpace(calculateAvailableScrollSpace(extraLayoutSpace, false))
-            setFillSpace(calculateExtraFillSpace(this))
-        }
-    }
-
-    fun updateForEndPreLayout(
-        layoutRequest: LayoutRequest,
-        extraLayoutSpace: Int,
-        maxOldPosition: Int,
-        anchorView: View
-    ) {
-        layoutRequest.apply {
-            setEndDirection()
-            setExtraLayoutSpaceEnd(extraLayoutSpace)
-            setRecyclingEnabled(false)
-            setCurrentPosition(maxOldPosition + layoutRequest.currentItemDirection.value)
-            setCheckpoint(layoutInfo.getDecoratedEnd(anchorView))
-            setAvailableScrollSpace(calculateAvailableScrollSpace(extraLayoutSpace, true))
-            setFillSpace(calculateExtraFillSpace(this))
-        }
-    }
-
-    open fun updateLayoutStateBeforePivot(
-        layoutRequest: LayoutRequest,
-        pivotView: View,
-        pivotPosition: Int
-    ) {
-    }
-
-    open fun updateLayoutStateAfterPivot(
-        layoutRequest: LayoutRequest,
-        pivotView: View,
-        pivotPosition: Int
-    ) {
-
-    }
-
     protected fun updateLayoutStateForExtraLayout(layoutRequest: LayoutRequest, anchorView: View) {
         layoutRequest.apply {
             setRecyclingEnabled(false)
@@ -108,18 +59,26 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         }
     }
 
-    protected fun calculateAvailableScrollSpace(
+    fun calculateAvailableScrollSpaceStart(offset: Int): Int {
+        return max(0, layoutInfo.getStartAfterPadding() - offset)
+    }
+
+    fun calculateAvailableScrollSpaceEnd(offset: Int): Int {
+        return max(0, offset - layoutInfo.getEndAfterPadding())
+    }
+
+    fun calculateAvailableScrollSpace(
         offset: Int,
         towardsEnd: Boolean
     ): Int {
         return if (towardsEnd) {
-            max(0, offset - layoutInfo.getEndAfterPadding())
+            calculateAvailableScrollSpaceEnd(offset)
         } else {
-            max(0, layoutInfo.getStartAfterPadding() - offset)
+            calculateAvailableScrollSpaceStart(offset)
         }
     }
 
-    private fun calculateExtraFillSpace(layoutRequest: LayoutRequest): Int {
+    fun calculateExtraFillSpace(layoutRequest: LayoutRequest): Int {
         return if (layoutRequest.isLayingOutEnd()) {
             max(0, layoutRequest.extraLayoutSpaceEnd - layoutRequest.availableScrollSpace)
         } else {
@@ -127,7 +86,7 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         }
     }
 
-    protected fun updateExtraLayoutSpace(layoutRequest: LayoutRequest, state: RecyclerView.State) {
+    fun updateExtraLayoutSpace(layoutRequest: LayoutRequest, state: RecyclerView.State) {
         if (setCustomExtraLayoutSpace(layoutRequest, state)) {
             // Skip our logic if user specified a custom strategy for extra layout space
             return

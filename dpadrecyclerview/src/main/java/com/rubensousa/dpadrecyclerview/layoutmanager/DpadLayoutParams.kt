@@ -46,6 +46,9 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
     var spanIndex = 0
         private set
 
+    var spanGroupIndex = 0
+        private set
+
     private var alignmentPositions: IntArray? = null
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
@@ -55,8 +58,9 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
     constructor(source: RecyclerView.LayoutParams) : super(source)
     constructor(source: DpadLayoutParams) : super(source)
 
-    internal fun updateSpan(index: Int, size: Int) {
+    internal fun updateSpan(index: Int, groupIndex: Int, size: Int) {
         spanIndex = index
+        spanGroupIndex = groupIndex
         spanSize = size
     }
 

@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutEngineer
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutAlignmentMock
@@ -55,7 +54,6 @@ class LinearLayoutEngineerVerticalTest {
             it.setOrientation(RecyclerView.VERTICAL)
         }
     )
-    private val layoutRequest = LayoutRequest()
     private val column = ColumnLayout(
         LayoutConfig(
             parentWidth = screenWidth,
@@ -119,7 +117,6 @@ class LinearLayoutEngineerVerticalTest {
     private fun layout(pivotPosition: Int) {
         engineer.layoutChildren(
             pivotPosition,
-            layoutRequest,
             recyclerMock.get(),
             recyclerViewStateMock.get()
         )
