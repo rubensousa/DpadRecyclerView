@@ -37,7 +37,7 @@ import timber.log.Timber
 
 class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
 
-    private val spanCount = 2
+    private val spanCount = 5
     private val binding by viewBinding(ScreenStandardGridBinding::bind)
     private val viewModel by viewModels<GridViewModel>()
     private lateinit var placeholderAdapter : PlaceholderAdapter
@@ -126,9 +126,6 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
     }
 
     private fun setupDpadRecyclerView(recyclerView: DpadRecyclerView) {
-      /*  val itemAnimator = recyclerView.itemAnimator as DefaultItemAnimator
-        itemAnimator.addDuration = 3000
-        itemAnimator.removeDuration = 2000*/
         recyclerView.apply {
             setSpanCount(spanCount)
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
