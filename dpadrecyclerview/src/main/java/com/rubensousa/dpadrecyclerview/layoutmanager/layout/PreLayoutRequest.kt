@@ -44,11 +44,11 @@ internal class PreLayoutRequest {
     var lastView: View? = null
         private set
 
-    fun updateOffsets(decoratedStart: Int, decoratedEnd: Int, remainingScroll: Int) {
+    fun updateOffsets(decoratedStart: Int, decoratedEnd: Int) {
         startOffset = min(startOffset, decoratedStart)
         endOffset = max(endOffset, decoratedEnd)
         if (startOffset != Int.MAX_VALUE && endOffset != Int.MIN_VALUE && endOffset > startOffset) {
-            extraLayoutSpace = max(0, endOffset - startOffset + remainingScroll)
+            extraLayoutSpace = max(0, endOffset - startOffset)
         }
     }
 

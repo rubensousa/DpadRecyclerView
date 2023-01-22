@@ -24,7 +24,6 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import kotlin.math.abs
 
 internal abstract class StructureEngineer(
     protected val layoutManager: LayoutManager,
@@ -66,6 +65,13 @@ internal abstract class StructureEngineer(
 
     }
 
+    protected abstract fun preLayout(
+        preLayoutRequest: PreLayoutRequest,
+        layoutRequest: LayoutRequest,
+        recycler: Recycler,
+        state: State
+    )
+
     /**
      * Starts a new layout from scratch with the pivot view aligned
      * @return pivot view
@@ -102,13 +108,6 @@ internal abstract class StructureEngineer(
         scrollOffset: Int
     )
 
-    protected abstract fun preLayout(
-        preLayoutRequest: PreLayoutRequest,
-        layoutRequest: LayoutRequest,
-        recycler: Recycler,
-        state: State
-    )
-
     /**
      * Places one or multiple views at the end/start of the current layout
      */
@@ -131,7 +130,6 @@ internal abstract class StructureEngineer(
         val firstPosition = layoutInfo.getOldPositionOf(firstView)
         val lastPosition = layoutInfo.getOldPositionOf(lastView)
         preLayoutRequest.reset(firstPosition, firstView, lastPosition, lastView)
-        val remainingScroll = abs(layoutInfo.getRemainingScroll(state))
 
         for (i in 0 until childCount) {
             val view = layoutManager.getChildAt(i) ?: continue
@@ -142,8 +140,7 @@ internal abstract class StructureEngineer(
             ) {
                 preLayoutRequest.updateOffsets(
                     decoratedStart = layoutInfo.getDecoratedStart(view),
-                    decoratedEnd = layoutInfo.getDecoratedEnd(view),
-                    remainingScroll = remainingScroll
+                    decoratedEnd = layoutInfo.getDecoratedEnd(view)
                 )
             }
         }

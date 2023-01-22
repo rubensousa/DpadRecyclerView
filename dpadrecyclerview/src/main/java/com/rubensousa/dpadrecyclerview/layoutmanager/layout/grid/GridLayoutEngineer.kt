@@ -38,7 +38,6 @@ import android.util.SparseArray
 import android.util.SparseIntArray
 import android.view.View
 import android.view.View.MeasureSpec
-import androidx.core.util.forEach
 import androidx.core.util.isEmpty
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -227,8 +226,9 @@ internal class GridLayoutEngineer(
         if (disappearingViews.isEmpty()) {
             return
         }
+        val firstViewPosition = layoutInfo.getLayoutPositionOf(firstView)
         val rowOffsets = calculateRowOffsets(layoutRequest, recycler, state)
-        layoutDisappearingViews(layoutRequest, disappearingViews, rowOffsets)
+        layoutDisappearingViews(layoutRequest, firstViewPosition, disappearingViews, rowOffsets)
     }
 
     private fun calculateRowOffsets(
@@ -253,16 +253,23 @@ internal class GridLayoutEngineer(
 
     private fun layoutDisappearingViews(
         layoutRequest: LayoutRequest,
+        firstViewPosition: Int,
         views: SparseArray<View>,
         rowOffsets: SparseIntArray,
     ) {
         val secondarySpecMode = layoutInfo.orientationHelper.modeInOther
         var firstRowIndex = rowOffsets.keyAt(0)
         var lastRowIndex = rowOffsets.keyAt(rowOffsets.size() - 1)
-        views.forEach { position, view ->
+        for (i in views.size() - 1 downTo 0) {
+            val view = views.valueAt(i)
+            val position = views.keyAt(i)
             val layoutParams = view.layoutParams as DpadLayoutParams
             val rowIndex = layoutParams.spanGroupIndex
-            layoutManager.addDisappearingView(view)
+            if (position < firstViewPosition) {
+                layoutManager.addDisappearingView(view, 0)
+            } else {
+                layoutManager.addDisappearingView(view)
+            }
             layoutManager.calculateItemDecorationsForChild(view, insets)
             measureChild(view, layoutRow, layoutParams, secondarySpecMode, alreadyMeasured = false)
             val decoratedSize = layoutInfo.getDecoratedSize(view)
