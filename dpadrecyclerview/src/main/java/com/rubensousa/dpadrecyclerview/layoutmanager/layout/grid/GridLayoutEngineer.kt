@@ -226,7 +226,12 @@ internal class GridLayoutEngineer(
         }
         val firstViewPosition = layoutInfo.getLayoutPositionOf(firstView)
         val rowOffsets = calculateRowOffsets(layoutRequest, recycler, state)
-        layoutDisappearingViews(layoutRequest, firstViewPosition, disappearingViews, rowOffsets)
+        layoutDisappearingViews(
+            layoutRequest,
+            firstViewPosition,
+            disappearingViews,
+            rowOffsets
+        )
     }
 
     private fun calculateRowOffsets(
@@ -255,12 +260,16 @@ internal class GridLayoutEngineer(
         views: SparseArrayCompat<View>,
         rowOffsets: SparseArrayCompat<Int>,
     ) {
+        val firstDisappearingPosition = views.keyAt(0)
         val secondarySpecMode = layoutInfo.orientationHelper.modeInOther
         var firstRowIndex = rowOffsets.keyAt(0)
         var lastRowIndex = rowOffsets.keyAt(rowOffsets.size() - 1)
-        for (i in views.size() - 1 downTo 0) {
-            val view = views.valueAt(i)
-            val position = views.keyAt(i)
+        val appending = firstDisappearingPosition > firstViewPosition
+        var index = if (appending) 0 else views.size() - 1
+        val endIndex = if (appending) views.size() - 1 else 0
+        while (index != endIndex) {
+            val view = views.valueAt(index)
+            val position = views.keyAt(index)
             val layoutParams = view.layoutParams as DpadLayoutParams
             val rowIndex = layoutParams.spanGroupIndex
             if (position < firstViewPosition) {
@@ -286,7 +295,12 @@ internal class GridLayoutEngineer(
                 lastRowIndex = rowIndex
                 rowOffsets.put(rowIndex, checkpoint + decoratedSize)
             } else {
-                checkpoint = rowOffsets[rowIndex]!!
+                checkpoint = if (appending) {
+                    rowOffsets[rowIndex] ?: rowOffsets[lastRowIndex]!!
+                } else {
+                    prepending = true
+                    rowOffsets[rowIndex] ?: rowOffsets[firstRowIndex]!!
+                }
             }
 
             updateLayoutBounds(
@@ -298,6 +312,12 @@ internal class GridLayoutEngineer(
             )
             updateViewBounds(view, layoutRequest.isVertical, layoutParams, viewBounds)
             performLayout(view, viewBounds)
+
+            if (appending) {
+                index++
+            } else {
+                index--
+            }
         }
     }
 
