@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal
+package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment

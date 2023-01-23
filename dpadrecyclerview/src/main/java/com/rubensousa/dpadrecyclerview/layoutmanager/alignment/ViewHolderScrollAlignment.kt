@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal
+package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 import android.view.View
-import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.ViewHolderAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
 internal class ViewHolderScrollAlignment {
 

@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
-import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManagerDelegate
 
 /**
  * Takes care of most of the functionality of [DpadRecyclerView]
@@ -35,14 +34,13 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
 
     var smoothScrollByBehavior: DpadRecyclerView.SmoothScrollByBehavior? = null
 
-    private var layoutDelegate: PivotLayoutManagerDelegate? = null
-    private var layoutManagerImpl: LayoutManager? = null
+    private var layoutManager: PivotLayoutManager? = null
     private var isRetainingFocus = false
     private var hasOverlappingRendering = true
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
 
     fun init(context: Context, attrs: AttributeSet?) {
-        layoutDelegate = createLayoutManager(context, attrs)
+        layoutManager = createLayoutManager(context, attrs)
         recyclerView.apply {
             // The LayoutManager will restore focus and scroll automatically when needed
             preserveFocusAfterLayout = false
@@ -63,39 +61,38 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
 
             setWillNotDraw(true)
             overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-            layoutManager = layoutManagerImpl
         }
+        recyclerView.layoutManager = layoutManager
     }
 
-    fun setLayoutManager(layoutManager: LayoutManager?) {
-        layoutDelegate?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
-        layoutDelegate?.setRecyclerView(null)
-        layoutDelegate = null
+    fun setLayoutManager(newLayoutManager: LayoutManager?) {
+        layoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
+        layoutManager?.setRecyclerView(null)
+        layoutManager = null
 
-        if (layoutManager != null && layoutManager !is PivotLayoutManagerDelegate) {
+        if (newLayoutManager != null && newLayoutManager !is PivotLayoutManager) {
             throw IllegalArgumentException(
-                "Only PivotLayoutManagerDelegate is supported, but got $layoutManager"
+                "Only PivotLayoutManagerDelegate is supported, but got $newLayoutManager"
             )
         }
-        if (layoutManager is PivotLayoutManagerDelegate) {
-            layoutManager.setRecyclerView(recyclerView)
-            layoutManager.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
-            layoutDelegate = layoutManager
+        if (newLayoutManager is PivotLayoutManager) {
+            newLayoutManager.setRecyclerView(recyclerView)
+            newLayoutManager.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
+            layoutManager = newLayoutManager
         }
     }
 
     private fun createLayoutManager(
         context: Context,
         attrs: AttributeSet?
-    ): PivotLayoutManagerDelegate {
+    ): PivotLayoutManager {
         val typedArray = context.obtainStyledAttributes(
             attrs,
             R.styleable.DpadRecyclerView,
             R.attr.dpadRecyclerViewStyle, 0
         )
         val properties = LayoutManager.getProperties(context, attrs, 0, 0)
-        layoutManagerImpl = PivotLayoutManager(properties)
-        val layout = layoutManagerImpl as PivotLayoutManagerDelegate
+        val layout = PivotLayoutManager(properties)
         layout.setFocusOutAllowed(
             throughFront = typedArray.getBoolean(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutFront, true
@@ -175,23 +172,23 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         if (focused == null) {
             return null
         }
-        return layoutDelegate?.onInterceptFocusSearch(focused, direction)
+        return layoutManager?.onInterceptFocusSearch(focused, direction)
     }
 
     fun onRtlPropertiesChanged() {
-        layoutDelegate?.onRtlPropertiesChanged()
+        layoutManager?.onRtlPropertiesChanged()
     }
 
     fun onFocusChanged(gainFocus: Boolean) {
-        layoutDelegate?.onFocusChanged(gainFocus)
+        layoutManager?.onFocusChanged(gainFocus)
     }
 
     fun focusSearch(direction: Int): View? {
-        val currentLayout = layoutDelegate
+        val currentLayout = layoutManager
         if (recyclerView.isFocused && currentLayout != null) {
             // focusSearch will be called when RecyclerView itself is focused.
             // Calling focusSearch(view, int) to get next sibling of current selected child.
-            val view = layoutManagerImpl?.findViewByPosition(currentLayout.getSelectedPosition())
+            val view = currentLayout.findViewByPosition(currentLayout.getSelectedPosition())
             if (view != null) {
                 return focusSearch(view, direction)
             }
@@ -207,7 +204,7 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
              */
             false
         } else {
-            layoutDelegate?.onRequestFocusInDescendants(direction, previouslyFocusedRect) ?: false
+            layoutManager?.onRequestFocusInDescendants(direction, previouslyFocusedRect) ?: false
         }
     }
 
@@ -218,9 +215,8 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
     fun getFocusableDirection() = requireLayout().getFocusableDirection()
 
     fun getChildDrawingOrder(childCount: Int, drawingOrderPosition: Int): Int {
-        val selectedPosition = layoutDelegate?.getSelectedPosition() ?: return drawingOrderPosition
-        val view =
-            layoutManagerImpl?.findViewByPosition(selectedPosition) ?: return drawingOrderPosition
+        val selectedPosition = layoutManager?.getSelectedPosition() ?: return drawingOrderPosition
+        val view = layoutManager?.findViewByPosition(selectedPosition) ?: return drawingOrderPosition
         val focusIndex = recyclerView.indexOfChild(view)
         // Scenario: 0 1 2 3 4 5 6 7 8 9, 4 is the focused item
         // drawing order is: 0 1 2 3 9 8 7 6 5 4
@@ -280,8 +276,8 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         if (spans == 1) {
             return
         }
-        if (layoutManagerImpl is PivotLayoutManager) {
-            val pivotLayoutManager = layoutManagerImpl as PivotLayoutManager
+        if (layoutManager is PivotLayoutManager) {
+            val pivotLayoutManager = layoutManager as PivotLayoutManager
             pivotLayoutManager.setSpanCount(spans)
         }
     }
@@ -307,11 +303,11 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         requireLayout().selectPosition(position, subPosition, smooth)
     }
 
-    fun getSelectedPosition() = layoutDelegate?.getSelectedPosition() ?: RecyclerView.NO_POSITION
+    fun getSelectedPosition() = layoutManager?.getSelectedPosition() ?: RecyclerView.NO_POSITION
 
-    fun getSelectedSubPosition() = layoutDelegate?.getSelectedSubPosition() ?: 0
+    fun getSelectedSubPosition() = layoutManager?.getSelectedSubPosition() ?: 0
 
-    fun getCurrentSubPositions() = layoutDelegate?.getCurrentSubPositions() ?: 0
+    fun getCurrentSubPositions() = layoutManager?.getCurrentSubPositions() ?: 0
 
     fun setSelectedSubPosition(subPosition: Int, smooth: Boolean) {
         requireLayout().selectSubPosition(subPosition, smooth)
@@ -337,7 +333,7 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         requireLayout().clearOnViewHolderSelectedListeners()
     }
 
-    fun getSpanCount(): Int = layoutDelegate?.getSpanCount() ?: 0
+    fun getSpanCount(): Int = layoutManager?.getSpanCount() ?: 0
 
     fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
         requireLayout().setAlignments(parent, child, smooth)
@@ -394,8 +390,8 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         return requireLayout().isFocusSearchDisabled()
     }
 
-    fun requireLayout(): PivotLayoutManagerDelegate {
-        return requireNotNull(layoutDelegate) {
+    fun requireLayout(): PivotLayoutManager {
+        return requireNotNull(layoutManager) {
             "LayoutManager is null. You need to call RecyclerView.setLayoutManager"
         }
     }

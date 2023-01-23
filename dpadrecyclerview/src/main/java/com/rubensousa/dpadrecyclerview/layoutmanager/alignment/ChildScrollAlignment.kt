@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.internal
+package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 
 import android.view.View

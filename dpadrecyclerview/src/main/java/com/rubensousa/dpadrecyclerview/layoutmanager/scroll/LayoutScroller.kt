@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
@@ -361,7 +362,6 @@ internal class LayoutScroller(
         }
 
         override fun onPivotFound(pivotView: View) {
-            Log.i(TAG, "onPivotFound: $pivotView")
             scrollToView(
                 pivotView,
                 subPositionView = null,
@@ -437,7 +437,9 @@ internal class LayoutScroller(
                 pivotSelector.dispatchViewHolderSelectedAndAligned()
                 previousSelectedPosition = RecyclerView.NO_POSITION
             }
-            logChildren()
+            if (BuildConfig.DEBUG) {
+                logChildren()
+            }
         }
 
         private fun logChildren() {

@@ -98,7 +98,6 @@ internal class SearchPivotSmoothScroller(
         }
         val viewHolder = layoutInfo.getChildViewHolder(child) ?: return
         val adapterPosition = viewHolder.absoluteAdapterPosition
-        Log.i(TAG, "View attached: $adapterPosition")
         if (layoutInfo.isViewFocusable(child)
             && adapterPosition != RecyclerView.NO_POSITION
             && movements.shouldScrollToView(adapterPosition, pivotSelector.position)
@@ -118,7 +117,6 @@ internal class SearchPivotSmoothScroller(
             }
         }
         if (movements.shouldStopScrolling() && isRunning) {
-            Log.i(TAG, "Requested stop scrolling")
             targetPosition = pivotSelector.position
             stop()
         }

@@ -18,7 +18,7 @@ package com.rubensousa.dpadrecyclerview.test
 
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.internal.ParentScrollAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.ParentScrollAlignment
 import org.junit.Test
 
 class ParentScrollAlignmentTest {

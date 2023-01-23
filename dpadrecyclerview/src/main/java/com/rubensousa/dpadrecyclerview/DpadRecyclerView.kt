@@ -28,7 +28,7 @@ import android.view.animation.Interpolator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 
 /**
  * A [RecyclerView] that scrolls to items on DPAD key events instead of swipe/touch gestures.
@@ -269,7 +269,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Updates the number of spans of the [DpadLayoutManager] used by this RecyclerView.
+     * Updates the number of spans of the [PivotLayoutManager] used by this RecyclerView.
      * @param spans number of columns in vertical orientation,
      * or number of rows in horizontal orientation. Must be greater than 0
      */
@@ -283,7 +283,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun getSpanCount(): Int = delegate.getSpanCount()
 
     /**
-     * Updates the orientation the [DpadLayoutManager] used by this RecyclerView
+     * Updates the orientation of the [PivotLayoutManager] used by this RecyclerView
      * @param orientation either [RecyclerView.VERTICAL] or [RecyclerView.HORIZONTAL]
      */
     fun setOrientation(orientation: Int) {
