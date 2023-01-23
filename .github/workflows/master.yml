@@ -11,7 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v3
@@ -34,6 +33,7 @@ jobs:
 
   ui_test:
     runs-on: macos-12
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
