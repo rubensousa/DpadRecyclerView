@@ -34,11 +34,9 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
 
 import android.graphics.Rect
 import android.util.Log
-import android.util.SparseArray
-import android.util.SparseIntArray
 import android.view.View
 import android.view.View.MeasureSpec
-import androidx.core.util.isEmpty
+import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
@@ -215,7 +213,7 @@ internal class GridLayoutEngineer(
         if (scrapList.isEmpty()) {
             return
         }
-        val disappearingViews = SparseArray<View>()
+        val disappearingViews = SparseArrayCompat<View>()
         for (i in 0 until scrapList.size) {
             val scrap = scrapList[i]
             val viewPosition = layoutInfo.getAdapterPositionOf(scrap.itemView)
@@ -235,8 +233,8 @@ internal class GridLayoutEngineer(
         layoutRequest: LayoutRequest,
         recycler: Recycler,
         state: State,
-    ): SparseIntArray {
-        val offsets = SparseIntArray()
+    ): SparseArrayCompat<Int> {
+        val offsets = SparseArrayCompat<Int>()
         for (i in 0 until layoutManager.childCount) {
             val view = layoutManager.getChildAt(i) ?: continue
             val layoutParams = view.layoutParams as DpadLayoutParams
@@ -254,8 +252,8 @@ internal class GridLayoutEngineer(
     private fun layoutDisappearingViews(
         layoutRequest: LayoutRequest,
         firstViewPosition: Int,
-        views: SparseArray<View>,
-        rowOffsets: SparseIntArray,
+        views: SparseArrayCompat<View>,
+        rowOffsets: SparseArrayCompat<Int>,
     ) {
         val secondarySpecMode = layoutInfo.orientationHelper.modeInOther
         var firstRowIndex = rowOffsets.keyAt(0)
@@ -279,16 +277,16 @@ internal class GridLayoutEngineer(
             var prepending = false
 
             if (rowIndex < firstRowIndex) {
-                checkpoint = rowOffsets[firstRowIndex]
+                checkpoint = rowOffsets[firstRowIndex]!!
                 firstRowIndex = rowIndex
                 prepending = true
                 rowOffsets.put(rowIndex, checkpoint - decoratedSize)
             } else if (rowIndex > lastRowIndex) {
-                checkpoint = rowOffsets[lastRowIndex]
+                checkpoint = rowOffsets[lastRowIndex]!!
                 lastRowIndex = rowIndex
                 rowOffsets.put(rowIndex, checkpoint + decoratedSize)
             } else {
-                checkpoint = rowOffsets[rowIndex]
+                checkpoint = rowOffsets[rowIndex]!!
             }
 
             updateLayoutBounds(

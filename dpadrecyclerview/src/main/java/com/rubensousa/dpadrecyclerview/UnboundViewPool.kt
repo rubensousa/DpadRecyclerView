@@ -16,7 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview
 
-import android.util.SparseArray
+import androidx.collection.SparseArrayCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.util.LinkedList
 import java.util.Queue
@@ -30,7 +30,7 @@ import java.util.Queue
  */
 class UnboundViewPool : RecyclerView.RecycledViewPool() {
 
-    private val viewHolderQueues = SparseArray<LinkedList<RecyclerView.ViewHolder>>()
+    private val viewHolderQueues = SparseArrayCompat<LinkedList<RecyclerView.ViewHolder>>()
 
     override fun clear() {
         viewHolderQueues.clear()
@@ -41,11 +41,11 @@ class UnboundViewPool : RecyclerView.RecycledViewPool() {
     }
 
     override fun getRecycledView(viewType: Int): RecyclerView.ViewHolder? {
-        return viewHolderQueues.get(viewType)?.poll()
+        return viewHolderQueues[viewType]?.poll()
     }
 
     override fun getRecycledViewCount(viewType: Int): Int {
-        return viewHolderQueues.get(viewType)?.size ?: 0
+        return viewHolderQueues[viewType]?.size ?: 0
     }
 
     override fun putRecycledView(viewHolder: RecyclerView.ViewHolder) {
@@ -53,7 +53,7 @@ class UnboundViewPool : RecyclerView.RecycledViewPool() {
     }
 
     private fun getOrCreateQueue(viewType: Int): Queue<RecyclerView.ViewHolder> {
-        var queue = viewHolderQueues.get(viewType)
+        var queue = viewHolderQueues[viewType]
         if (queue == null) {
             queue = LinkedList()
             viewHolderQueues.put(viewType, queue)

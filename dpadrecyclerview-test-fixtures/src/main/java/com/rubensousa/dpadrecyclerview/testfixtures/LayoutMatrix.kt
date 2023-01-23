@@ -20,7 +20,6 @@ import androidx.collection.CircularArray
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
-import kotlin.math.max
 
 abstract class LayoutMatrix(
     protected val config: LayoutConfig
@@ -83,14 +82,14 @@ abstract class LayoutMatrix(
     fun getExtraLayoutSpaceEnd() = extraLayoutSpaceEnd
 
     fun getFirstView(): ViewItem? {
-        if (views.isEmpty) {
+        if (views.isEmpty()) {
             return null
         }
         return views.first
     }
 
     fun getLastView(): ViewItem? {
-        if (views.isEmpty) {
+        if (views.isEmpty()) {
             return null
         }
         return views.last
