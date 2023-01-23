@@ -25,6 +25,8 @@ import androidx.leanback.widget.OnChildViewHolderSelectedListener
 import androidx.leanback.widget.VerticalGridView
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.decorator.ColumnProvider
+import com.rubensousa.decorator.GridMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
@@ -40,8 +42,8 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
     private val spanCount = 5
     private val binding by viewBinding(ScreenStandardGridBinding::bind)
     private val viewModel by viewModels<GridViewModel>()
-    private lateinit var placeholderAdapter : PlaceholderAdapter
-    private lateinit var itemAdapter : MutableGridAdapter
+    private lateinit var placeholderAdapter: PlaceholderAdapter
+    private lateinit var itemAdapter: MutableGridAdapter
     private lateinit var concatAdapter: ConcatAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -58,7 +60,7 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
         binding.toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (checkedId == R.id.dpadButton && isChecked) {
                 showDpadRecyclerView()
-            } else if(checkedId == R.id.leanbackButton && isChecked) {
+            } else if (checkedId == R.id.leanbackButton && isChecked) {
                 showVerticalGridView()
             }
         }
@@ -82,7 +84,7 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
         binding.verticalGridView.requestFocus()
     }
 
-    private fun buildAdapter(spanCount: Int) : ConcatAdapter {
+    private fun buildAdapter(spanCount: Int): ConcatAdapter {
         placeholderAdapter = PlaceholderAdapter(items = spanCount)
         itemAdapter = MutableGridAdapter(object : ItemViewHolder.ItemClickListener {
             override fun onViewHolderClicked() {
@@ -127,6 +129,15 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
 
     private fun setupDpadRecyclerView(recyclerView: DpadRecyclerView) {
         recyclerView.apply {
+            addItemDecoration(
+                GridMarginDecoration(
+                    horizontalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
+                    verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
+                    columnProvider = object : ColumnProvider {
+                        override fun getNumberOfColumns(): Int = spanCount
+                    }
+                )
+            )
             setSpanCount(spanCount)
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
                 override fun onViewHolderSelected(
