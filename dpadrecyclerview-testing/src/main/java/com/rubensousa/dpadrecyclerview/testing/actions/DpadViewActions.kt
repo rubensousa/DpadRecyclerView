@@ -56,7 +56,7 @@ object DpadViewActions {
     fun <T : View> waitForCondition(
         description: String,
         condition: (view: T) -> Boolean,
-        timeout: Long = 5,
+        timeout: Long = 2,
         timeoutUnit: TimeUnit = TimeUnit.SECONDS
     ): ViewAction {
         return WaitForCondition(description, condition, timeout, timeoutUnit)

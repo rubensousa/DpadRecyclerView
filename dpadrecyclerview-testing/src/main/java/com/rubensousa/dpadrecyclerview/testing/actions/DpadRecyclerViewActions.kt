@@ -93,7 +93,7 @@ object DpadRecyclerViewActions {
     fun waitForAdapterUpdate(
         updates: Int = 1,
         failOnTimeout: Boolean = false,
-        timeout: Long = 5,
+        timeout: Long = 2,
         timeoutUnit: TimeUnit = TimeUnit.SECONDS
     ): ViewAction {
         return WaitForAdapterUpdateAction(updates, failOnTimeout, timeout, timeoutUnit)
@@ -101,7 +101,7 @@ object DpadRecyclerViewActions {
 
     @JvmStatic
     fun waitForIdleScroll(
-        timeout: Long = 5,
+        timeout: Long = 2,
         timeoutUnit: TimeUnit = TimeUnit.SECONDS
     ): ViewAction {
         return WaitForCondition<RecyclerView>(

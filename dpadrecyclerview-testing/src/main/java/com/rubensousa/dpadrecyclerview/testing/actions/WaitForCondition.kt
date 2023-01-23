@@ -27,7 +27,7 @@ import java.util.concurrent.TimeoutException
 internal class WaitForCondition<T : View>(
     description: String,
     private val condition: (view: T) -> Boolean,
-    timeout: Long = 5,
+    timeout: Long = 2,
     timeoutUnit: TimeUnit = TimeUnit.SECONDS
 ) : DpadViewActions.DpadViewAction(description) {
 

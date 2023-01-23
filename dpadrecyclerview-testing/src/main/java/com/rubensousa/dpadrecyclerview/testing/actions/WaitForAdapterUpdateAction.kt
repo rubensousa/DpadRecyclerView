@@ -31,7 +31,7 @@ import java.util.concurrent.TimeoutException
 internal class WaitForAdapterUpdateAction(
     private val updates: Int,
     private val failOnTimeout: Boolean,
-    timeout: Long = 5,
+    timeout: Long = 2,
     timeoutUnit: TimeUnit = TimeUnit.SECONDS
 ) : ViewAction {
 
