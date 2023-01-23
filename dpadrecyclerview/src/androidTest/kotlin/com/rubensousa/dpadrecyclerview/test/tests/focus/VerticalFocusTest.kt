@@ -24,7 +24,6 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressUp
@@ -120,8 +119,6 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         selectPosition(lastFocusablePosition, 0)
 
         pressDown()
-
-        waitForIdleScrollState()
 
         waitForCondition("Selection is in the correct position") { recyclerView ->
             recyclerView.getSelectedPosition() == lastFocusablePosition
