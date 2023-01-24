@@ -10,13 +10,16 @@ versions.navigation = '2.5.2'
 
 def testVersions = [:]
 testVersions.junit = '4.13.2'
-testVersions.espressoJunit = '1.1.3'
+testVersions.espressoJunit = '1.1.5'
 testVersions.truth = '1.1.3'
 testVersions.jacoco = '0.8.8'
-testVersions.testCore = '1.4.0'
-testVersions.orchestrator = '1.4.1'
+testVersions.core = '1.5.0'
+testVersions.rules = '1.5.0'
+testVersions.espressoTruth = '1.5.0'
+testVersions.runner = '1.5.2'
+testVersions.orchestrator = '1.4.2'
 testVersions.uiautomator = '2.2.0'
-testVersions.espresso = '3.4.0'
+testVersions.espresso = '3.5.1'
 testVersions.fragment = '1.5.4'
 
 ext.testVersions = testVersions
