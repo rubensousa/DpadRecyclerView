@@ -67,7 +67,7 @@ jobs:
           target: ${{ matrix.target }}
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
-          force-avd-creation: true
+          force-avd-creation: false
           disable-animations: false
           avd-name: avd-28
           cores: 4
