@@ -75,7 +75,7 @@ jobs:
           profile: ${{ matrix.profile }}
           force-avd-creation: true
           disable-animations: false
-          avd_name: avd-27
+          avd-name: avd-27
           cores: 4
           disk-size: 6096M
           ram-size: 4096M
