@@ -66,8 +66,7 @@ jobs:
             ~/.android/adb*
           key: avd-${{ matrix.api-level }}
 
-      - name: create AVD
-        if: steps.avd-cache.outputs.cache-hit != 'true'
+      - name: UI Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
@@ -76,19 +75,11 @@ jobs:
           profile: ${{ matrix.profile }}
           force-avd-creation: true
           disable-animations: false
-          emulator-options: -no-window -wipe-data -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: echo "Generated AVD snapshot for caching."
-
-      - name: UI tests
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          target: ${{ matrix.target }}
-          arch: ${{ matrix.arch }}
-          profile: ${{ matrix.profile }}
-          force-avd-creation: false
-          disable-animations: false
-          emulator-options: -no-snapshot -wipe-data -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          avd_name: avd-27
+          cores: 4
+          disk-size: 6096M
+          ram-size: 4096M
+          emulator-options: -no-window -wipe-data -no-snapshot -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: ./gradlew --build-cache connectedDebugAndroidTest --info
 
       - name: Upload results
