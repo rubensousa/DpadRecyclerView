@@ -84,9 +84,9 @@ jobs:
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
           force-avd-creation: false
-          disable-animations: true
+          disable-animations: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew connectedCheck --info
+          script: ./gradlew uninstallAll && ./gradlew --build-cache connectedDebugAndroidTest
 
       - name: Upload results
         uses: actions/upload-artifact@v3
