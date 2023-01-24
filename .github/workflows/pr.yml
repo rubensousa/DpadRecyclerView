@@ -1,5 +1,8 @@
 name: Pull requests
 
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
+
 on:
   pull_request:
     paths-ignore:
@@ -71,7 +74,7 @@ jobs:
           disk-size: 6096M
           ram-size: 4096M
           emulator-options: -no-window -no-snapshot -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew --build-cache connectedCheck --info
+          script: ./gradlew --build-cache connectedDebugAndroidTest --info
 
       - name: Upload results
         uses: actions/upload-artifact@v3
