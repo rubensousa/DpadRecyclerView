@@ -56,8 +56,6 @@ jobs:
 
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
-        with:
-          cache-read-only: false
 
       - name: AVD cache
         uses: actions/cache@v3
@@ -68,7 +66,7 @@ jobs:
             ~/.android/adb*
           key: avd-${{ matrix.api-level }}
 
-      - name: create AVD and generate snapshot for caching
+      - name: create AVD
         if: steps.avd-cache.outputs.cache-hit != 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -76,9 +74,9 @@ jobs:
           target: ${{ matrix.target }}
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
-          force-avd-creation: false
+          force-avd-creation: true
           disable-animations: false
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          emulator-options: -no-window -wipe-data -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: echo "Generated AVD snapshot for caching."
 
       - name: UI tests
@@ -90,8 +88,8 @@ jobs:
           profile: ${{ matrix.profile }}
           force-avd-creation: false
           disable-animations: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew uninstallAll && ./gradlew --build-cache connectedDebugAndroidTest
+          emulator-options: -no-snapshot -wipe-data -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: ./gradlew --build-cache connectedDebugAndroidTest --info
 
       - name: Upload results
         uses: actions/upload-artifact@v3
