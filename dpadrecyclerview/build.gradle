@@ -66,10 +66,10 @@ dependencies {
     androidTestImplementation "androidx.fragment:fragment-testing:$versions.fragment"
     androidTestImplementation project (':dpadrecyclerview-testing')
     androidTestImplementation project (':dpadrecyclerview-test-fixtures')
-    androidTestImplementation "androidx.test:core-ktx:$testVersions.testCore"
+    androidTestImplementation "androidx.test:core-ktx:$testVersions.core"
     androidTestImplementation "androidx.test:runner:$testVersions.runner"
-    androidTestImplementation "androidx.test:rules:$testVersions.testCore"
-    androidTestImplementation "androidx.test.ext:truth:$testVersions.testCore"
+    androidTestImplementation "androidx.test:rules:$testVersions.rules"
+    androidTestImplementation "androidx.test.ext:truth:$testVersions.espressoTruth"
     androidTestImplementation "androidx.test.ext:junit-ktx:$testVersions.espressoJunit"
     androidTestImplementation "androidx.test.espresso:espresso-idling-resource:$testVersions.espresso"
     androidTestImplementation "androidx.test.espresso:espresso-core:$testVersions.espresso"
