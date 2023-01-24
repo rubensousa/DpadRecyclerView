@@ -13,9 +13,9 @@ android {
     defaultConfig {
         minSdk versions.minSdkVersion
         targetSdk versions.targetSdkVersion
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments useTestStorageService: 'true'
     }
 
     buildTypes {
@@ -63,5 +63,6 @@ dependencies {
     implementation "androidx.test.espresso:espresso-core:$testVersions.espresso"
     implementation "androidx.test.espresso:espresso-contrib:$testVersions.espresso"
     implementation "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
+    androidTestUtil "androidx.test.services:test-services:$testVersions.services"
     androidTestUtil "androidx.test:orchestrator:$testVersions.orchestrator"
 }

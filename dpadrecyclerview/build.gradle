@@ -14,6 +14,7 @@ android {
         targetSdk versions.targetSdkVersion
         consumerProguardFiles "consumer-rules.pro"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments useTestStorageService: 'true'
     }
 
     buildTypes {
@@ -66,5 +67,6 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$testVersions.espresso"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$testVersions.espresso"
     androidTestImplementation "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
+    androidTestUtil "androidx.test.services:test-services:$testVersions.services"
     androidTestUtil "androidx.test:orchestrator:$testVersions.orchestrator"
 }
