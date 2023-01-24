@@ -52,17 +52,19 @@ android {
 
 dependencies {
     implementation project (':dpadrecyclerview')
-    debugImplementation "androidx.fragment:fragment-testing:$testVersions.fragment"
-    implementation "androidx.recyclerview:recyclerview:$versions.recyclerview"
-    implementation "androidx.test:runner:$testVersions.runner"
-    implementation "androidx.test:core-ktx:$testVersions.core"
-    implementation "androidx.test:rules:$testVersions.rules"
-    implementation "androidx.test.ext:truth:$testVersions.espressoTruth"
-    implementation "androidx.test.ext:junit-ktx:$testVersions.espressoJunit"
-    implementation "androidx.test.espresso:espresso-idling-resource:$testVersions.espresso"
-    implementation "androidx.test.espresso:espresso-core:$testVersions.espresso"
-    implementation "androidx.test.espresso:espresso-contrib:$testVersions.espresso"
-    implementation "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
+    debugImplementation "androidx.fragment:fragment-testing-manifest:$versions.fragment"
+    //noinspection FragmentGradleConfiguration
+    androidTestImplementation "androidx.fragment:fragment-testing:$versions.fragment"
+    api "androidx.recyclerview:recyclerview:$versions.recyclerview"
+    api "androidx.test:runner:$testVersions.runner"
+    api "androidx.test:core-ktx:$testVersions.core"
+    api "androidx.test:rules:$testVersions.rules"
+    api "androidx.test.ext:truth:$testVersions.espressoTruth"
+    api "androidx.test.ext:junit-ktx:$testVersions.espressoJunit"
+    api "androidx.test.espresso:espresso-idling-resource:$testVersions.espresso"
+    api "androidx.test.espresso:espresso-core:$testVersions.espresso"
+    api "androidx.test.espresso:espresso-contrib:$testVersions.espresso"
+    api "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
     androidTestUtil "androidx.test.services:test-services:$testVersions.services"
     androidTestUtil "androidx.test:orchestrator:$testVersions.orchestrator"
 }
