@@ -22,7 +22,6 @@ testVersions.orchestrator = '1.4.2'
 testVersions.services = '1.4.2'
 testVersions.uiautomator = '2.2.0'
 testVersions.espresso = '3.5.1'
-testVersions.fragment = '1.5.5'
 testVersions.mockk = '1.13.2'
 
 ext.testVersions = testVersions
