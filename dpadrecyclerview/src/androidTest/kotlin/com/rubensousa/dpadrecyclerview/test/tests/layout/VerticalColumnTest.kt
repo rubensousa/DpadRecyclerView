@@ -36,6 +36,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+// TODO: Add focus position assertions
 class VerticalColumnTest : DpadRecyclerViewTest() {
 
     @get:Rule
