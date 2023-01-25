@@ -101,7 +101,7 @@ object DpadRecyclerViewActions {
 
     @JvmStatic
     fun waitForIdleScroll(
-        timeout: Long = 2,
+        timeout: Long = 5,
         timeoutUnit: TimeUnit = TimeUnit.SECONDS
     ): ViewAction {
         return WaitForCondition<RecyclerView>(
