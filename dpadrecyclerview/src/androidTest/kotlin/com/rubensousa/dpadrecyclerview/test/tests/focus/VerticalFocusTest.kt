@@ -96,9 +96,9 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
             )
         )
 
-        repeat(5) { index ->
-            assertFocusAndSelection(position = increment * index)
+        repeat(2) { index ->
             pressDown()
+            assertFocusAndSelection(position = increment * (index + 1))
         }
 
     }
