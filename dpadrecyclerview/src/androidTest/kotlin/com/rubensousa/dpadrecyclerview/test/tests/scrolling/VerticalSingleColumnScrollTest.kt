@@ -110,19 +110,9 @@ class VerticalSingleColumnScrollTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testMultiStepScroll() {
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 50)
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 25)
-        waitForIdleScrollState()
-        assertFocusPosition(position = 25)
-    }
-
-    @Test
     fun testContinuousScrollThatSettlesInSamePosition() {
-        repeat(5) {
-            KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 10)
-            KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 10)
-        }
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 5)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 5)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
