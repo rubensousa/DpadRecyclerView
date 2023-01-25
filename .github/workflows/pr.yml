@@ -61,6 +61,9 @@ jobs:
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
 
+      - name: Compile instrumented tests
+        run: ./gradlew --build-cache assembleDebugAndroidTest
+
       # Retrieve the cached emulator snapshot.
       - name: AVD cache
         uses: actions/cache@v3
