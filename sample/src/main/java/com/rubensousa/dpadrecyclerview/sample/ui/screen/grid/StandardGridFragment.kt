@@ -103,6 +103,15 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
 
     private fun setupVerticalGridView(recyclerView: VerticalGridView) {
         recyclerView.apply {
+            addItemDecoration(
+                GridMarginDecoration(
+                    horizontalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
+                    verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
+                    columnProvider = object : ColumnProvider {
+                        override fun getNumberOfColumns(): Int = spanCount
+                    }
+                )
+            )
             recyclerView.setNumColumns(spanCount)
             addOnChildViewHolderSelectedListener(object : OnChildViewHolderSelectedListener() {
                 override fun onChildViewHolderSelected(
