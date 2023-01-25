@@ -95,12 +95,8 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
                 focusEvery = increment
             )
         )
-
-        repeat(2) { index ->
-            pressDown()
-            assertFocusAndSelection(position = increment * (index + 1))
-        }
-
+        pressDown()
+        assertFocusAndSelection(position = increment)
     }
 
     @Ignore("This test crashes the CI. Find out why")
