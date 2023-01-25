@@ -23,11 +23,9 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressUp
-import org.junit.Ignore
 import org.junit.Test
 
 class VerticalFocusTest : DpadRecyclerViewTest() {
@@ -104,7 +102,6 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
 
     }
 
-    @Ignore("Checking if this crashing the CI test run")
     @Test
     fun testScrollingBackToPreviousSelectionWhenNextPivotIsNotFound() {
         val increment = 15
@@ -121,10 +118,6 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         selectPosition(lastFocusablePosition, 0)
 
         pressDown()
-
-        waitForCondition("Selection is in the correct position") { recyclerView ->
-            recyclerView.getSelectedPosition() == lastFocusablePosition
-        }
 
         assertFocusAndSelection(position = lastFocusablePosition)
     }

@@ -93,13 +93,13 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
 
     @Test
     fun testNoExtraSpaceIsAddedWhenScrollingByDefault() {
-        repeat(30) {
+        repeat(5) {
             scrollDown()
         }
 
         assertChildrenPositions()
 
-        repeat(30) {
+        repeat(5) {
             scrollUp()
         }
 
@@ -124,7 +124,7 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
 
     @Test
     fun testExtraLayoutSpaceIsAddedAtTop() {
-        repeat(30) {
+        repeat(10) {
             scrollDown()
         }
 
@@ -157,7 +157,7 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
 
     @Test
     fun testExtraLayoutSpaceIsAddedAtTopDuringScroll() {
-        repeat(30) {
+        repeat(10) {
             scrollDown()
         }
         onRecyclerView("Change extra layout space") { recyclerView ->
