@@ -1,5 +1,8 @@
 name: Release
 
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
+
 on:
   push:
     paths-ignore:
@@ -26,10 +29,10 @@ jobs:
         uses: malinskiy/action-android/install-sdk@release/0.1.4
 
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --stacktrace
+        run: ./gradlew --build-cache testDebugUnitTest --stacktrace
 
       - name: Assemble library
-        run: ./gradlew assembleRelease
+        run: ./gradlew --build-cache assembleRelease
 
   ui_test:
     runs-on: macos-12
@@ -84,9 +87,9 @@ jobs:
           arch: ${{ matrix.arch }}
           profile: ${{ matrix.profile }}
           force-avd-creation: false
-          disable-animations: false
+          disable-animations: true
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          script: ./gradlew uninstallAll && ./gradlew --build-cache connectedDebugAndroidTest
+          script: ./gradlew --build-cache connectedDebugAndroidTest
 
       - name: Upload results
         uses: actions/upload-artifact@v3
