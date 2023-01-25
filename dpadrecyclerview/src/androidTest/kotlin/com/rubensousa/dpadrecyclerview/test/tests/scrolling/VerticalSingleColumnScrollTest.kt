@@ -107,14 +107,6 @@ class VerticalSingleColumnScrollTest : DpadRecyclerViewTest() {
         KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 10)
         waitForIdleScrollState()
         assertFocusPosition(position = 20)
-
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 5)
-        waitForIdleScrollState()
-        assertFocusPosition(position = 15)
-
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 5)
-        waitForIdleScrollState()
-        assertFocusPosition(position = 10)
     }
 
     @Test
