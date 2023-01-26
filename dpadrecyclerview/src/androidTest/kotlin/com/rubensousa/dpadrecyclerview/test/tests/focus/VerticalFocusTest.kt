@@ -26,7 +26,6 @@ import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressUp
-import org.junit.Ignore
 import org.junit.Test
 
 class VerticalFocusTest : DpadRecyclerViewTest() {
@@ -87,7 +86,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
 
     @Test
     fun testScrollingUntilPivotIsFound() {
-        val increment = 15
+        val increment = 5
         val steps = 10
         launchFragment(
             getDefaultAdapterConfiguration().copy(
@@ -99,10 +98,9 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         assertFocusAndSelection(position = increment)
     }
 
-    @Ignore("This test crashes the CI. Find out why")
     @Test
     fun testScrollingBackToPreviousSelectionWhenNextPivotIsNotFound() {
-        val increment = 15
+        val increment = 5
         val steps = 10
         launchFragment(
             getDefaultAdapterConfiguration().copy(

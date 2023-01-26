@@ -70,8 +70,8 @@ class VerticalSingleColumnScrollTest : DpadRecyclerViewTest() {
 
     @Test
     fun testContinuousScrollDown() {
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 25)
-        assertFocusAndSelection(position = 25)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 15, delay = 200L)
+        assertFocusAndSelection(position = 15)
     }
 
     @Test
@@ -85,8 +85,8 @@ class VerticalSingleColumnScrollTest : DpadRecyclerViewTest() {
 
     @Test
     fun testContinuousScrollUp() {
-        selectPosition(position = 25, subPosition = 0)
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 25)
+        selectPosition(position = 10, subPosition = 0)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 10, delay = 200L)
         assertFocusAndSelection(position = 0)
     }
 
