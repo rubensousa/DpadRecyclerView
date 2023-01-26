@@ -21,18 +21,17 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.decorator.GridSpanMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListHeaderAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListPlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
 
-class DetailListController(private val fragment: DetailFragment) {
+class DetailListController {
 
-    private val loadingAdapter = ListPlaceholderAdapter(
+    private val loadingAdapter = PlaceholderAdapter(
         items = 5,
         layoutId = R.layout.adapter_grid_placeholder,
         focusPlaceholders = false
@@ -121,12 +120,6 @@ class DetailListController(private val fragment: DetailFragment) {
                 }
             }
         })
-        recyclerView.addItemDecoration(
-            GridSpanMarginDecoration.create(
-                margin = recyclerView.resources.getDimensionPixelOffset(R.dimen.item_spacing),
-                recyclerView.getDpadLayoutManager()
-            )
-        )
     }
 
     private fun setupPagination(

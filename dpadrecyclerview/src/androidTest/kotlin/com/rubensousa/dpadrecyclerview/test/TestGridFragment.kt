@@ -22,7 +22,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
+import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 
@@ -34,6 +36,8 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         private const val ARG_LAYOUT_CONFIG = "layout_config"
         private const val ARG_ADAPTER_CONFIG = "adapter_config"
 
+        var viewPool = UnboundViewPool()
+
         fun getArgs(
             layoutConfig: TestLayoutConfiguration,
             adapterConfig: TestAdapterConfiguration = TestAdapterConfiguration()
@@ -43,6 +47,11 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
             bundle.putParcelable(ARG_ADAPTER_CONFIG, adapterConfig)
             return bundle
         }
+
+        fun installViewPool(viewPool: UnboundViewPool) {
+            this.viewPool = viewPool
+        }
+
     }
 
     private val selectionEvents = ArrayList<DpadSelectionEvent>()
@@ -55,28 +64,38 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         val layoutConfig = args.getParcelable<TestLayoutConfiguration>(ARG_LAYOUT_CONFIG)!!
         val adapterConfig = args.getParcelable<TestAdapterConfiguration>(ARG_ADAPTER_CONFIG)!!
         val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
-        recyclerView.addOnViewHolderSelectedListener(this)
+        if (layoutConfig.useCustomViewPool) {
+            recyclerView.setRecycledViewPool(viewPool)
+        }
+        recyclerView.setRecycleChildrenOnDetach(layoutConfig.recycleChildrenOnDetach)
         recyclerView.setFocusableDirection(layoutConfig.focusableDirection)
         recyclerView.setGravity(layoutConfig.gravity)
         recyclerView.setSpanCount(layoutConfig.spans)
         recyclerView.setOrientation(layoutConfig.orientation)
         recyclerView.setParentAlignment(layoutConfig.parentAlignment)
         recyclerView.setChildAlignment(layoutConfig.childAlignment)
+        recyclerView.addOnViewHolderSelectedListener(this)
         recyclerView.adapter = createAdapter(recyclerView, adapterConfig)
         recyclerView.requestFocus()
+    }
+
+    fun mutateAdapter(action: (adapter: AbstractTestAdapter<*>) -> Unit) {
+        getDpadRecyclerView()?.adapter?.let { adapter ->
+            if (adapter is AbstractTestAdapter<*>) {
+                action(adapter)
+            }
+        }
+    }
+
+    fun requestFocus() {
+        getDpadRecyclerView()?.requestFocus()
     }
 
     open fun createAdapter(
         recyclerView: DpadRecyclerView,
         adapterConfig: TestAdapterConfiguration
     ): RecyclerView.Adapter<*> {
-        val adapter = TestAdapter(adapterConfig.itemLayoutId, adapterConfig.alternateFocus)
-        adapter.submitList(ArrayList<Int>().apply {
-            repeat(adapterConfig.numberOfItems) {
-                add(it)
-            }
-        })
-        return adapter
+        return TestAdapter(adapterConfig)
     }
 
     override fun onViewHolderSelected(
@@ -85,7 +104,6 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         position: Int,
         subPosition: Int
     ) {
-        super.onViewHolderSelected(parent, child, position, subPosition)
         selectionEvents.add(DpadSelectionEvent(position, subPosition))
     }
 
@@ -95,7 +113,6 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         position: Int,
         subPosition: Int
     ) {
-        super.onViewHolderSelectedAndAligned(parent, child, position, subPosition)
         alignedEvents.add(DpadSelectionEvent(position, subPosition))
     }
 
@@ -113,10 +130,21 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         }
     }
 
+    fun clearEvents() {
+        selectionEvents.clear()
+        alignedEvents.clear()
+    }
+
+    fun clearAdapter() {
+        getDpadRecyclerView()?.adapter = null
+    }
+
     fun getTasksExecuted(): List<DpadSelectionEvent> = tasks
 
     fun getSelectionEvents(): List<DpadSelectionEvent> = selectionEvents
 
     fun getSelectedAndAlignedEvents(): List<DpadSelectionEvent> = alignedEvents
+
+    private fun getDpadRecyclerView(): DpadRecyclerView? = view?.findViewById(R.id.recyclerView)
 
 }

@@ -20,7 +20,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemGridBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListTypes
 
 class ItemGridAdapter(private val onItemClickListener: ItemViewHolder.ItemClickListener) :
@@ -39,7 +39,9 @@ class ItemGridAdapter(private val onItemClickListener: ItemViewHolder.ItemClickL
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val binding = AdapterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = AdapterItemGridBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
         return ItemViewHolder(binding.root, binding.textView)
     }
 

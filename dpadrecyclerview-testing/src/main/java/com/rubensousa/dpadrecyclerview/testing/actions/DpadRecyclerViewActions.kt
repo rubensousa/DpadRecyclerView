@@ -67,6 +67,14 @@ object DpadRecyclerViewActions {
     }
 
     @JvmStatic
+    fun getRelativeItemViewBounds(position: Int, rect: Rect): ViewAction {
+        return executeForViewHolderItemViewAt(
+            position,
+            DpadViewActions.getRelativeViewBounds(rect)
+        )
+    }
+
+    @JvmStatic
     fun updateChildAlignment(alignment: ChildAlignment): ViewAction {
         return UpdateChildAlignmentAction(alignment)
     }
@@ -84,10 +92,11 @@ object DpadRecyclerViewActions {
     @JvmStatic
     fun waitForAdapterUpdate(
         updates: Int = 1,
-        timeout: Long = 5,
+        failOnTimeout: Boolean = false,
+        timeout: Long = 2,
         timeoutUnit: TimeUnit = TimeUnit.SECONDS
     ): ViewAction {
-        return WaitForAdapterUpdateAction(updates, timeout, timeoutUnit)
+        return WaitForAdapterUpdateAction(updates, failOnTimeout, timeout, timeoutUnit)
     }
 
     @JvmStatic
@@ -95,7 +104,12 @@ object DpadRecyclerViewActions {
         timeout: Long = 5,
         timeoutUnit: TimeUnit = TimeUnit.SECONDS
     ): ViewAction {
-        return WaitForIdleScrollAction(timeout, timeoutUnit)
+        return WaitForCondition<RecyclerView>(
+            "Waiting for idle Scroll",
+            { recyclerView -> recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE },
+            timeout,
+            timeoutUnit
+        )
     }
 
     @JvmStatic

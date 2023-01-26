@@ -30,25 +30,30 @@ data class TestLayoutConfiguration(
     val childAlignment: ChildAlignment,
     val gravity: Int = Gravity.START,
     val reverseLayout: Boolean = false,
+    val useCustomViewPool: Boolean = false,
+    val recycleChildrenOnDetach: Boolean = false,
     val focusableDirection: FocusableDirection = FocusableDirection.STANDARD
 ) : Parcelable {
 
+
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
-        parcel.readInt(),
-        requireNotNull(
+        spans = parcel.readInt(),
+        orientation = parcel.readInt(),
+        parentAlignment = requireNotNull(
             parcel.readParcelable(
                 ParentAlignment::class.java.classLoader, ParentAlignment::class.java
             )
         ),
-        requireNotNull(
+        childAlignment = requireNotNull(
             parcel.readParcelable(
                 ChildAlignment::class.java.classLoader, ChildAlignment::class.java
             )
         ),
-        parcel.readInt(),
-        parcel.readByte() != 0.toByte(),
-        FocusableDirection.values()[parcel.readInt()]
+        gravity = parcel.readInt(),
+        reverseLayout = parcel.readByte() != 0.toByte(),
+        useCustomViewPool = parcel.readByte() != 0.toByte(),
+        recycleChildrenOnDetach = parcel.readByte() != 0.toByte(),
+        focusableDirection = FocusableDirection.values()[parcel.readInt()]
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -58,6 +63,8 @@ data class TestLayoutConfiguration(
         parcel.writeParcelable(childAlignment, flags)
         parcel.writeInt(gravity)
         parcel.writeByte(if (reverseLayout) 1 else 0)
+        parcel.writeByte(if (useCustomViewPool) 1 else 0)
+        parcel.writeByte(if (recycleChildrenOnDetach) 1 else 0)
         parcel.writeInt(focusableDirection.ordinal)
     }
 

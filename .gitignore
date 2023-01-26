@@ -9,3 +9,6 @@
 .cxx
 local.properties
 /test_coverage
+instrumentation_logs.txt
+logcat.txt
+/recordings

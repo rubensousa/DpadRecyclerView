@@ -16,6 +16,8 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
+import androidx.leanback.widget.HorizontalGridView
+import androidx.leanback.widget.OnChildViewHolderSelectedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
@@ -24,8 +26,10 @@ class DpadStateHolder {
 
     private val positions = LinkedHashMap<String, Int>()
     private val listeners = LinkedHashMap<String, OnViewHolderSelectedListener>()
+    private val leanbackListeners = LinkedHashMap<String, OnChildViewHolderSelectedListener>()
 
-    fun register(recyclerView: DpadRecyclerView, key: String) {
+    fun register(recyclerView: DpadRecyclerView, key: String, adapter: RecyclerView.Adapter<*>) {
+        recyclerView.adapter = adapter
         val restoredPosition = positions[key] ?: 0
         recyclerView.setSelectedPosition(restoredPosition)
         val listener = object : OnViewHolderSelectedListener {
@@ -43,11 +47,38 @@ class DpadStateHolder {
         listeners[key] = listener
     }
 
+    fun register(recyclerView: HorizontalGridView, key: String, adapter: RecyclerView.Adapter<*>) {
+        recyclerView.adapter = adapter
+        val restoredPosition = positions[key] ?: 0
+        recyclerView.selectedPosition = restoredPosition
+        val listener = object : OnChildViewHolderSelectedListener() {
+            override fun onChildViewHolderSelected(
+                parent: RecyclerView,
+                child: RecyclerView.ViewHolder?,
+                position: Int,
+                subposition: Int
+            ) {
+                positions[key] = position
+            }
+        }
+        recyclerView.addOnChildViewHolderSelectedListener(listener)
+        leanbackListeners[key] = listener
+    }
+
+    fun unregister(recyclerView: HorizontalGridView, key: String) {
+        leanbackListeners.remove(key)?.let { listener ->
+            recyclerView.removeOnChildViewHolderSelectedListener(listener)
+            recyclerView.selectedPosition = 0
+        }
+        recyclerView.adapter = null
+    }
+
     fun unregister(recyclerView: DpadRecyclerView, key: String) {
         listeners.remove(key)?.let { listener ->
             recyclerView.removeOnViewHolderSelectedListener(listener)
             recyclerView.setSelectedPosition(position = 0)
         }
+        recyclerView.adapter = null
     }
 
 

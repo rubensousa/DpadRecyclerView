@@ -29,10 +29,10 @@ class PaginationViewModel : ViewModel() {
     private var loadOffset = 2
     private var loadDelay = 0L
     private val list = ArrayList<Int>()
-    private val listLiveData = MutableLiveData<List<Int>>()
+    private val listLiveData = MutableLiveData<ArrayList<Int>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
     val loadingState: LiveData<Boolean> = loadingStateLiveData
-    val listState: LiveData<List<Int>> = listLiveData
+    val listState: LiveData<ArrayList<Int>> = listLiveData
     private var items = 0
 
     fun setLoadDelay(delay: Long) {

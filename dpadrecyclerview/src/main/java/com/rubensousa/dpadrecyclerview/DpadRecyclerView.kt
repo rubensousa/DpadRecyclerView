@@ -26,7 +26,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 
 /**
  * A [RecyclerView] that scrolls to items on DPAD key events instead of swipe/touch gestures.
@@ -177,29 +179,30 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Sets the amount of pixels to be used for laying out extra space
-     * on the invisible portion of this RecyclerView when scrolling in a given direction.
+     * Sets the strategy for calculating extra layout space.
      *
-     * By default, [DpadLayoutManager] already uses a constant entire page as extra space
-     * and the value you pass here is passed as extra.
-     *
-     * E.g: RecyclerView with height of 1080 px has 2 pages of size 1080 invisible but laid out.
-     * With extra space of 200 px, the total extra space would be: 2 * (1080 + 200)
-     *
-     * Default is 0, which means [DpadLayoutManager] will only lay out the default entire page
-     * on both scroll directions.
-     *
-     * @param value Must be equal to or greater than 0
+     * Check [ExtraLayoutSpaceStrategy] for more context.
      */
-    fun setExtraLayoutSpace(value: Int) {
-        delegate.setExtraLayoutSpace(value)
+    fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
+        delegate.setExtraLayoutSpaceStrategy(strategy)
     }
 
     /**
-     * @return custom extra layout space factor set by [setExtraLayoutSpace]
+     * Set whether the LayoutManager of this RecyclerView will recycle its children
+     * when this RecyclerView is detached from the window.
+     *
+     * If you are re-using a [RecyclerView.RecycledViewPool], it might be a good idea to set
+     * this flag to **true** so that views will be available to other RecyclerViews
+     * immediately.
+     *
+     * Since by default no extra space is laid out,
+     * enabling this flag will only produce a different result
+     * if a new extra space configuration is passed through [setExtraLayoutSpaceStrategy].
+     *
+     * @param recycle Whether children should be recycled in detach or not.
      */
-    fun getExtraLayoutSpace(): Int {
-        return delegate.getExtraLayoutSpace()
+    fun setRecycleChildrenOnDetach(recycle: Boolean) {
+        delegate.setRecycleChildrenOnDetach(recycle)
     }
 
     /**
@@ -218,6 +221,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      */
     fun setFocusDrawingOrderEnabled(enabled: Boolean) {
         super.setChildrenDrawingOrderEnabled(enabled)
+        delegate.setChildrenDrawingOrderEnabled(enabled)
     }
 
     /**
@@ -244,16 +248,28 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Updates the [GridLayoutManager.SpanSizeLookup] used by the [DpadLayoutManager]
-     * of this RecyclerView
-     * @param spanSizeLookup the new span configuration
+     * Updates the [DpadSpanSizeLookup] used by the layout manager of this RecyclerView.
+     * @param spanSizeLookup the new span size configuration
      */
+    @Deprecated("Use setSpanSizeLookup(DpadSpanSizeLookup) instead")
     fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
+        setSpanSizeLookup(object : DpadSpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return spanSizeLookup.getSpanSize(position)
+            }
+        })
+    }
+
+    /**
+     * Updates the [DpadSpanSizeLookup] used by the layout manager of this RecyclerView.
+     * @param spanSizeLookup the new span size configuration
+     */
+    fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
         delegate.setSpanSizeLookup(spanSizeLookup)
     }
 
     /**
-     * Updates the number of spans of the [DpadLayoutManager] used by this RecyclerView.
+     * Updates the number of spans of the [PivotLayoutManager] used by this RecyclerView.
      * @param spans number of columns in vertical orientation,
      * or number of rows in horizontal orientation. Must be greater than 0
      */
@@ -267,7 +283,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun getSpanCount(): Int = delegate.getSpanCount()
 
     /**
-     * Updates the orientation the [DpadLayoutManager] used by this RecyclerView
+     * Updates the orientation of the [PivotLayoutManager] used by this RecyclerView
      * @param orientation either [RecyclerView.VERTICAL] or [RecyclerView.HORIZONTAL]
      */
     fun setOrientation(orientation: Int) {
@@ -278,6 +294,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * Sets the gravity used for child view positioning.
      * Defaults to [Gravity.TOP] for horizontal orientation
      * and [Gravity.START] for vertical orientation.
+     *
+     * This is only supported for single rows (i.e 1 span)
      *
      * @param gravity See [Gravity]
      */
@@ -442,6 +460,46 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun getCurrentSubPositions() = delegate.getCurrentSubPositions()
 
     /**
+     * Similar to [LinearLayoutManager.findFirstVisibleItemPosition]
+     *
+     * @return The adapter position of the first visible item or [RecyclerView.NO_POSITION] if
+     * there aren't any visible items
+     */
+    fun findFirstVisibleItemPosition(): Int {
+        return delegate.findFirstVisibleItemPosition()
+    }
+
+    /**
+     * Similar to [LinearLayoutManager.findFirstCompletelyVisibleItemPosition]
+     *
+     * @return The adapter position of the first fully visible item or [RecyclerView.NO_POSITION] if
+     * there aren't any fully visible items
+     */
+    fun findFirstCompletelyVisibleItemPosition(): Int {
+        return delegate.findFirstCompletelyVisibleItemPosition()
+    }
+
+    /**
+     * Similar to [LinearLayoutManager.findLastVisibleItemPosition]
+     *
+     * @return The adapter position of the last visible item or [RecyclerView.NO_POSITION] if
+     * there aren't any visible items
+     */
+    fun findLastVisibleItemPosition(): Int {
+        return delegate.findLastVisibleItemPosition()
+    }
+
+    /**
+     * Similar to [LinearLayoutManager.findLastCompletelyVisibleItemPosition]
+     *
+     * @return The adapter position of the last fully visible item or [RecyclerView.NO_POSITION] if
+     * there aren't any fully visible items
+     */
+    fun findLastCompletelyVisibleItemPosition(): Int {
+        return delegate.findLastCompletelyVisibleItemPosition()
+    }
+
+    /**
      * Registers a callback to be invoked when an item has been selected
      * @param listener The listener to be invoked.
      */
@@ -539,13 +597,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
 
     /**
-     * @return the [DpadLayoutManager] used by this RecyclerView
-     */
-    fun getDpadLayoutManager(): DpadLayoutManager {
-        return delegate.requireLayout()
-    }
-
-    /**
      * Defines behavior of duration and interpolator for [smoothScrollBy].
      */
     interface SmoothScrollByBehavior {
@@ -590,7 +641,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     /**
      * Listener for receiving notifications of a completed layout pass
-     * by the LayoutManager of this RecyclerView ([DpadLayoutManager.onLayoutCompleted])
+     * by the LayoutManager of this RecyclerView
      */
     interface OnLayoutCompletedListener {
         /**

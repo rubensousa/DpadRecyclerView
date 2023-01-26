@@ -23,24 +23,24 @@ import android.view.Gravity
 import android.view.View
 import android.view.animation.Interpolator
 import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 
 /**
- * Takes care of most of the functionality of [DpadRecyclerView].
- * You can use this if you use your own [RecyclerView] and can't use [DpadRecyclerView] directly
+ * Takes care of most of the functionality of [DpadRecyclerView]
  */
-class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
+internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
     var smoothScrollByBehavior: DpadRecyclerView.SmoothScrollByBehavior? = null
 
-    private var layout: DpadLayoutManager? = null
+    private var layoutManager: PivotLayoutManager? = null
     private var isRetainingFocus = false
     private var hasOverlappingRendering = true
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
 
     fun init(context: Context, attrs: AttributeSet?) {
-        layout = createLayoutManager(context, attrs)
+        layoutManager = createLayoutManager(context, attrs)
         recyclerView.apply {
             // The LayoutManager will restore focus and scroll automatically when needed
             preserveFocusAfterLayout = false
@@ -61,55 +61,38 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
             setWillNotDraw(true)
             overScrollMode = RecyclerView.OVER_SCROLL_NEVER
-            layoutManager = layout
         }
+        recyclerView.layoutManager = layoutManager
     }
 
-    fun setLayoutManager(layoutManager: RecyclerView.LayoutManager?) {
-        layout?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
-        layout?.setRecyclerView(null)
-        layout = null
+    fun setLayoutManager(newLayoutManager: LayoutManager?) {
+        layoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
+        layoutManager?.setRecyclerView(null)
+        layoutManager = null
 
-        if (layoutManager != null && layoutManager !is DpadLayoutManager) {
+        if (newLayoutManager != null && newLayoutManager !is PivotLayoutManager) {
             throw IllegalArgumentException(
-                "Only DpadGridLayoutManager is supported, but got $layoutManager"
+                "Only PivotLayoutManagerDelegate is supported, but got $newLayoutManager"
             )
         }
-        if (layoutManager is DpadLayoutManager) {
-            layoutManager.setRecyclerView(recyclerView, true)
-            layoutManager.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
-            layout = layoutManager
+        if (newLayoutManager is PivotLayoutManager) {
+            newLayoutManager.setRecyclerView(recyclerView)
+            newLayoutManager.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
+            layoutManager = newLayoutManager
         }
     }
 
-    private fun createLayoutManager(context: Context, attrs: AttributeSet?): DpadLayoutManager {
+    private fun createLayoutManager(
+        context: Context,
+        attrs: AttributeSet?
+    ): PivotLayoutManager {
         val typedArray = context.obtainStyledAttributes(
             attrs,
             R.styleable.DpadRecyclerView,
             R.attr.dpadRecyclerViewStyle, 0
         )
-        val orientation = when (
-            typedArray.getInt(
-                R.styleable.DpadRecyclerView_android_orientation,
-                RecyclerView.VERTICAL
-            )
-        ) {
-            0 -> RecyclerView.HORIZONTAL
-            1 -> RecyclerView.VERTICAL
-            else -> throw IllegalArgumentException(
-                "Orientation must be either HORIZONTAL or VERTICAL"
-            )
-        }
-        val layout = DpadLayoutManager(
-            context,
-            spanCount = typedArray.getInt(
-                R.styleable.DpadRecyclerView_spanCount, 1
-            ),
-            orientation = orientation,
-            reverseLayout = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_reverseLayout, false
-            ),
-        )
+        val properties = LayoutManager.getProperties(context, attrs, 0, 0)
+        val layout = PivotLayoutManager(properties)
         layout.setFocusOutAllowed(
             throughFront = typedArray.getBoolean(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutFront, true
@@ -141,6 +124,12 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
             layout.setGravity(
                 typedArray.getInt(R.styleable.DpadRecyclerView_android_gravity, Gravity.NO_GRAVITY)
             )
+        }
+        if (!typedArray.hasValue(R.styleable.DpadRecyclerView_android_focusable)) {
+            recyclerView.isFocusable = true
+        }
+        if (!typedArray.hasValue(R.styleable.DpadRecyclerView_android_focusableInTouchMode)) {
+            recyclerView.isFocusableInTouchMode = true
         }
         val parentAlignment = ParentAlignment(
             edge = ParentAlignment.Edge.values()[typedArray.getInt(
@@ -183,23 +172,23 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         if (focused == null) {
             return null
         }
-        return layout?.onInterceptFocusSearch(focused, direction)
+        return layoutManager?.onInterceptFocusSearch(focused, direction)
     }
 
     fun onRtlPropertiesChanged() {
-        layout?.onRtlPropertiesChanged()
+        layoutManager?.onRtlPropertiesChanged()
     }
 
     fun onFocusChanged(gainFocus: Boolean) {
-        layout?.onFocusChanged(gainFocus)
+        layoutManager?.onFocusChanged(gainFocus)
     }
 
     fun focusSearch(direction: Int): View? {
-        val currentLayout = layout
+        val currentLayout = layoutManager
         if (recyclerView.isFocused && currentLayout != null) {
             // focusSearch will be called when RecyclerView itself is focused.
             // Calling focusSearch(view, int) to get next sibling of current selected child.
-            val view = currentLayout.findViewByPosition(currentLayout.selectedPosition)
+            val view = currentLayout.findViewByPosition(currentLayout.getSelectedPosition())
             if (view != null) {
                 return focusSearch(view, direction)
             }
@@ -215,7 +204,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
              */
             false
         } else {
-            layout?.onRequestFocusInDescendants(direction, previouslyFocusedRect) ?: false
+            layoutManager?.onRequestFocusInDescendants(direction, previouslyFocusedRect) ?: false
         }
     }
 
@@ -225,22 +214,32 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
     fun getFocusableDirection() = requireLayout().getFocusableDirection()
 
-    fun getChildDrawingOrder(childCount: Int, i: Int): Int {
-        return layout?.getChildDrawingOrder(childCount, i) ?: i
+    fun getChildDrawingOrder(childCount: Int, drawingOrderPosition: Int): Int {
+        val selectedPosition = layoutManager?.getSelectedPosition() ?: return drawingOrderPosition
+        val view = layoutManager?.findViewByPosition(selectedPosition) ?: return drawingOrderPosition
+        val focusIndex = recyclerView.indexOfChild(view)
+        // Scenario: 0 1 2 3 4 5 6 7 8 9, 4 is the focused item
+        // drawing order is: 0 1 2 3 9 8 7 6 5 4
+        return if (drawingOrderPosition < focusIndex) {
+            drawingOrderPosition
+        } else if (drawingOrderPosition < childCount - 1) {
+            focusIndex + childCount - 1 - drawingOrderPosition
+        } else {
+            focusIndex
+        }
     }
 
     fun removeView(view: View) {
-        val retainFocusForChild = view.hasFocus() && recyclerView.isFocusable
-        if (retainFocusForChild) {
-            isRetainingFocus = true
+        isRetainingFocus = view.hasFocus() && recyclerView.isFocusable
+        if (isRetainingFocus) {
             recyclerView.requestFocus()
         }
     }
 
     fun removeViewAt(index: Int) {
-        val retainFocusForChild = recyclerView.getChildAt(index)?.hasFocus() ?: false
-        if (retainFocusForChild) {
-            isRetainingFocus = true
+        val childHasFocus = recyclerView.getChildAt(index)?.hasFocus() ?: false
+        isRetainingFocus = childHasFocus && recyclerView.isFocusable
+        if (isRetainingFocus) {
             recyclerView.requestFocus()
         }
     }
@@ -274,11 +273,17 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
     }
 
     fun setSpanCount(spans: Int) {
-        requireLayout().spanCount = spans
+        if (spans == 1) {
+            return
+        }
+        if (layoutManager is PivotLayoutManager) {
+            val pivotLayoutManager = layoutManager as PivotLayoutManager
+            pivotLayoutManager.setSpanCount(spans)
+        }
     }
 
     fun setOrientation(orientation: Int) {
-        requireLayout().orientation = orientation
+        requireLayout().setOrientation(orientation)
     }
 
     fun setGravity(gravity: Int) {
@@ -298,11 +303,11 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         requireLayout().selectPosition(position, subPosition, smooth)
     }
 
-    fun getSelectedPosition() = layout?.selectedPosition ?: RecyclerView.NO_POSITION
+    fun getSelectedPosition() = layoutManager?.getSelectedPosition() ?: RecyclerView.NO_POSITION
 
-    fun getSelectedSubPosition() = layout?.subSelectionPosition ?: RecyclerView.NO_POSITION
+    fun getSelectedSubPosition() = layoutManager?.getSelectedSubPosition() ?: 0
 
-    fun getCurrentSubPositions() = layout?.getCurrentSubSelectionCount() ?: 0
+    fun getCurrentSubPositions() = layoutManager?.getCurrentSubPositions() ?: 0
 
     fun setSelectedSubPosition(subPosition: Int, smooth: Boolean) {
         requireLayout().selectSubPosition(subPosition, smooth)
@@ -328,7 +333,7 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         requireLayout().clearOnViewHolderSelectedListeners()
     }
 
-    fun getSpanCount(): Int = layout?.spanCount ?: 0
+    fun getSpanCount(): Int = layoutManager?.getSpanCount() ?: 0
 
     fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
         requireLayout().setAlignments(parent, child, smooth)
@@ -346,8 +351,8 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
 
     fun getChildAlignment() = requireLayout().getChildAlignment()
 
-    fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
-        requireLayout().spanSizeLookup = spanSizeLookup
+    fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
+        requireLayout().setSpanSizeLookup(spanSizeLookup)
     }
 
     fun addOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
@@ -362,11 +367,9 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         requireLayout().clearOnLayoutCompletedListeners()
     }
 
-    fun setExtraLayoutSpace(value: Int) {
-        requireLayout().setExtraLayoutSpace(value)
+    fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
+        requireLayout().setExtraLayoutSpaceStrategy(strategy)
     }
-
-    fun getExtraLayoutSpace() = requireLayout().getExtraLayoutSpace()
 
     fun hasOverlappingRendering(): Boolean = hasOverlappingRendering
 
@@ -387,56 +390,34 @@ class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) {
         return requireLayout().isFocusSearchDisabled()
     }
 
-    fun requireLayout(): DpadLayoutManager {
-        return requireNotNull(layout) {
+    fun requireLayout(): PivotLayoutManager {
+        return requireNotNull(layoutManager) {
             "LayoutManager is null. You need to call RecyclerView.setLayoutManager"
         }
     }
 
-    private class ViewHolderTaskExecutor : OnViewHolderSelectedListener {
+    fun setChildrenDrawingOrderEnabled(enabled: Boolean) {
+        requireLayout().setChildrenDrawingOrderEnabled(enabled)
+    }
 
-        private var targetPosition = RecyclerView.NO_POSITION
-        private var pendingTask: ViewHolderTask? = null
+    fun findFirstVisibleItemPosition(): Int {
+        return requireLayout().findFirstVisibleItemPosition()
+    }
 
-        fun schedule(position: Int, task: ViewHolderTask) {
-            targetPosition = position
-            pendingTask = task
-        }
+    fun findFirstCompletelyVisibleItemPosition(): Int {
+        return requireLayout().findFirstCompletelyVisibleItemPosition()
+    }
 
-        override fun onViewHolderSelected(
-            parent: RecyclerView,
-            child: RecyclerView.ViewHolder?,
-            position: Int,
-            subPosition: Int
-        ) {
-            if (position == targetPosition
-                && child != null
-                && pendingTask?.executeWhenAligned == false
-            ) {
-                executePendingTask(child)
-            }
-        }
+    fun findLastVisibleItemPosition(): Int {
+        return requireLayout().findLastVisibleItemPosition()
+    }
 
-        override fun onViewHolderSelectedAndAligned(
-            parent: RecyclerView,
-            child: RecyclerView.ViewHolder?,
-            position: Int,
-            subPosition: Int
-        ) {
-            if (position == targetPosition
-                && child != null
-                && pendingTask?.executeWhenAligned == true
-            ) {
-                executePendingTask(child)
-            }
-        }
+    fun findLastCompletelyVisibleItemPosition(): Int {
+        return requireLayout().findLastCompletelyVisibleItemPosition()
+    }
 
-        private fun executePendingTask(viewHolder: RecyclerView.ViewHolder) {
-            pendingTask?.execute(viewHolder)
-            pendingTask = null
-            targetPosition = RecyclerView.NO_POSITION
-        }
-
+    fun setRecycleChildrenOnDetach(recycle: Boolean) {
+        requireLayout().setRecycleChildrenOnDetach(recycle)
     }
 
 }

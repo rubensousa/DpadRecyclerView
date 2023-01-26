@@ -1,9 +1,11 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'androidx.navigation.safeargs'
 }
 
 android {
+    namespace 'com.rubensousa.dpadrecyclerview.sample'
     compileSdk versions.compileSdkVersion
     defaultConfig {
         applicationId "com.rubensousa.dpadrecyclerview.sample"
@@ -31,15 +33,17 @@ android {
     buildFeatures {
         viewBinding true
     }
+
 }
 
 dependencies {
     implementation project (":dpadrecyclerview")
+    implementation "androidx.leanback:leanback-grid:1.0.0-alpha01"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
     implementation "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$versions.navigation"
-    implementation 'com.rubensousa:decorator:2.0.2'
+    implementation 'com.rubensousa:decorator:2.1.0'
     implementation 'com.jakewharton.timber:timber:5.0.1'
 }

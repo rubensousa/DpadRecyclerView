@@ -26,11 +26,11 @@
             <enum name="circular" value="1" />
             <enum name="continuous" value="2" />
         </attr>
+        <attr name="dpadRecyclerViewPivotLayoutManager" format="boolean" />
 
-        <attr name="spanCount" />
-        <attr name="reverseLayout" />
         <attr name="android:gravity" />
-        <attr name="android:orientation" />
+        <attr name="android:focusable" />
+        <attr name="android:focusableInTouchMode" />
     </declare-styleable>
 
 

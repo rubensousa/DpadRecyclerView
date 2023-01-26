@@ -22,6 +22,7 @@ import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
+import java.util.concurrent.TimeUnit
 
 /**
  * Useful [ViewAction] for plain views
@@ -30,7 +31,12 @@ object DpadViewActions {
 
     @JvmStatic
     fun getViewBounds(rect: Rect): ViewAction {
-        return GetViewBoundsAction(rect)
+        return GetViewBoundsAction(rect, relativeToParent = false)
+    }
+
+    @JvmStatic
+    fun getRelativeViewBounds(rect: Rect): ViewAction {
+        return GetViewBoundsAction(rect, relativeToParent = true)
     }
 
     /**
@@ -46,6 +52,16 @@ object DpadViewActions {
         return RequestFocusAction()
     }
 
+    @JvmStatic
+    fun <T : View> waitForCondition(
+        description: String,
+        condition: (view: T) -> Boolean,
+        timeout: Long = 2,
+        timeoutUnit: TimeUnit = TimeUnit.SECONDS
+    ): ViewAction {
+        return WaitForCondition(description, condition, timeout, timeoutUnit)
+    }
+
     private class RequestFocusAction : DpadViewAction("Requesting view focus") {
         override fun perform(uiController: UiController, view: View) {
             view.requestFocus()
@@ -59,16 +75,28 @@ object DpadViewActions {
     }
 
     private class GetViewBoundsAction(
-        private val rect: Rect
+        private val rect: Rect,
+        private val relativeToParent: Boolean
     ) : DpadViewAction("Retrieving View Bounds") {
 
         override fun perform(uiController: UiController, view: View) {
-            view.getGlobalVisibleRect(rect)
+            if (relativeToParent) {
+                rect.left = view.left
+                rect.top = view.top
+                rect.right = view.right
+                rect.bottom = view.bottom
+            } else {
+                val location = IntArray(2)
+                view.getLocationInWindow(location)
+                rect.left = location[0]
+                rect.top = location[1]
+                rect.right = rect.left + view.width
+                rect.bottom = rect.top + view.height
+            }
         }
-
     }
 
-    private abstract class DpadViewAction(private val description: String) : ViewAction {
+    abstract class DpadViewAction(private val description: String) : ViewAction {
         override fun getConstraints(): Matcher<View> = Matchers.isA(View::class.java)
         override fun getDescription(): String = description
     }

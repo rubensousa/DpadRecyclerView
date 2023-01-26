@@ -2,11 +2,37 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/list_fragment">
+    app:startDestination="@id/main_fragment">
+
+    <fragment
+        android:id="@+id/main_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.main.MainFragment">
+
+        <action
+            android:id="@+id/open_list"
+            app:destination="@id/list_fragment" />
+
+        <action
+            android:id="@+id/open_horizontal_leanback"
+            app:destination="@id/leanback_horizontal_fragment" />
+
+        <action
+            android:id="@+id/open_standard_grid"
+            app:destination="@id/standard_grid_fragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/standard_grid_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.StandardGridFragment" />
+
+    <fragment
+        android:id="@+id/leanback_horizontal_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.leanback.LeanbackHorizontalFragment" />
 
     <fragment
         android:id="@+id/list_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.main.MainFragment">
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ListFragment">
 
         <action
             android:id="@+id/open_detail"

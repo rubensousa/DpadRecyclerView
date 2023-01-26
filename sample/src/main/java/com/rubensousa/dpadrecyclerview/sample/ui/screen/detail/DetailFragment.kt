@@ -28,7 +28,7 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
     private var _binding: ScreenTvDetailBinding? = null
     private val binding: ScreenTvDetailBinding get() = _binding!!
     private val viewModel by viewModels<DetailViewModel>()
-    private val listController = DetailListController(this)
+    private val listController = DetailListController()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,7 +49,6 @@ class DetailFragment : Fragment(R.layout.screen_tv_detail) {
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             listController.showLoading(isLoading)
         }
-
     }
 
     override fun onDestroyView() {

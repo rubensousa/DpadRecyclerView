@@ -41,6 +41,7 @@ jobs:
 
   ui_test:
     runs-on: macos-12
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -100,13 +101,15 @@ jobs:
           ram-size: 4096M
           emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
-            ./gradlew --build-cache connectedDebugAndroidTest --info
+            ./run_instrumented_tests.sh
 
-      - name: Upload results
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.api-level }}-${{ matrix.arch }}-instrumentation-test-results
           path: |
+            logcat.txt
+            ./recordings/**
             ./**/build/reports/androidTests/connected/**
             ./**/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/**
         if: always()
