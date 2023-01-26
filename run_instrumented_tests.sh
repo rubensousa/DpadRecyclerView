@@ -12,7 +12,7 @@ adb logcat -c
 adb logcat > logcat.txt &
 
 instrumentedLogFile=instrumentation_logs.txt
-adb shell CLASSPATH="$testServicesClasspath" app_process / androidx.test.services.shellexecutor.ShellMain am instrument -r -w -e targetInstrumentation com.rubensousa.dpadrecyclerview.test/androidx.test.runner.AndroidJUnitRunner -e useTestStorageService true -e listener com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener -e class com.rubensousa.dpadrecyclerview.test.tests.layout.VerticalColumnTest androidx.test.orchestrator/androidx.test.orchestrator.AndroidTestOrchestrator 2>&1 | tee "$instrumentedLogFile"
+adb shell CLASSPATH="$testServicesClasspath" app_process / androidx.test.services.shellexecutor.ShellMain am instrument -r -w -e targetInstrumentation com.rubensousa.dpadrecyclerview.test/androidx.test.runner.AndroidJUnitRunner -e useTestStorageService true -e listener com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener androidx.test.orchestrator/androidx.test.orchestrator.AndroidTestOrchestrator 2>&1 | tee "$instrumentedLogFile"
 testRunCode=$?
 
 if [ $testRunCode -ne 0 ]; then
