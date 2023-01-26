@@ -38,5 +38,7 @@ dependencies {
     implementation "androidx.collection:collection-ktx:1.2.0"
     implementation "junit:junit:$testVersions.junit"
     implementation "com.google.truth:truth:$testVersions.truth"
+    api "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
+    api "androidx.test:runner:$testVersions.runner"
     testImplementation "com.google.truth:truth:$testVersions.truth"
 }

@@ -25,15 +25,20 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
+import com.rubensousa.dpadrecyclerview.testfixtures.recording.TestScreenRecorder
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.After
+import org.junit.Rule
 
 abstract class DpadRecyclerViewTest {
 
     companion object {
         const val DEFAULT_ITEM_COUNT = 200
     }
+
+    @get:Rule(order = Int.MIN_VALUE)
+    val recordingRule = TestScreenRecorder()
 
     abstract fun getDefaultLayoutConfiguration(): TestLayoutConfiguration
 
