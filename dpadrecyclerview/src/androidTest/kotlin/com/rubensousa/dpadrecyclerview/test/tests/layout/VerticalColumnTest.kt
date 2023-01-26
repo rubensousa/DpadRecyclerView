@@ -75,16 +75,6 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testFailureOnPurpose() {
-        repeat(10) {
-            scrollDown()
-        }
-
-        assertChildrenPositions()
-        assertFocusAndSelection(0)
-    }
-
-    @Test
     fun testNewViewIsLaidOutInDirectionOfScroll() {
         val lastViewPosition = column.getChildCount() - 1
 
