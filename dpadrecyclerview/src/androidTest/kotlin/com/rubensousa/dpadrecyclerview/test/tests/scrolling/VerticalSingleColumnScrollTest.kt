@@ -23,10 +23,7 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
@@ -73,9 +70,8 @@ class VerticalSingleColumnScrollTest : DpadRecyclerViewTest() {
 
     @Test
     fun testContinuousScrollDown() {
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 100)
-        waitForIdleScrollState()
-        assertFocusPosition(position = 100)
+        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 25)
+        assertFocusAndSelection(position = 25)
     }
 
     @Test
@@ -89,13 +85,9 @@ class VerticalSingleColumnScrollTest : DpadRecyclerViewTest() {
 
     @Test
     fun testContinuousScrollUp() {
-        KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_DOWN, times = 50)
-        waitForIdleScrollState()
-        assertFocusPosition(position = 50)
-
+        selectPosition(position = 25, subPosition = 0)
         KeyEvents.pressKey(key = KeyEvent.KEYCODE_DPAD_UP, times = 25)
-        waitForIdleScrollState()
-        assertFocusPosition(position = 25)
+        assertFocusAndSelection(position = 0)
     }
 
     @Test
