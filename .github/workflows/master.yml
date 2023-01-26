@@ -98,12 +98,13 @@ jobs:
           script: |
             ./run_instrumented_tests.sh
 
-      - name: Upload results
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.api-level }}-${{ matrix.arch }}-instrumentation-test-results
           path: |
             logcat.txt
+            ./recordings/**
             ./**/build/reports/androidTests/connected/**
             ./**/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/**
         if: always()
