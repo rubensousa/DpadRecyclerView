@@ -2,13 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
+    android:layout_height="@dimen/dpadrecyclerview_test_grid_item_height"
     android:background="@drawable/dpadrecyclerview_test_item_background">
     
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:duplicateParentState="true"
         android:gravity="center"

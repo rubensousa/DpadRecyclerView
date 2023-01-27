@@ -19,12 +19,17 @@ package com.rubensousa.dpadrecyclerview.test.tests
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
+import com.google.common.truth.Truth
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
+import com.rubensousa.dpadrecyclerview.testfixtures.LayoutMatrix
 import com.rubensousa.dpadrecyclerview.testfixtures.recording.TestScreenRecorder
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -145,6 +150,19 @@ abstract class DpadRecyclerViewTest {
     @After
     open fun destroy() {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
+    }
+
+    protected fun assertChildrenPositions(matrix: LayoutMatrix) {
+        waitForIdleScrollState()
+        val expectedChildCount = matrix.getChildCount()
+        var childCount = 0
+        onRecyclerView("Getting child count") { recyclerView ->
+            childCount = recyclerView.layoutManager?.childCount ?: 0
+        }
+        Truth.assertThat(childCount).isEqualTo(expectedChildCount)
+        onRecyclerView("Assert children positions") { recyclerView ->
+            LayoutManagerAssertions.assertChildrenBounds(recyclerView.layoutManager!!, matrix)
+        }
     }
 
 }
