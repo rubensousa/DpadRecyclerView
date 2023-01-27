@@ -86,17 +86,17 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
 
     @Test
     fun testExtraSpaceIsNotLaidOutAfterFirstLayout() {
-        assertChildrenPositions()
+        assertChildrenPositions(column)
     }
 
     @Test
     fun testNoExtraSpaceIsAddedWhenScrollingByDefault() {
         scrollDown()
-        assertChildrenPositions()
+        assertChildrenPositions(column)
         assertFocusAndSelection(1)
 
         scrollUp()
-        assertChildrenPositions()
+        assertChildrenPositions(column)
         assertFocusAndSelection(0)
     }
 
@@ -113,7 +113,7 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
             })
         }
         column.setExtraLayoutSpace(end = column.getSize())
-        assertChildrenPositions()
+        assertChildrenPositions(column)
     }
 
     @Test
@@ -122,7 +122,7 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
             scrollDown()
         }
 
-        assertChildrenPositions()
+        assertChildrenPositions(column)
 
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
@@ -135,7 +135,7 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
             })
         }
         column.setExtraLayoutSpace(start = column.getSize())
-        assertChildrenPositions()
+        assertChildrenPositions(column)
     }
 
     @Test
@@ -146,7 +146,7 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
                 recyclerView.requestLayout()
             }
         }
-        assertChildrenPositions()
+        assertChildrenPositions(column)
     }
 
     @Test
@@ -165,7 +165,7 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
             })
         }
         column.setExtraLayoutSpace(start = column.getSize())
-        assertChildrenPositions()
+        assertChildrenPositions(column)
     }
 
     private fun scrollUp() {
@@ -176,19 +176,6 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
     private fun scrollDown() {
         KeyEvents.pressDown()
         column.scrollDown()
-    }
-
-    private fun assertChildrenPositions() {
-        waitForIdleScrollState()
-        val expectedChildCount = column.getChildCount()
-        var childCount = 0
-        onRecyclerView("Getting child count") { recyclerView ->
-            childCount = recyclerView.layoutManager?.childCount ?: 0
-        }
-        assertThat(childCount).isEqualTo(expectedChildCount)
-        onRecyclerView("Assert children positions") { recyclerView ->
-            LayoutManagerAssertions.assertChildrenBounds(recyclerView.layoutManager!!, column)
-        }
     }
 
 }

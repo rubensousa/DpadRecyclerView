@@ -50,7 +50,7 @@ fun selectLastPosition(smooth: Boolean = false, id: Int = R.id.recyclerView): In
 
 fun selectPosition(
     position: Int,
-    subPosition: Int,
+    subPosition: Int = 0,
     smooth: Boolean = false,
     id: Int = R.id.recyclerView
 ) {

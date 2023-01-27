@@ -36,9 +36,7 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
     }
 
     private fun layoutPivot(pivotPosition: Int): ViewItem {
-        layoutRequest.apply {
-            reset()
-            setTowardsEnd()
+        layoutRequest.append(pivotPosition) {
             position = pivotPosition
             checkpoint = (config.parentKeyline - config.childKeyline * getChildSize()).toInt()
             space = 1
@@ -54,10 +52,7 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
     }
 
     private fun layoutFromPivotToStart(pivotView: ViewItem) {
-        layoutRequest.apply {
-            reset()
-            setTowardsStart()
-            position = pivotView.position - 1
+        layoutRequest.prepend(pivotView.position) {
             checkpoint = getDecoratedStart(pivotView)
             space = max(0, checkpoint + getExtraLayoutSpaceStart())
         }
@@ -65,10 +60,7 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
     }
 
     private fun layoutFromPivotToEnd(pivotView: ViewItem) {
-        layoutRequest.reset()
-        layoutRequest.apply {
-            setTowardsEnd()
-            position = pivotView.position + 1
+        layoutRequest.append(pivotView.position) {
             checkpoint = getDecoratedEnd(pivotView)
             space = max(0, getVisibleSpace() - checkpoint + getExtraLayoutSpaceEnd())
         }
@@ -95,10 +87,7 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
 
     override fun layoutExtraStart() {
         val firstView = getFirstView() ?: return
-        layoutRequest.reset()
-        layoutRequest.apply {
-            setTowardsStart()
-            position = firstView.position - 1
+        layoutRequest.prepend(firstView.position) {
             checkpoint = getLayoutStartOffset()
             space = max(0, checkpoint + getExtraLayoutSpaceStart())
         }
@@ -107,10 +96,7 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
 
     override fun layoutExtraEnd() {
         val lastView = getLastView() ?: return
-        layoutRequest.reset()
-        layoutRequest.apply {
-            setTowardsEnd()
-            position = lastView.position + 1
+        layoutRequest.append(lastView.position) {
             checkpoint = getLayoutEndOffset()
             space = max(0, getVisibleSpace() - checkpoint + getExtraLayoutSpaceEnd())
         }
@@ -121,22 +107,18 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
         val scrollDistance = abs(offset)
         if (offset < 0) {
             val firstView = getFirstView() ?: return
-            layoutRequest.apply {
-                setTowardsStart()
+            layoutRequest.prepend(firstView.position) {
                 checkpoint = getDecoratedStart(firstView)
                 val availableScrollSpace = max(0, -checkpoint)
                 space = max(0, scrollDistance + getExtraLayoutSpaceStart() - availableScrollSpace)
-                position = firstView.position - 1
             }
             fill(layoutRequest)
         } else {
             val lastView = getLastView() ?: return
-            layoutRequest.apply {
-                setTowardsEnd()
+            layoutRequest.append(lastView.position) {
                 checkpoint = getDecoratedEnd(lastView)
                 val availableScrollSpace = max(0, checkpoint - getSize())
                 space = max(0, scrollDistance + getExtraLayoutSpaceEnd() - availableScrollSpace)
-                position = lastView.position + 1
             }
             fill(layoutRequest)
         }
@@ -154,7 +136,7 @@ abstract class SingleSpanLayout(config: LayoutConfig) : LayoutMatrix(config) {
         } else {
             prepend(request.position, request.checkpoint)
         }
-        request.position += request.direction
+        request.position += request.currentItemDirection
         return LayoutBlockResult(
             views = listOf(view),
             consumedSpace = if (isVertical()) {

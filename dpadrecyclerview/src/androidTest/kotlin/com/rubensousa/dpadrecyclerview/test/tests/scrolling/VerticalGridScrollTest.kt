@@ -17,14 +17,16 @@
 package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.platform.app.InstrumentationRegistry
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
+import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
+import com.rubensousa.dpadrecyclerview.testfixtures.VerticalGridLayout
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
@@ -36,39 +38,178 @@ class VerticalGridScrollTest : DpadRecyclerViewTest() {
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
 
+    private val spanCount = 5
+    private val numberOfItems = 200
+
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
-            spans = 5,
+            spans = spanCount,
             orientation = RecyclerView.VERTICAL,
             parentAlignment = ParentAlignment(
-                edge = ParentAlignment.Edge.MIN_MAX,
+                edge = ParentAlignment.Edge.NONE,
                 offset = 0,
                 offsetRatio = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
                 offsetRatio = 0.5f
-            ),
-            focusableDirection = FocusableDirection.CONTINUOUS
+            )
         )
     }
 
     override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
         return super.getDefaultAdapterConfiguration().copy(
+            numberOfItems = numberOfItems,
             itemLayoutId = R.layout.dpadrecyclerview_test_item_grid
         )
     }
 
     @Test
-    fun testContinuousScrollForwardAndBackwards() {
+    fun testScrollingDown() {
         launchFragment()
-        KeyEvents.pressRight(times = 50)
-        waitForIdleScrollState()
-        assertFocusPosition(position = 50)
+        val grid = createGrid()
+        grid.init(position = 0)
 
-        KeyEvents.pressLeft(times = 50)
+        repeat(5) { step ->
+            scrollDown(grid)
+            val nextPosition = (step + 1) * spanCount
+            assertFocusAndSelection(nextPosition)
+            assertChildrenPositions(grid)
+        }
+    }
+
+    @Test
+    fun testScrollingUp() {
+        launchFragment()
+        val grid = createGrid()
+        val startPosition = numberOfItems - 1
+        grid.init(position = startPosition)
+        selectPosition(position = startPosition)
+
+        repeat(5) { step ->
+            scrollUp(grid)
+            val previousPosition = startPosition - (step + 1) * spanCount
+            assertFocusAndSelection(previousPosition)
+            assertChildrenPositions(grid)
+        }
+    }
+
+    @Test
+    fun testScrollingLeft() {
+        launchFragment()
+        val grid = createGrid()
+        val startPosition = spanCount - 1
+        grid.init(position = startPosition)
+        selectPosition(position = startPosition)
+
+        repeat(spanCount - 1) { step ->
+            KeyEvents.pressLeft()
+            assertFocusAndSelection(startPosition - 1 - step)
+            assertChildrenPositions(grid)
+        }
+
+        repeat(spanCount - 1) {
+            KeyEvents.pressLeft()
+            assertFocusAndSelection(0)
+        }
+    }
+
+    @Test
+    fun testScrollingRight() {
+        launchFragment()
+        val grid = createGrid()
+        val startPosition = 0
+        grid.init(position = startPosition)
+
+        repeat(spanCount - 1) { step ->
+            KeyEvents.pressRight()
+            assertFocusAndSelection(startPosition + step + 1)
+            assertChildrenPositions(grid)
+        }
+
+        repeat(spanCount - 1) {
+            KeyEvents.pressRight()
+            assertFocusAndSelection(spanCount - 1)
+        }
+    }
+
+    @Test
+    fun testContinuousScrollForwardAndBackwards() {
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(
+                focusableDirection = FocusableDirection.CONTINUOUS
+            )
+        )
+        KeyEvents.pressRight(times = 10)
+        waitForIdleScrollState()
+        assertFocusPosition(position = 10)
+
+        KeyEvents.pressLeft(times = 10)
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
+    }
+
+    @Test
+    fun testCircularFocusAroundGrid() {
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(
+                focusableDirection = FocusableDirection.CIRCULAR
+            )
+        )
+
+        repeat(2) {
+            repeat(spanCount - 1) { step ->
+                KeyEvents.pressRight()
+                assertFocusAndSelection(position = step + 1)
+            }
+            KeyEvents.pressRight()
+            assertFocusAndSelection(position = 0)
+        }
+
+        KeyEvents.pressLeft()
+        val startPosition = spanCount - 1
+        assertFocusAndSelection(position = startPosition)
+
+        repeat(2) {
+            repeat(spanCount - 1) { step ->
+                KeyEvents.pressLeft()
+                assertFocusAndSelection(position = startPosition - 1 - step)
+            }
+            KeyEvents.pressLeft()
+            assertFocusAndSelection(position = startPosition)
+        }
+    }
+
+    private fun scrollUp(grid: VerticalGridLayout) {
+        KeyEvents.pressUp()
+        grid.scrollUp()
+    }
+
+    private fun scrollDown(grid: VerticalGridLayout) {
+        KeyEvents.pressDown()
+        grid.scrollDown()
+    }
+
+    private fun createGrid(): VerticalGridLayout {
+        val recyclerViewBounds = getRecyclerViewBounds()
+        val itemWidth = recyclerViewBounds.width() / spanCount
+        val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
+        val itemHeight = resources.getDimensionPixelOffset(
+            R.dimen.dpadrecyclerview_test_grid_item_height
+        )
+
+        return VerticalGridLayout(
+            config = LayoutConfig(
+                parentWidth = recyclerViewBounds.width(),
+                parentHeight = recyclerViewBounds.height(),
+                viewWidth = itemWidth,
+                viewHeight = itemHeight,
+                defaultItemCount = numberOfItems,
+                parentKeyline = recyclerViewBounds.height() / 2,
+                childKeyline = 0.5f
+            ),
+            spanCount = spanCount
+        )
     }
 
 }

@@ -13,11 +13,10 @@ class VerticalGridLayout(
 ) : LayoutMatrix(config) {
 
     private var spanSizeLookup = DpadSpanSizeLookup.default()
-    private var startRow = GridRow(numberOfSpans = spanCount, width = config.parentWidth)
-    private var endRow = GridRow(startRow)
+    private var layoutRow = GridRow(numberOfSpans = spanCount, width = config.parentWidth)
+    private var pivotRow = GridRow(layoutRow)
     private val rowViews = Array<ViewItem?>(spanCount) { null }
     private val viewBounds = ViewBounds()
-    private var isLayingOutPivotRow = false
 
     fun setSpanSizeLookup(lookup: DpadSpanSizeLookup) {
         spanSizeLookup = lookup
@@ -28,35 +27,25 @@ class VerticalGridLayout(
     override fun scrollBy(offset: Int) {
         val scrollDistance = abs(offset)
         if (offset < 0) {
-            layoutRequest.apply {
-                setTowardsStart()
-                checkpoint = if (startRow.isStartComplete()) {
-                    startRow.startOffset
-                } else {
-                    startRow.endOffset
-                }
+            val firstView = getFirstView() ?: return
+            layoutRequest.prepend(firstView.position) {
+                checkpoint = getDecoratedStart(firstView)
                 val availableScrollSpace = max(0, -checkpoint)
                 space = max(0, scrollDistance + getExtraLayoutSpaceStart() - availableScrollSpace)
-                position = startRow.getFirstPosition() - 1
             }
             fill(layoutRequest)
         } else {
-            layoutRequest.apply {
-                setTowardsEnd()
-                checkpoint = if (endRow.isEndComplete()) {
-                    endRow.endOffset
-                } else {
-                    endRow.startOffset
-                }
+            val lastView = getLastView() ?: return
+            layoutRequest.append(lastView.position) {
+                checkpoint = getDecoratedEnd(lastView)
                 val availableScrollSpace = max(0, checkpoint - getSize())
                 space = max(0, scrollDistance + getExtraLayoutSpaceEnd() - availableScrollSpace)
-                position = endRow.getLastPosition() + 1
             }
             fill(layoutRequest)
         }
         offsetChildren(-offset)
-        startRow.offsetBy(-offset)
-        endRow.offsetBy(-offset)
+        layoutRow.offsetBy(-offset)
+
         if (offset < 0) {
             recycleEnd()
         } else {
@@ -82,11 +71,12 @@ class VerticalGridLayout(
 
     override fun initializeLayout(pivotPosition: Int) {
         // Reset row states
-        startRow.reset(config.parentKeyline)
-        endRow.reset(config.parentKeyline)
+        layoutRow.reset(config.parentKeyline)
+        pivotRow.reset(config.parentKeyline)
 
         // Start by rendering the row of the pivot
         layoutPivotRow(pivotPosition)
+        pivotRow.copy(layoutRow)
 
         // Layout from the pivot's row until the start limit of the matrix
         layoutFromPivotToStart()
@@ -96,11 +86,9 @@ class VerticalGridLayout(
     }
 
     private fun layoutPivotRow(pivotPosition: Int) {
-        isLayingOutPivotRow = true
         val pivotSpanIndex = spanSizeLookup.getSpanIndex(pivotPosition, spanCount)
         val firstSpanPosition = max(0, pivotPosition - pivotSpanIndex)
-        layoutRequest.apply {
-            setTowardsEnd()
+        layoutRequest.append(firstSpanPosition) {
             position = firstSpanPosition
             checkpoint = config.parentKeyline
             space = 1
@@ -112,27 +100,20 @@ class VerticalGridLayout(
         // Align the pivot using the alignment configuration
         val scrollOffset = getViewCenter(pivotView) - config.parentKeyline
         offsetChildren(-scrollOffset)
-        startRow.offsetBy(-scrollOffset)
-        endRow.offsetBy(-scrollOffset)
-
-        isLayingOutPivotRow = false
+        layoutRow.offsetBy(-scrollOffset)
     }
 
     private fun layoutFromPivotToStart() {
-        layoutRequest.apply {
-            setTowardsStart()
-            position = startRow.getFirstPosition() - 1
-            checkpoint = getLayoutStartOffset()
+        layoutRequest.prepend(pivotRow.getFirstPosition()) {
+            checkpoint = pivotRow.startOffset
             space = checkpoint
         }
         fill(layoutRequest)
     }
 
     private fun layoutFromPivotToEnd() {
-        layoutRequest.apply {
-            setTowardsEnd()
-            position = endRow.getLastPosition() + 1
-            checkpoint = getLayoutEndOffset()
+        layoutRequest.append(pivotRow.getLastPosition()) {
+            checkpoint = pivotRow.endOffset
             space = max(0, getVisibleSpace() - checkpoint)
         }
         fill(layoutRequest)
@@ -170,9 +151,6 @@ class VerticalGridLayout(
 
         val rowHeight = fillRow(viewCount, row, request)
         reMeasureChildren(row, viewCount)
-        if (isLayingOutPivotRow) {
-            startRow = GridRow(endRow)
-        }
         layoutRow(viewCount, row, request)
 
         return LayoutBlockResult(rowViews.filterNotNull(), rowHeight, skipConsumption = false)
@@ -180,15 +158,15 @@ class VerticalGridLayout(
 
     private fun updateRow(request: LayoutBlockRequest): GridRow {
         return if (request.isTowardsEnd()) {
-            if (endRow.isEndComplete()) {
-                endRow.moveToNext()
+            if (layoutRow.isEndComplete()) {
+                layoutRow.moveToNext()
             }
-            endRow
+            layoutRow
         } else {
-            if (startRow.isStartComplete()) {
-                startRow.moveToPrevious()
+            if (layoutRow.isStartComplete()) {
+                layoutRow.moveToPrevious()
             }
-            startRow
+            layoutRow
         }
     }
 
@@ -226,7 +204,7 @@ class VerticalGridLayout(
         var start = 0
         var end = 0
         var increment = 0
-        if (request.isItemTowardsEnd()) {
+        if (request.currentItemDirection > 0) {
             start = 0
             end = viewCount
             increment = 1
@@ -280,10 +258,10 @@ class VerticalGridLayout(
         while (isRowIncomplete(viewCount, request, remainingSpans)) {
             val position = request.position
             val spanSize = spanSizeLookup.getSpanSize(position)
-            if (spanSize > startRow.numberOfSpans) {
+            if (spanSize > layoutRow.numberOfSpans) {
                 throw IllegalArgumentException(
                     "Item at position $position requires $spanSize, " +
-                            "but spanCount is ${startRow.numberOfSpans}"
+                            "but spanCount is ${layoutRow.numberOfSpans}"
                 )
             }
             remainingSpans -= spanSize
@@ -294,7 +272,7 @@ class VerticalGridLayout(
             if (position == getItemCount()) {
                 break
             }
-            request.position += request.direction
+            request.position += request.currentItemDirection
             rowViews[viewCount] = ViewItem(position, ViewBounds(), config.decorInsets)
             viewCount++
         }
@@ -325,16 +303,16 @@ class VerticalGridLayout(
         layoutRequest: LayoutBlockRequest,
         remainingSpans: Int
     ): Boolean {
-        return viewCount < startRow.numberOfSpans
+        return viewCount < layoutRow.numberOfSpans
                 && layoutRequest.position < getItemCount() && layoutRequest.position >= 0
                 && remainingSpans > 0
     }
 
     private fun calculateRemainingSpans(request: LayoutBlockRequest): Int {
         return if (request.isTowardsEnd()) {
-            endRow.getAvailableAppendSpans()
+            layoutRow.getAvailableAppendSpans()
         } else {
-            startRow.getAvailablePrependSpans()
+            layoutRow.getAvailablePrependSpans()
         }
     }
 
@@ -379,9 +357,15 @@ class VerticalGridLayout(
         }
     }
 
-    override fun getLayoutStartOffset(): Int = startRow.startOffset
+    override fun getLayoutStartOffset(): Int {
+        val firstView = getFirstView() ?: return 0
+        return getDecoratedStart(firstView)
+    }
 
-    override fun getLayoutEndOffset(): Int = endRow.endOffset
+    override fun getLayoutEndOffset(): Int {
+        val lastView = getLastView() ?: return 0
+        return getDecoratedEnd(lastView)
+    }
 
     override fun getViewCenter(view: ViewItem): Int {
         return view.getDecoratedTop() + (view.getDecoratedHeight() * config.childKeyline).toInt()

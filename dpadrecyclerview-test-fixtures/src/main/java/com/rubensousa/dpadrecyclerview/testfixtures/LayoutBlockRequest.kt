@@ -32,13 +32,14 @@ class LayoutBlockRequest {
     /**
      * Layout direction: 1 -> towards end, -1 -> towards start
      */
-    var direction = 1
+    var layoutDirection = 1
         private set
 
     /**
      * Adapter item direction: 1 -> towards end, -1 -> towards start
      */
-    var itemDirection = 1
+    private var defaultItemDirection = 1
+    var currentItemDirection = defaultItemDirection
         private set
 
     /**
@@ -46,31 +47,44 @@ class LayoutBlockRequest {
      */
     var space: Int = 0
 
-    fun isItemTowardsEnd() = itemDirection == 1
+    fun isTowardsEnd() = layoutDirection > 0
 
-    fun setTowardsEnd() {
-        direction = 1
-    }
+    fun isTowardsStart() = layoutDirection < 0
 
-    fun setTowardsStart() {
-        direction = -1
-    }
-
-    fun isTowardsEnd() = direction > 0
-
-    fun isTowardsStart() = direction < 0
-
-    fun reset() {
-        setTowardsEnd()
+    private fun reset() {
         checkpoint = 0
         position = RecyclerView.NO_POSITION
         space = 0
     }
 
+    fun append(
+        referencePosition: Int,
+        itemDirection: Int = defaultItemDirection,
+        block: LayoutBlockRequest.() -> Unit
+    ) {
+        reset()
+        layoutDirection = 1
+        currentItemDirection = itemDirection
+        position = referencePosition + currentItemDirection
+        block(this)
+    }
+
+    fun prepend(
+        referencePosition: Int,
+        itemDirection: Int = defaultItemDirection * -1,
+        block: LayoutBlockRequest.() -> Unit
+    ) {
+        reset()
+        layoutDirection = -1
+        currentItemDirection = itemDirection
+        position = referencePosition + currentItemDirection
+        block(this)
+    }
+
     override fun toString(): String {
         return "LayoutBlockRequest(checkpoint=$checkpoint, " +
                 "position=$position, " +
-                "direction=$direction, " +
+                "direction=$layoutDirection, " +
                 "space=$space)"
     }
 
