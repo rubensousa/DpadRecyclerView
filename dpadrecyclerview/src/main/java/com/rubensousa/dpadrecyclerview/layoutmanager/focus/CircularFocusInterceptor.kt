@@ -67,7 +67,7 @@ internal class CircularFocusInterceptor(
         val lastColumnIndex = layoutInfo.getEndColumnIndex(position)
 
         // If we still have focusable views in the movement direction, bail out
-        while (currentRow == startRow) {
+        while (currentRow == startRow && currentPosition >= 0) {
             val currentView = layoutInfo.findViewByPosition(currentPosition)
             if (currentView != null && layoutInfo.isViewFocusable(currentView)) {
                 return null
