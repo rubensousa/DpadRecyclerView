@@ -36,7 +36,7 @@ abstract class AbstractListViewHolder(
     val textView = view.findViewById<TextView>(R.id.textView)
     val adapter = ItemNestedAdapter(
         itemLayoutId,
-        animateFocusChanges = itemLayoutId == R.layout.adapter_nested_item_start
+        animateFocusChanges = false
     )
 
     init {

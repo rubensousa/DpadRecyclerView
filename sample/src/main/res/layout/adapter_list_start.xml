@@ -17,15 +17,28 @@
         android:textColor="@color/white"
         tools:text="Headline" />
 
-    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
-        android:id="@+id/recyclerView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
-        app:dpadRecyclerViewParentAlignmentEdge="max"
-        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-        app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false" />
+        android:layout_height="wrap_content">
+
+        <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
+            app:dpadRecyclerViewParentAlignmentEdge="max"
+            app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
+            app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false" />
+
+        <com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.SelectionOverlayView
+            android:id="@+id/selectionOverlayView"
+            android:layout_width="@dimen/list_item_width"
+            android:layout_height="@dimen/list_item_height"
+            android:layout_marginStart="@dimen/list_margin_start"
+            android:layout_gravity="center_vertical" />
+
+    </FrameLayout>
 
 </LinearLayout>
