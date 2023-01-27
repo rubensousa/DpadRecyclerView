@@ -20,9 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
-import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressUp
@@ -116,6 +114,38 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         pressDown()
 
         assertFocusAndSelection(position = lastFocusablePosition)
+    }
+
+    @Test
+    fun testFocusDoesNotMoveWhileRecyclerViewIsAnimating() {
+        launchFragment()
+        onRecyclerView("Update animation duration") { recyclerView ->
+            recyclerView.itemAnimator?.moveDuration = 1000L
+        }
+        mutateAdapter { adapter ->
+            adapter.move(from = 0, to = 1)
+        }
+        pressDown()
+        waitForAnimation()
+        assertFocusAndSelection(position = 1)
+    }
+
+    @Test
+    fun testFocusMovesWhileRecyclerViewIsAnimating() {
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(
+                focusSearchEnabledDuringAnimations = true
+            )
+        )
+        onRecyclerView("Update animation duration") { recyclerView ->
+            recyclerView.itemAnimator?.moveDuration = 1000L
+        }
+        mutateAdapter { adapter ->
+            adapter.move(from = 0, to = 1)
+        }
+        pressDown()
+        waitForAnimation()
+        assertFocusAndSelection(position = 2)
     }
 
 }

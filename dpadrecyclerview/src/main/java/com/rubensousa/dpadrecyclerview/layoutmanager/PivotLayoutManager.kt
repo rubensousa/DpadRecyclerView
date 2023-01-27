@@ -375,6 +375,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         configuration.setFocusSearchDisabled(disabled)
     }
 
+    fun setFocusSearchEnabledDuringAnimations(disabled: Boolean) {
+        configuration.setFocusSearchEnabledDuringAnimations(disabled)
+    }
+
     fun isFocusSearchDisabled(): Boolean = configuration.isFocusSearchDisabled
 
     fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {

@@ -34,7 +34,9 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
 
     var smoothScrollByBehavior: DpadRecyclerView.SmoothScrollByBehavior? = null
 
-    private var layoutManager: PivotLayoutManager? = null
+    var layoutManager: PivotLayoutManager? = null
+        private set
+
     private var isRetainingFocus = false
     private var hasOverlappingRendering = true
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()

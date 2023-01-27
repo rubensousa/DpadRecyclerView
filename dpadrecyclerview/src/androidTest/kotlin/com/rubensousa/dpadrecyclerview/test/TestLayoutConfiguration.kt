@@ -32,6 +32,7 @@ data class TestLayoutConfiguration(
     val reverseLayout: Boolean = false,
     val useCustomViewPool: Boolean = false,
     val recycleChildrenOnDetach: Boolean = false,
+    val focusSearchEnabledDuringAnimations: Boolean = false,
     val focusableDirection: FocusableDirection = FocusableDirection.STANDARD
 ) : Parcelable {
 
@@ -53,6 +54,7 @@ data class TestLayoutConfiguration(
         reverseLayout = parcel.readByte() != 0.toByte(),
         useCustomViewPool = parcel.readByte() != 0.toByte(),
         recycleChildrenOnDetach = parcel.readByte() != 0.toByte(),
+        focusSearchEnabledDuringAnimations = parcel.readByte() != 0.toByte(),
         focusableDirection = FocusableDirection.values()[parcel.readInt()]
     )
 
@@ -65,6 +67,7 @@ data class TestLayoutConfiguration(
         parcel.writeByte(if (reverseLayout) 1 else 0)
         parcel.writeByte(if (useCustomViewPool) 1 else 0)
         parcel.writeByte(if (recycleChildrenOnDetach) 1 else 0)
+        parcel.writeByte(if (focusSearchEnabledDuringAnimations) 1 else 0)
         parcel.writeInt(focusableDirection.ordinal)
     }
 
