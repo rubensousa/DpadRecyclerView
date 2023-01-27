@@ -26,13 +26,7 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestPaginationFragment
-import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
-import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
-import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
-import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
-import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForAdapterUpdate
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -42,9 +36,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class VerticalPaginationTest : DpadRecyclerViewTest() {
-
-    @get:Rule
-    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
@@ -76,7 +67,8 @@ class VerticalPaginationTest : DpadRecyclerViewTest() {
     @Test
     fun testLastSelectedViewStaysAlignedWhenAdapterInsertsNewViewsDuringScroll() {
         launchPaginationFragment()
-        repeat(19) {
+        selectPosition(position = 15)
+        repeat(4) {
             pressDown()
         }
         assertFocusAndSelection(position = 19)
