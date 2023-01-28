@@ -437,22 +437,6 @@ internal class LayoutScroller(
                 pivotSelector.dispatchViewHolderSelectedAndAligned()
                 previousSelectedPosition = RecyclerView.NO_POSITION
             }
-            if (BuildConfig.DEBUG) {
-                logChildren()
-            }
-        }
-
-        private fun logChildren() {
-            Log.i(TAG, "Children laid out:")
-            for (i in 0 until layoutManager.childCount) {
-                val child = layoutManager.getChildAt(i)!!
-                val position = layoutManager.getPosition(child)
-                val left = layoutManager.getDecoratedLeft(child)
-                val top = layoutManager.getDecoratedTop(child)
-                val right = layoutManager.getDecoratedLeft(child)
-                val bottom = layoutManager.getDecoratedBottom(child)
-                Log.i(TAG, "View $position: [$left, $top, $right, $bottom]")
-            }
         }
 
     }

@@ -6,4 +6,8 @@
     <dimen name="adapter_item_height">200dp</dimen>
     <dimen name="adapter_small_item_height">100dp</dimen>
 
+    <dimen name="list_item_width">135dp</dimen>
+    <dimen name="list_item_height">180dp</dimen>
+    <dimen name="selection_overlay_stroke_width">4dp</dimen>
+
 </resources>

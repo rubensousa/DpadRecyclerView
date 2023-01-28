@@ -85,7 +85,8 @@ internal class FocusDispatcher(
 
     fun onInterceptFocusSearch(recyclerView: RecyclerView?, focused: View, direction: Int): View? {
         val currentRecyclerView = recyclerView ?: return focused
-        if (configuration.isFocusSearchDisabled) {
+
+        if (!isFocusSearchEnabled(currentRecyclerView)) {
             return focused
         }
 
@@ -159,6 +160,16 @@ internal class FocusDispatcher(
         }
         newFocusedView = currentRecyclerView.parent?.focusSearch(focused, direction)
         return newFocusedView ?: focused
+    }
+
+    private fun isFocusSearchEnabled(recyclerView: RecyclerView): Boolean {
+        if (configuration.isFocusSearchDisabled) {
+            return false
+        }
+        if (!configuration.isFocusSearchEnabledDuringAnimations && recyclerView.isAnimating) {
+            return false
+        }
+        return true
     }
 
     fun onAddFocusables(

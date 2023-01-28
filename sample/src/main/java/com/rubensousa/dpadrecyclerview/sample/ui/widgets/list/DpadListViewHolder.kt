@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
 import android.view.View
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.sample.R
 
 class DpadListViewHolder(
     view: View,
@@ -25,8 +26,20 @@ class DpadListViewHolder(
     itemLayoutId: Int
 ) : AbstractListViewHolder(view, dpadRecyclerView, itemLayoutId) {
 
+    private val selectionView = view.findViewById<View>(R.id.selectionOverlayView)
+
     init {
         onViewHolderDeselected()
+    }
+
+    override fun onViewHolderSelected() {
+        super.onViewHolderSelected()
+        selectionView.isActivated = true
+    }
+
+    override fun onViewHolderDeselected() {
+        super.onViewHolderDeselected()
+        selectionView.isActivated = false
     }
 
 }

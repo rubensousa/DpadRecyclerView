@@ -391,6 +391,9 @@ internal class LayoutInfo(
     }
 
     fun getChildViewHolder(view: View): ViewHolder? {
+        if (view.parent !== recyclerView) {
+            return null
+        }
         return recyclerView?.getChildViewHolder(view)
     }
 

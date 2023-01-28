@@ -241,6 +241,19 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Disables or enables focus search while RecyclerView is animating item changes.
+     * See [RecyclerView.isAnimating].
+     *
+     * This is disabled by default.
+     *
+     * @param enabled True to enable focus search while RecyclerView is animating item changes,
+     * or false to disable
+     */
+    fun setFocusSearchEnabledDuringAnimations(enabled: Boolean) {
+        delegate.layoutManager?.setFocusSearchEnabledDuringAnimations(enabled)
+    }
+
+    /**
      * @return True if focus search is disabled.
      */
     fun isFocusSearchDisabled(): Boolean {

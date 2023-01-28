@@ -85,6 +85,9 @@ internal class LayoutConfiguration(properties: Properties) {
     var isFocusSearchDisabled = false
         private set
 
+    var isFocusSearchEnabledDuringAnimations = false
+        private set
+
     // Number of items to prefetch when first coming on screen with new data
     var initialPrefetchItemCount = 4
         private set
@@ -177,6 +180,10 @@ internal class LayoutConfiguration(properties: Properties) {
 
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
         extraLayoutSpaceStrategy = strategy
+    }
+
+    fun setFocusSearchEnabledDuringAnimations(enabled: Boolean) {
+        isFocusSearchEnabledDuringAnimations = enabled
     }
 
 }
