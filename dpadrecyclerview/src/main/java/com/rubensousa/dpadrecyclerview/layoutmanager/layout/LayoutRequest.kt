@@ -57,11 +57,9 @@ internal class LayoutRequest {
     var isRecyclingEnabled = true
         private set
 
-    // The extra layout space calculated from the LayoutManager
     var extraLayoutSpaceStart: Int = 0
         private set
 
-    // The extra layout space calculated from the LayoutManager
     var extraLayoutSpaceEnd: Int = 0
         private set
 
@@ -159,22 +157,9 @@ internal class LayoutRequest {
 
     fun isLayingOutEnd() = direction == LayoutDirection.END
 
-    fun setExtraLayoutSpaceStart(extraSpace: Int) {
-        extraLayoutSpaceStart = extraSpace
-    }
-
-    fun setExtraLayoutSpaceEnd(extraSpace: Int) {
-        extraLayoutSpaceEnd = extraSpace
-    }
-
-    fun setStartDirection() {
-        direction = LayoutDirection.START
-        currentItemDirection = defaultItemDirection
-    }
-
-    fun setEndDirection() {
-        direction = LayoutDirection.END
-        currentItemDirection = defaultItemDirection
+    fun setExtraLayoutSpace(start: Int, end: Int) {
+        extraLayoutSpaceStart = start
+        extraLayoutSpaceEnd = end
     }
 
     fun setAvailableScrollSpace(space: Int) {

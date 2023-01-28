@@ -22,14 +22,28 @@ import androidx.recyclerview.widget.RecyclerView
 /**
  * Overrides the default mechanism for laying out extra views at the borders of the RecyclerView.
  * Check [LinearLayoutManager.calculateExtraLayoutSpace] for more details.
+ *
+ * By default, [DpadRecyclerView] will not layout any extra space
+ * to minimise the number of views in memory.
  */
 interface ExtraLayoutSpaceStrategy {
     /**
-     * Calculates the extra space that should be laid out (in pixels).
-     * `extraLayoutSpace[0]` should contain the extra space for top/left
-     * and `extraLayoutSpace[1]` the extra space for bottom/right depending on the orientation.
      *
-     * By default, [DpadRecyclerView] will not layout extra space to minimise the number of views
+     * @param state the current [DpadRecyclerView] state
+     *
+     * @return the extra space (in pixels) to be added to the start of the layout
      */
-    fun calculateExtraLayoutSpace(state: RecyclerView.State, extraLayoutSpace: IntArray)
+    fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int = 0
+
+    /**
+     * Calculates the extra space that should be laid out (in pixels)
+     *
+     * By default, [DpadRecyclerView] will not layout any extra space
+     * to minimise the number of views in memory.
+     *
+     * @param state the current [DpadRecyclerView] state
+     *
+     * @return the extra space (in pixels) to be added to the end of the layout
+     */
+    fun calculateEndExtraLayoutSpace(state: RecyclerView.State): Int = 0
 }

@@ -188,7 +188,7 @@ internal class GridLayoutEngineer(
         if (firstView != null) {
             prepend(layoutRequest, preLayoutRequest.firstPosition) {
                 setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-                setFillSpace(preLayoutRequest.extraLayoutSpace)
+                setFillSpace(extraLayoutSpaceStart + preLayoutRequest.extraLayoutSpace)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -196,7 +196,7 @@ internal class GridLayoutEngineer(
         if (lastView != null) {
             append(layoutRequest, preLayoutRequest.lastPosition) {
                 setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-                setFillSpace(preLayoutRequest.extraLayoutSpace)
+                setFillSpace(extraLayoutSpaceEnd + preLayoutRequest.extraLayoutSpace)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -330,6 +330,7 @@ internal class GridLayoutEngineer(
     ) {
         val firstView = layoutInfo.getChildClosestToStart() ?: return
         prepend(layoutRequest, layoutInfo.getLayoutPositionOf(firstView)) {
+            setRecyclingEnabled(false)
             architect.updateExtraLayoutSpace(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedStart(firstView))
             setFillSpace(extraLayoutSpaceStart + preLayoutRequest.extraLayoutSpace)
@@ -338,9 +339,10 @@ internal class GridLayoutEngineer(
 
         val lastView = layoutInfo.getChildClosestToEnd() ?: return
         append(layoutRequest, layoutInfo.getLayoutPositionOf(lastView)) {
+            setRecyclingEnabled(false)
             architect.updateExtraLayoutSpace(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-            setFillSpace(extraLayoutSpaceEnd)
+            setFillSpace(extraLayoutSpaceEnd + preLayoutRequest.extraLayoutSpace)
         }
         fill(layoutRequest, recycler, state)
     }

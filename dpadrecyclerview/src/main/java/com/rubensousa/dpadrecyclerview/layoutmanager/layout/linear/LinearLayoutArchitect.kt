@@ -16,12 +16,9 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear
 
-import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutArchitect
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
-import kotlin.math.abs
-import kotlin.math.max
 
 /**
  * Calculates the required amount for layout in both directions
@@ -35,6 +32,7 @@ internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchit
         layoutRequest.prepend(anchorPosition) {
             setRecyclingEnabled(false)
             setCheckpoint(getLayoutStart())
+            updateCurrentPositionFromScrap()
             setFillSpace(layoutRequest.extraLayoutSpaceStart)
         }
     }
@@ -46,80 +44,8 @@ internal open class LinearLayoutArchitect(layoutInfo: LayoutInfo) : LayoutArchit
         layoutRequest.append(anchorPosition) {
             setRecyclingEnabled(false)
             setCheckpoint(getLayoutEnd())
+            updateCurrentPositionFromScrap()
             setFillSpace(layoutRequest.extraLayoutSpaceEnd)
-        }
-    }
-
-    override fun updateForExtraLayoutEnd(layoutRequest: LayoutRequest, state: State) {
-        layoutRequest.apply {
-            setEndDirection()
-            updateExtraLayoutSpace(layoutRequest, state)
-            val view = layoutInfo.getChildClosestToEnd() ?: return
-            setCheckpoint(layoutInfo.getDecoratedEnd(view))
-            updateLayoutStateForExtraLayout(this, view)
-        }
-    }
-
-    override fun updateForExtraLayoutStart(layoutRequest: LayoutRequest, state: State) {
-        layoutRequest.apply {
-            setStartDirection()
-            updateExtraLayoutSpace(layoutRequest, state)
-            val view = layoutInfo.getChildClosestToStart() ?: return
-            setCheckpoint(layoutInfo.getDecoratedStart(view))
-            updateLayoutStateForExtraLayout(this, view)
-        }
-    }
-
-    override fun updateLayoutStateForScroll(
-        layoutRequest: LayoutRequest,
-        state: State,
-        offset: Int
-    ) {
-        if (offset > 0) {
-            layoutRequest.setEndDirection()
-        } else {
-            layoutRequest.setStartDirection()
-        }
-
-        updateExtraLayoutSpace(layoutRequest, state)
-
-        val view = if (layoutRequest.isLayingOutEnd()) {
-            layoutInfo.getChildClosestToEnd()
-        } else {
-            layoutInfo.getChildClosestToStart()
-        }
-        if (view == null) {
-            return
-        }
-        // Start layout from the next position of the child closest to the edge
-        layoutRequest.setCurrentPosition(
-            layoutInfo.getLayoutPositionOf(view) + layoutRequest.direction.value
-        )
-
-        // We need to at least fill the next scroll target
-        val requiredSpace = abs(offset)
-
-        if (layoutRequest.isLayingOutEnd()) {
-            layoutRequest.apply {
-                setCheckpoint(getLayoutEnd())
-                // The available scroll space starts from the checkpoint until the actual edge
-                setAvailableScrollSpace(
-                    max(0, checkpoint - layoutInfo.getEndAfterPadding())
-                )
-                // Remove availableScrollSpace since that space is already filled
-                val fill = requiredSpace + layoutRequest.extraLayoutSpaceEnd - availableScrollSpace
-                setFillSpace(max(0, fill))
-            }
-        } else {
-            layoutRequest.apply {
-                setCheckpoint(getLayoutStart())
-                setAvailableScrollSpace(
-                    max(0, layoutInfo.getStartAfterPadding() - checkpoint)
-                )
-                val fill =
-                    requiredSpace + layoutRequest.extraLayoutSpaceStart - availableScrollSpace
-                setFillSpace(max(0, fill))
-            }
         }
     }
 

@@ -16,20 +16,12 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
 internal open class ViewRecycler(
     protected val layoutManager: RecyclerView.LayoutManager,
     protected val layoutInfo: LayoutInfo,
 ) {
-
-    open fun updateLayoutState(
-        recycled: View,
-        position: Int,
-        size: Int,
-        layoutRequest: LayoutRequest
-    ) {}
 
     fun recycleByLayoutRequest(recycler: RecyclerView.Recycler, layoutRequest: LayoutRequest) {
         if (!layoutRequest.isRecyclingEnabled || layoutRequest.isInfinite) {
@@ -51,7 +43,7 @@ internal open class ViewRecycler(
                 if (layoutInfo.getDecoratedEnd(child) > limit
                     || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
                 ) {
-                    recycle(recycler, childCount - 1, i, layoutRequest)
+                    recycle(recycler, childCount - 1, i)
                     return
                 }
             }
@@ -61,7 +53,7 @@ internal open class ViewRecycler(
                 if (layoutInfo.getDecoratedEnd(child) > limit
                     || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
                 ) {
-                    recycle(recycler, 0, i, layoutRequest)
+                    recycle(recycler, 0, i)
                     return
                 }
             }
@@ -77,7 +69,7 @@ internal open class ViewRecycler(
                 if (layoutInfo.getDecoratedStart(child) < limit
                     || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
                 ) {
-                    recycle(recycler, 0, i, layoutRequest)
+                    recycle(recycler, 0, i)
                     return
                 }
             }
@@ -87,7 +79,7 @@ internal open class ViewRecycler(
                 if (layoutInfo.getDecoratedStart(child) < limit
                     || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
                 ) {
-                    recycle(recycler, childCount - 1, i, layoutRequest)
+                    recycle(recycler, childCount - 1, i)
                     return
                 }
             }
@@ -97,34 +89,29 @@ internal open class ViewRecycler(
     private fun recycle(
         recycler: RecyclerView.Recycler,
         startIndex: Int,
-        endIndex: Int,
-        layoutRequest: LayoutRequest
+        endIndex: Int
     ) {
         if (startIndex == endIndex) {
             return
         }
         if (endIndex > startIndex) {
             for (i in endIndex - 1 downTo startIndex) {
-                recycleViewAt(i, recycler, layoutRequest)
+                recycleViewAt(i, recycler)
             }
         } else {
             for (i in startIndex downTo endIndex + 1) {
-                recycleViewAt(i, recycler, layoutRequest)
+                recycleViewAt(i, recycler)
             }
         }
     }
 
     private fun recycleViewAt(
         index: Int,
-        recycler: RecyclerView.Recycler,
-        layoutRequest: LayoutRequest
+        recycler: RecyclerView.Recycler
     ) {
         val view = layoutInfo.getChildAt(index)
         if (view != null) {
-            val position = layoutInfo.getLayoutPositionOf(view)
             layoutManager.removeAndRecycleView(view, recycler)
-            val size = layoutInfo.getDecoratedSize(view)
-            updateLayoutState(view, position, size, layoutRequest)
         }
     }
 }

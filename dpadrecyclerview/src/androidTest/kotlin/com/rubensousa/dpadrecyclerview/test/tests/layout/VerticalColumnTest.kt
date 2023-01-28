@@ -104,11 +104,8 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
     fun testExtraLayoutSpaceIsAddedAtEnd() {
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateExtraLayoutSpace(
-                    state: RecyclerView.State,
-                    extraLayoutSpace: IntArray
-                ) {
-                    extraLayoutSpace[1] = column.getSize()
+                override fun calculateEndExtraLayoutSpace(state: RecyclerView.State): Int {
+                    return column.getSize()
                 }
             })
         }
@@ -126,11 +123,8 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
 
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateExtraLayoutSpace(
-                    state: RecyclerView.State,
-                    extraLayoutSpace: IntArray
-                ) {
-                    extraLayoutSpace[0] = column.getSize()
+                override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
+                    return column.getSize()
                 }
             })
         }
@@ -156,11 +150,8 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
         }
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateExtraLayoutSpace(
-                    state: RecyclerView.State,
-                    extraLayoutSpace: IntArray
-                ) {
-                    extraLayoutSpace[0] = column.getSize()
+                override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
+                    return column.getSize()
                 }
             })
         }

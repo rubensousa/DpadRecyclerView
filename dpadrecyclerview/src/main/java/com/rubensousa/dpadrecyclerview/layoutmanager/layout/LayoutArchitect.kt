@@ -16,13 +16,10 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 
 internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
-
-    private val extraLayoutSpace = IntArray(2)
 
     abstract fun updateLayoutStateForPredictiveStart(
         layoutRequest: LayoutRequest,
@@ -34,69 +31,21 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         anchorPosition: Int
     )
 
-    abstract fun updateForExtraLayoutEnd(
-        layoutRequest: LayoutRequest,
-        state: RecyclerView.State
-    )
-
-    abstract fun updateForExtraLayoutStart(
-        layoutRequest: LayoutRequest,
-        state: RecyclerView.State
-    )
-
-    abstract fun updateLayoutStateForScroll(
-        layoutRequest: LayoutRequest,
-        state: RecyclerView.State,
-        offset: Int
-    )
-
-    protected fun updateLayoutStateForExtraLayout(layoutRequest: LayoutRequest, anchorView: View) {
-        layoutRequest.apply {
-            setRecyclingEnabled(false)
-            setCurrentPosition(layoutInfo.getLayoutPositionOf(anchorView) + direction.value)
-            setAvailableScrollSpace(calculateAvailableScrollSpace(checkpoint, isLayingOutEnd()))
-            setFillSpace(calculateExtraFillSpace(this))
-        }
-    }
-
-    fun calculateAvailableScrollSpaceStart(offset: Int): Int {
-        return max(0, layoutInfo.getStartAfterPadding() - offset)
-    }
-
-    fun calculateAvailableScrollSpaceEnd(offset: Int): Int {
-        return max(0, offset - layoutInfo.getEndAfterPadding())
-    }
-
-    fun calculateAvailableScrollSpace(
-        offset: Int,
-        towardsEnd: Boolean
-    ): Int {
-        return if (towardsEnd) {
-            calculateAvailableScrollSpaceEnd(offset)
-        } else {
-            calculateAvailableScrollSpaceStart(offset)
-        }
-    }
-
-    fun calculateExtraFillSpace(layoutRequest: LayoutRequest): Int {
-        return if (layoutRequest.isLayingOutEnd()) {
-            max(0, layoutRequest.extraLayoutSpaceEnd - layoutRequest.availableScrollSpace)
-        } else {
-            max(0, layoutRequest.extraLayoutSpaceStart - layoutRequest.availableScrollSpace)
-        }
-    }
-
     fun updateExtraLayoutSpace(layoutRequest: LayoutRequest, state: RecyclerView.State) {
         if (setCustomExtraLayoutSpace(layoutRequest, state)) {
             // Skip our logic if user specified a custom strategy for extra layout space
             return
         }
         if (layoutRequest.isLayingOutEnd()) {
-            layoutRequest.setExtraLayoutSpaceEnd(getDefaultExtraLayoutSpace())
-            layoutRequest.setExtraLayoutSpaceStart(0)
+            layoutRequest.setExtraLayoutSpace(
+                end = getDefaultExtraLayoutSpace(),
+                start = 0
+            )
         } else {
-            layoutRequest.setExtraLayoutSpaceStart(getDefaultExtraLayoutSpace())
-            layoutRequest.setExtraLayoutSpaceEnd(0)
+            layoutRequest.setExtraLayoutSpace(
+                start = getDefaultExtraLayoutSpace(),
+                end = 0
+            )
         }
     }
 
@@ -105,9 +54,16 @@ internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
         state: RecyclerView.State
     ): Boolean {
         return layoutInfo.getConfiguration().extraLayoutSpaceStrategy?.let { strategy ->
-            strategy.calculateExtraLayoutSpace(state, extraLayoutSpace)
-            layoutRequest.setExtraLayoutSpaceStart(extraLayoutSpace[0])
-            layoutRequest.setExtraLayoutSpaceEnd(extraLayoutSpace[1])
+            var startSpace = strategy.calculateStartExtraLayoutSpace(state)
+            var endSpace = strategy.calculateEndExtraLayoutSpace(state)
+
+            // Ensure minimum extra layout space for target scrolling
+            if (layoutRequest.isLayingOutEnd()) {
+                endSpace = max(getDefaultExtraLayoutSpace(), endSpace)
+            } else {
+                startSpace = max(getDefaultExtraLayoutSpace(), startSpace)
+            }
+            layoutRequest.setExtraLayoutSpace(startSpace, endSpace)
             true
         } ?: false
     }
