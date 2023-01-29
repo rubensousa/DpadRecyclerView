@@ -118,15 +118,21 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
 
     @Test
     fun testFocusDoesNotMoveWhileRecyclerViewIsAnimating() {
-        launchFragment()
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(
+                focusSearchEnabledDuringAnimations = false
+            )
+        )
         onRecyclerView("Update animation duration") { recyclerView ->
-            recyclerView.itemAnimator?.moveDuration = 1000L
+            recyclerView.itemAnimator?.moveDuration = 1500L
         }
         mutateAdapter { adapter ->
             adapter.move(from = 0, to = 1)
         }
+        waitForCondition("Waiting for animation start") {recyclerView ->
+            recyclerView.isAnimating
+        }
         pressDown()
-        waitForAnimation()
         assertFocusAndSelection(position = 1)
     }
 
@@ -141,10 +147,13 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
             recyclerView.itemAnimator?.moveDuration = 1500L
         }
         mutateAdapter { adapter ->
-            adapter.move(from = 0, to = 1)
+            adapter.addAt(1000, index = 3)
+        }
+        waitForCondition("Waiting for animation start") {recyclerView ->
+            recyclerView.isAnimating
         }
         pressDown()
-        assertFocusAndSelection(position = 2)
+        assertFocusAndSelection(position = 1)
     }
 
 }

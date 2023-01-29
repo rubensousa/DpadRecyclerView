@@ -48,6 +48,10 @@ class MainFragment : Fragment(R.layout.screen_main) {
                 title = "Standard grid"
             ),
             ScreenDestination(
+                direction = MainFragmentDirections.openSlowScrollList(),
+                title = "List Slow Scroll"
+            ),
+            ScreenDestination(
                 direction = MainFragmentDirections.openHorizontalLeanback(),
                 title = "Horizontal Leanback"
             )

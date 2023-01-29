@@ -32,7 +32,7 @@ class PendingScrollMovementsTest {
 
     @Before
     fun setup() {
-        scrollMovements = PendingScrollMovements(mockLayoutInfo.get())
+        scrollMovements = PendingScrollMovements(maxPendingMoves = 2, mockLayoutInfo.get())
     }
 
     @Test
@@ -44,18 +44,6 @@ class PendingScrollMovementsTest {
         }
 
         assertThat(scrollMovements.pendingMoves).isEqualTo(5)
-    }
-
-    @Test
-    fun `setMaxPendingMoves does not allow invalid values`() {
-        scrollMovements.setMaxPendingMoves(2)
-        assertThat(scrollMovements.maxPendingMoves).isEqualTo(2)
-
-        scrollMovements.setMaxPendingMoves(-1)
-        assertThat(scrollMovements.maxPendingMoves).isEqualTo(1)
-
-        scrollMovements.setMaxPendingMoves(0)
-        assertThat(scrollMovements.maxPendingMoves).isEqualTo(1)
     }
 
     @Test

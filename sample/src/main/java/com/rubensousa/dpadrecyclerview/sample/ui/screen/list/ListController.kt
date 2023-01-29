@@ -38,17 +38,22 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.NestedListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
 import timber.log.Timber
 
-class ListController(private val fragment: Fragment) {
+class ListController(
+    private val fragment: Fragment,
+    private val slowScroll: Boolean
+) {
 
     private var selectedPosition = RecyclerView.NO_POSITION
     private val loadingAdapter = PlaceholderAdapter()
     private val scrollStateHolder = DpadStateHolder()
-    private val nestedListAdapter = NestedListAdapter(scrollStateHolder,
+    private val nestedListAdapter = NestedListAdapter(
+        scrollStateHolder,
         object : ItemViewHolder.ItemClickListener {
             override fun onViewHolderClicked() {
                 fragment.findNavController().navigate(R.id.open_detail)
             }
-        })
+        }, slowScroll
+    )
     private var dpadRecyclerView: DpadRecyclerView? = null
     private var gridView: BaseGridView? = null
 
@@ -57,7 +62,7 @@ class ListController(private val fragment: Fragment) {
         lifecycleOwner: LifecycleOwner,
         onSelected: (position: Int) -> Unit
     ) {
-        RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
+       // RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
         recyclerView.itemAnimator = DefaultItemAnimator().also { animator ->
             animator.supportsChangeAnimations = false
             // Just here to preview changes
@@ -70,6 +75,9 @@ class ListController(private val fragment: Fragment) {
         setupSpacings(recyclerView)
         setupPagination(recyclerView, onSelected)
         setupLifecycle(lifecycleOwner)
+        if (slowScroll) {
+            LimitedScrollBehavior().setup(recyclerView, { 0 }, { 0 }, maxPendingAlignments = 1)
+        }
 
         if (selectedPosition != RecyclerView.NO_POSITION) {
             recyclerView.setSelectedPosition(

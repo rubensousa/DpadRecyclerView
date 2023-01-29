@@ -34,13 +34,7 @@ androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 
 Item spacing wasn't supported on purpose since you can achieve the same with a plain `RecyclerView.ItemDecoration`. Check this library for some standard use cases: https://github.com/rubensousa/Decorator/
 
-Features still planned:
-
-- setLayoutEnabled
-- setScrollEnabled
-- setSelectedSubPosition with `ViewHolderTask`
-- Custom sub position parent alignment with `ViewHolderAlignment`
-- State saving for nested lists
+Features still planned: https://github.com/rubensousa/DpadRecyclerView/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement
 
 ## How to use
 

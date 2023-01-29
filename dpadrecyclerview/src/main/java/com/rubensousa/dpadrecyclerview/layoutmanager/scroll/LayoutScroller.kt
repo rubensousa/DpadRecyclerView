@@ -20,7 +20,6 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
@@ -46,6 +45,7 @@ internal class LayoutScroller(
     private var recyclerView: RecyclerView? = null
     private var pivotSelectionScroller: PivotSelectionSmoothScroller? = null
     private var searchPivotScroller: SearchPivotSmoothScroller? = null
+    private val alignmentQueue = ScrollAlignmentQueue(configuration, layoutAlignment, layoutInfo)
     private val idleScrollListener = IdleScrollListener()
     private val searchPivotListener = SearchPivotListener()
     private val selectionPivotListener = SelectionPivotListener()
@@ -243,6 +243,7 @@ internal class LayoutScroller(
         if (searchPivotScroller == null) {
             val newSmoothScroller = SearchPivotSmoothScroller(
                 currentRecyclerView,
+                configuration.maxPendingMoves,
                 layoutInfo,
                 pivotSelector,
                 layoutAlignment,
@@ -303,7 +304,6 @@ internal class LayoutScroller(
         smooth: Boolean
     ) {
         val scrollOffset = layoutAlignment.calculateScrollOffset(view, subPositionView)
-
         scrollBy(scrollOffset, smooth)
 
         if (selectViewHolder) {
@@ -346,6 +346,22 @@ internal class LayoutScroller(
         searchPivotScroller?.onChildLaidOut(view)
     }
 
+    fun hasReachedPendingAlignmentLimit(): Boolean {
+        return alignmentQueue.hasReachedLimit()
+    }
+
+    fun addPendingAlignment(newFocusedView: View) {
+        val viewHolder = layoutInfo.getChildViewHolder(newFocusedView) ?: return
+        val parentView = viewHolder.itemView
+        val subView = if (newFocusedView !== parentView) {
+            newFocusedView
+        } else {
+            null
+        }
+        val scrollOffset = layoutAlignment.calculateScrollOffset(parentView, subView)
+        alignmentQueue.add(parentView, subView, scrollOffset)
+    }
+
     private inner class SearchPivotListener : SearchPivotSmoothScroller.Listener {
 
         override fun onPivotAttached(adapterPosition: Int) {
@@ -358,6 +374,7 @@ internal class LayoutScroller(
                 pivotView.requestFocus()
                 isSelectionInProgress = false
             }
+            addPendingAlignment(pivotView)
             pivotSelector.dispatchViewHolderSelected()
         }
 
@@ -436,6 +453,9 @@ internal class LayoutScroller(
                 // If we're no longer scrolling, check if we need to send a new event
                 pivotSelector.dispatchViewHolderSelectedAndAligned()
                 previousSelectedPosition = RecyclerView.NO_POSITION
+            }
+            if (!isScrolling) {
+                alignmentQueue.consumeAll()
             }
         }
 

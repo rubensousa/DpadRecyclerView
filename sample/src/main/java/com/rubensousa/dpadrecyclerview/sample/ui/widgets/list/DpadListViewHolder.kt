@@ -18,18 +18,24 @@ package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
 import android.view.View
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.list.LimitedScrollBehavior
 
 class DpadListViewHolder(
     view: View,
     val dpadRecyclerView: DpadRecyclerView,
-    itemLayoutId: Int
+    itemLayoutId: Int,
+    slowScroll: Boolean
 ) : AbstractListViewHolder(view, dpadRecyclerView, itemLayoutId) {
 
     private val selectionView = view.findViewById<View>(R.id.selectionOverlayView)
 
     init {
         onViewHolderDeselected()
+        if (slowScroll) {
+            setupSlowScrollingBehavior()
+        }
     }
 
     override fun onViewHolderSelected() {
@@ -40,6 +46,19 @@ class DpadListViewHolder(
     override fun onViewHolderDeselected() {
         super.onViewHolderDeselected()
         selectionView.isActivated = false
+    }
+
+    private fun setupSlowScrollingBehavior() {
+        dpadRecyclerView.setParentAlignment(
+            dpadRecyclerView.getParentAlignment().copy(
+                edge = ParentAlignment.Edge.NONE
+            )
+        )
+        LimitedScrollBehavior().setup(
+            recyclerView = dpadRecyclerView,
+            extraLayoutSpaceStart = { dpadRecyclerView.width / 2 },
+            extraLayoutSpaceEnd = { 0 }
+        )
     }
 
 }

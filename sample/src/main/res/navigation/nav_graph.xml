@@ -13,6 +13,16 @@
             app:destination="@id/list_fragment" />
 
         <action
+            android:id="@+id/open_slow_scroll_list"
+            app:destination="@id/list_fragment">
+
+            <argument
+                android:name="slowScroll"
+                android:defaultValue="true" />
+
+        </action>
+
+        <action
             android:id="@+id/open_horizontal_leanback"
             app:destination="@id/leanback_horizontal_fragment" />
 
@@ -33,6 +43,10 @@
     <fragment
         android:id="@+id/list_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ListFragment">
+
+        <argument
+            android:name="slowScroll"
+            android:defaultValue="false" />
 
         <action
             android:id="@+id/open_detail"

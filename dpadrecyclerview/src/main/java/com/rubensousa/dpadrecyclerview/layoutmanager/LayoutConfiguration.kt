@@ -95,6 +95,20 @@ internal class LayoutConfiguration(properties: Properties) {
     var isSmoothFocusChangesEnabled = true
         private set
 
+    /**
+     * Maximum number of pending focus changes that we can consume
+     * while searching for a focusable pivot.
+     */
+    var maxPendingMoves = 10
+        private set
+
+    /**
+     * Maximum number of pending scroll alignments after focus changes.
+     * This is different from [maxPendingMoves] and by default we don't specify any limit
+     */
+    var maxPendingAlignments = Int.MAX_VALUE
+        private set
+
     var stackFromEnd = false
         private set
 
@@ -184,6 +198,21 @@ internal class LayoutConfiguration(properties: Properties) {
 
     fun setFocusSearchEnabledDuringAnimations(enabled: Boolean) {
         isFocusSearchEnabledDuringAnimations = enabled
+    }
+
+    fun setMaxPendingAlignments(max: Int) {
+        require(max > 0)
+        maxPendingAlignments = max
+    }
+
+    fun setMaxPendingMoves(moves: Int) {
+        require(moves > 0)
+        maxPendingMoves = moves
+    }
+
+    fun setSmoothScrollSpeedFactor(speedFactor: Float) {
+        require(speedFactor > 0f)
+        smoothScrollSpeedFactor = speedFactor
     }
 
 }

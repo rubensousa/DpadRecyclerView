@@ -31,6 +31,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListene
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PreLayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
+import kotlin.math.abs
 import kotlin.math.max
 
 /**
@@ -59,7 +60,25 @@ internal class LinearLayoutEngineer(
         state: State,
         scrollOffset: Int
     ) {
-        architect.updateLayoutStateForScroll(layoutRequest, state, scrollOffset)
+        val scrollDistance = abs(scrollOffset)
+
+        if (scrollOffset < 0) {
+            val view = layoutInfo.getChildClosestToStart() ?: return
+            layoutRequest.prepend(layoutInfo.getLayoutPositionOf(view)) {
+                setCheckpoint(layoutInfo.getDecoratedStart(view))
+                architect.updateExtraLayoutSpace(layoutRequest, state)
+                setAvailableScrollSpace(max(0, layoutInfo.getStartAfterPadding() - checkpoint))
+                setFillSpace(scrollDistance + extraLayoutSpaceStart - availableScrollSpace)
+            }
+        } else {
+            val view = layoutInfo.getChildClosestToEnd() ?: return
+            layoutRequest.append(layoutInfo.getLayoutPositionOf(view)) {
+                setCheckpoint(layoutInfo.getDecoratedEnd(view))
+                architect.updateExtraLayoutSpace(layoutRequest, state)
+                setAvailableScrollSpace(max(0, checkpoint - layoutInfo.getEndAfterPadding()))
+                setFillSpace(scrollDistance + extraLayoutSpaceEnd - availableScrollSpace)
+            }
+        }
     }
 
     override fun initLayout(
@@ -82,16 +101,16 @@ internal class LinearLayoutEngineer(
         recycler: Recycler,
         state: State
     ) {
-        val extraLayoutSpace = max(0, preLayoutRequest.endOffset - preLayoutRequest.startOffset)
         val firstView = preLayoutRequest.firstView
+        architect.updateExtraLayoutSpace(layoutRequest, state)
         if (firstView != null) {
             layoutRequest.prepend(preLayoutRequest.firstPosition) {
                 setRecyclingEnabled(false)
                 setCheckpoint(layoutInfo.getDecoratedStart(firstView))
                 setAvailableScrollSpace(
-                    architect.calculateAvailableScrollSpaceStart(extraLayoutSpace)
+                    max(0, layoutInfo.getStartAfterPadding() - preLayoutRequest.extraLayoutSpace)
                 )
-                setFillSpace(extraLayoutSpace)
+                setFillSpace(preLayoutRequest.extraLayoutSpace + extraLayoutSpaceStart)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -102,9 +121,9 @@ internal class LinearLayoutEngineer(
                 setRecyclingEnabled(false)
                 setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
                 setAvailableScrollSpace(
-                    architect.calculateAvailableScrollSpaceEnd(extraLayoutSpace)
+                    max(0, preLayoutRequest.extraLayoutSpace - layoutInfo.getEndAfterPadding())
                 )
-                setFillSpace(extraLayoutSpace)
+                setFillSpace(preLayoutRequest.extraLayoutSpace + extraLayoutSpaceEnd)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -139,8 +158,10 @@ internal class LinearLayoutEngineer(
             }
         }
 
-        layoutRequest.setExtraLayoutSpaceStart(scrapExtraStart)
-        layoutRequest.setExtraLayoutSpaceEnd(scrapExtraEnd)
+        layoutRequest.setExtraLayoutSpace(
+            start = scrapExtraStart,
+            end = scrapExtraEnd
+        )
 
         if (scrapExtraStart > 0) {
             val anchor = layoutInfo.getChildClosestToStart()
@@ -171,10 +192,22 @@ internal class LinearLayoutEngineer(
         recycler: Recycler,
         state: State
     ) {
-        architect.updateForExtraLayoutStart(layoutRequest, state)
+        val firstView = layoutInfo.getChildClosestToStart() ?: return
+        prepend(layoutRequest, layoutInfo.getLayoutPositionOf(firstView)) {
+            setRecyclingEnabled(false)
+            architect.updateExtraLayoutSpace(layoutRequest, state)
+            setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+            setFillSpace(extraLayoutSpaceStart + preLayoutRequest.extraLayoutSpace)
+        }
         fill(layoutRequest, recycler, state)
 
-        architect.updateForExtraLayoutEnd(layoutRequest, state)
+        val lastView = layoutInfo.getChildClosestToEnd() ?: return
+        append(layoutRequest, layoutInfo.getLayoutPositionOf(lastView)) {
+            setRecyclingEnabled(false)
+            architect.updateExtraLayoutSpace(layoutRequest, state)
+            setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+            setFillSpace(extraLayoutSpaceEnd + preLayoutRequest.extraLayoutSpace)
+        }
         fill(layoutRequest, recycler, state)
     }
 
@@ -228,7 +261,7 @@ internal class LinearLayoutEngineer(
             val startFillSpace = max(
                 0, checkpoint - layoutInfo.getStartAfterPadding()
             )
-            setFillSpace(startFillSpace + layoutRequest.extraLayoutSpaceStart)
+            setFillSpace(startFillSpace)
         }
         fill(layoutRequest, recycler, state)
     }
@@ -241,11 +274,12 @@ internal class LinearLayoutEngineer(
         state: State
     ) {
         layoutRequest.append(pivotPosition) {
+            architect.updateExtraLayoutSpace(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedEnd(pivotView))
             val endFillSpace = max(
                 0, layoutInfo.getEndAfterPadding() - checkpoint
             )
-            setFillSpace(endFillSpace + layoutRequest.extraLayoutSpaceEnd)
+            setFillSpace(endFillSpace)
         }
         fill(layoutRequest, recycler, state)
     }
@@ -309,6 +343,24 @@ internal class LinearLayoutEngineer(
             bounds.left = bounds.right - decoratedSize
         }
         return decoratedSize
+    }
+
+    private fun prepend(
+        request: LayoutRequest,
+        fromPosition: Int,
+        block: LayoutRequest.() -> Unit
+    ) {
+        request.prepend(fromPosition, request.defaultItemDirection.opposite()) {
+            setRecyclingEnabled(false)
+            block(this)
+        }
+    }
+
+    private fun append(request: LayoutRequest, fromPosition: Int, block: LayoutRequest.() -> Unit) {
+        request.append(fromPosition) {
+            setRecyclingEnabled(false)
+            block(this)
+        }
     }
 
     private fun applyHorizontalGravity(

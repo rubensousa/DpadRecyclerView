@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenTvNestedListsBinding
 
@@ -28,7 +29,13 @@ class ListFragment : Fragment(R.layout.screen_tv_nested_lists) {
     private var _binding: ScreenTvNestedListsBinding? = null
     private val binding: ScreenTvNestedListsBinding get() = _binding!!
     private val viewModel by viewModels<ListViewModel>()
-    private val listController = ListController(this)
+    private val args by navArgs<ListFragmentArgs>()
+    private lateinit var listController : ListController
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        listController = ListController(this, args.slowScroll)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

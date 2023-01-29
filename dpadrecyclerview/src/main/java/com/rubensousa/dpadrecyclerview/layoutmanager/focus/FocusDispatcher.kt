@@ -90,6 +90,10 @@ internal class FocusDispatcher(
             return focused
         }
 
+        if (scroller.hasReachedPendingAlignmentLimit()){
+            return focused
+        }
+
         var newFocusedView: View? = focusInterceptor.findFocus(
             recyclerView, focused,
             pivotSelector.position, direction
@@ -97,6 +101,7 @@ internal class FocusDispatcher(
 
         // If we found the view using our interceptor, return it immediately
         if (newFocusedView != null) {
+            scroller.addPendingAlignment(newFocusedView)
             return newFocusedView
         }
 
@@ -105,6 +110,7 @@ internal class FocusDispatcher(
             defaultFocusInterceptor.findFocus(
                 recyclerView, focused, pivotSelector.position, direction
             )?.let { view ->
+                scroller.addPendingAlignment(view)
                 return view
             }
         }
@@ -215,8 +221,12 @@ internal class FocusDispatcher(
         return view.requestFocus(direction, previouslyFocusedRect)
     }
 
-    fun onRequestChildFocus(child: View, focused: View?): Boolean {
-        if (configuration.isFocusSearchDisabled) {
+    fun onRequestChildFocus(
+        recyclerView: RecyclerView,
+        child: View,
+        focused: View?
+    ): Boolean {
+        if (!isFocusSearchEnabled(recyclerView)) {
             return true
         }
         val newViewPosition = layoutInfo.getAdapterPositionOf(child)

@@ -391,10 +391,7 @@ internal class LayoutInfo(
     }
 
     fun getChildViewHolder(view: View): ViewHolder? {
-        if (view.parent !== recyclerView) {
-            return null
-        }
-        return recyclerView?.getChildViewHolder(view)
+        return recyclerView?.findContainingViewHolder(view)
     }
 
     fun findViewByPosition(position: Int): View? {

@@ -111,11 +111,8 @@ class HorizontalRowTest : DpadRecyclerViewTest() {
     fun testExtraLayoutSpaceIsAddedAtEnd() {
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateExtraLayoutSpace(
-                    state: RecyclerView.State,
-                    extraLayoutSpace: IntArray
-                ) {
-                    extraLayoutSpace[1] = row.getSize()
+                override fun calculateEndExtraLayoutSpace(state: RecyclerView.State): Int {
+                    return row.getSize()
                 }
             })
         }
@@ -130,11 +127,8 @@ class HorizontalRowTest : DpadRecyclerViewTest() {
         }
         onRecyclerView("Change extra layout space") { recyclerView ->
             recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateExtraLayoutSpace(
-                    state: RecyclerView.State,
-                    extraLayoutSpace: IntArray
-                ) {
-                    extraLayoutSpace[0] = row.getSize()
+                override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
+                    return row.getSize()
                 }
             })
         }

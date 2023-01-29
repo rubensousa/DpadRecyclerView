@@ -36,6 +36,7 @@ import kotlin.math.sqrt
  */
 internal class SearchPivotSmoothScroller(
     recyclerView: RecyclerView,
+    maxPendingMoves: Int,
     private val layoutInfo: LayoutInfo,
     private val pivotSelector: PivotSelector,
     private val alignment: LayoutAlignment,
@@ -45,12 +46,10 @@ internal class SearchPivotSmoothScroller(
     companion object {
         // Forces smooth scroller to run until target is actually set
         const val UNDEFINED_TARGET = -2
-
-        private const val TAG = "SearchPivotScroller"
     }
 
     private var isCanceled = false
-    private val movements = PendingScrollMovements(layoutInfo)
+    private val movements = PendingScrollMovements(maxPendingMoves, layoutInfo)
 
     init {
         targetPosition = UNDEFINED_TARGET
@@ -184,7 +183,6 @@ internal class SearchPivotSmoothScroller(
 
     override fun onStop() {
         super.onStop()
-        Log.i(TAG, "onStop")
         if (isCanceled) {
             listener.onSmoothScrollerStopped()
             return
