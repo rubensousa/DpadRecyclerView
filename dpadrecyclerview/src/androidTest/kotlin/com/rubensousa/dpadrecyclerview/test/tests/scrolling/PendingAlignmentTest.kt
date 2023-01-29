@@ -82,7 +82,7 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
     private fun setupRecyclerView(
         maxPendingAlignments: Int,
         maxPendingMoves: Int = 10,
-        scrollDuration: Int = 2000
+        scrollDuration: Int = 4000
     ) {
         onRecyclerView("Setup") { recyclerView ->
             recyclerView.setSmoothScrollMaxPendingMoves(maxPendingMoves)
