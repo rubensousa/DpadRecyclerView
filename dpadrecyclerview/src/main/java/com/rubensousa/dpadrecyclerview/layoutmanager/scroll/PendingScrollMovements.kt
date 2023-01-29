@@ -16,19 +16,19 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 
+import androidx.annotation.VisibleForTesting
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.max
 
 internal class PendingScrollMovements(
+    private var maxPendingMoves: Int,
     private val layoutInfo: LayoutInfo
 ) {
 
     var pendingMoves = 0
         private set
 
-    var maxPendingMoves = 2
-        private set
-
+    @VisibleForTesting
     fun setMaxPendingMoves(max: Int) {
         maxPendingMoves = max(1, max)
     }

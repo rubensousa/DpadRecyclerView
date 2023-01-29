@@ -242,7 +242,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         child: View,
         focused: View?
     ): Boolean {
-        return focusDispatcher.onRequestChildFocus(child, focused)
+        return focusDispatcher.onRequestChildFocus(parent, child, focused)
     }
 
     // Disabled since only this LayoutManager knows how to position views
@@ -370,6 +370,28 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun setSmoothFocusChangesEnabled(isEnabled: Boolean) {
         configuration.setSmoothFocusChangesEnabled(isEnabled)
     }
+
+    fun setMaxPendingAlignments(max: Int) {
+        configuration.setMaxPendingAlignments(max)
+    }
+
+    fun getMaxPendingAlignments(): Int {
+        return configuration.maxPendingAlignments
+    }
+
+    fun setMaxPendingMoves(max: Int) {
+        configuration.setMaxPendingMoves(max)
+    }
+
+    fun getMaxPendingMoves(): Int {
+        return configuration.maxPendingMoves
+    }
+
+    fun setSmoothScrollSpeedFactor(speedFactor: Float) {
+        configuration.setSmoothScrollSpeedFactor(speedFactor)
+    }
+
+    fun getSmoothScrollSpeedFactor(): Float = configuration.smoothScrollSpeedFactor
 
     fun setFocusSearchDisabled(disabled: Boolean) {
         configuration.setFocusSearchDisabled(disabled)
