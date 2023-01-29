@@ -20,13 +20,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressUp
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
+import org.junit.Rule
 import org.junit.Test
 
 class VerticalFocusTest : DpadRecyclerViewTest() {
+
+    @get:Rule
+    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
@@ -124,7 +133,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
             )
         )
         onRecyclerView("Update animation duration") { recyclerView ->
-            recyclerView.itemAnimator?.moveDuration = 1500L
+            recyclerView.itemAnimator?.moveDuration = 2500L
         }
         mutateAdapter { adapter ->
             adapter.move(from = 0, to = 1)
@@ -144,7 +153,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
             )
         )
         onRecyclerView("Update animation duration") { recyclerView ->
-            recyclerView.itemAnimator?.moveDuration = 1500L
+            recyclerView.itemAnimator?.moveDuration = 2500L
         }
         mutateAdapter { adapter ->
             adapter.addAt(1000, index = 3)
