@@ -138,7 +138,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
             )
         )
         onRecyclerView("Update animation duration") { recyclerView ->
-            recyclerView.itemAnimator?.moveDuration = 1500L
+            recyclerView.itemAnimator?.moveDuration = 2500L
         }
         mutateAdapter { adapter ->
             adapter.move(from = 0, to = 1)
