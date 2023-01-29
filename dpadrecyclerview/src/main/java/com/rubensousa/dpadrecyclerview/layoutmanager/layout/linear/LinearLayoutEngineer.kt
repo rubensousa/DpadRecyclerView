@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ExtraLayoutSpaceCalculator
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
@@ -53,7 +54,7 @@ internal class LinearLayoutEngineer(
         const val TAG = "LinearLayoutEngineer"
     }
 
-    private val architect = LinearLayoutArchitect(layoutInfo)
+    private val extraLayoutSpaceCalculator = ExtraLayoutSpaceCalculator(layoutInfo)
 
     override fun updateLayoutRequestForScroll(
         layoutRequest: LayoutRequest,
@@ -66,7 +67,7 @@ internal class LinearLayoutEngineer(
             val view = layoutInfo.getChildClosestToStart() ?: return
             layoutRequest.prepend(layoutInfo.getLayoutPositionOf(view)) {
                 setCheckpoint(layoutInfo.getDecoratedStart(view))
-                architect.updateExtraLayoutSpace(layoutRequest, state)
+                extraLayoutSpaceCalculator.update(layoutRequest, state)
                 setAvailableScrollSpace(max(0, layoutInfo.getStartAfterPadding() - checkpoint))
                 setFillSpace(scrollDistance + extraLayoutSpaceStart - availableScrollSpace)
             }
@@ -74,7 +75,7 @@ internal class LinearLayoutEngineer(
             val view = layoutInfo.getChildClosestToEnd() ?: return
             layoutRequest.append(layoutInfo.getLayoutPositionOf(view)) {
                 setCheckpoint(layoutInfo.getDecoratedEnd(view))
-                architect.updateExtraLayoutSpace(layoutRequest, state)
+                extraLayoutSpaceCalculator.update(layoutRequest, state)
                 setAvailableScrollSpace(max(0, checkpoint - layoutInfo.getEndAfterPadding()))
                 setFillSpace(scrollDistance + extraLayoutSpaceEnd - availableScrollSpace)
             }
@@ -102,7 +103,6 @@ internal class LinearLayoutEngineer(
         state: State
     ) {
         val firstView = preLayoutRequest.firstView
-        architect.updateExtraLayoutSpace(layoutRequest, state)
         if (firstView != null) {
             layoutRequest.prepend(preLayoutRequest.firstPosition) {
                 setRecyclingEnabled(false)
@@ -158,25 +158,27 @@ internal class LinearLayoutEngineer(
             }
         }
 
-        layoutRequest.setExtraLayoutSpace(
-            start = scrapExtraStart,
-            end = scrapExtraEnd
-        )
+        if (DEBUG) {
+            Log.i(TAG, "Scrap extra layout: $scrapExtraStart, $scrapExtraEnd")
+        }
 
-        Log.i(TAG, "Scrap extra layout: $scrapExtraStart, $scrapExtraEnd")
         if (scrapExtraStart > 0) {
-            architect.updateLayoutStateForPredictiveStart(
-                layoutRequest,
-                layoutManager.getPosition(firstView)
-            )
+            layoutRequest.prepend(layoutInfo.getLayoutPositionOf(firstView)) {
+                setRecyclingEnabled(false)
+                setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+                updateCurrentPositionFromScrap()
+                setFillSpace(scrapExtraStart)
+            }
             fill(layoutRequest, recycler, state)
         }
 
         if (scrapExtraEnd > 0) {
-            architect.updateLayoutStateForPredictiveEnd(
-                layoutRequest,
-                layoutManager.getPosition(lastView)
-            )
+            layoutRequest.append(layoutInfo.getLayoutPositionOf(lastView)) {
+                setRecyclingEnabled(false)
+                setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+                updateCurrentPositionFromScrap()
+                setFillSpace(scrapExtraEnd)
+            }
             fill(layoutRequest, recycler, state)
         }
     }
@@ -189,7 +191,7 @@ internal class LinearLayoutEngineer(
         val firstView = layoutInfo.getChildClosestToStart() ?: return
         prepend(layoutRequest, layoutInfo.getLayoutPositionOf(firstView)) {
             setRecyclingEnabled(false)
-            architect.updateExtraLayoutSpace(layoutRequest, state)
+            extraLayoutSpaceCalculator.update(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedStart(firstView))
             setFillSpace(extraLayoutSpaceStart)
         }
@@ -198,7 +200,7 @@ internal class LinearLayoutEngineer(
         val lastView = layoutInfo.getChildClosestToEnd() ?: return
         append(layoutRequest, layoutInfo.getLayoutPositionOf(lastView)) {
             setRecyclingEnabled(false)
-            architect.updateExtraLayoutSpace(layoutRequest, state)
+            extraLayoutSpaceCalculator.update(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
             setFillSpace(extraLayoutSpaceEnd)
         }
@@ -257,7 +259,6 @@ internal class LinearLayoutEngineer(
             )
             setFillSpace(startFillSpace)
         }
-        Log.i(TAG, "Layout pivot to start: $layoutRequest")
         fill(layoutRequest, recycler, state)
     }
 
@@ -275,7 +276,6 @@ internal class LinearLayoutEngineer(
             )
             setFillSpace(endFillSpace)
         }
-        Log.i(TAG, "Layout pivot to end: $layoutRequest")
         fill(layoutRequest, recycler, state)
     }
 
@@ -298,8 +298,7 @@ internal class LinearLayoutEngineer(
         }
 
         if (DEBUG) {
-            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds," +
-                    "remaining scroll: ${layoutInfo.getRemainingScroll(state)}")
+            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
         }
 
         if (shouldSkipSpaceOf(view)) {
