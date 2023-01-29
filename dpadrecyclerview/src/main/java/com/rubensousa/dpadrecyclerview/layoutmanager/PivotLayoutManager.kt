@@ -256,8 +256,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         immediate: Boolean
     ): Boolean = false
 
+    override fun onAttachedToWindow(view: RecyclerView) {
+        super.onAttachedToWindow(view)
+        focusDispatcher.updateParentRecyclerView(view)
+    }
+
     override fun onDetachedFromWindow(view: RecyclerView, recycler: RecyclerView.Recycler) {
         super.onDetachedFromWindow(view, recycler)
+        focusDispatcher.clearParentRecyclerView()
         if (configuration.recycleChildrenOnDetach) {
             removeAndRecycleAllViews(recycler)
             recycler.clear()
@@ -312,6 +318,9 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     // Configuration methods
     fun setRecyclerView(recyclerView: RecyclerView?) {
+        if (recyclerView == null) {
+            focusDispatcher.clearParentRecyclerView()
+        }
         this.recyclerView = recyclerView
         layoutInfo.setRecyclerView(recyclerView)
         scroller.setRecyclerView(recyclerView)

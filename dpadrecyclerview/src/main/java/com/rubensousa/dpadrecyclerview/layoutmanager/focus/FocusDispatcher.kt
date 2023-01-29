@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.FocusableDirection
@@ -47,6 +48,22 @@ internal class FocusDispatcher(
         layoutInfo, configuration
     )
     private var focusInterceptor: FocusInterceptor = defaultFocusInterceptor
+    private var parentRecyclerView: RecyclerView? = null
+
+    fun updateParentRecyclerView(childRecyclerView: RecyclerView) {
+        var parent: ViewParent? = childRecyclerView.parent
+        while (parent != null && parent is ViewGroup) {
+            if (parent is RecyclerView) {
+                parentRecyclerView = parent
+                return
+            }
+            parent = parent.parent
+        }
+    }
+
+    fun clearParentRecyclerView() {
+        parentRecyclerView = null
+    }
 
     fun updateFocusableDirection(direction: FocusableDirection) {
         focusInterceptor = when (direction) {
@@ -90,7 +107,7 @@ internal class FocusDispatcher(
             return focused
         }
 
-        if (scroller.hasReachedPendingAlignmentLimit()){
+        if (scroller.hasReachedPendingAlignmentLimit()) {
             return focused
         }
 
@@ -175,7 +192,12 @@ internal class FocusDispatcher(
         if (!configuration.isFocusSearchEnabledDuringAnimations && recyclerView.isAnimating) {
             return false
         }
-        return true
+        // Check if this RecyclerView is a Nested RecyclerView and delay focus changes
+        // until the parent is no longer smooth scrolling
+        val isParentSmoothScrolling = parentRecyclerView
+            ?.layoutManager?.isSmoothScrolling ?: return true
+
+        return !isParentSmoothScrolling
     }
 
     fun onAddFocusables(
