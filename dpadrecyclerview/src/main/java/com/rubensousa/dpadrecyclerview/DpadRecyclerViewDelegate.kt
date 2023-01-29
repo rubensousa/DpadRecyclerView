@@ -38,7 +38,6 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         private set
 
     private var isRetainingFocus = false
-    private var hasOverlappingRendering = true
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
 
     fun init(context: Context, attrs: AttributeSet?) {
@@ -65,23 +64,6 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
             overScrollMode = RecyclerView.OVER_SCROLL_NEVER
         }
         recyclerView.layoutManager = layoutManager
-    }
-
-    fun setLayoutManager(newLayoutManager: LayoutManager?) {
-        layoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
-        layoutManager?.setRecyclerView(null)
-        layoutManager = null
-
-        if (newLayoutManager != null && newLayoutManager !is PivotLayoutManager) {
-            throw IllegalArgumentException(
-                "Only PivotLayoutManagerDelegate is supported, but got $newLayoutManager"
-            )
-        }
-        if (newLayoutManager is PivotLayoutManager) {
-            newLayoutManager.setRecyclerView(recyclerView)
-            newLayoutManager.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
-            layoutManager = newLayoutManager
-        }
     }
 
     private fun createLayoutManager(
@@ -168,34 +150,6 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
         layout.setAlignments(parentAlignment, childAlignment, smooth = false)
         typedArray.recycle()
         return layout
-    }
-
-    fun focusSearch(focused: View?, direction: Int): View? {
-        if (focused == null) {
-            return null
-        }
-        return layoutManager?.onInterceptFocusSearch(focused, direction)
-    }
-
-    fun onRtlPropertiesChanged() {
-        layoutManager?.onRtlPropertiesChanged()
-    }
-
-    fun onFocusChanged(gainFocus: Boolean) {
-        layoutManager?.onFocusChanged(gainFocus)
-    }
-
-    fun focusSearch(direction: Int): View? {
-        val currentLayout = layoutManager
-        if (recyclerView.isFocused && currentLayout != null) {
-            // focusSearch will be called when RecyclerView itself is focused.
-            // Calling focusSearch(view, int) to get next sibling of current selected child.
-            val view = currentLayout.findViewByPosition(currentLayout.getSelectedPosition())
-            if (view != null) {
-                return focusSearch(view, direction)
-            }
-        }
-        return null
     }
 
     fun onRequestFocusInDescendants(direction: Int, previouslyFocusedRect: Rect?): Boolean {
@@ -371,12 +325,6 @@ internal class DpadRecyclerViewDelegate(private val recyclerView: RecyclerView) 
 
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
         requireLayout().setExtraLayoutSpaceStrategy(strategy)
-    }
-
-    fun hasOverlappingRendering(): Boolean = hasOverlappingRendering
-
-    fun setHasOverlappingRendering(enabled: Boolean) {
-        this.hasOverlappingRendering = enabled
     }
 
     fun setFocusSearchDisabled(disabled: Boolean) {

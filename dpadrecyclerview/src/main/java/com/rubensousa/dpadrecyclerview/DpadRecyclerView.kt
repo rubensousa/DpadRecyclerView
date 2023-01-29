@@ -53,6 +53,9 @@ open class DpadRecyclerView @JvmOverloads constructor(
         const val TAG = "DpadRecyclerView"
     }
 
+    private var pivotLayoutManager: PivotLayoutManager? = null
+    private var isOverlappingRenderingEnabled = true
+    private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
     private val delegate = DpadRecyclerViewDelegate(this)
     private var keyInterceptListener: OnKeyInterceptListener? = null
     private var unhandledKeyListener: OnUnhandledKeyListener? = null
@@ -62,6 +65,24 @@ open class DpadRecyclerView @JvmOverloads constructor(
         // The LayoutManager will draw the focused view on top of all other views
         isChildrenDrawingOrderEnabled = true
         delegate.init(context, attrs)
+    }
+
+    final override fun setLayoutManager(layout: LayoutManager?) {
+        super.setLayoutManager(layout)
+        pivotLayoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
+        pivotLayoutManager?.setRecyclerView(null)
+        pivotLayoutManager = null
+
+        if (layout != null && layout !is PivotLayoutManager) {
+            throw IllegalArgumentException(
+                "Only PivotLayoutManager is supported, but got $layout"
+            )
+        }
+        if (layout is PivotLayoutManager) {
+            layout.setRecyclerView(this)
+            layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
+            pivotLayoutManager = layout
+        }
     }
 
     final override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
@@ -74,7 +95,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     final override fun hasOverlappingRendering(): Boolean {
-        return delegate.hasOverlappingRendering()
+        return isOverlappingRenderingEnabled
     }
 
     final override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -94,17 +115,24 @@ open class DpadRecyclerView @JvmOverloads constructor(
         return super.dispatchGenericFocusedEvent(event)
     }
 
-    final override fun setLayoutManager(layout: LayoutManager?) {
-        super.setLayoutManager(layout)
-        delegate.setLayoutManager(layout)
-    }
-
     final override fun focusSearch(focused: View?, direction: Int): View? {
-        return delegate.focusSearch(focused, direction)
+        if (focused == null) {
+            return null
+        }
+        return pivotLayoutManager?.onInterceptFocusSearch(focused, direction)
     }
 
     final override fun focusSearch(direction: Int): View? {
-        return delegate.focusSearch(direction) ?: super.focusSearch(direction)
+        val currentLayout = pivotLayoutManager
+        if (isFocused && currentLayout != null) {
+            // focusSearch will be called when RecyclerView itself is focused.
+            // Calling focusSearch(view, int) to get next sibling of current selected child.
+            val view = currentLayout.findViewByPosition(currentLayout.getSelectedPosition())
+            if (view != null) {
+                return focusSearch(view, direction)
+            }
+        }
+        return super.focusSearch(direction)
     }
 
     final override fun onFocusChanged(
@@ -113,7 +141,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
         previouslyFocusedRect: Rect?
     ) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
-        delegate.onFocusChanged(gainFocus)
+        pivotLayoutManager?.onFocusChanged(gainFocus)
     }
 
     final override fun onRequestFocusInDescendants(
@@ -141,7 +169,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun onRtlPropertiesChanged(layoutDirection: Int) {
         super.onRtlPropertiesChanged(layoutDirection)
-        delegate.onRtlPropertiesChanged()
+        pivotLayoutManager?.onRtlPropertiesChanged()
     }
 
     final override fun smoothScrollBy(dx: Int, dy: Int) {
@@ -210,7 +238,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param enabled true if overlapping rendering is enabled. Default is true
      */
     fun setHasOverlappingRendering(enabled: Boolean) {
-        delegate.setHasOverlappingRendering(enabled)
+        isOverlappingRenderingEnabled = enabled
     }
 
     /**
