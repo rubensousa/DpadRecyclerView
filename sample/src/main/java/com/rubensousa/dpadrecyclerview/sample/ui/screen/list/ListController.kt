@@ -222,8 +222,7 @@ class ListController(
             ) {
                 Timber.d("Aligned: $position, $subPosition")
                 Timber.d("FirstVisibleItemPosition: ${recyclerView.findFirstVisibleItemPosition()}")
-                Timber.d("FirstLastVisibleItemPosition: ${recyclerView.findLastVisibleItemPosition()}")
-
+                Timber.d("LastVisibleItemPosition: ${recyclerView.findLastVisibleItemPosition()}")
             }
         })
     }

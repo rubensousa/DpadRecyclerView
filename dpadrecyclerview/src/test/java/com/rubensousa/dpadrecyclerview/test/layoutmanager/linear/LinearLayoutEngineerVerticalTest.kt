@@ -20,6 +20,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemChanges
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutEngineer
@@ -54,6 +55,8 @@ class LinearLayoutEngineerVerticalTest {
             it.setOrientation(RecyclerView.VERTICAL)
         }
     )
+    private val itemChanges = ItemChanges()
+
     private val column = ColumnLayout(
         LayoutConfig(
             parentWidth = screenWidth,
@@ -110,6 +113,17 @@ class LinearLayoutEngineerVerticalTest {
         LayoutManagerAssertions.assertChildrenBounds(layoutManager, column)
     }
 
+    @Test
+    fun `do not allow values of remainingScroll too high`() {
+        initLayout()
+        repeat(3) {
+            column.scrollDown()
+        }
+        recyclerViewStateMock.remainingScrollVertical = column.getSize() * 2
+        layout(pivotPosition = 3)
+        LayoutManagerAssertions.assertChildrenBounds(layoutManager, column)
+    }
+
     private fun initLayout(position: Int = 0) {
         column.init(position)
     }
@@ -117,6 +131,7 @@ class LinearLayoutEngineerVerticalTest {
     private fun layout(pivotPosition: Int) {
         engineer.layoutChildren(
             pivotPosition,
+            itemChanges,
             recyclerMock.get(),
             recyclerViewStateMock.get()
         )

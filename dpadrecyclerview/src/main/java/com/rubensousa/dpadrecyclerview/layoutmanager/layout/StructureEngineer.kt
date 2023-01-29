@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import kotlin.math.abs
 
 internal abstract class StructureEngineer(
     protected val layoutManager: LayoutManager,
@@ -97,7 +98,6 @@ internal abstract class StructureEngineer(
 
     protected abstract fun layoutExtraSpace(
         layoutRequest: LayoutRequest,
-        preLayoutRequest: PreLayoutRequest,
         recycler: Recycler,
         state: State
     )
@@ -150,7 +150,20 @@ internal abstract class StructureEngineer(
         }
     }
 
-    fun layoutChildren(pivotPosition: Int, recycler: Recycler, state: State) {
+    fun layoutChildren(
+        pivotPosition: Int,
+        itemChanges: ItemChanges,
+        recycler: Recycler,
+        state: State
+    ) {
+        // If there were item changes out of bounds, we don't need to relayout
+        if (!isNewLayoutRequired(state, itemChanges)) {
+            if (DEBUG) {
+                Log.i(TAG, "layout changes are out of bounds, so skip relayout: : $itemChanges")
+            }
+            return
+        }
+
         // Start by detaching all existing views.
         // Views not attached again will be animated out if we're running predictive animations
         layoutManager.detachAndScrapAttachedViews(recycler)
@@ -171,7 +184,7 @@ internal abstract class StructureEngineer(
         alignPivot(pivotView, recycler, state)
 
         // Layout extra space if user requested it
-        layoutExtraSpace(layoutRequest, preLayoutRequest, recycler, state)
+        layoutExtraSpace(layoutRequest, recycler, state)
 
         // We might have views we no longer need after aligning the pivot,
         // so recycle them if we're not running animations
@@ -181,6 +194,18 @@ internal abstract class StructureEngineer(
 
         onLayoutChildrenFinished()
         preLayoutRequest.clear()
+    }
+
+    private fun isNewLayoutRequired(state: State, itemChanges: ItemChanges): Boolean {
+        if (state.didStructureChange() || !itemChanges.isValid()) {
+            return true
+        }
+        val firstPos = layoutInfo.findFirstAddedPosition()
+        val lastPos = layoutInfo.findLastAddedPosition()
+        if (firstPos == RecyclerView.NO_POSITION || lastPos == RecyclerView.NO_POSITION) {
+            return true
+        }
+        return !itemChanges.isOutOfBounds(firstPos, lastPos)
     }
 
     fun scrollBy(offset: Int, recycler: Recycler, state: State): Int {
@@ -266,9 +291,16 @@ internal abstract class StructureEngineer(
     private fun alignPivot(pivotView: View, recycler: Recycler, state: State) {
         // Offset all views by the existing remaining scroll so that they're still scrolled
         // to their final locations when RecyclerView resumes scrolling
-        val remainingScroll = layoutInfo.getRemainingScroll(state)
+        var remainingScroll = layoutInfo.getRemainingScroll(state)
+        if (abs(remainingScroll) > layoutInfo.getTotalSpace()) {
+            // Do not allow remaining scroll to exceed the total space available
+            // This might happen when RecyclerView keeps adding up scroll changes
+            // from previous alignments without consuming them until the next layout pass
+            remainingScroll = 0
+        }
         val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView) - remainingScroll
         updateLayoutRequestForScroll(layoutRequest, state, scrollOffset)
+        layoutRequest.setRecyclingEnabled(false)
         offsetChildren(-scrollOffset)
         fill(layoutRequest, recycler, state)
     }
@@ -302,6 +334,7 @@ internal abstract class StructureEngineer(
     }
 
     fun clear() {
+        layoutManager.removeAllViews()
         layoutRequest.clear()
     }
 

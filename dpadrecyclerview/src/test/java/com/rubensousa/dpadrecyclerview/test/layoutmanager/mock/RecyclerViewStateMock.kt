@@ -27,6 +27,7 @@ class RecyclerViewStateMock {
     var remainingScrollHorizontal = 0
     var remainingScrollVertical = 0
     var isPreLayout = false
+    var didStructureChange = false
     var itemCount = 1000
     var willRunPredictiveAnimations = false
     var willRunSimpleAnimations = false
@@ -41,6 +42,7 @@ class RecyclerViewStateMock {
         every { mock.itemCount }.answers { itemCount }
         every { mock.willRunPredictiveAnimations() }.answers { willRunPredictiveAnimations }
         every { mock.willRunSimpleAnimations() }.answers { willRunSimpleAnimations }
+        every { mock.didStructureChange() }.answers { didStructureChange }
     }
 
     fun get(): RecyclerView.State = mock

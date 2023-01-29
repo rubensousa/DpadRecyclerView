@@ -19,19 +19,9 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 
-internal abstract class LayoutArchitect(protected val layoutInfo: LayoutInfo) {
+internal class ExtraLayoutSpaceCalculator(private val layoutInfo: LayoutInfo) {
 
-    abstract fun updateLayoutStateForPredictiveStart(
-        layoutRequest: LayoutRequest,
-        anchorPosition: Int
-    )
-
-    abstract fun updateLayoutStateForPredictiveEnd(
-        layoutRequest: LayoutRequest,
-        anchorPosition: Int
-    )
-
-    fun updateExtraLayoutSpace(layoutRequest: LayoutRequest, state: RecyclerView.State) {
+    fun update(layoutRequest: LayoutRequest, state: RecyclerView.State) {
         if (setCustomExtraLayoutSpace(layoutRequest, state)) {
             // Skip our logic if user specified a custom strategy for extra layout space
             return

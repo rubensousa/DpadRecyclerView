@@ -189,6 +189,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
+        pivotLayout.onItemsAdded(positionStart, itemCount)
         pivotSelector.onItemsAdded(positionStart, itemCount)
     }
 
@@ -197,10 +198,12 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
+        pivotLayout.onItemsRemoved(positionStart, itemCount)
         pivotSelector.onItemsRemoved(positionStart, itemCount)
     }
 
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
+        pivotLayout.onItemsMoved(from, to, itemCount)
         pivotSelector.onItemsMoved(from, to, itemCount)
     }
 

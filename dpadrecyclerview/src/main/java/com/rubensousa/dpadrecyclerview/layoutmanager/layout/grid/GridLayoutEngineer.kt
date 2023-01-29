@@ -44,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ExtraLayoutSpaceCalculator
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
@@ -51,7 +52,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListene
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PreLayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutArchitect
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -75,7 +75,7 @@ internal class GridLayoutEngineer(
     )
     private val gridState = GridState(layoutManager)
     private val pivotRow = GridRow(layoutRow)
-    private val architect = LinearLayoutArchitect(layoutInfo)
+    private val extraLayoutSpaceCalculator = ExtraLayoutSpaceCalculator(layoutInfo)
     private var pivotLayoutPosition = RecyclerView.NO_POSITION
 
     override fun onLayoutStarted(state: State) {
@@ -98,7 +98,7 @@ internal class GridLayoutEngineer(
                 layoutRequest.defaultItemDirection.opposite()
             ) {
                 setCheckpoint(layoutInfo.getDecoratedStart(view))
-                architect.updateExtraLayoutSpace(layoutRequest, state)
+                extraLayoutSpaceCalculator.update(layoutRequest, state)
                 setAvailableScrollSpace(max(0, layoutInfo.getStartAfterPadding() - checkpoint))
                 setFillSpace(scrollDistance + extraLayoutSpaceStart - availableScrollSpace)
             }
@@ -106,7 +106,7 @@ internal class GridLayoutEngineer(
             val view = layoutInfo.getChildClosestToEnd() ?: return
             layoutRequest.append(layoutInfo.getLayoutPositionOf(view)) {
                 setCheckpoint(layoutInfo.getDecoratedEnd(view))
-                architect.updateExtraLayoutSpace(layoutRequest, state)
+                extraLayoutSpaceCalculator.update(layoutRequest, state)
                 setAvailableScrollSpace(max(0, checkpoint - layoutInfo.getEndAfterPadding()))
                 setFillSpace(scrollDistance + extraLayoutSpaceEnd - availableScrollSpace)
             }
@@ -188,7 +188,7 @@ internal class GridLayoutEngineer(
         if (firstView != null) {
             prepend(layoutRequest, preLayoutRequest.firstPosition) {
                 setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-                setFillSpace(extraLayoutSpaceStart + preLayoutRequest.extraLayoutSpace)
+                setFillSpace(preLayoutRequest.extraLayoutSpace)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -196,7 +196,7 @@ internal class GridLayoutEngineer(
         if (lastView != null) {
             append(layoutRequest, preLayoutRequest.lastPosition) {
                 setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-                setFillSpace(extraLayoutSpaceEnd + preLayoutRequest.extraLayoutSpace)
+                setFillSpace(preLayoutRequest.extraLayoutSpace)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -324,25 +324,24 @@ internal class GridLayoutEngineer(
 
     override fun layoutExtraSpace(
         layoutRequest: LayoutRequest,
-        preLayoutRequest: PreLayoutRequest,
         recycler: Recycler,
         state: State
     ) {
         val firstView = layoutInfo.getChildClosestToStart() ?: return
         prepend(layoutRequest, layoutInfo.getLayoutPositionOf(firstView)) {
             setRecyclingEnabled(false)
-            architect.updateExtraLayoutSpace(layoutRequest, state)
+            extraLayoutSpaceCalculator.update(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-            setFillSpace(extraLayoutSpaceStart + preLayoutRequest.extraLayoutSpace)
+            setFillSpace(extraLayoutSpaceStart)
         }
         fill(layoutRequest, recycler, state)
 
         val lastView = layoutInfo.getChildClosestToEnd() ?: return
         append(layoutRequest, layoutInfo.getLayoutPositionOf(lastView)) {
             setRecyclingEnabled(false)
-            architect.updateExtraLayoutSpace(layoutRequest, state)
+            extraLayoutSpaceCalculator.update(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-            setFillSpace(extraLayoutSpaceEnd + preLayoutRequest.extraLayoutSpace)
+            setFillSpace(extraLayoutSpaceEnd)
         }
         fill(layoutRequest, recycler, state)
     }

@@ -49,6 +49,7 @@ internal class PivotLayout(
     private val childLayoutListener = ChildLayoutListener()
     private var structureEngineer = createStructureEngineer()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
+    private val itemChanges = ItemChanges()
 
     fun updateStructure() {
         structureEngineer = createStructureEngineer()
@@ -91,18 +92,18 @@ internal class PivotLayout(
     private fun preLayoutChildren(
         pivotPosition: Int,
         recycler: Recycler,
-        recyclerViewState: State
+        state: State
     ) {
         val childCount = layoutManager.childCount
         if (childCount == 0) {
             return
         }
         if (DEBUG) {
-            Log.i(TAG, "PreLayoutStart")
+            Log.i(TAG, "PreLayoutStart: ${state.asString()}")
             structureEngineer.logChildren()
         }
 
-        structureEngineer.preLayoutChildren(pivotPosition, recycler, recyclerViewState)
+        structureEngineer.preLayoutChildren(pivotPosition, recycler, state)
 
         if (DEBUG) {
             Log.i(TAG, "PreLayoutFinished")
@@ -110,13 +111,13 @@ internal class PivotLayout(
         }
     }
 
-    private fun layoutChildren(recycler: Recycler, recyclerViewState: State) {
+    private fun layoutChildren(recycler: Recycler, state: State) {
         if (DEBUG) {
-            Log.i(TAG, "LayoutStart")
+            Log.i(TAG, "LayoutStart: ${state.asString()}")
             structureEngineer.logChildren()
         }
 
-        structureEngineer.layoutChildren(pivotSelector.position, recycler, recyclerViewState)
+        structureEngineer.layoutChildren(pivotSelector.position, itemChanges, recycler, state)
 
         if (DEBUG) {
             Log.i(TAG, "LayoutFinished")
@@ -128,7 +129,24 @@ internal class PivotLayout(
         structureEngineer.clear()
     }
 
+    fun onItemsAdded(positionStart: Int, itemCount: Int) {
+        itemChanges.insertionPosition = positionStart
+        itemChanges.insertionItemCount = itemCount
+    }
+
+    fun onItemsRemoved(positionStart: Int, itemCount: Int) {
+        itemChanges.removalPosition = positionStart
+        itemChanges.removalItemCount = itemCount
+    }
+
+    fun onItemsMoved(from: Int, to: Int, itemCount: Int) {
+        itemChanges.moveFromPosition = from
+        itemChanges.moveToPosition = to
+        itemChanges.moveItemCount = itemCount
+    }
+
     fun onLayoutCompleted(state: State) {
+        itemChanges.reset()
         layoutInfo.onLayoutCompleted()
         layoutCompleteListeners.forEach { listener ->
             listener.onLayoutCompleted(state)
@@ -220,6 +238,7 @@ internal class PivotLayout(
             this.remainingScrollHorizontal
         }
         return "itemCount=${itemCount}, " +
+                "didStructureChange=${didStructureChange()}, " +
                 "remainingScroll=$remainingScroll, " +
                 "predictiveAnimations=${willRunPredictiveAnimations()}"
     }
