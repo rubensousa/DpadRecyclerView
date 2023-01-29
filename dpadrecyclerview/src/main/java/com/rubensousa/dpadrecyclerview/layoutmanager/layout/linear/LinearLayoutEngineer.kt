@@ -110,7 +110,7 @@ internal class LinearLayoutEngineer(
                 setAvailableScrollSpace(
                     max(0, layoutInfo.getStartAfterPadding() - preLayoutRequest.extraLayoutSpace)
                 )
-                setFillSpace(preLayoutRequest.extraLayoutSpace + extraLayoutSpaceStart)
+                setFillSpace(preLayoutRequest.extraLayoutSpace)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -123,7 +123,7 @@ internal class LinearLayoutEngineer(
                 setAvailableScrollSpace(
                     max(0, preLayoutRequest.extraLayoutSpace - layoutInfo.getEndAfterPadding())
                 )
-                setFillSpace(preLayoutRequest.extraLayoutSpace + extraLayoutSpaceEnd)
+                setFillSpace(preLayoutRequest.extraLayoutSpace)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -163,32 +163,26 @@ internal class LinearLayoutEngineer(
             end = scrapExtraEnd
         )
 
+        Log.i(TAG, "Scrap extra layout: $scrapExtraStart, $scrapExtraEnd")
         if (scrapExtraStart > 0) {
-            val anchor = layoutInfo.getChildClosestToStart()
-            if (anchor != null) {
-                architect.updateLayoutStateForPredictiveStart(
-                    layoutRequest,
-                    layoutManager.getPosition(anchor)
-                )
-                fill(layoutRequest, recycler, state)
-            }
+            architect.updateLayoutStateForPredictiveStart(
+                layoutRequest,
+                layoutManager.getPosition(firstView)
+            )
+            fill(layoutRequest, recycler, state)
         }
 
         if (scrapExtraEnd > 0) {
-            val anchor = layoutInfo.getChildClosestToEnd()
-            if (anchor != null) {
-                architect.updateLayoutStateForPredictiveEnd(
-                    layoutRequest,
-                    layoutManager.getPosition(anchor)
-                )
-                fill(layoutRequest, recycler, state)
-            }
+            architect.updateLayoutStateForPredictiveEnd(
+                layoutRequest,
+                layoutManager.getPosition(lastView)
+            )
+            fill(layoutRequest, recycler, state)
         }
     }
 
     override fun layoutExtraSpace(
         layoutRequest: LayoutRequest,
-        preLayoutRequest: PreLayoutRequest,
         recycler: Recycler,
         state: State
     ) {
@@ -197,7 +191,7 @@ internal class LinearLayoutEngineer(
             setRecyclingEnabled(false)
             architect.updateExtraLayoutSpace(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-            setFillSpace(extraLayoutSpaceStart + preLayoutRequest.extraLayoutSpace)
+            setFillSpace(extraLayoutSpaceStart)
         }
         fill(layoutRequest, recycler, state)
 
@@ -206,7 +200,7 @@ internal class LinearLayoutEngineer(
             setRecyclingEnabled(false)
             architect.updateExtraLayoutSpace(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-            setFillSpace(extraLayoutSpaceEnd + preLayoutRequest.extraLayoutSpace)
+            setFillSpace(extraLayoutSpaceEnd)
         }
         fill(layoutRequest, recycler, state)
     }
@@ -256,13 +250,14 @@ internal class LinearLayoutEngineer(
         recycler: Recycler,
         state: State
     ) {
-        layoutRequest.prepend(pivotPosition) {
+        prepend(layoutRequest, pivotPosition) {
             setCheckpoint(layoutInfo.getDecoratedStart(pivotView))
             val startFillSpace = max(
                 0, checkpoint - layoutInfo.getStartAfterPadding()
             )
             setFillSpace(startFillSpace)
         }
+        Log.i(TAG, "Layout pivot to start: $layoutRequest")
         fill(layoutRequest, recycler, state)
     }
 
@@ -273,14 +268,14 @@ internal class LinearLayoutEngineer(
         recycler: Recycler,
         state: State
     ) {
-        layoutRequest.append(pivotPosition) {
-            architect.updateExtraLayoutSpace(layoutRequest, state)
+        append(layoutRequest, pivotPosition) {
             setCheckpoint(layoutInfo.getDecoratedEnd(pivotView))
             val endFillSpace = max(
                 0, layoutInfo.getEndAfterPadding() - checkpoint
             )
             setFillSpace(endFillSpace)
         }
+        Log.i(TAG, "Layout pivot to end: $layoutRequest")
         fill(layoutRequest, recycler, state)
     }
 
@@ -303,7 +298,8 @@ internal class LinearLayoutEngineer(
         }
 
         if (DEBUG) {
-            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
+            Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds," +
+                    "remaining scroll: ${layoutInfo.getRemainingScroll(state)}")
         }
 
         if (shouldSkipSpaceOf(view)) {

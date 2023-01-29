@@ -188,7 +188,7 @@ internal class GridLayoutEngineer(
         if (firstView != null) {
             prepend(layoutRequest, preLayoutRequest.firstPosition) {
                 setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-                setFillSpace(extraLayoutSpaceStart + preLayoutRequest.extraLayoutSpace)
+                setFillSpace(preLayoutRequest.extraLayoutSpace)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -196,7 +196,7 @@ internal class GridLayoutEngineer(
         if (lastView != null) {
             append(layoutRequest, preLayoutRequest.lastPosition) {
                 setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-                setFillSpace(extraLayoutSpaceEnd + preLayoutRequest.extraLayoutSpace)
+                setFillSpace(preLayoutRequest.extraLayoutSpace)
             }
             fill(layoutRequest, recycler, state)
         }
@@ -324,7 +324,6 @@ internal class GridLayoutEngineer(
 
     override fun layoutExtraSpace(
         layoutRequest: LayoutRequest,
-        preLayoutRequest: PreLayoutRequest,
         recycler: Recycler,
         state: State
     ) {
@@ -333,7 +332,7 @@ internal class GridLayoutEngineer(
             setRecyclingEnabled(false)
             architect.updateExtraLayoutSpace(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-            setFillSpace(extraLayoutSpaceStart + preLayoutRequest.extraLayoutSpace)
+            setFillSpace(extraLayoutSpaceStart)
         }
         fill(layoutRequest, recycler, state)
 
@@ -342,7 +341,7 @@ internal class GridLayoutEngineer(
             setRecyclingEnabled(false)
             architect.updateExtraLayoutSpace(layoutRequest, state)
             setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-            setFillSpace(extraLayoutSpaceEnd + preLayoutRequest.extraLayoutSpace)
+            setFillSpace(extraLayoutSpaceEnd)
         }
         fill(layoutRequest, recycler, state)
     }
