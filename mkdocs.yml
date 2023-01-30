@@ -1,5 +1,5 @@
 site_name: DpadRecyclerView
-site_description: 'An image loading library for Android backed by Kotlin Coroutines'
+site_description: 'A RecyclerView built for Android TV'
 site_author: 'Rúben Sousa'
 site_url: 'https://rubensousa.github.io/dpadrecyclerview/'
 remote_branch: gh-pages
