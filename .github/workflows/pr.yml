@@ -6,8 +6,9 @@ env:
 on:
   pull_request:
     paths-ignore:
-      - '**.md'
-      - '**.MD'
+      - '**/**.md'
+      - '**/**.MD'
+      - 'mkdocs.yml'
     branches:
       - 'master'
 
