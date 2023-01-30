@@ -6,8 +6,8 @@ env:
 on:
   push:
     paths-ignore:
-      - '**.md'
-      - '**.MD'
+      - '**/**.md'
+      - '**/**.MD'
       - 'mkdocs.yml'
     branches:
       - 'master'
