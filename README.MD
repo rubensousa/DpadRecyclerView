@@ -2,13 +2,15 @@
 
 A RecyclerView built for Android TV as a replacement for Leanback's BaseGridView.
 
+See the project website for more information: https://rubensousa.github.io/DpadRecyclerView
+
 ## Install
 
 ```groovy
- implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:1.0.0-alpha03'
+ implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:$latestVersion'
 
 // Optional Espresso test extensions
-androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:1.0.0-alpha03'
+androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:$latestVersion'
 ```
 
 ## Feature comparison with Leanback's BaseGridView
@@ -36,6 +38,20 @@ Item spacing wasn't supported on purpose since you can achieve the same with a p
 
 Features still planned: https://github.com/rubensousa/DpadRecyclerView/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement
 
+## Sample app
+
+Check the sample app for a complete example of integration of this library.
+
+Nested lists:
+
+[nested_lists.webm](https://user-images.githubusercontent.com/10662096/200195777-e6020eb8-5a85-4254-82e2-f2f0cc503406.webm)
+
+
+Grid with different span sizes and sub focus positions:
+
+[grid_span_different.webm](https://user-images.githubusercontent.com/10662096/200195709-203b78ec-873c-4e21-bab4-7cd8dede808e.webm)
+
+
 ## How to use
 
 - Migrating from Leanback's BaseGridView: https://github.com/rubensousa/DpadRecyclerView/wiki/Migrating-from-Leanback's-BaseGridView
@@ -51,22 +67,6 @@ I tried to keep the public API of `DpadRecyclerView` really similar to the one o
 ## Testing
 
 See this for more details: https://github.com/rubensousa/DpadRecyclerView/wiki/Testing
-
-## Sample app
-
-Check the sample app for a complete example of integration of this library.
-
-Nested lists:
-
-[nested_lists.webm](https://user-images.githubusercontent.com/10662096/200195777-e6020eb8-5a85-4254-82e2-f2f0cc503406.webm)
-
-
-Grid with different span sizes and sub focus positions:
-
-
-[grid_span_different.webm](https://user-images.githubusercontent.com/10662096/200195709-203b78ec-873c-4e21-bab4-7cd8dede808e.webm)
-
-
 
 ## License
 
