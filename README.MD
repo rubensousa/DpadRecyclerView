@@ -4,39 +4,7 @@ A RecyclerView built for Android TV as a replacement for Leanback's BaseGridView
 
 See the project website for more information: https://rubensousa.github.io/DpadRecyclerView
 
-## Install
-
-```groovy
- implementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview:$latestVersion'
-
-// Optional Espresso test extensions
-androidTestImplementation 'com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:$latestVersion'
-```
-
-## Feature comparison with Leanback's BaseGridView
-
-| Feature                           | BaseGridView | DpadRecyclerView |
-|-----------------------------------|--------------|------------------|
-| Customize View alignment          | ✅            | ✅                |
-| Sub position focus                | ✅            | ✅                |
-| Smooth view alignment changes     | ❌            | ✅                |
-| Multiple span sizes               | ❌            | ✅                |
-| Change orientation at runtime     | ❌            | ✅                |
-| Disabling smooth scrolling        | ❌            | ✅                |
-| Circular grid focus               | ❌            | ✅                |
-| Continuous grid focus             | ❌            | ✅                |
-| XML attributes for configuration  | ❌            | ✅                |
-| Touch event scrolling             | ✅            | ❌                |
-| Item spacing                      | ✅            | ❌                |
-| Save children state automatically | ✅            | ❌                |
-| setLayoutEnabled                  | ✅            | ❌                |
-| setScrollEnabled                  | ✅            | ❌                |
-| Scroll in secondary direction     | ✅            | ❌                |
-
-
-Item spacing wasn't supported on purpose since you can achieve the same with a plain `RecyclerView.ItemDecoration`. Check this library for some standard use cases: https://github.com/rubensousa/Decorator/
-
-Features still planned: https://github.com/rubensousa/DpadRecyclerView/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement
+Motivation for this library: https://rubensousa.com/2022/11/08/dpadrecyclerview/
 
 ## Sample app
 
@@ -50,23 +18,6 @@ Nested lists:
 Grid with different span sizes and sub focus positions:
 
 [grid_span_different.webm](https://user-images.githubusercontent.com/10662096/200195709-203b78ec-873c-4e21-bab4-7cd8dede808e.webm)
-
-
-## How to use
-
-- Migrating from Leanback's BaseGridView: https://github.com/rubensousa/DpadRecyclerView/wiki/Migrating-from-Leanback's-BaseGridView
-
-I tried to keep the public API of `DpadRecyclerView` really similar to the one of `BaseGridView`. The migration should be pretty straightforward.
-
-- XML Attributes: https://github.com/rubensousa/DpadRecyclerView/wiki/XML-Attributes
-
-- View Alignment: https://github.com/rubensousa/DpadRecyclerView/wiki/Customize-View-Alignment
-
-- Compose Interoperability: https://github.com/rubensousa/DpadRecyclerView/wiki/Compose-Interoperability
-
-## Testing
-
-See this for more details: https://github.com/rubensousa/DpadRecyclerView/wiki/Testing
 
 ## License
 

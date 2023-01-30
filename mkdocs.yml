@@ -13,19 +13,23 @@ theme:
   name: 'material'
   language: 'en'
   palette:
-    scheme: slate
-    primary: 'indigo'
+    scheme: default
+    primary: 'black'
     accent: 'light-blue'
   font:
     text: 'Roboto'
     code: 'Roboto Mono'
 
 extra:
+  dpadrecyclerview:
+    version: '1.0.0-alpha03'
   social:
     - icon: 'fontawesome/brands/github'
       link: 'https://github.com/rubensousa/DpadRecyclerView'
 
 markdown_extensions:
+  - admonition
+  - pymdownx.details
   - codehilite:
       guess_lang: false
   - meta
@@ -34,3 +38,25 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+
+plugins:
+  - markdownextradata: {}
+
+
+nav:
+  - 'Overview': index.md
+  - 'Getting Started': getting_started.md
+  - 'Migrating from Leanback': migrating_leanback.md
+  - 'Focus and selection': selection.md
+  - 'Alignment': alignment.md
+  - 'Compose interoperability': compose.md
+  - 'Testing': testing.md
+  - 'XML attributes': xml.md
+  - 'Recipes':
+      - 'Layout': recipes/layout.md
+      - 'Alignment': recipes/alignment.md
+      - 'Focus': recipes/focus.md
+      - 'Scrolling': recipes/scrolling.md
+  - 'Changelog': changelog.md
