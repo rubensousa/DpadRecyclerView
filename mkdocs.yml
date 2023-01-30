@@ -1,0 +1,36 @@
+site_name: DpadRecyclerView
+site_description: 'An image loading library for Android backed by Kotlin Coroutines'
+site_author: 'Rúben Sousa'
+site_url: 'https://rubensousa.github.io/dpadrecyclerview/'
+remote_branch: gh-pages
+edit_uri: ""
+copyright: 'Copyright &copy; 2023 Rúben Sousa'
+
+repo_name: 'DpadRecyclerView'
+repo_url: 'https://github.com/rubensousa/DpadRecyclerView'
+
+theme:
+  name: 'material'
+  language: 'en'
+  palette:
+    scheme: slate
+    primary: 'indigo'
+    accent: 'light-blue'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+
+extra:
+  social:
+    - icon: 'fontawesome/brands/github'
+      link: 'https://github.com/rubensousa/DpadRecyclerView'
+
+markdown_extensions:
+  - codehilite:
+      guess_lang: false
+  - meta
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
