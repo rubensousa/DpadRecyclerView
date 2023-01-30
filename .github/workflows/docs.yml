@@ -1,0 +1,25 @@
+name: Publish docs
+
+on:
+  push:
+    paths:
+      - '/docs/**'
+    branches:
+      - 'master'
+
+jobs:
+  build:
+    name: Deploy docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          pip3 install --upgrade pip && pip3 install mkdocs-material mkdocs-material-extensions
+
+      - name: Deploy docs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
