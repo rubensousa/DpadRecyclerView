@@ -30,7 +30,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutMatrix
-import com.rubensousa.dpadrecyclerview.testfixtures.recording.TestScreenRecorder
+import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testfixtures.rules.RepeatRule
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -44,7 +44,7 @@ abstract class DpadRecyclerViewTest {
     }
 
     @get:Rule(order = Int.MIN_VALUE)
-    val recordingRule = TestScreenRecorder()
+    val recordingRule = ScreenRecorderRule()
 
     @get:Rule
     val repeatRule = RepeatRule()

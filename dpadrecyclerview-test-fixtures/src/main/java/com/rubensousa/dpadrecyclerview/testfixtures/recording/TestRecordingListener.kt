@@ -21,12 +21,12 @@ class TestRecordingListener : InstrumentationRunListener() {
 
     private val successfulRecordings = ArrayList<String>()
     private val failedRecordings = LinkedHashSet<String>()
-    private val recordingDir = TestScreenRecorder.getRecordingDir()
 
     override fun testRunStarted(description: Description) {
         super.testRunStarted(description)
         successfulRecordings.clear()
         failedRecordings.clear()
+        val recordingDir = ScreenRecorderRule.getRecordingDir(instrumentation.targetContext)
         UiDevice.getInstance(instrumentation)
             .executeShellCommand("mkdir -p ${recordingDir.absolutePath}")
         UiDevice.getInstance(instrumentation)
@@ -52,6 +52,7 @@ class TestRecordingListener : InstrumentationRunListener() {
         junitResults: Result?
     ) {
         val device = UiDevice.getInstance(instrumentation)
+        val recordingDir = ScreenRecorderRule.getRecordingDir(instrumentation.targetContext)
         successfulRecordings.forEach { filename ->
             val file = File(recordingDir, filename)
             try {
