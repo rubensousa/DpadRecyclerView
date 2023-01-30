@@ -19,9 +19,9 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.detail
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.ConcatAdapter
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemGridAdapter
@@ -111,7 +111,7 @@ class DetailListController {
     }
 
     private fun setupLayout(recyclerView: DpadRecyclerView) {
-        recyclerView.setSpanSizeLookup(object : GridLayoutManager.SpanSizeLookup() {
+        recyclerView.setSpanSizeLookup(object : DpadSpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 return if (position < headerAdapter.itemCount) {
                     recyclerView.getSpanCount()

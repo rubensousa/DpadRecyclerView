@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.Gravity
@@ -25,9 +26,9 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 
 /**
@@ -53,24 +54,137 @@ open class DpadRecyclerView @JvmOverloads constructor(
         const val TAG = "DpadRecyclerView"
     }
 
+    private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
+    private val focusableChildDrawingCallback = FocusableChildDrawingCallback()
+
     private var pivotLayoutManager: PivotLayoutManager? = null
     private var isOverlappingRenderingEnabled = true
-    private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
-    private val delegate = DpadRecyclerViewDelegate(this)
+    private var isRetainingFocus = false
+    private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
     private var keyInterceptListener: OnKeyInterceptListener? = null
     private var unhandledKeyListener: OnUnhandledKeyListener? = null
     private var motionInterceptListener: OnMotionInterceptListener? = null
 
     init {
-        // The LayoutManager will draw the focused view on top of all other views
-        isChildrenDrawingOrderEnabled = true
-        delegate.init(context, attrs)
+        val typedArray = context.obtainStyledAttributes(
+            attrs,
+            R.styleable.DpadRecyclerView,
+            R.attr.dpadRecyclerViewStyle,
+            0
+        )
+
+        // Set this DpadRecyclerView as focusable by default
+        if (!typedArray.hasValue(R.styleable.DpadRecyclerView_android_focusable)) {
+            isFocusable = true
+        }
+        if (!typedArray.hasValue(R.styleable.DpadRecyclerView_android_focusableInTouchMode)) {
+            isFocusableInTouchMode = true
+        }
+
+        layoutManager = createLayoutManager(typedArray, context, attrs)
+
+        // The LayoutManager will restore focus and scroll automatically when needed
+        preserveFocusAfterLayout = false
+
+        // Focus a ViewHolder's view first by default if one exists
+        descendantFocusability = FOCUS_AFTER_DESCENDANTS
+
+        // Typically all RecyclerViews have a fixed size, so this is a safe default
+        setHasFixedSize(true)
+
+        // Call setItemAnimator to set it up
+        this.itemAnimator = itemAnimator
+
+        setWillNotDraw(true)
+        setChildDrawingOrderCallback(focusableChildDrawingCallback)
+        overScrollMode = OVER_SCROLL_NEVER
+
+        typedArray.recycle()
+    }
+
+    private fun createLayoutManager(
+        typedArray: TypedArray,
+        context: Context,
+        attrs: AttributeSet?
+    ): PivotLayoutManager {
+        val properties = LayoutManager.getProperties(context, attrs, 0, 0)
+        val layout = PivotLayoutManager(properties)
+        layout.setFocusOutAllowed(
+            throughFront = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutFront, true
+            ),
+            throughBack = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutBack, true
+            )
+        )
+        layout.setFocusOutSideAllowed(
+            throughFront = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideFront, true
+            ),
+            throughBack = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideBack, true
+            )
+        )
+        layout.setFocusableDirection(
+            FocusableDirection.values()[typedArray.getInt(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusableDirection,
+                FocusableDirection.STANDARD.ordinal
+            )]
+        )
+        layout.setSmoothFocusChangesEnabled(
+            typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewSmoothFocusChangesEnabled, true
+            )
+        )
+        if (typedArray.hasValue(R.styleable.DpadRecyclerView_android_gravity)) {
+            layout.setGravity(
+                typedArray.getInt(R.styleable.DpadRecyclerView_android_gravity, Gravity.NO_GRAVITY)
+            )
+        }
+        val parentAlignment = ParentAlignment(
+            edge = ParentAlignment.Edge.values()[typedArray.getInt(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,
+                ParentAlignment.DEFAULT_EDGE.ordinal
+            )],
+            offset = typedArray.getDimensionPixelSize(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffset,
+                ViewAlignment.DEFAULT_OFFSET
+            ),
+            offsetRatio = typedArray.getFloat(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffsetRatio,
+                ViewAlignment.DEFAULT_OFFSET_RATIO
+            ),
+            isOffsetRatioEnabled = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffsetRatioEnabled,
+                true
+            )
+        )
+        val childAlignment = ChildAlignment(
+            offset = typedArray.getDimensionPixelSize(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffset,
+                ViewAlignment.DEFAULT_OFFSET
+            ),
+            offsetRatio = typedArray.getFloat(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffsetRatio,
+                ViewAlignment.DEFAULT_OFFSET_RATIO
+            ),
+            isOffsetRatioEnabled = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffsetRatioEnabled,
+                true
+            )
+        )
+        layout.setAlignments(parentAlignment, childAlignment, smooth = false)
+        return layout
     }
 
     final override fun setLayoutManager(layout: LayoutManager?) {
         super.setLayoutManager(layout)
         pivotLayoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
         pivotLayoutManager?.setRecyclerView(null)
+        if (pivotLayoutManager !== layout) {
+            pivotLayoutManager?.clearOnLayoutCompletedListeners()
+            pivotLayoutManager?.clearOnViewHolderSelectedListeners()
+        }
         pivotLayoutManager = null
 
         if (layout != null && layout !is PivotLayoutManager) {
@@ -83,6 +197,26 @@ open class DpadRecyclerView @JvmOverloads constructor(
             layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             pivotLayoutManager = layout
         }
+    }
+
+    final override fun setItemAnimator(animator: ItemAnimator?) {
+        super.setItemAnimator(animator)
+        /**
+         * Disable change animation by default due to focus problems when animating.
+         * The change animation will create a new temporary view and cause undesired
+         * focus animation between the old view and new view.
+         */
+        if (animator is SimpleItemAnimator) {
+            animator.supportsChangeAnimations = false
+        }
+    }
+
+    final override fun setWillNotDraw(willNotDraw: Boolean) {
+        super.setWillNotDraw(willNotDraw)
+    }
+
+    final override fun setHasFixedSize(hasFixedSize: Boolean) {
+        super.setHasFixedSize(hasFixedSize)
     }
 
     final override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
@@ -148,23 +282,40 @@ open class DpadRecyclerView @JvmOverloads constructor(
         direction: Int,
         previouslyFocusedRect: Rect?
     ): Boolean {
-        return delegate.onRequestFocusInDescendants(direction, previouslyFocusedRect)
+        if (isRetainingFocus) {
+            /**
+             * Don't focus to child if DpadRecyclerView is already retaining focus temporarily
+             * from a previous [removeView] or [removeViewAt]
+             */
+            return false
+        }
+        return pivotLayoutManager?.onRequestFocusInDescendants(direction, previouslyFocusedRect)
+            ?: false
     }
 
     final override fun removeView(view: View) {
-        delegate.removeView(view)
+        isRetainingFocus = view.hasFocus() && isFocusable
+        if (isRetainingFocus) {
+            requestFocus()
+        }
         super.removeView(view)
-        delegate.setRemoveViewFinished()
+        isRetainingFocus = false
     }
 
     final override fun removeViewAt(index: Int) {
-        delegate.removeViewAt(index)
+        val childHasFocus = getChildAt(index)?.hasFocus() ?: false
+        isRetainingFocus = childHasFocus && isFocusable
+        if (isRetainingFocus) {
+            requestFocus()
+        }
         super.removeViewAt(index)
-        delegate.setRemoveViewFinished()
+        isRetainingFocus = false
     }
 
-    final override fun getChildDrawingOrder(childCount: Int, i: Int): Int {
-        return delegate.getChildDrawingOrder(childCount, i)
+    final override fun setChildDrawingOrderCallback(
+        childDrawingOrderCallback: ChildDrawingOrderCallback?
+    ) {
+        super.setChildDrawingOrderCallback(childDrawingOrderCallback)
     }
 
     final override fun onRtlPropertiesChanged(layoutDirection: Int) {
@@ -173,11 +324,23 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     final override fun smoothScrollBy(dx: Int, dy: Int) {
-        delegate.smoothScrollBy(dx, dy)
+        smoothScrollByBehavior?.let { behavior ->
+            smoothScrollBy(
+                dx, dy,
+                behavior.configSmoothScrollByInterpolator(dx, dy),
+                behavior.configSmoothScrollByDuration(dx, dy)
+            )
+        } ?: smoothScrollBy(dx, dy, null, UNDEFINED_DURATION)
     }
 
     final override fun smoothScrollBy(dx: Int, dy: Int, interpolator: Interpolator?) {
-        delegate.smoothScrollBy(dx, dy, interpolator)
+        smoothScrollByBehavior?.let { behavior ->
+            smoothScrollBy(
+                dx, dy,
+                interpolator,
+                behavior.configSmoothScrollByDuration(dx, dy)
+            )
+        } ?: smoothScrollBy(dx, dy, interpolator, UNDEFINED_DURATION)
     }
 
     /**
@@ -188,31 +351,32 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param enabled true to smooth scroll to the new focused position, false to scroll immediately
      */
     fun setSmoothFocusChangesEnabled(enabled: Boolean) {
-        delegate.setSmoothFocusChangesEnabled(enabled)
+        requireLayout().setSmoothFocusChangesEnabled(enabled)
     }
 
     /**
      * Changes how RecyclerView will find the next focusable view.
-     * Check [FocusableDirection] for all supported directions. Default is [FocusableDirection.STANDARD]
+     * Check [FocusableDirection] for all supported directions.
+     * Default is [FocusableDirection.STANDARD]
      */
     fun setFocusableDirection(direction: FocusableDirection) {
-        delegate.setFocusableDirection(direction)
+        requireLayout().setFocusableDirection(direction)
     }
 
     /**
      * @return the current [FocusableDirection]. Default is [FocusableDirection.STANDARD]
      */
     fun getFocusableDirection(): FocusableDirection {
-        return delegate.getFocusableDirection()
+        return requireLayout().getFocusableDirection()
     }
 
     /**
      * Sets the strategy for calculating extra layout space.
      *
-     * Check [ExtraLayoutSpaceStrategy] for more context.
+     * Check [ExtraLayoutSpaceStrategy] for more information.
      */
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
-        delegate.setExtraLayoutSpaceStrategy(strategy)
+        requireLayout().setExtraLayoutSpaceStrategy(strategy)
     }
 
     /**
@@ -223,14 +387,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * this flag to **true** so that views will be available to other RecyclerViews
      * immediately.
      *
-     * Since by default no extra space is laid out,
-     * enabling this flag will only produce a different result
-     * if a new extra space configuration is passed through [setExtraLayoutSpaceStrategy].
-     *
      * @param recycle Whether children should be recycled in detach or not.
      */
     fun setRecycleChildrenOnDetach(recycle: Boolean) {
-        delegate.setRecycleChildrenOnDetach(recycle)
+        requireLayout().setRecycleChildrenOnDetach(recycle)
     }
 
     /**
@@ -249,7 +409,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      */
     fun setFocusDrawingOrderEnabled(enabled: Boolean) {
         super.setChildrenDrawingOrderEnabled(enabled)
-        delegate.setChildrenDrawingOrderEnabled(enabled)
+        requireLayout().setChildrenDrawingOrderEnabled(enabled)
     }
 
     /**
@@ -265,7 +425,19 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param disabled True to disable focus search, false to enable.
      */
     fun setFocusSearchDisabled(disabled: Boolean) {
-        delegate.setFocusSearchDisabled(disabled)
+        descendantFocusability = if (disabled) {
+            FOCUS_BLOCK_DESCENDANTS
+        } else {
+            FOCUS_AFTER_DESCENDANTS
+        }
+        requireLayout().setFocusSearchDisabled(disabled)
+    }
+
+    /**
+     * @return True if focus search is disabled.
+     */
+    fun isFocusSearchDisabled(): Boolean {
+        return requireLayout().isFocusSearchDisabled()
     }
 
     /**
@@ -278,27 +450,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * or false to disable
      */
     fun setFocusSearchEnabledDuringAnimations(enabled: Boolean) {
-        delegate.layoutManager?.setFocusSearchEnabledDuringAnimations(enabled)
-    }
-
-    /**
-     * @return True if focus search is disabled.
-     */
-    fun isFocusSearchDisabled(): Boolean {
-        return delegate.isFocusSearchDisabled()
-    }
-
-    /**
-     * Updates the [DpadSpanSizeLookup] used by the layout manager of this RecyclerView.
-     * @param spanSizeLookup the new span size configuration
-     */
-    @Deprecated("Use setSpanSizeLookup(DpadSpanSizeLookup) instead")
-    fun setSpanSizeLookup(spanSizeLookup: GridLayoutManager.SpanSizeLookup) {
-        setSpanSizeLookup(object : DpadSpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int {
-                return spanSizeLookup.getSpanSize(position)
-            }
-        })
+        requireLayout().setFocusSearchEnabledDuringAnimations(enabled)
     }
 
     /**
@@ -306,7 +458,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param spanSizeLookup the new span size configuration
      */
     fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
-        delegate.setSpanSizeLookup(spanSizeLookup)
+        requireLayout().setSpanSizeLookup(spanSizeLookup)
     }
 
     /**
@@ -315,20 +467,20 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * or number of rows in horizontal orientation. Must be greater than 0
      */
     fun setSpanCount(spans: Int) {
-        delegate.setSpanCount(spans)
+        requireLayout().setSpanCount(spans)
     }
 
     /**
      * See [setSpanCount]
      */
-    fun getSpanCount(): Int = delegate.getSpanCount()
+    fun getSpanCount(): Int = requireLayout().getSpanCount()
 
     /**
      * Updates the orientation of the [PivotLayoutManager] used by this RecyclerView
      * @param orientation either [RecyclerView.VERTICAL] or [RecyclerView.HORIZONTAL]
      */
     fun setOrientation(orientation: Int) {
-        delegate.setOrientation(orientation)
+        requireLayout().setOrientation(orientation)
     }
 
     /**
@@ -341,7 +493,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param gravity See [Gravity]
      */
     fun setGravity(gravity: Int) {
-        delegate.setGravity(gravity)
+        requireLayout().setGravity(gravity)
     }
 
     /**
@@ -350,13 +502,13 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param smooth true if the alignment change should be animated
      */
     fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean = false) {
-        delegate.setParentAlignment(alignment, smooth)
+        requireLayout().setParentAlignment(alignment, smooth)
     }
 
     /**
      * @return the current parent alignment configuration
      */
-    fun getParentAlignment() = delegate.getParentAlignment()
+    fun getParentAlignment(): ParentAlignment = requireLayout().getParentAlignment()
 
     /**
      * Updates the child alignment configuration for child views of this RecyclerView
@@ -364,13 +516,13 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param smooth true if the alignment change should be animated
      */
     fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean = false) {
-        delegate.setChildAlignment(alignment, smooth)
+        requireLayout().setChildAlignment(alignment, smooth)
     }
 
     /**
      * @return the current child alignment configuration
      */
-    fun getChildAlignment() = delegate.getChildAlignment()
+    fun getChildAlignment(): ChildAlignment = requireLayout().getChildAlignment()
 
     /**
      * Updates both parent and child alignments
@@ -379,7 +531,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param smooth true if the alignment change should be animated
      */
     fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
-        delegate.setAlignments(parent, child, smooth)
+        requireLayout().setAlignments(parent, child, smooth)
     }
 
     /**
@@ -396,7 +548,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * move out the right or left (in RTL) side of the grid.
      */
     fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
-        delegate.setFocusOutAllowed(throughFront, throughBack)
+        requireLayout().setFocusOutAllowed(throughFront, throughBack)
     }
 
     /**
@@ -411,7 +563,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * move out the bottom side of the grid.
      */
     fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
-        delegate.setFocusOutSideAllowed(throughFront, throughBack)
+        requireLayout().setFocusOutSideAllowed(throughFront, throughBack)
     }
 
     /**
@@ -431,14 +583,14 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param max Maximum number of pending alignment changes
      */
     fun setSmoothScrollMaxPendingAlignments(max: Int) {
-        delegate.layoutManager?.setMaxPendingAlignments(max)
+        requireLayout().setMaxPendingAlignments(max)
     }
 
     /**
      * See [setSmoothScrollMaxPendingAlignments]
      */
     fun getSmoothScrollMaxPendingAlignments(): Int {
-        return delegate.layoutManager?.getMaxPendingAlignments() ?: Int.MAX_VALUE
+        return requireLayout().getMaxPendingAlignments()
     }
 
     /**
@@ -457,14 +609,14 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param max Maximum number of pending key events to be remembered.
      */
     fun setSmoothScrollMaxPendingMoves(max: Int) {
-        delegate.layoutManager?.setMaxPendingMoves(max)
+        requireLayout().setMaxPendingMoves(max)
     }
 
     /**
      * See [setSmoothScrollMaxPendingMoves]
      */
     fun getSmoothScrollMaxPendingMoves(): Int {
-        return delegate.layoutManager?.getMaxPendingMoves() ?: 10
+        return requireLayout().getMaxPendingMoves()
     }
 
     /**
@@ -478,7 +630,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param smoothScrollSpeedFactor Factor of how slow the smooth scroll is.
      */
     fun setSmoothScrollSpeedFactor(smoothScrollSpeedFactor: Float) {
-        delegate.layoutManager?.setSmoothScrollSpeedFactor(smoothScrollSpeedFactor)
+        requireLayout().setSmoothScrollSpeedFactor(smoothScrollSpeedFactor)
     }
 
     /**
@@ -487,7 +639,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @return Factor of how slow the smooth scroller runs. Default value is 1f.
      */
     fun getSmoothScrollSpeedFactor(): Float {
-        return delegate.layoutManager?.getSmoothScrollSpeedFactor() ?: 1f
+        return requireLayout().getSmoothScrollSpeedFactor()
     }
 
     /**
@@ -495,7 +647,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param position adapter position of the item to select
      */
     fun setSelectedPosition(position: Int) {
-        delegate.setSelectedPosition(position, smooth = false)
+        requireLayout().selectPosition(position, subPosition = 0, smooth = false)
     }
 
     /**
@@ -505,7 +657,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedPosition(position: Int, task: ViewHolderTask) {
-        delegate.setSelectedPosition(position, task, smooth = false)
+        viewHolderTaskExecutor.schedule(position, task)
+        requireLayout().selectPosition(position, subPosition = 0, smooth = false)
     }
 
     /**
@@ -513,7 +666,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param position Adapter position of the item to select
      */
     fun setSelectedPositionSmooth(position: Int) {
-        delegate.setSelectedPosition(position, smooth = true)
+        requireLayout().selectPosition(position, subPosition = 0, smooth = true)
     }
 
     /**
@@ -523,7 +676,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedPositionSmooth(position: Int, task: ViewHolderTask) {
-        delegate.setSelectedPosition(position, task, smooth = true)
+        viewHolderTaskExecutor.schedule(position, task)
+        requireLayout().selectPosition(position, subPosition = 0, smooth = true)
     }
 
     /**
@@ -532,7 +686,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
      */
     fun setSelectedSubPosition(position: Int, subPosition: Int) {
-        delegate.setSelectedSubPosition(position, subPosition, smooth = false)
+        requireLayout().selectPosition(position, subPosition, smooth = false)
     }
 
     /**
@@ -540,7 +694,15 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
      */
     fun setSelectedSubPosition(subPosition: Int) {
-        delegate.setSelectedSubPosition(subPosition, smooth = false)
+        requireLayout().selectSubPosition(subPosition, smooth = false)
+    }
+
+    /**
+     * Changes the sub selected view and runs and animation to scroll to it.
+     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     */
+    fun setSelectedSubPositionSmooth(subPosition: Int) {
+        requireLayout().selectSubPosition(subPosition, smooth = true)
     }
 
     /**
@@ -549,32 +711,24 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
      */
     fun setSelectedSubPositionSmooth(position: Int, subPosition: Int) {
-        delegate.setSelectedSubPosition(position, subPosition, smooth = true)
-    }
-
-    /**
-     * Changes the sub selected view and runs and animation to scroll to it.
-     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
-     */
-    fun setSelectedSubPositionSmooth(subPosition: Int) {
-        delegate.setSelectedSubPosition(subPosition, smooth = true)
+        requireLayout().selectPosition(position, subPosition, smooth = true)
     }
 
     /**
      * @return the current selected position or [RecyclerView.NO_POSITION] if there's none
      */
-    fun getSelectedPosition() = delegate.getSelectedPosition()
+    fun getSelectedPosition(): Int = pivotLayoutManager?.getSelectedPosition() ?: NO_POSITION
 
     /**
      * @return the current selected sub position or 0 if there's none
      */
-    fun getSelectedSubPosition() = delegate.getSelectedSubPosition()
+    fun getSelectedSubPosition(): Int = pivotLayoutManager?.getSelectedSubPosition() ?: NO_POSITION
 
     /**
      * @return the number of available sub positions for the current selected item
      * or 0 if there's none. See [DpadViewHolder.getAlignments]
      */
-    fun getCurrentSubPositions() = delegate.getCurrentSubPositions()
+    fun getCurrentSubPositions(): Int = pivotLayoutManager?.getCurrentSubPositions() ?: 0
 
     /**
      * Similar to [LinearLayoutManager.findFirstVisibleItemPosition]
@@ -583,7 +737,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * there aren't any visible items
      */
     fun findFirstVisibleItemPosition(): Int {
-        return delegate.findFirstVisibleItemPosition()
+        return pivotLayoutManager?.findFirstVisibleItemPosition() ?: NO_POSITION
     }
 
     /**
@@ -593,7 +747,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * there aren't any fully visible items
      */
     fun findFirstCompletelyVisibleItemPosition(): Int {
-        return delegate.findFirstCompletelyVisibleItemPosition()
+        return pivotLayoutManager?.findFirstCompletelyVisibleItemPosition() ?: NO_POSITION
     }
 
     /**
@@ -603,7 +757,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * there aren't any visible items
      */
     fun findLastVisibleItemPosition(): Int {
-        return delegate.findLastVisibleItemPosition()
+        return pivotLayoutManager?.findLastVisibleItemPosition() ?: NO_POSITION
     }
 
     /**
@@ -613,7 +767,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * there aren't any fully visible items
      */
     fun findLastCompletelyVisibleItemPosition(): Int {
-        return delegate.findLastCompletelyVisibleItemPosition()
+        return pivotLayoutManager?.findLastCompletelyVisibleItemPosition() ?: NO_POSITION
     }
 
     /**
@@ -621,7 +775,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param listener The listener to be invoked.
      */
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
-        delegate.addOnViewHolderSelectedListener(listener)
+        requireLayout().addOnViewHolderSelectedListener(listener)
     }
 
     /**
@@ -629,14 +783,14 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param listener The listener to be removed.
      */
     fun removeOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
-        delegate.removeOnViewHolderSelectedListener(listener)
+        requireLayout().removeOnViewHolderSelectedListener(listener)
     }
 
     /**
      * Clears all existing listeners added by [addOnViewHolderSelectedListener]
      */
     fun clearOnViewHolderSelectedListeners() {
-        delegate.clearOnViewHolderSelectedListeners()
+        requireLayout().clearOnViewHolderSelectedListeners()
     }
 
     /**
@@ -644,7 +798,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param behavior Custom behavior or null for the default behavior.
      */
     fun setSmoothScrollBehavior(behavior: SmoothScrollByBehavior?) {
-        delegate.smoothScrollByBehavior = behavior
+        smoothScrollByBehavior = behavior
     }
 
     /**
@@ -681,7 +835,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param listener The listener to be invoked.
      */
     fun addOnLayoutCompletedListener(listener: OnLayoutCompletedListener) {
-        delegate.addOnLayoutCompletedListener(listener)
+        requireLayout().addOnLayoutCompletedListener(listener)
     }
 
     /**
@@ -689,14 +843,14 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param listener The listener to be removed.
      */
     fun removeOnLayoutCompletedListener(listener: OnLayoutCompletedListener) {
-        delegate.removeOnLayoutCompletedListener(listener)
+        requireLayout().removeOnLayoutCompletedListener(listener)
     }
 
     /**
      * Clears all listeners added by [addOnLayoutCompletedListener]
      */
     fun clearOnLayoutCompletedListeners() {
-        delegate.clearOnLayoutCompletedListeners()
+        requireLayout().clearOnLayoutCompletedListeners()
     }
 
     /**
@@ -712,6 +866,35 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @return the listener set by [setOnMotionInterceptListener]
      */
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
+
+    private fun requireLayout(): PivotLayoutManager {
+        return requireNotNull(pivotLayoutManager) {
+            "PivotLayoutManager is null. Check for unnecessary usages of " +
+                    "RecyclerView.setLayoutManager(null) or just set a new PivotLayoutManager."
+        }
+    }
+
+    /**
+     * [PivotLayoutManager] will draw the focused view on top of all other views by default
+     */
+    private inner class FocusableChildDrawingCallback : ChildDrawingOrderCallback {
+
+        override fun onGetChildDrawingOrder(childCount: Int, i: Int): Int {
+            val selectedPosition = pivotLayoutManager?.getSelectedPosition() ?: return i
+            val view = pivotLayoutManager?.findViewByPosition(selectedPosition) ?: return i
+            val focusIndex = indexOfChild(view)
+            // Scenario: 0 1 2 3 4 5 6 7 8 9, 4 is the focused item
+            // drawing order is: 0 1 2 3 9 8 7 6 5 4
+            return if (i < focusIndex) {
+                i
+            } else if (i < childCount - 1) {
+                focusIndex + childCount - 1 - i
+            } else {
+                focusIndex
+            }
+        }
+
+    }
 
     /**
      * Defines behavior of duration and interpolator for [smoothScrollBy].
