@@ -2,8 +2,6 @@ name: Publish docs
 
 on:
   push:
-    paths:
-      - '/docs/**'
     branches:
       - 'master'
 
