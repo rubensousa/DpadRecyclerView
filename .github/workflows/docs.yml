@@ -10,14 +10,18 @@ jobs:
     name: Deploy docs
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - uses: actions/cache@v2
+        with:
+          key: ${{ github.ref }}
+          path: .cache
 
       - name: Install dependencies
         run: |
-          pip3 install --upgrade pip && pip3 install mkdocs-material mkdocs-material-extensions mkdocs-markdownextradata-plugin
+          pip install mkdocs-material mkdocs-material-extensions mkdocs-markdownextradata-plugin
 
       - name: Deploy docs
-        uses: mhausenblas/mkdocs-deploy-gh-pages@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mkdocs gh-deploy --force
