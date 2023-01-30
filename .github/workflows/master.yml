@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - '**.md'
       - '**.MD'
+      - 'mkdocs.yml'
     branches:
       - 'master'
 
