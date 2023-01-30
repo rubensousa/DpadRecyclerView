@@ -9,6 +9,7 @@ on:
       - '**/**.md'
       - '**/**.MD'
       - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
     branches:
       - 'master'
 
