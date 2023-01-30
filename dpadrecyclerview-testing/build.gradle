@@ -58,8 +58,6 @@ android {
 dependencies {
     implementation project (':dpadrecyclerview')
     debugImplementation "androidx.fragment:fragment-testing-manifest:$versions.fragment"
-    //noinspection FragmentGradleConfiguration
-    androidTestImplementation "androidx.fragment:fragment-testing:$versions.fragment"
     api "androidx.recyclerview:recyclerview:$versions.recyclerview"
     api "androidx.test:runner:$testVersions.runner"
     api "androidx.test:core-ktx:$testVersions.core"
@@ -70,6 +68,10 @@ dependencies {
     api "androidx.test.espresso:espresso-core:$testVersions.espresso"
     api "androidx.test.espresso:espresso-contrib:$testVersions.espresso"
     api "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
+
+    //noinspection FragmentGradleConfiguration
+    androidTestImplementation "androidx.fragment:fragment-testing:$versions.fragment"
+    androidTestImplementation project (':dpadrecyclerview-test-fixtures')
     androidTestUtil "androidx.test.services:test-services:$testVersions.services"
     androidTestUtil "androidx.test:orchestrator:$testVersions.orchestrator"
 }

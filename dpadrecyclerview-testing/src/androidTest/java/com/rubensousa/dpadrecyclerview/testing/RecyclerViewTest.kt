@@ -24,11 +24,16 @@ import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
+import org.junit.Rule
 
 abstract class RecyclerViewTest {
 
     private lateinit var subPositionFragment: FragmentScenario<DpadSubPositionFragment>
     private lateinit var gridFragment: FragmentScenario<DpadGridFragment>
+
+    @get:Rule
+    val screenRecordingRule = ScreenRecorderRule()
 
     protected fun onGridFragment(block: (fragment: DpadGridFragment) -> Unit) {
         gridFragment.onFragment { fragment ->
