@@ -49,11 +49,6 @@ class DpadListViewHolder(
     }
 
     private fun setupSlowScrollingBehavior() {
-        dpadRecyclerView.setParentAlignment(
-            dpadRecyclerView.getParentAlignment().copy(
-                edge = ParentAlignment.Edge.NONE
-            )
-        )
         LimitedScrollBehavior().setup(
             recyclerView = dpadRecyclerView,
             extraLayoutSpaceStart = { dpadRecyclerView.width / 2 },
