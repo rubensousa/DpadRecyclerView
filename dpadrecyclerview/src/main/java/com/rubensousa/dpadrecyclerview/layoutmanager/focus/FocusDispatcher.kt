@@ -136,7 +136,7 @@ internal class FocusDispatcher(
         val focusDirection: FocusDirection = FocusDirection.from(
             direction = direction,
             isVertical = layoutInfo.isVertical(),
-            isRTL = layoutInfo.isRTL()
+            reverseLayout = layoutInfo.shouldReverseLayout()
         ) ?: return focused
 
 
@@ -303,7 +303,7 @@ internal class FocusDispatcher(
         val focusDirection = FocusDirection.from(
             direction = direction,
             isVertical = configuration.isVertical(),
-            isRTL = layoutInfo.isRTL()
+            reverseLayout = layoutInfo.shouldReverseLayout()
         ) ?: return
 
         if ((focusDirection == FocusDirection.NEXT_COLUMN
@@ -493,6 +493,8 @@ internal class FocusDispatcher(
                 } else {
                     layoutInfo.getChildCount() - 1
                 }
+            } else if (layoutInfo.shouldReverseLayout()) {
+                focusedChildIndex - increment
             } else {
                 focusedChildIndex + increment
             }

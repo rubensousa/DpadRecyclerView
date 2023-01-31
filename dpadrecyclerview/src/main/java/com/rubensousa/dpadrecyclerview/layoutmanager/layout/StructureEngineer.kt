@@ -48,7 +48,7 @@ internal abstract class StructureEngineer(
         layoutRequest.init(
             gravity = layoutInfo.getConfiguration().gravity,
             isVertical = layoutInfo.isVertical(),
-            reverseLayout = layoutInfo.getConfiguration().reverseLayout,
+            reverseLayout = layoutInfo.shouldReverseLayout(),
             infinite = layoutInfo.isInfinite()
         )
     }

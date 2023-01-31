@@ -493,7 +493,7 @@ internal class GridLayoutEngineer(
     ) {
         val perpendicularSize = layoutInfo.getPerpendicularDecoratedSize(view)
         if (isVertical) {
-            if (layoutInfo.isRTL()) {
+            if (layoutInfo.shouldReverseLayout()) {
                 bounds.right = layoutManager.paddingLeft + layoutRow.getSpanBorder(
                     layoutRow.numberOfSpans - layoutParams.spanIndex
                 )

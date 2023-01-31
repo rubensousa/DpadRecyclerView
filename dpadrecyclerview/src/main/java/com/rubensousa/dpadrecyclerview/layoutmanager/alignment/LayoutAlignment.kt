@@ -45,7 +45,7 @@ internal class LayoutAlignment(
 
     fun update() {
         parentAlignment.setSize(layoutManager.width, layoutManager.height, layoutInfo.orientation)
-        parentAlignment.reverseLayout = configuration.reverseLayout
+        parentAlignment.reverseLayout = layoutInfo.shouldReverseLayout()
         parentAlignment.setPadding(
             layoutManager.paddingLeft,
             layoutManager.paddingRight,
@@ -189,7 +189,7 @@ internal class LayoutAlignment(
         val minAddedPosition: Int
         val maxEdgePosition: Int
         val minEdgePosition: Int
-        if (!layoutInfo.isRTL()) {
+        if (!layoutInfo.shouldReverseLayout()) {
             maxAddedPosition = layoutInfo.findLastAddedPosition()
             maxEdgePosition = itemCount - 1
             minAddedPosition = layoutInfo.findFirstAddedPosition()
@@ -231,7 +231,7 @@ internal class LayoutAlignment(
         val minEdge: Int
         var minViewCenter = 0
         if (lowAvailable) {
-            minEdge = getEdge(minAddedPosition) ?: Int.MIN_VALUE
+            minEdge = getMinEdge(minAddedPosition) ?: Int.MIN_VALUE
             layoutManager.findViewByPosition(minAddedPosition)?.let { minChild ->
                 minViewCenter = getViewCenter(minChild)
             }
@@ -244,7 +244,7 @@ internal class LayoutAlignment(
 
     private fun getMaxEdge(index: Int): Int? {
         val view = layoutManager.findViewByPosition(index) ?: return null
-        return if (layoutInfo.isRTL() && layoutInfo.isHorizontal()) {
+        return if (layoutInfo.shouldReverseLayout()) {
             getViewMin(view)
         } else {
             getViewMax(view)
@@ -255,12 +255,12 @@ internal class LayoutAlignment(
      * Will return the start coordinate of the view in horizontal mode
      * or the top coordinate in vertical mode
      */
-    private fun getEdge(index: Int): Int? {
+    private fun getMinEdge(index: Int): Int? {
         val view = layoutManager.findViewByPosition(index) ?: return null
-        if (layoutInfo.isRTL() && layoutInfo.isHorizontal()) {
-            return getViewMax(view)
+        return if (layoutInfo.shouldReverseLayout()) {
+            getViewMax(view)
         } else {
-            return getViewMin(view)
+            getViewMin(view)
         }
     }
 

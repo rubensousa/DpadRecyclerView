@@ -74,7 +74,7 @@ internal class LayoutAccessibilityHelper(
         info: AccessibilityNodeInfoCompat
     ) {
         val count = state.itemCount
-        val reverseLayout = configuration.reverseLayout
+        val reverseLayout = layoutInfo.shouldReverseLayout()
 
         // If focusOutFront/focusOutEnd is false, override Talkback in handling
         // backward/forward actions by adding such actions to supported action list.
@@ -141,7 +141,9 @@ internal class LayoutAccessibilityHelper(
             // Consume request to avoid talkback focusing out of the RecyclerView
             return true
         }
-        val translatedAction = translateAccessibilityAction(action, configuration.reverseLayout)
+        val translatedAction = translateAccessibilityAction(
+            action, layoutInfo.shouldReverseLayout()
+        )
 
         val scrollingReachedStart = (pivotSelector.position == 0
                 && translatedAction == AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD)
@@ -159,16 +161,16 @@ internal class LayoutAccessibilityHelper(
             sendViewScrolledAccessibilityEvent(recyclerView)
         } else {
             // TODO
-          /*  when (translatedAction) {
-                AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD -> {
-                    scroller.addScrollMovement(false)
-                    scroller.dispatchSelectionMoves(false, -1)
-                }
-                AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD -> {
-                    scroller.addScrollMovement(true)
-                    scroller.dispatchSelectionMoves(false, 1)
-                }
-            }*/
+            /*  when (translatedAction) {
+                  AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD -> {
+                      scroller.addScrollMovement(false)
+                      scroller.dispatchSelectionMoves(false, -1)
+                  }
+                  AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD -> {
+                      scroller.addScrollMovement(true)
+                      scroller.dispatchSelectionMoves(false, 1)
+                  }
+              }*/
         }
         return true
     }

@@ -27,13 +27,13 @@ internal enum class FocusDirection {
     companion object {
 
         @JvmStatic
-        fun getAbsoluteDirection(direction: Int, isVertical: Boolean, isRTL: Boolean): Int {
+        fun getAbsoluteDirection(direction: Int, isVertical: Boolean, reverseLayout: Boolean): Int {
             if (direction != View.FOCUS_FORWARD && direction != View.FOCUS_BACKWARD) {
                 return direction
             }
             return if (isVertical) {
                 if (direction == View.FOCUS_FORWARD) View.FOCUS_DOWN else View.FOCUS_UP
-            } else if ((direction == View.FOCUS_FORWARD) xor isRTL) {
+            } else if ((direction == View.FOCUS_FORWARD) xor reverseLayout) {
                 View.FOCUS_RIGHT
             } else {
                 View.FOCUS_LEFT
@@ -44,31 +44,31 @@ internal enum class FocusDirection {
         fun from(
             direction: Int,
             isVertical: Boolean,
-            isRTL: Boolean,
+            reverseLayout: Boolean,
         ): FocusDirection? {
             val absoluteDirection = getAbsoluteDirection(direction, isVertical, isVertical)
             return if (isVertical) {
                 when (absoluteDirection) {
-                    View.FOCUS_UP -> PREVIOUS_ITEM
-                    View.FOCUS_DOWN -> NEXT_ITEM
+                    View.FOCUS_UP -> if (reverseLayout) NEXT_ITEM else PREVIOUS_ITEM
+                    View.FOCUS_DOWN -> if (reverseLayout) PREVIOUS_ITEM else NEXT_ITEM
                     View.FOCUS_LEFT -> {
-                        if (isRTL) NEXT_COLUMN else PREVIOUS_COLUMN
+                        if (reverseLayout) NEXT_COLUMN else PREVIOUS_COLUMN
                     }
                     View.FOCUS_RIGHT -> {
-                        if (isRTL) PREVIOUS_COLUMN else NEXT_COLUMN
+                        if (reverseLayout) PREVIOUS_COLUMN else NEXT_COLUMN
                     }
                     else -> null
                 }
             } else {
                 when (absoluteDirection) {
                     View.FOCUS_LEFT -> {
-                        if (isRTL) NEXT_ITEM else PREVIOUS_ITEM
+                        if (reverseLayout) NEXT_ITEM else PREVIOUS_ITEM
                     }
                     View.FOCUS_RIGHT -> {
-                        if (isRTL) PREVIOUS_ITEM else NEXT_ITEM
+                        if (reverseLayout) PREVIOUS_ITEM else NEXT_ITEM
                     }
-                    View.FOCUS_UP -> PREVIOUS_COLUMN
-                    View.FOCUS_DOWN -> NEXT_COLUMN
+                    View.FOCUS_UP -> if (reverseLayout) NEXT_COLUMN else PREVIOUS_COLUMN
+                    View.FOCUS_DOWN -> if (reverseLayout) PREVIOUS_COLUMN else NEXT_COLUMN
                     else -> null
                 }
             }

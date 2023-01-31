@@ -109,9 +109,6 @@ internal class LayoutConfiguration(properties: Properties) {
     var maxPendingAlignments = Int.MAX_VALUE
         private set
 
-    var stackFromEnd = false
-        private set
-
     var isChildDrawingOrderEnabled = true
         private set
 
@@ -131,7 +128,6 @@ internal class LayoutConfiguration(properties: Properties) {
         setSpanCount(properties.spanCount)
         setOrientation(properties.orientation)
         setReverseLayout(properties.reverseLayout)
-        setStackFromEnd(properties.stackFromEnd)
     }
 
     fun setRecycleChildrenOnDetach(recycle: Boolean) {
@@ -152,10 +148,6 @@ internal class LayoutConfiguration(properties: Properties) {
 
     fun setReverseLayout(isEnabled: Boolean) {
         reverseLayout = isEnabled
-    }
-
-    fun setStackFromEnd(isEnabled: Boolean) {
-        stackFromEnd = isEnabled
     }
 
     fun setOrientation(newOrientation: Int) {

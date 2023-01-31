@@ -31,19 +31,19 @@ class FocusDirectionTest {
         View.FOCUS_RIGHT
     )
     private val orientations = setOf(RecyclerView.VERTICAL, RecyclerView.HORIZONTAL)
-    private val rtl = setOf(false, true)
+    private val reverseLayoutFlags = setOf(false, true)
 
     @Test
     fun `absolute direction returns correct values for absolute directions`() {
         absoluteDirections.forEach { absoluteDirection ->
             orientations.forEach { orientation ->
                 val isVertical = orientation == RecyclerView.VERTICAL
-                rtl.forEach { isRTL ->
+                reverseLayoutFlags.forEach { reverseLayout ->
                     assertThat(
                         FocusDirection.getAbsoluteDirection(
                             direction = absoluteDirection,
                             isVertical = isVertical,
-                            isRTL = isRTL
+                            reverseLayout = reverseLayout
                         )
                     ).isEqualTo(absoluteDirection)
                 }
@@ -57,7 +57,7 @@ class FocusDirectionTest {
             FocusDirection.getAbsoluteDirection(
                 direction = View.FOCUS_FORWARD,
                 isVertical = true,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(View.FOCUS_DOWN)
 
@@ -65,7 +65,7 @@ class FocusDirectionTest {
             FocusDirection.getAbsoluteDirection(
                 direction = View.FOCUS_BACKWARD,
                 isVertical = true,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(View.FOCUS_UP)
     }
@@ -76,7 +76,7 @@ class FocusDirectionTest {
             FocusDirection.getAbsoluteDirection(
                 direction = View.FOCUS_FORWARD,
                 isVertical = false,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(View.FOCUS_RIGHT)
 
@@ -84,7 +84,7 @@ class FocusDirectionTest {
             FocusDirection.getAbsoluteDirection(
                 direction = View.FOCUS_FORWARD,
                 isVertical = false,
-                isRTL = true
+                reverseLayout = true
             )
         ).isEqualTo(View.FOCUS_LEFT)
 
@@ -92,7 +92,7 @@ class FocusDirectionTest {
             FocusDirection.getAbsoluteDirection(
                 direction = View.FOCUS_BACKWARD,
                 isVertical = false,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(View.FOCUS_LEFT)
 
@@ -100,7 +100,7 @@ class FocusDirectionTest {
             FocusDirection.getAbsoluteDirection(
                 direction = View.FOCUS_BACKWARD,
                 isVertical = false,
-                isRTL = true
+                reverseLayout = true
             )
         ).isEqualTo(View.FOCUS_RIGHT)
     }
@@ -111,23 +111,39 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_UP,
                 isVertical = true,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
 
         assertThat(
             FocusDirection.from(
-                direction = View.FOCUS_DOWN,
+                direction = View.FOCUS_UP,
                 isVertical = true,
-                isRTL = false
+                reverseLayout = true
             )
         ).isEqualTo(FocusDirection.NEXT_ITEM)
 
         assertThat(
             FocusDirection.from(
+                direction = View.FOCUS_DOWN,
+                isVertical = true,
+                reverseLayout = false
+            )
+        ).isEqualTo(FocusDirection.NEXT_ITEM)
+
+        assertThat(
+            FocusDirection.from(
+                direction = View.FOCUS_DOWN,
+                isVertical = true,
+                reverseLayout = true
+            )
+        ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
+
+        assertThat(
+            FocusDirection.from(
                 direction = View.FOCUS_LEFT,
                 isVertical = true,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(FocusDirection.PREVIOUS_COLUMN)
 
@@ -135,7 +151,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_RIGHT,
                 isVertical = true,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(FocusDirection.NEXT_COLUMN)
 
@@ -143,7 +159,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_LEFT,
                 isVertical = true,
-                isRTL = true
+                reverseLayout = true
             )
         ).isEqualTo(FocusDirection.NEXT_COLUMN)
 
@@ -151,7 +167,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_RIGHT,
                 isVertical = true,
-                isRTL = true
+                reverseLayout = true
             )
         ).isEqualTo(FocusDirection.PREVIOUS_COLUMN)
     }
@@ -162,7 +178,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_UP,
                 isVertical = false,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(FocusDirection.PREVIOUS_COLUMN)
 
@@ -170,7 +186,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_DOWN,
                 isVertical = false,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(FocusDirection.NEXT_COLUMN)
 
@@ -178,7 +194,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_LEFT,
                 isVertical = false,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
 
@@ -186,7 +202,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_RIGHT,
                 isVertical = false,
-                isRTL = false
+                reverseLayout = false
             )
         ).isEqualTo(FocusDirection.NEXT_ITEM)
 
@@ -194,7 +210,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_LEFT,
                 isVertical = false,
-                isRTL = true
+                reverseLayout = true
             )
         ).isEqualTo(FocusDirection.NEXT_ITEM)
 
@@ -202,7 +218,7 @@ class FocusDirectionTest {
             FocusDirection.from(
                 direction = View.FOCUS_RIGHT,
                 isVertical = false,
-                isRTL = true
+                reverseLayout = true
             )
         ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
     }

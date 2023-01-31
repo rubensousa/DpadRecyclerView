@@ -354,6 +354,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         requestLayout()
     }
 
+    fun setReverseLayout(reverseLayout: Boolean) {
+        configuration.setReverseLayout(reverseLayout)
+        requestLayout()
+    }
+
     fun setSpanCount(spanCount: Int) {
         configuration.setSpanCount(spanCount)
         pivotLayout.updateStructure()

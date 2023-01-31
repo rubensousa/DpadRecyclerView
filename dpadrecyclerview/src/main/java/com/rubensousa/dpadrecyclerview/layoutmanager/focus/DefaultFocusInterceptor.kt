@@ -41,7 +41,7 @@ internal class DefaultFocusInterceptor(
         val absoluteDirection = FocusDirection.getAbsoluteDirection(
             direction = direction,
             isVertical = configuration.isVertical(),
-            isRTL = layoutInfo.isRTL()
+            reverseLayout = layoutInfo.shouldReverseLayout()
         )
         return focusFinder.findNextFocus(recyclerView, focusedView, absoluteDirection)
     }
