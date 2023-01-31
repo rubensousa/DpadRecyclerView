@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ExtraLayoutSpaceCalculator
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
@@ -158,7 +159,7 @@ internal class LinearLayoutEngineer(
             }
         }
 
-        if (DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "Scrap extra layout: $scrapExtraStart, $scrapExtraEnd")
         }
 
@@ -238,7 +239,7 @@ internal class LinearLayoutEngineer(
 
     private fun layoutPivot(view: View, bounds: ViewBounds) {
         performLayout(view, bounds)
-        if (DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "Laid pivot ${layoutInfo.getLayoutPositionOf(view)} at: $bounds")
         }
         bounds.setEmpty()
@@ -297,7 +298,7 @@ internal class LinearLayoutEngineer(
             prepend(view, viewBounds, layoutRequest)
         }
 
-        if (DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
         }
 

@@ -21,7 +21,6 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
-import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
@@ -29,8 +28,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid.GridLayoutEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
-import kotlin.math.max
-import kotlin.math.min
 
 internal class PivotLayout(
     private val layoutManager: RecyclerView.LayoutManager,
@@ -43,7 +40,6 @@ internal class PivotLayout(
 
     companion object {
         const val TAG = "PivotLayout"
-        private val DEBUG = BuildConfig.DEBUG
     }
 
     private val childLayoutListener = ChildLayoutListener()
@@ -65,7 +61,7 @@ internal class PivotLayout(
     }
 
     fun onLayoutChildren(recycler: Recycler, state: State) {
-        if (DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")
         }
         structureEngineer.onLayoutStarted(state)
@@ -98,28 +94,28 @@ internal class PivotLayout(
         if (childCount == 0) {
             return
         }
-        if (DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "PreLayoutStart: ${state.asString()}")
             structureEngineer.logChildren()
         }
 
         structureEngineer.preLayoutChildren(pivotPosition, recycler, state)
 
-        if (DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "PreLayoutFinished")
             structureEngineer.logChildren()
         }
     }
 
     private fun layoutChildren(recycler: Recycler, state: State) {
-        if (DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "LayoutStart: ${state.asString()}")
             structureEngineer.logChildren()
         }
 
         structureEngineer.layoutChildren(pivotSelector.position, itemChanges, recycler, state)
 
-        if (DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "LayoutFinished")
             structureEngineer.logChildren()
         }
@@ -198,37 +194,6 @@ internal class PivotLayout(
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
         return structureEngineer.scrollBy(scrollOffset, recycler, state)
-    }
-
-    // TODO
-    fun collectAdjacentPrefetchPositions(
-        dx: Int,
-        dy: Int,
-        state: State?,
-        layoutPrefetchRegistry: RecyclerView.LayoutManager.LayoutPrefetchRegistry
-    ) {
-
-    }
-
-    fun collectInitialPrefetchPositions(
-        adapterItemCount: Int,
-        layoutPrefetchRegistry: RecyclerView.LayoutManager.LayoutPrefetchRegistry
-    ) {
-        val prefetchCount: Int = configuration.initialPrefetchItemCount
-        if (adapterItemCount != 0 && prefetchCount != 0) {
-            // Prefetch items centered around the pivot
-            val initialPosition = max(
-                0, min(
-                    pivotSelector.position - (prefetchCount - 1) / 2,
-                    adapterItemCount - prefetchCount
-                )
-            )
-            var i = initialPosition
-            while (i < adapterItemCount && i < initialPosition + prefetchCount) {
-                layoutPrefetchRegistry.addPosition(i, 0)
-                i++
-            }
-        }
     }
 
     private fun State.asString(): String {

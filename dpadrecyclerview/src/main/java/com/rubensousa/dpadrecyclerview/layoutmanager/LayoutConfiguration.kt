@@ -215,4 +215,9 @@ internal class LayoutConfiguration(properties: Properties) {
         smoothScrollSpeedFactor = speedFactor
     }
 
+    fun setInitialPrefetchItemCount(count: Int) {
+        require(count >= 0)
+        initialPrefetchItemCount = count
+    }
+
 }

@@ -19,10 +19,8 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import androidx.recyclerview.widget.RecyclerView.Recycler
-import androidx.recyclerview.widget.RecyclerView.State
-import com.rubensousa.dpadrecyclerview.BuildConfig
+import androidx.recyclerview.widget.RecyclerView.*
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import kotlin.math.abs
 
@@ -34,9 +32,6 @@ internal abstract class StructureEngineer(
 
     companion object {
         const val TAG = "StructureEngineer"
-
-        @JvmStatic
-        protected val DEBUG = BuildConfig.DEBUG
     }
 
     // Holds the bounds of the view to be laid out
@@ -158,7 +153,7 @@ internal abstract class StructureEngineer(
     ) {
         // If there were item changes out of bounds, we don't need to relayout
         if (!isNewLayoutRequired(state, itemChanges)) {
-            if (DEBUG) {
+            if (DpadRecyclerView.DEBUG) {
                 Log.i(TAG, "layout changes are out of bounds, so skip relayout: : $itemChanges")
             }
             return
