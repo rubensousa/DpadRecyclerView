@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
+import android.view.View
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import io.mockk.every
@@ -26,17 +27,56 @@ internal class LayoutInfoMock(
 ) {
 
     private val mock = mockk<LayoutInfo>()
+    private val realInstance = LayoutInfo(mockk(), configuration)
+    var spanCount = 1
+    var childCount = 0
+    var isVertical = true
+    var reverseLayout = false
     var isScrolling = false
     var totalSpace = 0
     var hasCreatedFirstItem = false
     var hasCreatedLastItem = false
+    var endAfterPadding = 0
+    var startAfterPadding = 0
+    var childClosestToStart: View? = null
+    var childClosestToEnd: View? = null
 
     init {
+        every { mock.isVertical() }.answers { isVertical }
+        every { mock.getDecoratedStart(any()) }.answers {
+            val view = it.invocation.args.first() as View
+            if (isVertical) {
+                view.top
+            } else {
+                view.left
+            }
+        }
+        every { mock.getDecoratedEnd(any()) }.answers {
+            val view = it.invocation.args.first() as View
+            if (isVertical) {
+                view.bottom
+            } else {
+                view.right
+            }
+        }
+        every { mock.getStartAfterPadding() }.answers { startAfterPadding }
+        every { mock.getEndAfterPadding() }.answers { endAfterPadding }
         every { mock.isScrolling }.answers { isScrolling }
         every { mock.getTotalSpace() }.answers { totalSpace }
         every { mock.getConfiguration() }.answers { configuration }
         every { mock.hasCreatedFirstItem() }.answers { hasCreatedFirstItem }
         every { mock.hasCreatedLastItem() }.answers { hasCreatedLastItem }
+        every { mock.getChildClosestToEnd() }.answers { childClosestToEnd }
+        every { mock.getChildClosestToStart() }.answers { childClosestToStart }
+        every { mock.getChildCount() }.answers { childCount }
+        every { mock.getSpanCount() }.answers { spanCount }
+        every { mock.shouldReverseLayout() }.answers { reverseLayout }
+        every { mock.getLayoutPositionOf(any()) }.answers {
+            realInstance.getLayoutPositionOf(it.invocation.args.first() as View)
+        }
+        every { mock.getSpanSize(any()) }.answers {
+            realInstance.getSpanSize(it.invocation.args.first() as Int)
+        }
     }
 
     fun get(): LayoutInfo = mock

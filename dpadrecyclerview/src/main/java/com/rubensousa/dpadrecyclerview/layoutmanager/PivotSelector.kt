@@ -22,7 +22,6 @@ import android.util.Log
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
@@ -121,7 +120,7 @@ internal class PivotSelector(
     }
 
     fun onItemsAdded(positionStart: Int, itemCount: Int) {
-        if (BuildConfig.DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(DpadRecyclerView.TAG, "onItemsAdded: $positionStart, $itemCount")
         }
         if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
@@ -139,7 +138,7 @@ internal class PivotSelector(
     }
 
     fun onItemsRemoved(positionStart: Int, itemCount: Int) {
-        if (BuildConfig.DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(DpadRecyclerView.TAG, "onItemsRemoved: $positionStart, $itemCount")
         }
         if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
@@ -162,7 +161,7 @@ internal class PivotSelector(
     }
 
     fun onItemsMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
-        if (BuildConfig.DEBUG) {
+        if (DpadRecyclerView.DEBUG) {
             Log.i(DpadRecyclerView.TAG, "onItemsMoved: $fromPosition, $toPosition, $itemCount")
         }
         if (position != RecyclerView.NO_POSITION && positionOffset != Int.MIN_VALUE) {

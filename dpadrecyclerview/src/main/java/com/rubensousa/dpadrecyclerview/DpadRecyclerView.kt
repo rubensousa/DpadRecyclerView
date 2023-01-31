@@ -52,6 +52,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     companion object {
         const val TAG = "DpadRecyclerView"
+
+        internal val DEBUG = BuildConfig.DEBUG
     }
 
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
@@ -344,33 +346,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Enable or disable smooth scrolling to new focused position. By default, this is set to true.
-     * When set to false, RecyclerView will scroll immediately to the focused view
-     * without any animation.
-     *
-     * @param enabled true to smooth scroll to the new focused position, false to scroll immediately
-     */
-    fun setSmoothFocusChangesEnabled(enabled: Boolean) {
-        requireLayout().setSmoothFocusChangesEnabled(enabled)
-    }
-
-    /**
-     * Changes how RecyclerView will find the next focusable view.
-     * Check [FocusableDirection] for all supported directions.
-     * Default is [FocusableDirection.STANDARD]
-     */
-    fun setFocusableDirection(direction: FocusableDirection) {
-        requireLayout().setFocusableDirection(direction)
-    }
-
-    /**
-     * @return the current [FocusableDirection]. Default is [FocusableDirection.STANDARD]
-     */
-    fun getFocusableDirection(): FocusableDirection {
-        return requireLayout().getFocusableDirection()
-    }
-
-    /**
      * Sets the strategy for calculating extra layout space.
      *
      * Check [ExtraLayoutSpaceStrategy] for more information.
@@ -441,6 +416,22 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Changes how RecyclerView will find the next focusable view.
+     * Check [FocusableDirection] for all supported directions.
+     * Default is [FocusableDirection.STANDARD]
+     */
+    fun setFocusableDirection(direction: FocusableDirection) {
+        requireLayout().setFocusableDirection(direction)
+    }
+
+    /**
+     * @return the current [FocusableDirection]. Default is [FocusableDirection.STANDARD]
+     */
+    fun getFocusableDirection(): FocusableDirection {
+        return requireLayout().getFocusableDirection()
+    }
+
+    /**
      * Disables or enables focus search while RecyclerView is animating item changes.
      * See [RecyclerView.isAnimating].
      *
@@ -452,6 +443,77 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun setFocusSearchEnabledDuringAnimations(enabled: Boolean) {
         requireLayout().setFocusSearchEnabledDuringAnimations(enabled)
     }
+
+    /**
+     * Sets whether focus can move out from the front and/or back of the RecyclerView.
+     *
+     * @param throughFront For the vertical orientation, this controls whether focus can move out
+     * from the top.
+     * For the horizontal orientation, this controls whether focus can
+     * move out the left or right (in RTL) side of the grid.
+     *
+     * @param throughBack For the vertical orientation, this controls whether focus can move out
+     * from the bottom.
+     * For the horizontal orientation, this controls whether focus can
+     * move out the right or left (in RTL) side of the grid.
+     */
+    fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
+        requireLayout().setFocusOutAllowed(throughFront, throughBack)
+    }
+
+    /**
+     * Sets whether focus can move out from the opposite front and/or back of the RecyclerView
+     *
+     * @param throughFront For the vertical orientation, this controls whether focus can move out
+     * from the left of the grid. For the horizontal orientation, this controls whether focus can
+     * move out the top side of the grid.
+     *
+     * @param throughBack For the vertical orientation, this controls whether focus can move out
+     * from the right of the grid. For the horizontal orientation, this controls whether focus can
+     * move out the bottom side of the grid.
+     */
+    fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
+        requireLayout().setFocusOutSideAllowed(throughFront, throughBack)
+    }
+
+    /**
+     * See [RecyclerView.LayoutManager.setItemPrefetchEnabled]
+     *
+     * @param enabled `True` if items should be prefetched in between traversals.
+     */
+    fun setItemPrefetchEnabled(enabled: Boolean) {
+        requireLayout().isItemPrefetchEnabled = enabled
+    }
+
+    /**
+     * See [RecyclerView.LayoutManager.isItemPrefetchEnabled]
+     *
+     * @return `True` if items should be prefetched in between traversals.
+     */
+    fun isItemPrefetchEnabled(): Boolean = requireLayout().isItemPrefetchEnabled
+
+    /**
+     * Sets the number of items to prefetch in
+     * [RecyclerView.LayoutManager.collectInitialPrefetchPositions], which defines
+     * how many inner items should be prefetched when this RecyclerView is nested
+     * inside another RecyclerView.
+     *
+     * @param itemCount Number of items to prefetch
+     * @see [RecyclerView.LayoutManager.isItemPrefetchEnabled]
+     * @see [getInitialPrefetchItemCount]
+     * @see [RecyclerView.LayoutManager.collectInitialPrefetchPositions]
+     */
+    fun setInitialPrefetchItemCount(itemCount: Int) {
+        requireLayout().getConfig().setInitialPrefetchItemCount(itemCount)
+    }
+
+    /**
+     * @return number of items to prefetch
+     * @see [PivotLayoutManager.isItemPrefetchEnabled]
+     * @see [setInitialPrefetchItemCount]
+     * @see [RecyclerView.LayoutManager.collectInitialPrefetchPositions]
+     */
+    fun getInitialPrefetchItemCount(): Int = requireLayout().getConfig().initialPrefetchItemCount
 
     /**
      * Updates the [DpadSpanSizeLookup] used by the layout manager of this RecyclerView.
@@ -535,35 +597,14 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Sets whether focus can move out from the front and/or back of the RecyclerView.
+     * Enable or disable smooth scrolling to new focused position. By default, this is set to true.
+     * When set to false, RecyclerView will scroll immediately to the focused view
+     * without any animation.
      *
-     * @param throughFront For the vertical orientation, this controls whether focus can move out
-     * from the top.
-     * For the horizontal orientation, this controls whether focus can
-     * move out the left or right (in RTL) side of the grid.
-     *
-     * @param throughBack For the vertical orientation, this controls whether focus can move out
-     * from the bottom.
-     * For the horizontal orientation, this controls whether focus can
-     * move out the right or left (in RTL) side of the grid.
+     * @param enabled true to smooth scroll to the new focused position, false to scroll immediately
      */
-    fun setFocusOutAllowed(throughFront: Boolean, throughBack: Boolean) {
-        requireLayout().setFocusOutAllowed(throughFront, throughBack)
-    }
-
-    /**
-     * Sets whether focus can move out from the opposite front and/or back of the RecyclerView
-     *
-     * @param throughFront For the vertical orientation, this controls whether focus can move out
-     * from the left of the grid. For the horizontal orientation, this controls whether focus can
-     * move out the top side of the grid.
-     *
-     * @param throughBack For the vertical orientation, this controls whether focus can move out
-     * from the right of the grid. For the horizontal orientation, this controls whether focus can
-     * move out the bottom side of the grid.
-     */
-    fun setFocusOutSideAllowed(throughFront: Boolean, throughBack: Boolean) {
-        requireLayout().setFocusOutSideAllowed(throughFront, throughBack)
+    fun setSmoothFocusChangesEnabled(enabled: Boolean) {
+        requireLayout().setSmoothFocusChangesEnabled(enabled)
     }
 
     /**

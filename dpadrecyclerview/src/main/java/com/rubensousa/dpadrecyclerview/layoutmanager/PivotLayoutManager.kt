@@ -35,12 +35,14 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.focus.FocusDispatcher
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutPrefetchCollector
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PivotLayout
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
 /**
- * Successor of DpadLayoutManager built from scratch for performance optimizations
- * and to support more features.
+ * A [RecyclerView.LayoutManager] that builds the layout around a pivot view.
+ *
+ * It behaves similarly to `GridLayoutManager` with the main difference being how focus is handled.
  */
 class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() {
 
@@ -54,6 +56,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     private val pivotLayout = PivotLayout(
         this, layoutAlignment, configuration, pivotSelector, scroller, layoutInfo
     )
+    private val prefetchCollector = LayoutPrefetchCollector(layoutInfo)
     private val focusDispatcher = FocusDispatcher(
         this, configuration, scroller, layoutInfo, pivotSelector
     )
@@ -145,17 +148,22 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     override fun collectAdjacentPrefetchPositions(
         dx: Int,
         dy: Int,
-        state: RecyclerView.State?,
+        state: RecyclerView.State,
         layoutPrefetchRegistry: LayoutPrefetchRegistry
     ) {
-        pivotLayout.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
+        prefetchCollector.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
     }
 
     override fun collectInitialPrefetchPositions(
         adapterItemCount: Int,
         layoutPrefetchRegistry: LayoutPrefetchRegistry
     ) {
-        pivotLayout.collectInitialPrefetchPositions(adapterItemCount, layoutPrefetchRegistry)
+        prefetchCollector.collectInitialPrefetchPositions(
+            adapterItemCount = adapterItemCount,
+            prefetchItemCount = configuration.initialPrefetchItemCount,
+            pivotPosition = pivotSelector.position,
+            layoutPrefetchRegistry = layoutPrefetchRegistry
+        )
     }
 
     override fun scrollHorizontallyBy(
@@ -434,6 +442,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     fun getChildAlignment(): ChildAlignment = layoutAlignment.getChildAlignment()
+
+    internal fun getConfig() = configuration
 
     // Event methods
 
