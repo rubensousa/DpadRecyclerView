@@ -6,10 +6,11 @@ env:
 on:
   pull_request:
     paths-ignore:
-      - '**/**.md'
-      - '**/**.MD'
+      - 'docs/**'
+      - 'README.MD'
       - 'mkdocs.yml'
       - '.github/workflows/docs.yml'
+      - '.github/workflows/docs_pr.yml'
     branches:
       - 'master'
 

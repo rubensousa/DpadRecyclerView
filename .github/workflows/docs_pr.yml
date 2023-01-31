@@ -1,7 +1,7 @@
-name: Publish docs
+name: Build docs
 
 on:
-  push:
+  pull_request:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: Deploy docs
+    name: Build docs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -28,5 +28,5 @@ jobs:
         run: |
           pip install mkdocs-material mkdocs-material-extensions mkdocs-markdownextradata-plugin
 
-      - name: Deploy docs
-        run: mkdocs gh-deploy --force
+      - name: Build docs
+        run: mkdocs build -v
