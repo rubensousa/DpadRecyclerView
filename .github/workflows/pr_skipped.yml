@@ -1,0 +1,22 @@
+name: Pull requests
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'README.MD'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
+      - '.github/workflows/docs_pr.yml'
+    branches:
+      - 'master'
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "No build required"'
