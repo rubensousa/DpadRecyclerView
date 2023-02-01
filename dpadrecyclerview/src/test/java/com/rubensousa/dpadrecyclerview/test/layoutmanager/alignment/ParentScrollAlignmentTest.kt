@@ -141,6 +141,42 @@ class ParentScrollAlignmentTest {
             )
     }
 
+    @Test
+    fun `child is not aligned to end edge if that is smaller than the parent size`() {
+        updateLayoutInfo(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+
+        alignment.defaultAlignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MIN_MAX,
+            offset = 0,
+            offsetRatio = 0.5f
+        )
+
+        alignment.updateEndLimit(
+            edge = height / 2 + verticalViewHeight / 2,
+            viewAnchor = verticalViewHeight / 2
+        )
+        assertThat(alignment.calculateScrollOffset(viewAnchor = height / 2)).isEqualTo(0)
+    }
+
+    @Test
+    fun `child is not aligned to start edge if that is greater than the parent start position`() {
+        updateLayoutInfo(orientation = RecyclerView.VERTICAL, reverseLayout = true)
+
+        alignment.defaultAlignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MIN_MAX,
+            offset = 0,
+            offsetRatio = 0.5f
+        )
+
+        alignment.updateStartLimit(
+            edge = height / 2 - verticalViewHeight / 2,
+            viewAnchor = verticalViewHeight / 2
+        )
+
+        assertThat(alignment.calculateScrollOffset(viewAnchor = height / 2)).isEqualTo(0)
+    }
+
+
     private fun updateLayoutInfo(orientation: Int, reverseLayout: Boolean) {
         if (orientation == RecyclerView.VERTICAL) {
             alignment.updateLayoutInfo(verticalLayoutManager.get(), orientation, reverseLayout)

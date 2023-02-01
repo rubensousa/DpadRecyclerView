@@ -162,6 +162,11 @@ internal class ParentScrollAlignment {
         if (isStartUnknown || !shouldAlignToStartEdge(edge)) {
             return false
         }
+        // If the start edge is not before the layout start position,
+        // don't align to it in the reverse layout direction
+        if (startEdge > paddingStart && reverseLayout) {
+            return false
+        }
         return viewCenter - startEdge <= keyline - paddingStart
     }
 
@@ -169,8 +174,10 @@ internal class ParentScrollAlignment {
         if (isEndUnknown || !shouldAlignToEndEdge(edge)) {
             return false
         }
-        if (endEdge < size - paddingEnd) {
-            return true
+        // If the end edge is not after the layout size,
+        // don't align to it in the standard layout direction
+        if (endEdge < size - paddingEnd && !reverseLayout) {
+             return false
         }
         return endEdge - viewCenter <= size - keyline - paddingEnd
     }

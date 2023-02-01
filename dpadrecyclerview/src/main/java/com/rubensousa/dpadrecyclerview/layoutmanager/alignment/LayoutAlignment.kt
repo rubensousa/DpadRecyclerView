@@ -99,11 +99,7 @@ internal class LayoutAlignment(
     }
 
     fun getCappedScroll(scrollOffset: Int): Int {
-        val endScrollLimit = if (!layoutInfo.shouldReverseLayout()) {
-            parentAlignment.endScrollLimit
-        } else {
-            parentAlignment.startScrollLimit
-        }
+        val endScrollLimit = parentAlignment.endScrollLimit
         val startScrollLimit = parentAlignment.startScrollLimit
         return if (scrollOffset > 0) {
             if (parentAlignment.isScrollLimitInvalid(endScrollLimit)) {
