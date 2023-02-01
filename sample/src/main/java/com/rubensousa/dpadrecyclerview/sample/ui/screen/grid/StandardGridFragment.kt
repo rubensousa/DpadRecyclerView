@@ -52,10 +52,15 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
         setupVerticalGridView(binding.verticalGridView)
         setupDpadRecyclerView(binding.dpadRecyclerView)
         viewModel.listState.observe(viewLifecycleOwner) { state ->
-            itemAdapter.submitList(state)
+            itemAdapter.submitList(state) {
+                binding.dpadRecyclerView.invalidateItemDecorations()
+                binding.verticalGridView.invalidateItemDecorations()
+            }
         }
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             placeholderAdapter.show(isLoading)
+            binding.dpadRecyclerView.invalidateItemDecorations()
+            binding.verticalGridView.invalidateItemDecorations()
         }
         binding.toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (checkedId == R.id.dpadButton && isChecked) {
