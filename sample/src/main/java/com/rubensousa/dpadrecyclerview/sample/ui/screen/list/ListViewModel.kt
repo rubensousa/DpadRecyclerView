@@ -54,7 +54,7 @@ class ListViewModel : ViewModel() {
 
     private fun generateList(title: String, leanback: Boolean): ListModel {
         val items = ArrayList<Int>()
-        repeat(100) {
+        repeat(20) {
             items.add(it)
         }
         return ListModel(title, items, centerAligned = false, isLeanback = leanback)

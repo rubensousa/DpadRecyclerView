@@ -158,28 +158,18 @@ internal class ParentScrollAlignment {
         return keyLine
     }
 
-    private fun shouldAlignViewToStart(viewCenter: Int, keyline: Int, edge: Edge): Boolean {
+    private fun shouldAlignViewToStart(viewAnchor: Int, keyline: Int, edge: Edge): Boolean {
         if (isStartUnknown || !shouldAlignToStartEdge(edge)) {
             return false
         }
-        // If the start edge is not before the layout start position,
-        // don't align to it in the reverse layout direction
-        if (startEdge > paddingStart && reverseLayout) {
-            return false
-        }
-        return viewCenter - startEdge <= keyline - paddingStart
+        return viewAnchor + getLayoutStartEdge() <= startEdge + keyline
     }
 
-    private fun shouldAlignViewToEnd(viewCenter: Int, keyline: Int, edge: Edge): Boolean {
+    private fun shouldAlignViewToEnd(viewAnchor: Int, keyline: Int, edge: Edge): Boolean {
         if (isEndUnknown || !shouldAlignToEndEdge(edge)) {
             return false
         }
-        // If the end edge is not after the layout size,
-        // don't align to it in the standard layout direction
-        if (endEdge < size - paddingEnd && !reverseLayout) {
-             return false
-        }
-        return endEdge - viewCenter <= size - keyline - paddingEnd
+        return viewAnchor + getLayoutEndEdge() >= endEdge + keyline
     }
 
     private fun calculateScrollOffsetToKeyline(anchor: Int, keyline: Int): Int {
