@@ -37,25 +37,13 @@ internal open class ViewRecycler(
     fun recycleFromStart(recycler: RecyclerView.Recycler, layoutRequest: LayoutRequest) {
         val limit = -layoutRequest.extraLayoutSpaceStart
         val childCount = layoutInfo.getChildCount()
-        if (layoutRequest.reverseLayout) {
-            for (i in childCount - 1 downTo 0) {
-                val child = layoutInfo.getChildAt(i) ?: continue
-                if (layoutInfo.getDecoratedEnd(child) > limit
-                    || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
-                ) {
-                    recycle(recycler, childCount - 1, i)
-                    return
-                }
-            }
-        } else {
-            for (i in 0 until childCount) {
-                val child = layoutInfo.getChildAt(i) ?: continue
-                if (layoutInfo.getDecoratedEnd(child) > limit
-                    || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
-                ) {
-                    recycle(recycler, 0, i)
-                    return
-                }
+        for (i in 0 until childCount) {
+            val child = layoutInfo.getChildAt(i) ?: continue
+            if (layoutInfo.getDecoratedEnd(child) > limit
+                || layoutInfo.orientationHelper.getTransformedEndWithDecoration(child) > limit
+            ) {
+                recycle(recycler, 0, i)
+                return
             }
         }
     }
@@ -63,25 +51,13 @@ internal open class ViewRecycler(
     fun recycleFromEnd(recycler: RecyclerView.Recycler, layoutRequest: LayoutRequest) {
         val limit = layoutInfo.orientationHelper.end + layoutRequest.extraLayoutSpaceEnd
         val childCount = layoutInfo.getChildCount()
-        if (layoutRequest.reverseLayout) {
-            for (i in 0 until childCount) {
-                val child = layoutInfo.getChildAt(i) ?: continue
-                if (layoutInfo.getDecoratedStart(child) < limit
-                    || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
-                ) {
-                    recycle(recycler, 0, i)
-                    return
-                }
-            }
-        } else {
-            for (i in childCount - 1 downTo 0) {
-                val child = layoutInfo.getChildAt(i) ?: continue
-                if (layoutInfo.getDecoratedStart(child) < limit
-                    || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
-                ) {
-                    recycle(recycler, childCount - 1, i)
-                    return
-                }
+        for (i in childCount - 1 downTo 0) {
+            val child = layoutInfo.getChildAt(i) ?: continue
+            if (layoutInfo.getDecoratedStart(child) < limit
+                || layoutInfo.orientationHelper.getTransformedStartWithDecoration(child) < limit
+            ) {
+                recycle(recycler, childCount - 1, i)
+                return
             }
         }
     }

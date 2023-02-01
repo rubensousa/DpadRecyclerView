@@ -286,21 +286,11 @@ internal class LayoutInfo(
     }
 
     fun getChildClosestToStart(): View? {
-        val startIndex = if (configuration.reverseLayout) {
-            layout.childCount - 1
-        } else {
-            0
-        }
-        return layout.getChildAt(startIndex)
+        return layout.getChildAt(0)
     }
 
     fun getChildClosestToEnd(): View? {
-        val endIndex = if (configuration.reverseLayout) {
-            0
-        } else {
-            layout.childCount - 1
-        }
-        return layout.getChildAt(endIndex)
+        return layout.getChildAt(layout.childCount - 1)
     }
 
     fun findFirstAddedPosition(): Int {
@@ -401,10 +391,6 @@ internal class LayoutInfo(
     fun getChildCount() = layout.childCount
 
     fun getChildAt(index: Int) = layout.getChildAt(index)
-
-    fun requestLayout() {
-        layout.requestLayout()
-    }
 
     /**
      * Calculates the view layout order. (e.g. from end to start or start to end)

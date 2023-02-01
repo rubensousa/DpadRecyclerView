@@ -49,7 +49,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     private val configuration = LayoutConfiguration(properties)
     private val layoutInfo = LayoutInfo(this, configuration)
     private val pivotSelector = PivotSelector(this, layoutInfo)
-    private val layoutAlignment = LayoutAlignment(this, layoutInfo, configuration)
+    private val layoutAlignment = LayoutAlignment(this, layoutInfo)
     private val scroller = LayoutScroller(
         this, layoutInfo, layoutAlignment, configuration, pivotSelector
     )
@@ -344,20 +344,33 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     fun setGravity(gravity: Int) {
-        configuration.setGravity(gravity)
-        requestLayout()
+        if (configuration.gravity != gravity) {
+            configuration.setGravity(gravity)
+            requestLayout()
+        }
     }
 
     fun setOrientation(orientation: Int) {
-        configuration.setOrientation(orientation)
-        layoutInfo.updateOrientation()
-        requestLayout()
+        if (configuration.orientation != orientation) {
+            configuration.setOrientation(orientation)
+            layoutInfo.updateOrientation()
+            requestLayout()
+        }
+    }
+
+    fun setReverseLayout(reverseLayout: Boolean) {
+        if (configuration.reverseLayout != reverseLayout) {
+            configuration.setReverseLayout(reverseLayout)
+            requestLayout()
+        }
     }
 
     fun setSpanCount(spanCount: Int) {
-        configuration.setSpanCount(spanCount)
-        pivotLayout.updateStructure()
-        requestLayout()
+        if (configuration.spanCount != spanCount) {
+            configuration.setSpanCount(spanCount)
+            pivotLayout.updateStructure()
+            requestLayout()
+        }
     }
 
     fun getSpanCount(): Int = configuration.spanCount

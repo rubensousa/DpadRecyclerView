@@ -39,31 +39,57 @@ internal class PendingScrollMovements(
         return !hasPendingMoves() || isLayoutCompleteInScrollingDirection()
     }
 
-    fun shouldScrollToView(viewPosition: Int, pivotPosition: Int) : Boolean {
+    fun shouldScrollToView(viewPosition: Int, pivotPosition: Int): Boolean {
         if (viewPosition == pivotPosition) {
             return true
         }
-        val isMovingBackwards = pendingMoves < 0 && viewPosition < pivotPosition
-        val isMovingForwards = pendingMoves > 0 && viewPosition > pivotPosition
-        return isMovingBackwards || isMovingForwards
+        return if (!layoutInfo.shouldReverseLayout()) {
+            (pendingMoves < 0 && viewPosition < pivotPosition
+                    || pendingMoves > 0 && viewPosition > pivotPosition)
+        } else {
+            (pendingMoves < 0 && viewPosition > pivotPosition
+                    || pendingMoves > 0 && viewPosition < pivotPosition)
+        }
     }
 
     private fun isLayoutCompleteInScrollingDirection(): Boolean {
-        return layoutInfo.hasCreatedFirstItem() && pendingMoves < 0
-                || layoutInfo.hasCreatedLastItem() && pendingMoves > 0
+        return if (!layoutInfo.shouldReverseLayout()) {
+            (layoutInfo.hasCreatedFirstItem() && pendingMoves < 0
+                    || layoutInfo.hasCreatedLastItem() && pendingMoves > 0)
+        } else {
+            (layoutInfo.hasCreatedLastItem() && pendingMoves < 0
+                    || layoutInfo.hasCreatedFirstItem() && pendingMoves > 0)
+        }
+
     }
 
     fun clear() {
         pendingMoves = 0
     }
 
-    fun increase() {
+    fun add(forward: Boolean) {
+        if (layoutInfo.shouldReverseLayout()) {
+            if (forward) {
+                decrease()
+            } else {
+                increase()
+            }
+        } else {
+            if (forward) {
+                increase()
+            } else {
+                decrease()
+            }
+        }
+    }
+
+    private fun increase() {
         if (pendingMoves < maxPendingMoves) {
             pendingMoves++
         }
     }
 
-    fun decrease() {
+    private fun decrease() {
         if (pendingMoves > -maxPendingMoves) {
             pendingMoves--
         }

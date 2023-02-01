@@ -102,7 +102,7 @@ data class ParentAlignment(
 
         /**
          * All items will be always aligned to the keyline position except the item at the start.
-         * This will be the top of Vertical orientation, or start for the horizontal orientation
+         * This will be the top for Vertical orientation, or start for the horizontal orientation
          */
         MIN,
 

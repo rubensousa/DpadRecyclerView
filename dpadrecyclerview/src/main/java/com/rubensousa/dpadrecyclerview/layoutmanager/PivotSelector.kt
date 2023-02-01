@@ -56,7 +56,7 @@ internal class PivotSelector(
     private var isSelectionUpdatePending = false
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
     private val requestLayoutRunnable = Runnable {
-        layoutInfo.requestLayout()
+        layoutManager.requestLayout()
     }
     private var selectedViewHolder: DpadViewHolder? = null
 

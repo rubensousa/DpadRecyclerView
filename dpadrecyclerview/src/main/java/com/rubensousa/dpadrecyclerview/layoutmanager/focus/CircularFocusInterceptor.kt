@@ -37,7 +37,7 @@ internal class CircularFocusInterceptor(
     ): View? {
         val focusDirection = FocusDirection.from(
             isVertical = layoutInfo.isVertical(),
-            isRTL = layoutInfo.isRTL(),
+            reverseLayout = layoutInfo.shouldReverseLayout(),
             direction = direction
         ) ?: return null
         return findFocus(position, focusDirection)

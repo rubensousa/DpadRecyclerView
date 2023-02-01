@@ -119,13 +119,13 @@ class GridRow(
     fun getSpaceForSpanRange(
         startSpan: Int,
         spanSize: Int,
-        isVerticalRTL: Boolean
+        reverseLayout: Boolean
     ): Int {
-        return if (isVerticalRTL) {
+        return if (!reverseLayout) {
+            spanBorders[startSpan + spanSize] - spanBorders[startSpan]
+        } else {
             (spanBorders[numberOfSpans - startSpan]
                     - spanBorders[numberOfSpans - startSpan - spanSize])
-        } else {
-            spanBorders[startSpan + spanSize] - spanBorders[startSpan]
         }
     }
 

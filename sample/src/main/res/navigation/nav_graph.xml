@@ -10,15 +10,15 @@
 
         <action
             android:id="@+id/open_list"
-            app:destination="@id/list_fragment" />
-
-        <action
-            android:id="@+id/open_slow_scroll_list"
             app:destination="@id/list_fragment">
 
             <argument
                 android:name="slowScroll"
-                android:defaultValue="true" />
+                android:defaultValue="false" />
+
+            <argument
+                android:name="reverseLayout"
+                android:defaultValue="false" />
 
         </action>
 
@@ -28,13 +28,25 @@
 
         <action
             android:id="@+id/open_standard_grid"
-            app:destination="@id/standard_grid_fragment" />
+            app:destination="@id/standard_grid_fragment">
+
+            <argument
+                android:name="reverseLayout"
+                android:defaultValue="false" />
+
+        </action>
 
     </fragment>
 
     <fragment
         android:id="@+id/standard_grid_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.StandardGridFragment" />
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.StandardGridFragment">
+
+        <argument
+            android:name="reverseLayout"
+            android:defaultValue="false" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/leanback_horizontal_fragment"
@@ -46,6 +58,10 @@
 
         <argument
             android:name="slowScroll"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="reverseLayout"
             android:defaultValue="false" />
 
         <action

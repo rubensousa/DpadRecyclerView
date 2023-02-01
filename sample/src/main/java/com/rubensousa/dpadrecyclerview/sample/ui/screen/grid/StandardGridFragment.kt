@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.leanback.widget.OnChildViewHolderSelectedListener
 import androidx.leanback.widget.VerticalGridView
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.ColumnProvider
@@ -32,6 +33,7 @@ import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenStandardGridBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
@@ -42,6 +44,7 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
     private val spanCount = 5
     private val binding by viewBinding(ScreenStandardGridBinding::bind)
     private val viewModel by viewModels<GridViewModel>()
+    private val args by navArgs<StandardGridFragmentArgs>()
     private lateinit var placeholderAdapter: PlaceholderAdapter
     private lateinit var itemAdapter: MutableGridAdapter
     private lateinit var concatAdapter: ConcatAdapter
@@ -52,10 +55,15 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
         setupVerticalGridView(binding.verticalGridView)
         setupDpadRecyclerView(binding.dpadRecyclerView)
         viewModel.listState.observe(viewLifecycleOwner) { state ->
-            itemAdapter.submitList(state)
+            itemAdapter.submitList(state) {
+                binding.dpadRecyclerView.invalidateItemDecorations()
+                binding.verticalGridView.invalidateItemDecorations()
+            }
         }
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             placeholderAdapter.show(isLoading)
+            binding.dpadRecyclerView.invalidateItemDecorations()
+            binding.verticalGridView.invalidateItemDecorations()
         }
         binding.toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (checkedId == R.id.dpadButton && isChecked) {
@@ -138,10 +146,13 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
 
     private fun setupDpadRecyclerView(recyclerView: DpadRecyclerView) {
         recyclerView.apply {
+            RecyclerViewLogger.logChildrenWhenIdle(this)
+            setReverseLayout(args.reverseLayout)
             addItemDecoration(
                 GridMarginDecoration(
                     horizontalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
                     verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
+                    inverted = args.reverseLayout,
                     columnProvider = object : ColumnProvider {
                         override fun getNumberOfColumns(): Int = spanCount
                     }

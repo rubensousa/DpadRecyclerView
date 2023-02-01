@@ -23,7 +23,11 @@ class ColumnLayout(config: LayoutConfig) : SingleSpanLayout(config) {
     override fun isVertical(): Boolean = true
 
     override fun getViewCenter(view: ViewItem): Int {
-        return view.getDecoratedTop() + (view.getDecoratedHeight() * config.childKeyline).toInt()
+        return if (!config.reversed) {
+            view.getDecoratedTop() + (view.getDecoratedHeight() * config.childKeyline).toInt()
+        } else {
+            (view.getDecoratedBottom() - view.getDecoratedHeight() * config.childKeyline).toInt()
+        }
     }
 
     override fun append(position: Int, endOffset: Int): ViewItem {
@@ -53,18 +57,30 @@ class ColumnLayout(config: LayoutConfig) : SingleSpanLayout(config) {
     }
 
     fun scrollDown() {
-        if (selectedPosition == getItemCount() - 1) {
+        if ((selectedPosition == getItemCount() - 1 && !config.reversed)
+            || selectedPosition == 0 && config.reversed
+        ) {
             return
         }
-        updateSelectedPosition(selectedPosition + 1)
+        if (!config.reversed) {
+            updateSelectedPosition(selectedPosition + 1)
+        } else {
+            updateSelectedPosition(selectedPosition - 1)
+        }
         scrollBy(config.viewHeight)
     }
 
     fun scrollUp() {
-        if (selectedPosition == 0) {
+        if ((selectedPosition == 0 && !config.reversed)
+            || selectedPosition == getItemCount() - 1 && config.reversed
+        ) {
             return
         }
-        updateSelectedPosition(selectedPosition - 1)
+        if (!config.reversed) {
+            updateSelectedPosition(selectedPosition - 1)
+        } else {
+            updateSelectedPosition(selectedPosition + 1)
+        }
         scrollBy(-config.viewHeight)
     }
 

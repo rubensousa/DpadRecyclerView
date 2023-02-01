@@ -29,7 +29,8 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 abstract class AbstractListViewHolder(
     view: View,
     val recyclerView: RecyclerView,
-    itemLayoutId: Int = R.layout.adapter_nested_item_start
+    itemLayoutId: Int = R.layout.adapter_nested_item_start,
+    reverseLayout: Boolean = false
 ) : RecyclerView.ViewHolder(view), DpadViewHolder {
 
     var item: ListModel? = null
@@ -40,7 +41,7 @@ abstract class AbstractListViewHolder(
     )
 
     init {
-        setupRecyclerView(recyclerView)
+        setupRecyclerView(recyclerView, reverseLayout)
     }
 
     fun bind(list: ListModel, clickListener: ItemViewHolder.ItemClickListener) {
@@ -68,13 +69,14 @@ abstract class AbstractListViewHolder(
         textView.alpha = 0.5f
     }
 
-    private fun setupRecyclerView(recyclerView: RecyclerView) {
+    private fun setupRecyclerView(recyclerView: RecyclerView, reverseLayout: Boolean) {
         recyclerView.apply {
             addItemDecoration(
                 LinearMarginDecoration.createHorizontal(
                     horizontalMargin = itemView.resources.getDimensionPixelOffset(
                         R.dimen.item_spacing
-                    ) / 2
+                    ) / 2,
+                    inverted = reverseLayout
                 )
             )
         }

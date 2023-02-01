@@ -67,17 +67,22 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         if (layoutConfig.useCustomViewPool) {
             recyclerView.setRecycledViewPool(viewPool)
         }
-        recyclerView.setRecycleChildrenOnDetach(layoutConfig.recycleChildrenOnDetach)
-        recyclerView.setFocusableDirection(layoutConfig.focusableDirection)
-        recyclerView.setGravity(layoutConfig.gravity)
-        recyclerView.setSpanCount(layoutConfig.spans)
-        recyclerView.setOrientation(layoutConfig.orientation)
-        recyclerView.setParentAlignment(layoutConfig.parentAlignment)
-        recyclerView.setChildAlignment(layoutConfig.childAlignment)
-        recyclerView.setFocusSearchEnabledDuringAnimations(layoutConfig.focusSearchEnabledDuringAnimations)
         recyclerView.addOnViewHolderSelectedListener(this)
-        recyclerView.adapter = createAdapter(recyclerView, adapterConfig)
-        recyclerView.requestFocus()
+        
+        recyclerView.apply {
+            setReverseLayout(layoutConfig.reverseLayout)
+            setRecycleChildrenOnDetach(layoutConfig.recycleChildrenOnDetach)
+            setFocusableDirection(layoutConfig.focusableDirection)
+            setGravity(layoutConfig.gravity)
+            setSpanCount(layoutConfig.spans)
+            setOrientation(layoutConfig.orientation)
+            setParentAlignment(layoutConfig.parentAlignment)
+            setChildAlignment(layoutConfig.childAlignment)
+            setFocusSearchEnabledDuringAnimations(layoutConfig.focusSearchEnabledDuringAnimations)
+            adapter = createAdapter(recyclerView, adapterConfig)
+            requestFocus()
+        }
+      
     }
 
     fun mutateAdapter(action: (adapter: AbstractTestAdapter<*>) -> Unit) {

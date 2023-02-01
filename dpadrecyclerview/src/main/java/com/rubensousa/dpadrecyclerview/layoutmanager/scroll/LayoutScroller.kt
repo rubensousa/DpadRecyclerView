@@ -249,6 +249,7 @@ internal class LayoutScroller(
                 layoutAlignment,
                 searchPivotListener
             )
+            layoutAlignment.updateScrollLimits()
             pivotSelector.resetPositionOffset()
             newSmoothScroller.addScrollMovement(forward)
             layoutManager.startSmoothScroll(newSmoothScroller)

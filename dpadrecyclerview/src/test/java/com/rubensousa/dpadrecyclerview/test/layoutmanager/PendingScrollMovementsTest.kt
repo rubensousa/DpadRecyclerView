@@ -33,6 +33,8 @@ class PendingScrollMovementsTest {
     @Before
     fun setup() {
         scrollMovements = PendingScrollMovements(maxPendingMoves = 2, mockLayoutInfo.get())
+        mockLayoutInfo.hasCreatedFirstItem = false
+        mockLayoutInfo.hasCreatedLastItem = false
     }
 
     @Test
@@ -40,7 +42,7 @@ class PendingScrollMovementsTest {
         scrollMovements.setMaxPendingMoves(5)
 
         repeat(10) {
-            scrollMovements.increase()
+            scrollMovements.add(forward = true)
         }
 
         assertThat(scrollMovements.pendingMoves).isEqualTo(5)
@@ -51,7 +53,7 @@ class PendingScrollMovementsTest {
         scrollMovements.setMaxPendingMoves(5)
 
         repeat(10) {
-            scrollMovements.decrease()
+            scrollMovements.add(forward = false)
         }
 
         assertThat(scrollMovements.pendingMoves).isEqualTo(-5)
@@ -61,7 +63,7 @@ class PendingScrollMovementsTest {
     fun `shouldStopScrolling is true if we don't have pending moves`() {
         scrollMovements.setMaxPendingMoves(5)
         repeat(10) {
-            scrollMovements.increase()
+            scrollMovements.add(forward = true)
         }
         // Consume all events
         while (scrollMovements.consume()) {
@@ -75,7 +77,7 @@ class PendingScrollMovementsTest {
         scrollMovements.setMaxPendingMoves(5)
 
         repeat(10) {
-            scrollMovements.increase()
+            scrollMovements.add(forward = true)
         }
 
         mockLayoutInfo.hasCreatedLastItem = true
@@ -83,7 +85,7 @@ class PendingScrollMovementsTest {
         assertThat(scrollMovements.shouldStopScrolling()).isTrue()
 
         repeat(20) {
-            scrollMovements.decrease()
+            scrollMovements.add(forward = false)
         }
 
         mockLayoutInfo.hasCreatedFirstItem = true
@@ -95,19 +97,19 @@ class PendingScrollMovementsTest {
     fun `consume only consumes one event`() {
         assertThat(scrollMovements.consume()).isFalse()
 
-        scrollMovements.increase()
+        scrollMovements.add(forward = true)
 
         assertThat(scrollMovements.consume()).isTrue()
         assertThat(scrollMovements.consume()).isFalse()
 
-        scrollMovements.decrease()
+        scrollMovements.add(forward = false)
         assertThat(scrollMovements.consume()).isTrue()
         assertThat(scrollMovements.consume()).isFalse()
     }
 
     @Test
     fun `shouldScrollToView returns true if view is in scrolling direction or is already the pivot`() {
-        scrollMovements.increase()
+        scrollMovements.add(forward = true)
         assertThat(
             scrollMovements.shouldScrollToView(
                 viewPosition = 5,
@@ -117,8 +119,8 @@ class PendingScrollMovementsTest {
         assertThat(scrollMovements.shouldScrollToView(viewPosition = 7, pivotPosition = 6)).isTrue()
         assertThat(scrollMovements.shouldScrollToView(viewPosition = 6, pivotPosition = 6)).isTrue()
 
-        scrollMovements.decrease()
-        scrollMovements.decrease()
+        scrollMovements.add(forward = false)
+        scrollMovements.add(forward = false)
         assertThat(
             scrollMovements.shouldScrollToView(
                 viewPosition = 7,
@@ -127,6 +129,42 @@ class PendingScrollMovementsTest {
         ).isFalse()
         assertThat(scrollMovements.shouldScrollToView(viewPosition = 5, pivotPosition = 6)).isTrue()
         assertThat(scrollMovements.shouldScrollToView(viewPosition = 6, pivotPosition = 6)).isTrue()
+    }
+
+    @Test
+    fun `scroll movement in reverse layout is correct`() {
+        mockLayoutInfo.reverseLayout = true
+
+        scrollMovements.add(forward = true)
+
+        assertThat(scrollMovements.pendingMoves).isEqualTo(-1)
+        
+        scrollMovements.add(forward = false)
+
+        assertThat(scrollMovements.pendingMoves).isEqualTo(0)
+    }
+
+    @Test
+    fun `should stop scrolling if edge views are created in reverse layout`() {
+        mockLayoutInfo.reverseLayout = true
+
+        scrollMovements.setMaxPendingMoves(5)
+
+        repeat(5) {
+            scrollMovements.add(forward = true)
+        }
+
+        mockLayoutInfo.hasCreatedLastItem = true
+
+        assertThat(scrollMovements.shouldStopScrolling()).isTrue()
+
+        repeat(10) {
+            scrollMovements.add(forward = false)
+        }
+
+        mockLayoutInfo.hasCreatedFirstItem = true
+
+        assertThat(scrollMovements.shouldStopScrolling()).isTrue()
     }
 
 

@@ -36,6 +36,7 @@ import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
+import kotlin.math.abs
 
 class VerticalAlignmentTest : DpadRecyclerViewTest() {
 
@@ -113,7 +114,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
 
         updateChildAlignment(ChildAlignment(offset = 100))
         var viewBounds = getItemViewBounds(position = position)
-        assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY() + 100)
+        assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY() - 100)
 
         updateChildAlignment(ChildAlignment(offset = 0))
         viewBounds = getItemViewBounds(position = position)
@@ -121,7 +122,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
 
         updateChildAlignment(ChildAlignment(offset = -100))
         viewBounds = getItemViewBounds(position = position)
-        assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY() - 100)
+        assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY() + 100)
     }
 
     @Test
@@ -235,7 +236,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
     @Test
     fun testItemsAreAlignedToBothParentAndChildAlignmentOffsets() {
         val containerOffset = 100
-        val itemOffset = 100
+        val itemOffset = -100
         launchFragment(
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
@@ -253,7 +254,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.top)
-                .isEqualTo(recyclerViewBounds.top + containerOffset + itemOffset)
+                .isEqualTo(recyclerViewBounds.top + containerOffset + abs(itemOffset))
             KeyEvents.pressDown()
         }
     }
@@ -261,7 +262,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
     @Test
     fun testItemsAreAlignedToBothParentAndChildAlignmentOffsetRatios() {
         val containerOffset = 100
-        val itemOffset = 100
+        val itemOffset = -100
         launchFragment(
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
@@ -279,7 +280,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.centerY())
-                .isEqualTo(recyclerViewBounds.centerY() + containerOffset + itemOffset)
+                .isEqualTo(recyclerViewBounds.centerY() + containerOffset + abs(itemOffset))
             KeyEvents.pressDown()
         }
     }

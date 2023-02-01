@@ -1,6 +1,5 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
