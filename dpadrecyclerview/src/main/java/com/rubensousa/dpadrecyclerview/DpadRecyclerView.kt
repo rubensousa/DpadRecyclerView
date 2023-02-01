@@ -568,7 +568,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @return If layout is reversed or not.
      * @see [setReverseLayout]
      */
-    open fun isLayoutReversed(): Boolean {
+    fun isLayoutReversed(): Boolean {
         return requireLayout().getConfig().reverseLayout
     }
 
