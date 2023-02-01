@@ -280,13 +280,24 @@ internal class GridLayoutEngineer(
             val position = views.keyAt(index)
             val layoutParams = view.layoutParams as DpadLayoutParams
             val rowIndex = layoutParams.spanGroupIndex
-            if (position < firstViewPosition) {
-                layoutManager.addDisappearingView(view, 0)
+            if (!layoutRequest.reverseLayout) {
+                if (position < firstViewPosition) {
+                    layoutManager.addDisappearingView(view, 0)
+                } else {
+                    layoutManager.addDisappearingView(view)
+                }
             } else {
-                layoutManager.addDisappearingView(view)
+                if (position < firstViewPosition) {
+                    layoutManager.addDisappearingView(view)
+                } else {
+                    layoutManager.addDisappearingView(view, 0)
+                }
             }
             layoutManager.calculateItemDecorationsForChild(view, insets)
-            measureChild(view, layoutRow, layoutParams, secondarySpecMode, alreadyMeasured = false)
+            measureChild(
+                view, layoutRow, layoutParams, secondarySpecMode, alreadyMeasured = false,
+                layoutRequest
+            )
             val decoratedSize = layoutInfo.getDecoratedSize(view)
 
             // Find the checkpoint for placing this view
@@ -318,7 +329,7 @@ internal class GridLayoutEngineer(
                 rowHeight = decoratedSize,
                 bounds = viewBounds
             )
-            updateViewBounds(view, layoutRequest.isVertical, layoutParams, viewBounds)
+            updateViewBounds(view, layoutRequest, layoutParams, viewBounds)
             performLayout(view, viewBounds)
 
             if (appending) {
@@ -383,11 +394,11 @@ internal class GridLayoutEngineer(
         layoutRow.reset(keyline = layoutRequest.checkpoint)
         val fillSpanCount = calculateSpansToFill(layoutRequest)
         val viewCount = getViewsForRow(layoutRequest, recycler, state, fillSpanCount)
-        assignSpans(recycler, state, viewCount, layoutRequest.currentItemDirection)
+        assignSpans(recycler, state, viewCount, appending = layoutRequest.isLayingOutEnd())
 
         val rowHeight = fillRow(viewCount, layoutRow, layoutRequest)
         layoutResult.consumedSpace = rowHeight
-        reMeasureChildren(layoutRow, viewCount)
+        reMeasureChildren(layoutRow, viewCount, layoutRequest)
 
         layoutResult.skipConsumption = layoutRow(viewCount, layoutRow, viewBounds, layoutRequest)
     }
@@ -415,7 +426,10 @@ internal class GridLayoutEngineer(
 
             layoutManager.calculateItemDecorationsForChild(view, insets)
 
-            measureChild(view, row, layoutParams, secondarySpecMode, alreadyMeasured = false)
+            measureChild(
+                view, row, layoutParams, secondarySpecMode, alreadyMeasured = false,
+                layoutRequest
+            )
 
             val decoratedSize = layoutInfo.getDecoratedSize(view)
             if (layoutRequest.isLayingOutEnd()) {
@@ -448,8 +462,12 @@ internal class GridLayoutEngineer(
             if (layoutParams.viewLayoutPosition == pivotLayoutPosition) {
                 pivotView = view
             }
-            updateViewBounds(view, layoutRequest.isVertical, layoutParams, bounds)
+            updateViewBounds(view, layoutRequest, layoutParams, bounds)
             performLayout(view, bounds)
+
+            if (DpadRecyclerView.DEBUG) {
+                Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
+            }
 
             if (shouldSkipSpaceOf(view)) {
                 skipConsumption = true
@@ -495,23 +513,16 @@ internal class GridLayoutEngineer(
 
     private fun updateViewBounds(
         view: View,
-        isVertical: Boolean,
+        layoutRequest: LayoutRequest,
         layoutParams: DpadLayoutParams,
         bounds: ViewBounds
     ) {
         val perpendicularSize = layoutInfo.getPerpendicularDecoratedSize(view)
-        if (isVertical) {
-            if (layoutInfo.shouldReverseLayout()) {
-                bounds.right = layoutManager.paddingLeft + layoutRow.getSpanBorder(
-                    layoutRow.numberOfSpans - layoutParams.spanIndex
-                )
-                bounds.left = bounds.right - perpendicularSize
-            } else {
-                bounds.left = layoutManager.paddingLeft + layoutRow.getSpanBorder(
-                    layoutParams.spanIndex
-                )
-                bounds.right = bounds.left + perpendicularSize
-            }
+        if (layoutRequest.isVertical) {
+            bounds.left = layoutManager.paddingLeft + layoutRow.getSpanBorder(
+                layoutParams.spanIndex
+            )
+            bounds.right = bounds.left + perpendicularSize
         } else {
             bounds.top = layoutManager.paddingTop + layoutRow.getSpanBorder(
                 layoutParams.spanIndex
@@ -523,7 +534,7 @@ internal class GridLayoutEngineer(
     /**
      * Views that don't have the height of the row need to be re-measured
      */
-    private fun reMeasureChildren(row: GridRow, viewCount: Int) {
+    private fun reMeasureChildren(row: GridRow, viewCount: Int, layoutRequest: LayoutRequest) {
         val rowHeight = row.height
         for (i in 0 until viewCount) {
             val view = getRowViewAt(i)
@@ -537,7 +548,7 @@ internal class GridLayoutEngineer(
                 val totalSpaceInOther = row.getSpaceForSpanRange(
                     startSpan = layoutParams.spanIndex,
                     spanSize = layoutParams.spanSize,
-                    isVerticalRTL = layoutInfo.isVertical() && layoutInfo.isRTL()
+                    reverseLayout = layoutRequest.reverseLayout
                 )
                 val wSpec: Int
                 val hSpec: Int
@@ -572,7 +583,8 @@ internal class GridLayoutEngineer(
         row: GridRow,
         layoutParams: DpadLayoutParams,
         secondarySpecMode: Int,
-        alreadyMeasured: Boolean
+        alreadyMeasured: Boolean,
+        layoutRequest: LayoutRequest
     ) {
         val verticalInsets = (insets.top + insets.bottom
                 + layoutParams.topMargin + layoutParams.bottomMargin)
@@ -581,7 +593,7 @@ internal class GridLayoutEngineer(
         val spanSpace = row.getSpaceForSpanRange(
             startSpan = layoutParams.spanIndex,
             spanSize = layoutParams.spanSize,
-            isVerticalRTL = layoutInfo.isVertical() && layoutInfo.isRTL()
+            reverseLayout = layoutRequest.reverseLayout
         )
         val wSpec: Int
         val hSpec: Int
@@ -679,13 +691,12 @@ internal class GridLayoutEngineer(
         recycler: Recycler,
         state: State,
         count: Int,
-        itemDirection: LayoutRequest.ItemDirection
+        appending: Boolean
     ) {
-        var span = 0
         var start = 0
         var end = 0
         var increment = 0
-        if (itemDirection == LayoutRequest.ItemDirection.TAIL) {
+        if (appending) {
             start = 0
             end = count
             increment = 1
@@ -694,7 +705,7 @@ internal class GridLayoutEngineer(
             end = -1
             increment = -1
         }
-        span = 0
+        var span = 0
         var i = start
         while (i != end) {
             val view = getRowViewAt(i)
