@@ -144,10 +144,18 @@ internal class GridLayoutEngineer(
     ): View {
         val pivotSpanIndex = getSpanIndex(recycler, state, pivotPosition)
         val firstSpanPosition = max(0, pivotPosition - pivotSpanIndex)
-        layoutRequest.append(firstSpanPosition) {
-            setCurrentPosition(firstSpanPosition)
-            setCheckpoint(layoutAlignment.getParentKeyline())
-            setFillSpace(1)
+        if (!layoutRequest.reverseLayout) {
+            layoutRequest.append(firstSpanPosition) {
+                setCurrentPosition(firstSpanPosition)
+                setCheckpoint(layoutAlignment.getParentKeyline())
+                setFillSpace(1)
+            }
+        } else {
+            layoutRequest.prepend(firstSpanPosition) {
+                setCurrentPosition(firstSpanPosition)
+                setCheckpoint(layoutAlignment.getParentKeyline())
+                setFillSpace(1)
+            }
         }
         fill(layoutRequest, recycler, state)
         return requireNotNull(pivotView)

@@ -56,6 +56,11 @@ class MainFragment : Fragment(R.layout.screen_main) {
                 title = "Nested Reversed list"
             ),
             ScreenDestination(
+                direction = MainFragmentDirections.openStandardGrid()
+                    .apply { reverseLayout = true },
+                title = "Reversed grid"
+            ),
+            ScreenDestination(
                 direction = MainFragmentDirections.openHorizontalLeanback(),
                 title = "Horizontal Leanback comparison"
             )

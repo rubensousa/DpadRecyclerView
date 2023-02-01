@@ -28,13 +28,25 @@
 
         <action
             android:id="@+id/open_standard_grid"
-            app:destination="@id/standard_grid_fragment" />
+            app:destination="@id/standard_grid_fragment">
+
+            <argument
+                android:name="reverseLayout"
+                android:defaultValue="false" />
+
+        </action>
 
     </fragment>
 
     <fragment
         android:id="@+id/standard_grid_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.StandardGridFragment" />
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.StandardGridFragment">
+
+        <argument
+            android:name="reverseLayout"
+            android:defaultValue="false" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/leanback_horizontal_fragment"

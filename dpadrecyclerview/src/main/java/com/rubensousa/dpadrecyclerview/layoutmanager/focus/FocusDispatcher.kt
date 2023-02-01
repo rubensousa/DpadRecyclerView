@@ -482,6 +482,12 @@ internal class FocusDispatcher(
             } else {
                 -1
             }
+            if (layoutInfo.shouldReverseLayout()
+                && (focusDirection == FocusDirection.NEXT_ITEM
+                        || focusDirection == FocusDirection.PREVIOUS_ITEM)
+            ) {
+                increment *= -1
+            }
             end = if (increment > 0) {
                 layoutInfo.getChildCount() - 1
             } else {
