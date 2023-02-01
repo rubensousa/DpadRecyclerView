@@ -197,10 +197,14 @@ internal abstract class StructureEngineer(
         }
         val firstPos = layoutInfo.findFirstAddedPosition()
         val lastPos = layoutInfo.findLastAddedPosition()
-        if (firstPos == RecyclerView.NO_POSITION || lastPos == RecyclerView.NO_POSITION) {
+        if (firstPos == NO_POSITION || lastPos == NO_POSITION) {
             return true
         }
-        return !itemChanges.isOutOfBounds(firstPos, lastPos)
+        return if (!layoutRequest.reverseLayout) {
+            !itemChanges.isOutOfBounds(firstPos, lastPos)
+        } else {
+            !itemChanges.isOutOfBounds(lastPos, firstPos)
+        }
     }
 
     fun scrollBy(offset: Int, recycler: Recycler, state: State): Int {
