@@ -22,13 +22,11 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
-import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
 internal class LayoutAlignment(
     private val layoutManager: LayoutManager,
-    private val layoutInfo: LayoutInfo,
-    private val configuration: LayoutConfiguration
+    private val layoutInfo: LayoutInfo
 ) {
 
     companion object {
@@ -39,19 +37,9 @@ internal class LayoutAlignment(
     private val childAlignment = ChildScrollAlignment()
     private val viewHolderAlignment = ViewHolderScrollAlignment()
 
-    fun reset() {
-        parentAlignment.reset()
-    }
-
     fun update() {
-        parentAlignment.setSize(layoutManager.width, layoutManager.height, layoutInfo.orientation)
-        parentAlignment.reverseLayout = layoutInfo.shouldReverseLayout()
-        parentAlignment.setPadding(
-            layoutManager.paddingLeft,
-            layoutManager.paddingRight,
-            layoutManager.paddingTop,
-            layoutManager.paddingBottom,
-            layoutInfo.orientation
+        parentAlignment.updateLayoutInfo(
+            layoutManager, layoutInfo.orientation, layoutInfo.shouldReverseLayout()
         )
     }
 
@@ -66,15 +54,6 @@ internal class LayoutAlignment(
     }
 
     fun getChildAlignment() = childAlignment.getAlignment()
-
-    /**
-     * Calculates the view center based on the alignment for this view
-     * specified by the parent and child alignment configurations.
-     */
-    fun calculateViewCenterForLayout(view: View): Int {
-        updateChildAlignments(view)
-        return parentAlignment.calculateKeyline()
-    }
 
     fun getParentKeyline(): Int {
         return parentAlignment.calculateKeyline()
@@ -120,32 +99,34 @@ internal class LayoutAlignment(
     }
 
     fun getCappedScroll(scrollOffset: Int): Int {
+        val endScrollLimit = if (!layoutInfo.shouldReverseLayout()) {
+            parentAlignment.endScrollLimit
+        } else {
+            parentAlignment.startScrollLimit
+        }
+        val startScrollLimit = parentAlignment.startScrollLimit
         return if (scrollOffset > 0) {
-            if (parentAlignment.isMaxUnknown) {
+            if (parentAlignment.isScrollLimitInvalid(endScrollLimit)) {
                 scrollOffset
-            } else if (scrollOffset > parentAlignment.maxScroll) {
-                parentAlignment.maxScroll
+            } else if (scrollOffset > endScrollLimit) {
+                endScrollLimit
             } else {
                 scrollOffset
             }
-        } else if (parentAlignment.isMinUnknown) {
+        } else if (parentAlignment.isScrollLimitInvalid(startScrollLimit)) {
             scrollOffset
-        } else if (scrollOffset < parentAlignment.minScroll) {
-            parentAlignment.minScroll
+        } else if (scrollOffset < startScrollLimit) {
+            startScrollLimit
         } else {
             scrollOffset
         }
     }
 
     fun calculateScrollForAlignment(view: View): Int {
-        updateScrollLimits()
         updateChildAlignments(view)
-        return calculateDistanceToKeyline(view)
+        updateScrollLimits()
+        return calculateScrollToTarget(view)
     }
-
-    fun getMaxScroll() = parentAlignment.maxScroll
-
-    fun getMinScroll() = parentAlignment.minScroll
 
     fun calculateScrollOffset(view: View, subPosition: Int): Int {
         val viewAtSubPosition = getViewAtSubPosition(view, subPosition)
@@ -171,134 +152,159 @@ internal class LayoutAlignment(
         if (alignments.isNullOrEmpty()) {
             // Use the default child alignment strategy
             // if this ViewHolder didn't request a custom alignment strategy
-            childAlignment.updateAlignments(view, layoutParams, layoutInfo.orientation)
+            childAlignment.updateAlignments(
+                view,
+                layoutParams,
+                layoutInfo.orientation,
+                layoutInfo.shouldReverseLayout()
+            )
         } else {
             viewHolderAlignment.updateAlignments(
-                view, layoutParams, alignments, layoutInfo.orientation
+                view,
+                layoutParams,
+                alignments,
+                layoutInfo.orientation,
+                layoutInfo.shouldReverseLayout()
             )
         }
     }
 
-    // This can only be called after all views are in their final positions
     fun updateScrollLimits() {
         val itemCount = layoutManager.itemCount
         if (itemCount == 0) {
             return
         }
-        val maxAddedPosition: Int
-        val minAddedPosition: Int
-        val maxEdgePosition: Int
-        val minEdgePosition: Int
+        val endAdapterPos: Int
+        val startAdapterPos: Int
+        val endLayoutPos: Int
+        val startLayoutPos: Int
         if (!layoutInfo.shouldReverseLayout()) {
-            maxAddedPosition = layoutInfo.findLastAddedPosition()
-            maxEdgePosition = itemCount - 1
-            minAddedPosition = layoutInfo.findFirstAddedPosition()
-            minEdgePosition = 0
+            endAdapterPos = layoutInfo.findLastAddedPosition()
+            endLayoutPos = itemCount - 1
+            startAdapterPos = layoutInfo.findFirstAddedPosition()
+            startLayoutPos = 0
         } else {
-            maxAddedPosition = layoutInfo.findFirstAddedPosition()
-            maxEdgePosition = 0
-            minAddedPosition = layoutInfo.findLastAddedPosition()
-            minEdgePosition = itemCount - 1
+            endAdapterPos = layoutInfo.findFirstAddedPosition()
+            endLayoutPos = 0
+            startAdapterPos = layoutInfo.findLastAddedPosition()
+            startLayoutPos = itemCount - 1
         }
-        if (maxAddedPosition < 0 || minAddedPosition < 0) {
-            parentAlignment.invalidateScrollMin()
-            parentAlignment.invalidateScrollMax()
+        if (endAdapterPos < 0 || startAdapterPos < 0) {
+            parentAlignment.invalidateScrollLimits()
             return
         }
-        val highAvailable = maxAddedPosition == maxEdgePosition
-        val lowAvailable = minAddedPosition == minEdgePosition
-        if (!highAvailable && parentAlignment.isMaxUnknown
-            && !lowAvailable && parentAlignment.isMinUnknown
+        val isEndAvailable = isEndAvailable(endAdapterPos, endLayoutPos, startLayoutPos)
+        val isStartAvailable = isStartAvailable(startAdapterPos, endLayoutPos, startLayoutPos)
+        if (!isEndAvailable && parentAlignment.isEndUnknown
+            && !isStartAvailable && parentAlignment.isStartUnknown
         ) {
             return
         }
-        val maxEdge: Int
-        var maxViewCenter = 0
-        if (highAvailable) {
-            maxEdge = getMaxEdge(maxAddedPosition) ?: Int.MAX_VALUE
-            layoutManager.findViewByPosition(maxAddedPosition)?.let { maxChild ->
-                maxViewCenter = getViewCenter(maxChild)
+        val endEdge: Int
+        var endViewAnchor = 0
+        if (isEndAvailable) {
+            endEdge = getEndEdge(endAdapterPos) ?: Int.MAX_VALUE
+            layoutManager.findViewByPosition(endAdapterPos)?.let { maxChild ->
+                endViewAnchor = getAnchor(maxChild)
                 val layoutParams = maxChild.layoutParams as DpadLayoutParams
                 val multipleAlignments = layoutParams.getAlignmentPositions()
                 if (multipleAlignments != null && multipleAlignments.isNotEmpty()) {
-                    maxViewCenter += multipleAlignments.last() - multipleAlignments.first()
+                    endViewAnchor += multipleAlignments.last() - multipleAlignments.first()
                 }
             }
         } else {
-            maxEdge = Int.MAX_VALUE
-            maxViewCenter = Int.MAX_VALUE
+            endEdge = Int.MAX_VALUE
+            endViewAnchor = Int.MAX_VALUE
         }
-        val minEdge: Int
-        var minViewCenter = 0
-        if (lowAvailable) {
-            minEdge = getMinEdge(minAddedPosition) ?: Int.MIN_VALUE
-            layoutManager.findViewByPosition(minAddedPosition)?.let { minChild ->
-                minViewCenter = getViewCenter(minChild)
+        val startEdge: Int
+        var startViewAnchor = 0
+        if (isStartAvailable) {
+            startEdge = getStartEdge(startAdapterPos) ?: Int.MIN_VALUE
+            layoutManager.findViewByPosition(startAdapterPos)?.let { minChild ->
+                startViewAnchor = getAnchor(minChild)
             }
         } else {
-            minEdge = Int.MIN_VALUE
-            minViewCenter = Int.MIN_VALUE
+            startEdge = Int.MIN_VALUE
+            startViewAnchor = Int.MIN_VALUE
         }
-        parentAlignment.updateMinMax(minEdge, maxEdge, minViewCenter, maxViewCenter)
-    }
-
-    private fun getMaxEdge(index: Int): Int? {
-        val view = layoutManager.findViewByPosition(index) ?: return null
-        return if (layoutInfo.shouldReverseLayout()) {
-            getViewMin(view)
+        if (!layoutInfo.shouldReverseLayout()) {
+            parentAlignment.updateEndLimit(endEdge, endViewAnchor)
+            parentAlignment.updateStartLimit(startEdge, startViewAnchor)
         } else {
-            getViewMax(view)
+            parentAlignment.updateStartLimit(endEdge, endViewAnchor)
+            parentAlignment.updateEndLimit(startEdge, startViewAnchor)
         }
     }
 
-    /**
-     * Will return the start coordinate of the view in horizontal mode
-     * or the top coordinate in vertical mode
-     */
-    private fun getMinEdge(index: Int): Int? {
-        val view = layoutManager.findViewByPosition(index) ?: return null
-        return if (layoutInfo.shouldReverseLayout()) {
-            getViewMax(view)
+    private fun isEndAvailable(
+        adapterPosition: Int,
+        maxLayoutPosition: Int,
+        minLayoutPosition: Int
+    ): Boolean {
+        return if (!layoutInfo.shouldReverseLayout()) {
+            adapterPosition == maxLayoutPosition
         } else {
-            getViewMin(view)
+            adapterPosition == minLayoutPosition
         }
     }
 
-    private fun getViewMin(view: View): Int {
-        return layoutInfo.orientationHelper.getDecoratedStart(view)
+    private fun isStartAvailable(
+        adapterPosition: Int,
+        maxLayoutPosition: Int,
+        minLayoutPosition: Int
+    ): Boolean {
+        return if (!layoutInfo.shouldReverseLayout()) {
+            adapterPosition == minLayoutPosition
+        } else {
+            adapterPosition == maxLayoutPosition
+        }
     }
 
-    private fun getViewMax(view: View): Int {
-        return layoutInfo.orientationHelper.getDecoratedEnd(view)
+    private fun getEndEdge(index: Int): Int? {
+        val view = layoutManager.findViewByPosition(index) ?: return null
+        return if (!layoutInfo.shouldReverseLayout()) {
+            layoutInfo.orientationHelper.getDecoratedEnd(view)
+        } else {
+            layoutInfo.orientationHelper.getDecoratedStart(view)
+        }
     }
 
-    private fun getViewCenter(view: View): Int {
+    private fun getStartEdge(index: Int): Int? {
+        val view = layoutManager.findViewByPosition(index) ?: return null
+        return if (!layoutInfo.shouldReverseLayout()) {
+            layoutInfo.orientationHelper.getDecoratedStart(view)
+        } else {
+            layoutInfo.orientationHelper.getDecoratedEnd(view)
+        }
+    }
+
+    private fun getAnchor(view: View): Int {
         return if (layoutInfo.isHorizontal()) {
-            getViewCenterX(view)
+            getHorizontalAnchor(view)
         } else {
-            getViewCenterY(view)
+            getVerticalAnchor(view)
         }
     }
 
-    private fun getViewCenterX(view: View): Int {
+    private fun getHorizontalAnchor(view: View): Int {
         val layoutParams = view.layoutParams as DpadLayoutParams
-        return layoutParams.getOpticalLeft(view) + layoutParams.alignX
+        return layoutParams.getOpticalLeft(view) + layoutParams.absoluteAnchor
     }
 
-    private fun getViewCenterY(view: View): Int {
+    private fun getVerticalAnchor(view: View): Int {
         val layoutParams = view.layoutParams as DpadLayoutParams
-        return layoutParams.getOpticalTop(view) + layoutParams.alignY
+        return layoutParams.getOpticalTop(view) + layoutParams.absoluteAnchor
     }
 
     /**
      * Return the scroll delta required to make the view selected and aligned.
      * If the returned value is 0, there is no need to scroll.
      */
-    private fun calculateDistanceToKeyline(
+    private fun calculateScrollToTarget(
         view: View,
         subPositionAlignment: ParentAlignment? = null
     ): Int {
-        return parentAlignment.calculateScrollDistance(getViewCenter(view), subPositionAlignment)
+        return parentAlignment.calculateScrollOffset(getAnchor(view), subPositionAlignment)
     }
 
     private fun calculateAdjustedAlignedScrollDistance(

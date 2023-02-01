@@ -25,7 +25,8 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 class NestedListAdapter(
     private val stateHolder: DpadStateHolder,
     private val onItemClickListener: ItemViewHolder.ItemClickListener,
-    private val slowScroll: Boolean
+    private val slowScroll: Boolean,
+    private val reverseLayout: Boolean
 ) : MutableListAdapter<ListModel, AbstractListViewHolder>(DIFF_CALLBACK) {
 
     companion object {
@@ -57,7 +58,13 @@ class NestedListAdapter(
         return if (viewType == ListTypes.LIST_START_LEANBACK) {
             LeanbackViewHolder(view, view.findViewById(R.id.recyclerView), itemLayoutId)
         } else {
-            DpadListViewHolder(view, view.findViewById(R.id.recyclerView), itemLayoutId, slowScroll)
+            DpadListViewHolder(
+                view,
+                view.findViewById(R.id.recyclerView),
+                itemLayoutId,
+                slowScroll,
+                reverseLayout
+            )
         }
     }
 

@@ -39,7 +39,7 @@ object DpadRecyclerViewMatchers {
                 mismatchDescription: Description
             ): Boolean {
                 val itemView = searchForItemView(view.parent)
-                if (itemView == null ){
+                if (itemView == null) {
                     mismatchDescription.appendText("view is not a child of a RecyclerView")
                     return false
                 }
@@ -49,7 +49,7 @@ object DpadRecyclerViewMatchers {
                     return true
                 }
 
-                mismatchDescription.appendText("view is at position $position instead")
+                mismatchDescription.appendText("view not found at position $position")
                 return false
             }
 

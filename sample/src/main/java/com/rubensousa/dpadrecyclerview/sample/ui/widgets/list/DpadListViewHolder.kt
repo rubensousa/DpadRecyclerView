@@ -16,7 +16,10 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
+import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
+import android.widget.FrameLayout
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
@@ -26,13 +29,17 @@ class DpadListViewHolder(
     view: View,
     val dpadRecyclerView: DpadRecyclerView,
     itemLayoutId: Int,
-    slowScroll: Boolean
-) : AbstractListViewHolder(view, dpadRecyclerView, itemLayoutId) {
+    slowScroll: Boolean,
+    reverseLayout: Boolean
+) : AbstractListViewHolder(view, dpadRecyclerView, itemLayoutId, reverseLayout) {
 
     private val selectionView = view.findViewById<View>(R.id.selectionOverlayView)
 
     init {
         onViewHolderDeselected()
+        if (reverseLayout) {
+            setupReversedLayout()
+        }
         if (slowScroll) {
             setupSlowScrollingBehavior()
         }
@@ -46,6 +53,14 @@ class DpadListViewHolder(
     override fun onViewHolderDeselected() {
         super.onViewHolderDeselected()
         selectionView.isActivated = false
+    }
+
+    private fun setupReversedLayout() {
+        val layoutParams = selectionView.layoutParams as FrameLayout.LayoutParams
+        layoutParams.marginEnd = layoutParams.marginStart
+        layoutParams.gravity = Gravity.CENTER_VERTICAL.or(Gravity.END)
+        selectionView.layoutParams = layoutParams
+        dpadRecyclerView.setReverseLayout(true)
     }
 
     private fun setupSlowScrollingBehavior() {

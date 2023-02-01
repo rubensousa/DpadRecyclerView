@@ -546,6 +546,33 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Used to reverse item traversal and layout order.
+     * This behaves similar to the layout change for RTL views. When set to true, first item is
+     * laid out at the end of the UI, second item is laid out before it etc.
+     *
+     * For horizontal layouts, it depends on the layout direction.
+     *
+     * When set to true:
+     * - If this [DpadRecyclerView] is LTR, then it will layout from RTL.
+     * - If it is RTL, it will layout from LTR.
+     *
+     * @param reverseLayout `True` to reverse the layout order
+     */
+    fun setReverseLayout(reverseLayout: Boolean) {
+        requireLayout().setReverseLayout(reverseLayout)
+    }
+
+    /**
+     * Returns if views are laid out from the opposite direction of the layout.
+     *
+     * @return If layout is reversed or not.
+     * @see [setReverseLayout]
+     */
+    open fun isLayoutReversed(): Boolean {
+        return requireLayout().getConfig().reverseLayout
+    }
+
+    /**
      * Sets the gravity used for child view positioning.
      * Defaults to [Gravity.TOP] for horizontal orientation
      * and [Gravity.START] for vertical orientation.

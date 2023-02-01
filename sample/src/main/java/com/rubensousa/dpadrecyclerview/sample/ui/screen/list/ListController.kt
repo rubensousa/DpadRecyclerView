@@ -40,7 +40,7 @@ import timber.log.Timber
 
 class ListController(
     private val fragment: Fragment,
-    private val slowScroll: Boolean
+    private val args: ListFragmentArgs
 ) {
 
     private var selectedPosition = RecyclerView.NO_POSITION
@@ -52,7 +52,9 @@ class ListController(
             override fun onViewHolderClicked() {
                 fragment.findNavController().navigate(R.id.open_detail)
             }
-        }, slowScroll
+        },
+        slowScroll = args.slowScroll,
+        reverseLayout = args.reverseLayout
     )
     private var dpadRecyclerView: DpadRecyclerView? = null
     private var gridView: BaseGridView? = null
@@ -62,20 +64,20 @@ class ListController(
         lifecycleOwner: LifecycleOwner,
         onSelected: (position: Int) -> Unit
     ) {
-       // RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
+        RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
         recyclerView.itemAnimator = DefaultItemAnimator().also { animator ->
-            animator.supportsChangeAnimations = false
             // Just here to preview changes
             // animator.removeDuration = 500L
             // animator.addDuration = 500L
             // animator.moveDuration = 2000L
         }
         dpadRecyclerView = recyclerView
+        recyclerView.setReverseLayout(args.reverseLayout)
         setupAdapter(recyclerView)
-        setupSpacings(recyclerView)
+        setupSpacings(recyclerView, recyclerView.isLayoutReversed())
         setupPagination(recyclerView, onSelected)
         setupLifecycle(lifecycleOwner)
-        if (slowScroll) {
+        if (args.slowScroll) {
             LimitedScrollBehavior().setup(recyclerView, { 0 }, { 0 }, maxPendingAlignments = 1)
         }
 
@@ -144,13 +146,12 @@ class ListController(
         gridView = recyclerView
         recyclerView.itemAnimator = DefaultItemAnimator().also { animator ->
             // Just here to preview changes
-            animator.supportsChangeAnimations = false
             // animator.removeDuration = 2000L
             // animator.addDuration = 2000L
             //  animator.moveDuration = 2000L
         }
         setupAdapter(recyclerView)
-        setupSpacings(recyclerView)
+        setupSpacings(recyclerView, false)
         setupPagination(recyclerView, onSelected)
         setupLifecycle(lifecycleOwner)
 
@@ -258,12 +259,13 @@ class ListController(
         })
     }
 
-    private fun setupSpacings(recyclerView: RecyclerView) {
+    private fun setupSpacings(recyclerView: RecyclerView, reverseLayout: Boolean) {
         recyclerView.addItemDecoration(
             LinearMarginDecoration.createVertical(
                 verticalMargin = recyclerView.resources.getDimensionPixelOffset(
                     R.dimen.item_spacing
-                )
+                ),
+                inverted = reverseLayout
             )
         )
     }

@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import kotlin.math.max
@@ -24,224 +25,180 @@ import kotlin.math.min
 
 internal class ParentScrollAlignment {
 
-    val isMinUnknown: Boolean
-        get() = minEdge == Int.MIN_VALUE
+    val isStartUnknown: Boolean
+        get() = isScrollLimitInvalid(startEdge)
 
-    val isMaxUnknown: Boolean
-        get() = maxEdge == Int.MAX_VALUE
+    val isEndUnknown: Boolean
+        get() = isScrollLimitInvalid(endEdge)
 
     var defaultAlignment = ParentAlignment(edge = Edge.MIN_MAX)
-    var orientation = RecyclerView.VERTICAL
 
-    /**
-     * Scroll distance to align first child, it defines limit of scroll.
-     */
-    var minScroll = 0
+    var startScrollLimit = Int.MIN_VALUE
         private set
 
-    /**
-     * Scroll distance to align last child, it defines limit of scroll.
-     */
-    var maxScroll = 0
+    var endScrollLimit = Int.MAX_VALUE
         private set
 
-    var reverseLayout = false
+    private var reverseLayout = false
+    private var size = 0
+    private var paddingStart = 0
+    private var paddingEnd = 0
+    private var endEdge = Int.MAX_VALUE
+    private var startEdge = Int.MIN_VALUE
 
-    var size = 0
-        private set
-
-    private val sizeWithoutPaddings: Int
-        get() = size - paddingMin - paddingMax
-
-    /**
-     * Padding at the min edge, it is the left or top padding.
-     */
-    private var paddingMin = 0
-
-    /**
-     * Padding at the max edge, it is the right or bottom padding.
-     */
-    private var paddingMax = 0
-
-    /**
-     * Right or bottom edge of last child.
-     */
-    private var maxEdge = 0
-
-    /**
-     * Left or top edge of first child
-     */
-    private var minEdge = 0
-
-    fun invalidateScrollMin() {
-        minEdge = Int.MIN_VALUE
-        minScroll = Int.MIN_VALUE
-    }
-
-    fun invalidateScrollMax() {
-        maxEdge = Int.MAX_VALUE
-        maxScroll = Int.MAX_VALUE
-    }
-
-    fun setSize(width: Int, height: Int, orientation: Int) {
+    fun updateLayoutInfo(layoutManager: LayoutManager, orientation: Int, reverseLayout: Boolean) {
         size = if (orientation == RecyclerView.HORIZONTAL) {
-            width
+            layoutManager.width
         } else {
-            height
+            layoutManager.height
         }
-    }
-
-    fun setPadding(left: Int, right: Int, top: Int, bottom: Int, orientation: Int) {
+        this.reverseLayout = reverseLayout
         if (orientation == RecyclerView.HORIZONTAL) {
-            paddingMin = left
-            paddingMax = right
+            paddingStart = layoutManager.paddingStart
+            paddingEnd = layoutManager.paddingEnd
         } else {
-            paddingMin = top
-            paddingMax = bottom
+            paddingStart = layoutManager.paddingTop
+            paddingEnd = layoutManager.paddingBottom
         }
     }
 
-    fun updateMinMax(
-        minEdge: Int, maxEdge: Int,
-        minChildViewCenter: Int, maxChildViewCenter: Int
-    ) {
-        this.minEdge = minEdge
-        this.maxEdge = maxEdge
+    fun isScrollLimitInvalid(scroll: Int): Boolean {
+        return scroll == Int.MIN_VALUE || scroll == Int.MAX_VALUE
+    }
+
+    fun invalidateScrollLimits() {
+        startEdge = Int.MIN_VALUE
+        startScrollLimit = Int.MIN_VALUE
+
+        endEdge = Int.MAX_VALUE
+        endScrollLimit = Int.MAX_VALUE
+    }
+
+    fun updateStartLimit(edge: Int, viewAnchor: Int) {
+        startEdge = edge
+        if (isStartUnknown) {
+            startScrollLimit = Int.MIN_VALUE
+            return
+        }
         val keyLine = calculateKeyline(defaultAlignment)
-        val isMinUnknown = isMinUnknown
-        val isMaxUnknown = isMaxUnknown
-        if (!isMinUnknown) {
-            val alignToMinEdge = if (!reverseLayout) {
-                shouldAlignToMinEdge(defaultAlignment)
-            } else {
-                shouldAlignToMaxEdge(defaultAlignment)
-            }
-            if (alignToMinEdge) {
-                // calculate scroll distance to move current minEdge to padding at min edge
-                minScroll = minEdge - paddingMin
-            } else {
-                // calculate scroll distance to move min child center to key line
-                minScroll = calculateScrollToKeyLine(minChildViewCenter, keyLine)
-            }
+        startScrollLimit = if (shouldAlignViewToStart(viewAnchor, keyLine, defaultAlignment.edge)) {
+            calculateScrollOffsetToStartEdge(edge)
+        } else {
+            calculateScrollOffsetToKeyline(viewAnchor, keyLine)
         }
-        if (!isMaxUnknown) {
-            val alignToMaxEdge = if (!reverseLayout) {
-                shouldAlignToMaxEdge(defaultAlignment)
-            } else {
-                shouldAlignToMinEdge(defaultAlignment)
-            }
-            if (alignToMaxEdge) {
-                // calculate scroll distance to move current maxEdge to padding at max edge
-                maxScroll = maxEdge - paddingMin - sizeWithoutPaddings
-            } else {
-                // calculate scroll distance to move max child center to key line
-                maxScroll = calculateScrollToKeyLine(maxChildViewCenter, keyLine)
-            }
+    }
+
+    fun updateEndLimit(edge: Int, viewAnchor: Int) {
+        this.endEdge = edge
+        if (isEndUnknown) {
+            endScrollLimit = Int.MAX_VALUE
+            return
         }
-        if (!isMaxUnknown && !isMinUnknown) {
-            if (!reverseLayout) {
-                if (shouldAlignToMinEdge(defaultAlignment)) {
-                    // don't over scroll max
-                    maxScroll = max(minScroll, maxScroll)
-                } else if (shouldAlignToMaxEdge(defaultAlignment)) {
-                    // don't over scroll min
-                    minScroll = min(minScroll, maxScroll)
-                }
-            } else {
-                if (shouldAlignToMinEdge(defaultAlignment)) {
-                    // don't over scroll min
-                    minScroll = min(minScroll, maxScroll)
-                } else if (shouldAlignToMaxEdge(defaultAlignment)) {
-                    // don't over scroll max
-                    maxScroll = max(minScroll, maxScroll)
-                }
-            }
+        val keyLine = calculateKeyline(defaultAlignment)
+        endScrollLimit = if (shouldAlignViewToEnd(viewAnchor, keyLine, defaultAlignment.edge)) {
+            calculateScrollOffsetToEndEdge(edge)
+        } else {
+            calculateScrollOffsetToKeyline(viewAnchor, keyLine)
         }
+    }
+
+    private fun calculateScrollOffsetToEndEdge(edge: Int): Int {
+        return edge - getLayoutEndEdge()
+    }
+
+    private fun calculateScrollOffsetToStartEdge(edge: Int): Int {
+        return edge - getLayoutStartEdge()
     }
 
     /**
-     * Get scroll distance to align an item centered around [viewCenter].
+     * Returns the scroll target position to align an item centered around [viewAnchor].
      * Item will either be aligned to the keyline position or to either min or max edges
      * according to the current [defaultAlignment].
-     * The scroll distance will be capped by [minScroll] and [maxScroll]
      */
-    fun calculateScrollDistance(
-        viewCenter: Int, subPositionAlignment: ParentAlignment? = null
+    fun calculateScrollOffset(
+        viewAnchor: Int, subPositionAlignment: ParentAlignment? = null
     ): Int {
         val alignment = subPositionAlignment ?: defaultAlignment
-        val keyLine = calculateKeyline(alignment)
-        if (!isMinUnknown) {
-            val keyLineToMinEdge = keyLine - paddingMin
-            val alignToMinEdge = if (!reverseLayout) {
-                shouldAlignToMinEdge(alignment)
-            } else {
-                shouldAlignToMaxEdge(alignment)
+        val keyline = calculateKeyline(alignment)
+        val alignToStartEdge = shouldAlignViewToStart(viewAnchor, keyline, alignment.edge)
+        val alignToEndEdge = shouldAlignViewToEnd(viewAnchor, keyline, alignment.edge)
+        if (!reverseLayout) {
+            if (alignToStartEdge) {
+                return min(startScrollLimit, calculateScrollOffsetToStartEdge(viewAnchor))
             }
-            if (alignToMinEdge && viewCenter - minEdge <= keyLineToMinEdge) {
-                // view center is before key line: align the min edge (first child) to padding.
-                var alignToMin = minEdge - paddingMin
-                // Also we need make sure don't over scroll
-                if (!isMaxUnknown && alignToMin > maxScroll) {
-                    alignToMin = maxScroll
-                }
-                return alignToMin
+            if (alignToEndEdge) {
+                return max(endScrollLimit, calculateScrollOffsetToEndEdge(viewAnchor))
             }
-        }
-        if (!isMaxUnknown) {
-            val keyLineToMaxEdge = size - keyLine - paddingMax
-            val alignToMaxEdge = if (!reverseLayout) {
-                shouldAlignToMaxEdge(alignment)
-            } else {
-                shouldAlignToMinEdge(alignment)
+        } else {
+            if (alignToEndEdge) {
+                return max(endScrollLimit, calculateScrollOffsetToEndEdge(viewAnchor))
             }
-            if (alignToMaxEdge && maxEdge - viewCenter <= keyLineToMaxEdge) {
-                // view center is after key line: align the max edge (last child) to padding.
-                var alignToMax = maxEdge - (size - paddingMax)
-                // Also we need make sure don't over scroll
-                if (!isMinUnknown && alignToMax < minScroll) {
-                    alignToMax = minScroll
-                }
-                return alignToMax
+            if (alignToStartEdge) {
+                return min(startScrollLimit, calculateScrollOffsetToStartEdge(viewAnchor))
             }
         }
-        // else put view center at key line.
-        return calculateScrollToKeyLine(viewCenter, keyLine)
-    }
-
-    fun reset() {
-        minEdge = Int.MIN_VALUE
-        maxEdge = Int.MAX_VALUE
+        return calculateScrollOffsetToKeyline(viewAnchor, keyline)
     }
 
     fun calculateKeyline(alignment: ParentAlignment = defaultAlignment): Int {
         var keyLine = 0
         if (!reverseLayout) {
             if (alignment.isOffsetRatioEnabled) {
-                keyLine += (size * alignment.offsetRatio).toInt()
+                keyLine = (size * alignment.offsetRatio).toInt()
             }
             keyLine += alignment.offset
         } else {
             if (alignment.isOffsetRatioEnabled) {
-                keyLine -= (size * (1f - alignment.offsetRatio)).toInt()
+                keyLine = (size * (1.0f - alignment.offsetRatio)).toInt()
+                keyLine -= alignment.offset
+            } else {
+                keyLine = size - alignment.offset
             }
-            keyLine -= alignment.offset
         }
         return keyLine
     }
 
-    /**
-     * Returns scroll distance to move viewCenterPosition to keyLine.
-     */
-    private fun calculateScrollToKeyLine(viewCenterPosition: Int, keyLine: Int): Int {
-        return viewCenterPosition - keyLine
+    private fun shouldAlignViewToStart(viewCenter: Int, keyline: Int, edge: Edge): Boolean {
+        if (isStartUnknown || !shouldAlignToStartEdge(edge)) {
+            return false
+        }
+        return viewCenter - startEdge <= keyline - paddingStart
     }
 
-    private fun shouldAlignToMinEdge(alignment: ParentAlignment): Boolean {
-        return alignment.edge == Edge.MIN || alignment.edge == Edge.MIN_MAX
+    private fun shouldAlignViewToEnd(viewCenter: Int, keyline: Int, edge: Edge): Boolean {
+        if (isEndUnknown || !shouldAlignToEndEdge(edge)) {
+            return false
+        }
+        if (endEdge < size - paddingEnd) {
+            return true
+        }
+        return endEdge - viewCenter <= size - keyline - paddingEnd
     }
 
-    private fun shouldAlignToMaxEdge(alignment: ParentAlignment): Boolean {
-        return alignment.edge == Edge.MAX || alignment.edge == Edge.MIN_MAX
+    private fun calculateScrollOffsetToKeyline(anchor: Int, keyline: Int): Int {
+        return anchor - keyline
+    }
+
+    private fun getLayoutEndEdge(): Int {
+        return size - paddingEnd
+    }
+
+    private fun getLayoutStartEdge(): Int {
+        return paddingStart
+    }
+
+    private fun shouldAlignToStartEdge(edge: Edge): Boolean {
+        if (edge == Edge.MIN_MAX) {
+            return true
+        }
+        return (!reverseLayout && edge == Edge.MIN) || (reverseLayout && edge == Edge.MAX)
+    }
+
+    private fun shouldAlignToEndEdge(edge: Edge): Boolean {
+        if (edge == Edge.MIN_MAX) {
+            return true
+        }
+        return (!reverseLayout && edge == Edge.MAX) || (reverseLayout && edge == Edge.MIN)
     }
 
 }

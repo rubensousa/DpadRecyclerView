@@ -41,19 +41,23 @@ class MainFragment : Fragment(R.layout.screen_main) {
         return listOf(
             ScreenDestination(
                 direction = MainFragmentDirections.openList(),
-                title = "List -> Detail"
+                title = "Nested List -> Detail"
             ),
             ScreenDestination(
                 direction = MainFragmentDirections.openStandardGrid(),
                 title = "Standard grid"
             ),
             ScreenDestination(
-                direction = MainFragmentDirections.openSlowScrollList(),
-                title = "List Slow Scroll"
+                direction = MainFragmentDirections.openList().apply { slowScroll = true },
+                title = "Nested List Slow Scroll"
+            ),
+            ScreenDestination(
+                direction = MainFragmentDirections.openList().apply { reverseLayout = true },
+                title = "Nested Reversed list"
             ),
             ScreenDestination(
                 direction = MainFragmentDirections.openHorizontalLeanback(),
-                title = "Horizontal Leanback"
+                title = "Horizontal Leanback comparison"
             )
         )
     }

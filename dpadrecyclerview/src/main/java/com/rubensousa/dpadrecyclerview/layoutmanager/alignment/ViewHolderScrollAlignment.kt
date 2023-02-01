@@ -26,13 +26,15 @@ internal class ViewHolderScrollAlignment {
         view: View,
         layoutParams: DpadLayoutParams,
         alignments: List<ViewHolderAlignment>,
-        orientation: Int
+        orientation: Int,
+        reverseLayout: Boolean,
     ) {
         // Calculate item alignments for each sub position
         val subAlignments = getSubAlignmentPositions(
-            view, layoutParams, alignments, layoutParams.getAlignmentPositions(), orientation
+            view, layoutParams, alignments,
+            layoutParams.getAlignmentPositions(), orientation, reverseLayout
         )
-        layoutParams.setAlignments(subAlignments, orientation)
+        layoutParams.setAlignments(subAlignments)
     }
 
     private fun getSubAlignmentPositions(
@@ -40,20 +42,23 @@ internal class ViewHolderScrollAlignment {
         layoutParams: DpadLayoutParams,
         alignments: List<ViewHolderAlignment>,
         currentPositions: IntArray?,
-        orientation: Int
+        orientation: Int,
+        reverseLayout: Boolean
     ): IntArray? {
         if (alignments.isEmpty()) {
             return null
         }
-        val alignmentCache =
-            if (currentPositions == null || currentPositions.size != alignments.size) {
-                IntArray(alignments.size)
-            } else {
-                currentPositions
-            }
+        val alignmentCache = if (currentPositions == null
+            || currentPositions.size != alignments.size
+        ) {
+            IntArray(alignments.size)
+        } else {
+            currentPositions
+        }
         alignments.forEachIndexed { index, alignment ->
-            alignmentCache[index] =
-                getAlignmentPosition(itemView, layoutParams, alignment, orientation)
+            alignmentCache[index] = getAlignmentPosition(
+                itemView, layoutParams, alignment, orientation, reverseLayout
+            )
         }
         return alignmentCache
     }
@@ -62,11 +67,12 @@ internal class ViewHolderScrollAlignment {
         itemView: View,
         layoutParams: DpadLayoutParams,
         alignment: ViewHolderAlignment,
-        orientation: Int
+        orientation: Int,
+        reverseLayout: Boolean
     ): Int {
         val alignmentView = getAlignmentView(itemView, alignment)
-        return ViewAlignmentHelper.getAlignmentPosition(
-            itemView, alignmentView, layoutParams, alignment, orientation
+        return ViewAnchorHelper.calculateAnchor(
+            itemView, alignmentView, layoutParams, alignment, orientation, reverseLayout
         )
     }
 

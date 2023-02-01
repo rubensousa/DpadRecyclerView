@@ -112,5 +112,4 @@ class RowLayoutTest {
         row.assertViewBounds(expectedFirstBounds.offsetHorizontallyBy(-scrollDistance))
     }
 
-
 }

@@ -48,6 +48,7 @@ abstract class LayoutMatrix(
      * Starts the layout with the view at [position] aligned in its final location
      */
     fun init(position: Int) {
+        layoutRequest.init(config.reversed)
         clear()
         selectedPosition = position
         initializeLayout(position)

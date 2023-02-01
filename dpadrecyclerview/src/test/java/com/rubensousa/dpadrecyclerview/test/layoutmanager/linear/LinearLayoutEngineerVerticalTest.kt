@@ -46,7 +46,7 @@ class LinearLayoutEngineerVerticalTest {
     private val layoutAlignmentMock = LayoutAlignmentMock(parentKeyline = keyline)
     private val listener = Listener()
     private val recyclerMock = RecyclerMock(viewAdapter)
-    private val layoutManagerMock = LayoutManagerMock(viewAdapter, recyclerMock)
+    private val layoutManagerMock = LayoutManagerMock(recyclerMock)
     private val layoutManager: RecyclerView.LayoutManager = layoutManagerMock.get()
     private val recyclerViewStateMock = RecyclerViewStateMock()
     private val layoutInfo = LayoutInfo(

@@ -10,15 +10,15 @@
 
         <action
             android:id="@+id/open_list"
-            app:destination="@id/list_fragment" />
-
-        <action
-            android:id="@+id/open_slow_scroll_list"
             app:destination="@id/list_fragment">
 
             <argument
                 android:name="slowScroll"
-                android:defaultValue="true" />
+                android:defaultValue="false" />
+
+            <argument
+                android:name="reverseLayout"
+                android:defaultValue="false" />
 
         </action>
 
@@ -46,6 +46,10 @@
 
         <argument
             android:name="slowScroll"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="reverseLayout"
             android:defaultValue="false" />
 
         <action

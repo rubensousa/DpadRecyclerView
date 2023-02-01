@@ -12,6 +12,7 @@
         android:orientation="vertical"
         app:dpadRecyclerViewChildAlignmentOffsetRatio="0.5"
         app:dpadRecyclerViewFocusOutBack="false"
+        app:dpadRecyclerViewFocusOutFront="false"
         app:dpadRecyclerViewParentAlignmentEdge="min"
         app:dpadRecyclerViewParentAlignmentOffsetRatio="0.5" />
 

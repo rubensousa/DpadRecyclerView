@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 import android.view.View
 import androidx.annotation.MainThread
-import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
@@ -34,17 +33,18 @@ internal class ChildScrollAlignment {
 
     fun getAlignment() = alignment
 
-    fun updateAlignments(view: View, layoutParams: DpadLayoutParams, orientation: Int) {
-        val alignmentPosition = ViewAlignmentHelper.getAlignmentPosition(
+    fun updateAlignments(
+        view: View,
+        layoutParams: DpadLayoutParams,
+        orientation: Int,
+        reverseLayout: Boolean
+    ) {
+        val anchor = ViewAnchorHelper.calculateAnchor(
             itemView = view,
             alignmentView = view,
-            layoutParams, alignment, orientation
+            layoutParams, alignment, orientation, reverseLayout
         )
-        if (orientation == RecyclerView.HORIZONTAL) {
-            layoutParams.setAlignX(alignmentPosition)
-        } else {
-            layoutParams.setAlignY(alignmentPosition)
-        }
+        layoutParams.setAbsoluteAnchor(anchor)
     }
 
 }

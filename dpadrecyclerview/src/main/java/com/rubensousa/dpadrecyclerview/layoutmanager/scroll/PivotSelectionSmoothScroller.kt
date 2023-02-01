@@ -85,7 +85,7 @@ internal class PivotSelectionSmoothScroller(
     private fun isGoingTowardsStart(targetPosition: Int): Boolean {
         val firstChild = requireNotNull(recyclerView.getChildAt(0))
         val firstChildPosition = layoutInfo.getLayoutPositionOf(firstChild)
-        return if (layoutInfo.isRTL() && layoutInfo.isHorizontal()) {
+        return if (layoutInfo.shouldReverseLayout()) {
             targetPosition > firstChildPosition
         } else {
             targetPosition < firstChildPosition

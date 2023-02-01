@@ -39,6 +39,7 @@ class LayoutBlockRequest {
      * Adapter item direction: 1 -> towards end, -1 -> towards start
      */
     private var defaultItemDirection = 1
+
     var currentItemDirection = defaultItemDirection
         private set
 
@@ -46,6 +47,10 @@ class LayoutBlockRequest {
      * Total space to be laid out
      */
     var space: Int = 0
+
+    fun init(reversed: Boolean) {
+        defaultItemDirection = if (reversed) -1 else 1
+    }
 
     fun isTowardsEnd() = layoutDirection > 0
 

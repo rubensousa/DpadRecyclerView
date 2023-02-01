@@ -27,25 +27,37 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
     // TODO For custom placement
     var leftInset = 0
         private set
+
     var topInset = 0
         private set
+
     var rightInset = 0
         private set
+
     var bottomInset = 0
         private set
 
-    // For alignment
-    var alignX = 0
-        private set
-    var alignY = 0
+    /**
+     * Anchor alignment position. Always measured from start to end
+     */
+    var absoluteAnchor: Int = 0
         private set
 
+    /**
+     * Current span size as of the latest layout pass
+     */
     var spanSize = 1
         private set
 
+    /**
+     * Current span index (column index) as of the latest layout pass
+     */
     var spanIndex = 0
         private set
 
+    /**
+     * Current span group index (row index) as of the latest layout pass
+     */
     var spanGroupIndex = 0
         private set
 
@@ -98,30 +110,21 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
         return height - topInset - bottomInset
     }
 
-    fun getAlignmentPositions(): IntArray? {
+    internal fun getAlignmentPositions(): IntArray? {
         return alignmentPositions
     }
 
-    fun setAlignX(value: Int) {
-        alignX = value
+    internal fun setAbsoluteAnchor(anchor: Int) {
+        absoluteAnchor = anchor
     }
 
-    fun setAlignY(value: Int) {
-        alignY = value
-    }
-
-    fun setAlignments(newAlignments: IntArray?, orientation: Int) {
+    internal fun setAlignments(newAlignments: IntArray?) {
         alignmentPositions = newAlignments
         if (newAlignments == null) {
-            alignX = 0
-            alignY = 0
+            absoluteAnchor = 0
             return
         }
-        if (orientation == RecyclerView.HORIZONTAL) {
-            alignX = newAlignments[0]
-        } else {
-            alignY = newAlignments[0]
-        }
+        absoluteAnchor = newAlignments[0]
     }
 
 }

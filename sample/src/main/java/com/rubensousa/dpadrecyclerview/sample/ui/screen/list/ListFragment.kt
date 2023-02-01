@@ -34,7 +34,7 @@ class ListFragment : Fragment(R.layout.screen_tv_nested_lists) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        listController = ListController(this, args.slowScroll)
+        listController = ListController(this, args)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

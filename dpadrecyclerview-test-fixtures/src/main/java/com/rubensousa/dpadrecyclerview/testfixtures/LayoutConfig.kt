@@ -26,5 +26,6 @@ data class LayoutConfig(
     val defaultItemCount: Int,
     val parentKeyline: Int,
     val childKeyline: Float,
+    val reversed: Boolean = false,
     val decorInsets: ViewBounds = ViewBounds(0, 0, 0, 0)
 )

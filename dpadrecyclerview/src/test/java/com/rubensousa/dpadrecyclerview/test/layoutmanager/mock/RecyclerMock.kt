@@ -38,6 +38,8 @@ internal class RecyclerMock(
 
     fun get(): RecyclerView.Recycler = mock
 
+    fun getItemCount() = viewAdapter.getItemCount()
+
     fun setScrap(views: List<View>) {
         scrapList = List(views.size) { index ->
             TestViewAdapter.ViewHolder(views[index])

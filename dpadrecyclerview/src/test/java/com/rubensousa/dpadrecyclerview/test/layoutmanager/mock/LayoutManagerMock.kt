@@ -23,7 +23,6 @@ import io.mockk.every
 import io.mockk.mockk
 
 internal class LayoutManagerMock(
-    val viewAdapter: TestViewAdapter,
     val recyclerMock: RecyclerMock,
     val parentWidth: Int = 1920,
     val parentHeight: Int = 1080
@@ -44,7 +43,7 @@ internal class LayoutManagerMock(
     var bottomPadding = 0
 
     init {
-        every { mock.itemCount }.answers { viewAdapter.getItemCount() }
+        every { mock.itemCount }.answers { recyclerMock.getItemCount() }
         every { mock.addView(any()) }.answers {
             addView(it.invocation.args.first() as View, false)
         }

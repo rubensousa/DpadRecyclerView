@@ -170,11 +170,7 @@ internal class SearchPivotSmoothScroller(
     }
 
     fun addScrollMovement(forward: Boolean) {
-        if (forward) {
-            movements.increase()
-        } else {
-            movements.decrease()
-        }
+        movements.add(forward)
     }
 
     fun cancel() {
