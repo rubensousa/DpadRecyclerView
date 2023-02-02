@@ -2,7 +2,6 @@ package com.rubensousa.dpadrecyclerview.test.tests.layout
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.truth.Truth
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
@@ -10,9 +9,7 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
-import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
 import com.rubensousa.dpadrecyclerview.testfixtures.VerticalGridLayout
-import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.Before
 import org.junit.Test
@@ -54,7 +51,7 @@ class VerticalGridTest : DpadRecyclerViewTest() {
         val itemWidth = recyclerViewBounds.width() / spanCount
         val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
         val itemHeight = resources.getDimensionPixelOffset(
-            R.dimen.dpadrecyclerview_test_grid_item_height
+            R.dimen.dpadrecyclerview_test_grid_item_size
         )
 
         grid = VerticalGridLayout(

@@ -85,17 +85,8 @@ class DpadLinearSpacingDecoration private constructor(
         val itemCount = state.itemCount
         val reverseLayout = parent.isLayoutReversed()
 
-        val isAtStartEdge = if (!reverseLayout) {
-            layoutPosition == 0
-        } else {
-            layoutPosition == itemCount - 1
-        }
-
-        val isAtEndEdge = if (!reverseLayout) {
-            layoutPosition == itemCount - 1
-        } else {
-            layoutPosition == 0
-        }
+        val isAtStartEdge = layoutPosition == 0
+        val isAtEndEdge = layoutPosition == itemCount - 1
 
         if (parent.getOrientation() == RecyclerView.VERTICAL) {
             applyVertically(outRect, isAtStartEdge, isAtEndEdge, reverseLayout)

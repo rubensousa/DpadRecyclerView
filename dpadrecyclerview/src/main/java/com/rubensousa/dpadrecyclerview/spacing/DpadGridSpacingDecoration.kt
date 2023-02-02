@@ -30,11 +30,13 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
  *
  * @param horizontalItemSpacing horizontal spacing between items
  *
- * @param horizontalEdgeSpacing horizontal spacing in items bordering an edge
+ * @param horizontalEdgeSpacing horizontal spacing in items bordering an edge.
+ * Only applied to horizontal grids
  *
  * @param verticalItemSpacing vertical spacing between items
  *
- * @param verticalEdgeSpacing vertical spacing in items bordering an edge
+ * @param verticalEdgeSpacing vertical spacing in items bordering an edge.
+ * Only applied to vertical grids
  *
  */
 class DpadGridSpacingDecoration constructor(
@@ -91,7 +93,7 @@ class DpadGridSpacingDecoration constructor(
         reverseLayout: Boolean
     ) {
         val startSpanSpace = spanCount - spanIndex
-        val endSpanSpace = spanIndex + 1 + (spanSize - 1)
+        val endSpanSpace = spanIndex + spanSize
         val startSpacing = horizontalItemSpacing * (startSpanSpace / spanCount.toFloat())
         val endSpacing = horizontalItemSpacing * (endSpanSpace / spanCount.toFloat())
 
@@ -129,7 +131,7 @@ class DpadGridSpacingDecoration constructor(
         reverseLayout: Boolean
     ) {
         val startSpanSpace = spanCount - spanIndex
-        val endSpanSpace = spanIndex + 1 + (spanSize - 1)
+        val endSpanSpace = spanIndex + spanSize
         val startSpacing = verticalItemSpacing * (startSpanSpace / spanCount.toFloat())
         val endSpacing = verticalItemSpacing * (endSpanSpace / spanCount.toFloat())
 
@@ -139,14 +141,10 @@ class DpadGridSpacingDecoration constructor(
         if (isAtStartEdge) {
             if (!reverseLayout) {
                 outRect.left = horizontalEdgeSpacing
-                if (!isAtEndEdge) {
-                    outRect.right = verticalItemSpacing
-                }
+                outRect.right = horizontalItemSpacing
             } else {
                 outRect.right = horizontalEdgeSpacing
-                if (!isAtEndEdge) {
-                    outRect.left = verticalItemSpacing
-                }
+                outRect.left = horizontalItemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {

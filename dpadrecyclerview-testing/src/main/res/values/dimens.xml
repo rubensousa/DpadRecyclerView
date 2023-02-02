@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="dpadrecyclerview_test_grid_item_height">100dp</dimen>
+    <dimen name="dpadrecyclerview_test_grid_item_size">100dp</dimen>
 </resources>

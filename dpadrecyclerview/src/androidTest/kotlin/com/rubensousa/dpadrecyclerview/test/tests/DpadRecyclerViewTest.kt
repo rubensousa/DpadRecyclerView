@@ -16,12 +16,15 @@
 
 package com.rubensousa.dpadrecyclerview.test.tests
 
+import android.view.View
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.lifecycle.Lifecycle
-import com.google.common.truth.Truth
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
@@ -156,17 +159,66 @@ abstract class DpadRecyclerViewTest {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
     }
 
-    protected fun assertChildrenPositions(matrix: LayoutMatrix) {
+    protected fun assertChildBounds(
+        childIndex: Int,
+        bounds: ViewBounds,
+        fromStart: Boolean = true
+    ) {
+        onRecyclerView("Assert child bounds") { recyclerView ->
+            val layoutManager = recyclerView.layoutManager!!
+            val view = getChildAt(layoutManager, childIndex, fromStart)
+            assertThat(view.left).isEqualTo(bounds.left)
+            assertThat(view.top).isEqualTo(bounds.top)
+            assertThat(view.right).isEqualTo(bounds.right)
+            assertThat(view.bottom).isEqualTo(bounds.bottom)
+        }
+    }
+
+    protected fun assertChildDecorations(
+        childIndex: Int,
+        insets: ViewBounds,
+        fromStart: Boolean = true
+    ) {
+        onRecyclerView(
+            "Assert child decorations for child: $childIndex, from start: $fromStart"
+        ) { recyclerView ->
+            val layoutManager = recyclerView.layoutManager!!
+            val view = getChildAt(layoutManager, childIndex, fromStart)
+            assertThat(layoutManager.getLeftDecorationWidth(view)).isEqualTo(insets.left)
+            assertThat(layoutManager.getTopDecorationHeight(view)).isEqualTo(insets.top)
+            assertThat(layoutManager.getRightDecorationWidth(view)).isEqualTo(insets.right)
+            assertThat(layoutManager.getBottomDecorationHeight(view)).isEqualTo(insets.bottom)
+        }
+    }
+
+    private fun getChildAt(
+        layoutManager: LayoutManager,
+        childIndex: Int,
+        fromStart: Boolean
+    ): View {
+        val childCount = layoutManager.childCount
+        return if (fromStart) {
+            layoutManager.getChildAt(childIndex)!!
+        } else {
+            layoutManager.getChildAt(childCount - 1 - childIndex)!!
+        }
+    }
+
+    protected fun assertChildrenPositions(bounds: List<ViewBounds>) {
         waitForIdleScrollState()
-        val expectedChildCount = matrix.getChildCount()
+        val expectedChildCount = bounds.size
         var childCount = 0
         onRecyclerView("Getting child count") { recyclerView ->
             childCount = recyclerView.layoutManager?.childCount ?: 0
         }
-        Truth.assertThat(childCount).isEqualTo(expectedChildCount)
+        assertThat(childCount).isEqualTo(expectedChildCount)
         onRecyclerView("Assert children positions") { recyclerView ->
-            LayoutManagerAssertions.assertChildrenBounds(recyclerView.layoutManager!!, matrix)
+            LayoutManagerAssertions.assertChildrenBounds(recyclerView.layoutManager!!, bounds)
         }
+    }
+
+    protected fun assertChildrenPositions(matrix: LayoutMatrix) {
+        assertChildrenPositions(matrix.getChildren().map { view -> view.getDecoratedBounds() })
     }
 
 }
