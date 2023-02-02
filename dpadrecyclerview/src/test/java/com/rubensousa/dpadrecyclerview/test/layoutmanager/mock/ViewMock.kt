@@ -17,13 +17,14 @@
 package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import io.mockk.every
 import io.mockk.mockk
 
 class ViewMock(
-    private val futureWidth: Int,
-    private val futureHeight: Int
+    private val futureWidth: Int = 0,
+    private val futureHeight: Int = 0,
 ) {
 
     private val mock = mockk<View>()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
+package com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 
-class TestViewAdapter(
-    private val viewWidth: Int,
-    private val viewHeight: Int,
-    private val numberOfItems: Int = 100,
-) {
+/**
+ * Abstraction over the way to provide the next views for layout.
+ *
+ * @see ScrapViewProvider
+ * @see RecyclerViewProvider
+ */
+internal interface ViewProvider {
 
-    fun getItemCount() = numberOfItems
+    fun next(layoutRequest: LayoutRequest, state: RecyclerView.State): View?
 
-    fun getViewAt(position: Int): View? {
-        if (position < 0) {
-            return null
-        }
-        if (position >= numberOfItems) {
-            return null
-        }
-        val viewMock = ViewMock(viewWidth, viewHeight)
-        viewMock.layoutPosition = position
-        return viewMock.get()
+    fun hasNext(layoutPosition: Int, state: RecyclerView.State): Boolean {
+        return layoutPosition >= 0 && layoutPosition < state.itemCount
     }
-
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 }
