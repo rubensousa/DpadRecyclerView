@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager.Properties
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
+import kotlin.math.max
 
 internal class LayoutConfiguration(properties: Properties) {
 
@@ -160,8 +161,7 @@ internal class LayoutConfiguration(properties: Properties) {
     }
 
     fun setSpanCount(count: Int) {
-        require(count >= 1)
-        spanCount = count
+        spanCount = max(1, count)
     }
 
     fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
