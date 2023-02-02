@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
 import android.view.View
 import androidx.leanback.widget.HorizontalGridView
+import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.sample.R
 
 class LeanbackViewHolder(
@@ -34,6 +35,15 @@ class LeanbackViewHolder(
             R.dimen.list_margin_start
         )
         horizontalGridView.windowAlignmentOffsetPercent = 0.0f
+        horizontalGridView.apply {
+            addItemDecoration(
+                LinearMarginDecoration.createHorizontal(
+                    horizontalMargin = itemView.resources.getDimensionPixelOffset(
+                        R.dimen.horizontal_item_spacing
+                    )
+                )
+            )
+        }
         onViewHolderDeselected()
     }
 

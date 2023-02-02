@@ -36,6 +36,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.NestedListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import timber.log.Timber
 
 class ListController(
@@ -74,7 +75,7 @@ class ListController(
         dpadRecyclerView = recyclerView
         recyclerView.setReverseLayout(args.reverseLayout)
         setupAdapter(recyclerView)
-        setupSpacings(recyclerView, recyclerView.isLayoutReversed())
+        setupSpacings(recyclerView)
         setupPagination(recyclerView, onSelected)
         setupLifecycle(lifecycleOwner)
         if (args.slowScroll) {
@@ -136,34 +137,6 @@ class ListController(
             RecyclerViewLogger.logChildren(recyclerView)
         }
     }
-
-    fun setup(
-        recyclerView: BaseGridView,
-        lifecycleOwner: LifecycleOwner,
-        onSelected: (position: Int) -> Unit
-    ) {
-        RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
-        gridView = recyclerView
-        recyclerView.itemAnimator = DefaultItemAnimator().also { animator ->
-            // Just here to preview changes
-            // animator.removeDuration = 2000L
-            // animator.addDuration = 2000L
-            //  animator.moveDuration = 2000L
-        }
-        setupAdapter(recyclerView)
-        setupSpacings(recyclerView, false)
-        setupPagination(recyclerView, onSelected)
-        setupLifecycle(lifecycleOwner)
-
-        if (selectedPosition != RecyclerView.NO_POSITION) {
-            recyclerView.setSelectedPosition(selectedPosition) {
-                Timber.d("Selection state restored")
-            }
-        }
-
-        recyclerView.requestFocus()
-    }
-
 
     fun submitList(list: MutableList<ListModel>) {
         nestedListAdapter.submitList(list) {
@@ -259,13 +232,12 @@ class ListController(
         })
     }
 
-    private fun setupSpacings(recyclerView: RecyclerView, reverseLayout: Boolean) {
+    private fun setupSpacings(recyclerView: DpadRecyclerView) {
         recyclerView.addItemDecoration(
-            LinearMarginDecoration.createVertical(
-                verticalMargin = recyclerView.resources.getDimensionPixelOffset(
-                    R.dimen.item_spacing
+            DpadLinearSpacingDecoration.createVertical(
+                verticalItemSpacing = recyclerView.resources.getDimensionPixelOffset(
+                    R.dimen.vertical_item_spacing
                 ),
-                inverted = reverseLayout
             )
         )
     }

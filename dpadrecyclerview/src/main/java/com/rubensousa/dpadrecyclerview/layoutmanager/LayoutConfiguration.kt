@@ -151,10 +151,16 @@ internal class LayoutConfiguration(properties: Properties) {
     }
 
     fun setOrientation(newOrientation: Int) {
+        require(
+            newOrientation == RecyclerView.HORIZONTAL || newOrientation == RecyclerView.VERTICAL
+        ) {
+            "Invalid orientation value. Must be RecyclerView.HORIZONTAL or RecyclerView.VERTICAL"
+        }
         orientation = newOrientation
     }
 
     fun setSpanCount(count: Int) {
+        require(count >= 1)
         spanCount = count
     }
 

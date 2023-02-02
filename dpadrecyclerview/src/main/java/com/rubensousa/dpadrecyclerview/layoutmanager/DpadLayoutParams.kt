@@ -24,6 +24,14 @@ import androidx.recyclerview.widget.RecyclerView
 
 class DpadLayoutParams : RecyclerView.LayoutParams {
 
+    companion object {
+
+        /**
+         * Views that haven't been laid out yet will have this in [spanIndex] and [spanGroupIndex]
+         */
+        const val INVALID_SPAN_ID = -1
+    }
+
     // TODO For custom placement
     var leftInset = 0
         private set
@@ -52,13 +60,13 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
     /**
      * Current span index (column index) as of the latest layout pass
      */
-    var spanIndex = 0
+    var spanIndex = INVALID_SPAN_ID
         private set
 
     /**
      * Current span group index (row index) as of the latest layout pass
      */
-    var spanGroupIndex = 0
+    var spanGroupIndex = INVALID_SPAN_ID
         private set
 
     private var alignmentPositions: IntArray? = null
