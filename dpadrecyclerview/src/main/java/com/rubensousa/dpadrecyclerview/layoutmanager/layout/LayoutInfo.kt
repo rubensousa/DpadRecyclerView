@@ -409,20 +409,16 @@ internal class LayoutInfo(
         return orientationHelper.mode == View.MeasureSpec.UNSPECIFIED && orientationHelper.end == 0
     }
 
-    fun isRemoved(viewHolder: ViewHolder): Boolean {
-        val layoutParams = viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
-        return layoutParams.isItemRemoved
-    }
-
     fun isViewFocusable(view: View): Boolean {
         return view.visibility == View.VISIBLE && view.hasFocusable()
     }
 
-    fun didChildStateChange(
+    fun didViewHolderStateChange(
         viewHolder: ViewHolder,
         pivotPosition: Int,
-        minOldPosition: Int,
-        maxOldPosition: Int
+        startOldPosition: Int,
+        endOldPosition: Int,
+        reverseLayout: Boolean
     ): Boolean {
         val view = viewHolder.itemView
         val layoutParams = view.layoutParams as RecyclerView.LayoutParams
@@ -440,7 +436,11 @@ internal class LayoutInfo(
         }
         val newPosition = getAdapterPositionOf(view)
         // If it moved outside the previous visible range
-        return newPosition < minOldPosition || newPosition > maxOldPosition
+        return if (!reverseLayout) {
+            newPosition < startOldPosition || newPosition > endOldPosition
+        } else {
+            newPosition > startOldPosition || newPosition < endOldPosition
+        }
     }
 
     fun getRemainingScroll(state: RecyclerView.State): Int {

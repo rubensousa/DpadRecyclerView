@@ -32,8 +32,8 @@ object RecyclerViewLogger {
     }
 
     fun logChildren(recyclerView: RecyclerView) {
-        Timber.i("Children laid out:")
         recyclerView.layoutManager?.let { layout ->
+            Timber.i("Children laid out: ${layout.childCount}:")
             for (i in 0 until layout.childCount) {
                 val child = layout.getChildAt(i)!!
                 val position = layout.getPosition(child)

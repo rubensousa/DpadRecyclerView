@@ -26,12 +26,13 @@ internal class RecyclerMock(
 ) {
 
     private val mock = mockk<RecyclerView.Recycler>()
-    private var scrapList : List<TestViewAdapter.ViewHolder> = emptyList()
+    private var scrapList: List<TestViewAdapter.ViewHolder> = emptyList()
 
     init {
         every { mock.recycleView(any()) }.answers { }
         every { mock.getViewForPosition(any()) }.answers {
-            viewAdapter.getViewAt(it.invocation.args.first() as Int)!!
+            val layoutPosition = it.invocation.args.first() as Int
+            viewAdapter.getViewAt(layoutPosition)!!
         }
         every { mock.scrapList }.answers { scrapList }
     }

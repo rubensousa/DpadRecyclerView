@@ -17,7 +17,6 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.view.Gravity
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 
@@ -25,9 +24,6 @@ import kotlin.math.max
  * Holds information required for the next layout
  */
 internal class LayoutRequest {
-
-    // TODO Adjust by making it mutable
-    private val scrap = LayoutScrap()
 
     // The current direction of the layout stage
     var direction: LayoutDirection = LayoutDirection.END
@@ -82,6 +78,9 @@ internal class LayoutRequest {
     var isInfinite: Boolean = false
         private set
 
+    var isLayingOutScrap: Boolean = false
+        private set
+
     fun init(
         gravity: Int,
         isVertical: Boolean,
@@ -121,41 +120,17 @@ internal class LayoutRequest {
         checkpoint += offset
     }
 
-    fun hasMoreItems(state: RecyclerView.State): Boolean {
-        return currentPosition >= 0 && currentPosition < state.itemCount
-    }
-
-    /**
-     * Gets the view for the next element that we should layout.
-     * Also updates current item index to the next item, based on the [defaultItemDirection]
-     *
-     * @return The next element that we should layout.
-     */
-    // TODO Move this to another class
-    fun getNextView(recycler: RecyclerView.Recycler): View? {
-        if (scrap.exists()) {
-            val scrapView = scrap.getNextScrapView()
-            if (scrapView != null) {
-                scrap.updateCurrentPositionFromScrap(scrapView)
-            }
-            return scrapView
-        }
-        val view = recycler.getViewForPosition(currentPosition)
+    fun moveToNextPosition() {
         currentPosition += currentItemDirection.value
-        return view
-    }
-
-    fun setScrap(scrappedViews: List<RecyclerView.ViewHolder>?) {
-        scrap.update(scrappedViews)
-    }
-
-    fun updateCurrentPositionFromScrap() {
-        scrap.updateCurrentPositionFromScrap(ignoredView = null)
     }
 
     fun isLayingOutStart() = direction == LayoutDirection.START
 
     fun isLayingOutEnd() = direction == LayoutDirection.END
+
+    fun setLayingOutScrap(layoutScrap: Boolean) {
+        isLayingOutScrap = layoutScrap
+    }
 
     fun setExtraLayoutSpace(start: Int, end: Int) {
         extraLayoutSpaceStart = start
@@ -206,106 +181,5 @@ internal class LayoutRequest {
                 "availableScrollSpace=$availableScrollSpace, " +
                 "checkpoint=$checkpoint, "
     }
-
-    fun isUsingScrap(): Boolean = scrap.exists()
-
-
-    /**
-     * Direction in which the layout is being filled.
-     * These are absolute directions, so it doesn't consider RTL at all
-     */
-    internal enum class LayoutDirection(val value: Int) {
-        /**
-         * Either left in horizontal or top in vertical
-         */
-        START(-1),
-
-        /**
-         * Either right in horizontal or bottom in vertical
-         */
-        END(1)
-    }
-
-    /**
-     * Defines the direction in which the adapter is traversed
-     */
-    internal enum class ItemDirection(val value: Int) {
-        HEAD(-1),
-        TAIL(1);
-
-        fun opposite() = if (this == HEAD) TAIL else HEAD
-    }
-
-
-    /**
-     * Holds views pending recycling or removal
-     */
-    private inner class LayoutScrap {
-
-        private var scrappedViews: List<RecyclerView.ViewHolder>? = null
-
-        fun exists(): Boolean {
-            return scrappedViews != null
-        }
-
-        fun update(views: List<RecyclerView.ViewHolder>?) {
-            scrappedViews = views
-        }
-
-        /**
-         * Returns the next item from the scrap list.
-         */
-        fun getNextScrapView(): View? {
-            scrappedViews?.forEach { viewHolder ->
-                val view = viewHolder.itemView
-                val layoutParams = view.layoutParams as RecyclerView.LayoutParams
-                if (!layoutParams.isItemRemoved
-                    && currentPosition == layoutParams.viewLayoutPosition
-                ) {
-                    updateCurrentPositionFromScrap(view)
-                    return view
-                }
-            }
-            return null
-        }
-
-        /**
-         * Updates the layout position to the one from the nearest view to the current position
-         * to ensure layout continuity.
-         *
-         * New current item position will be: VH.layoutPosition + itemDirection
-         */
-        fun updateCurrentPositionFromScrap(ignoredView: View?) {
-            val closestView = findClosestViewToCurrentPosition(ignoredView)
-            currentPosition = if (closestView == null) {
-                RecyclerView.NO_POSITION
-            } else {
-                (closestView.layoutParams as RecyclerView.LayoutParams).viewLayoutPosition
-            }
-        }
-
-        private fun findClosestViewToCurrentPosition(ignoredView: View?): View? {
-            var closest: View? = null
-            var closestDistance = Int.MAX_VALUE
-            scrappedViews?.forEach { viewHolder ->
-                val view = viewHolder.itemView
-                val layoutParams = view.layoutParams as RecyclerView.LayoutParams
-                val distance =
-                    (layoutParams.viewLayoutPosition - currentPosition) * currentItemDirection.value
-                val skipView = view === ignoredView
-                        || layoutParams.isItemRemoved
-                        || distance < 0  // item is not in current direction
-                if (!skipView && distance < closestDistance) {
-                    closest = view
-                    closestDistance = distance
-                    if (distance == 0) {
-                        return@forEach
-                    }
-                }
-            }
-            return closest
-        }
-    }
-
 
 }

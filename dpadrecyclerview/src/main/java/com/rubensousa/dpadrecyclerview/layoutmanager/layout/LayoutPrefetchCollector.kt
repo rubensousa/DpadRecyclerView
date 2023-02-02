@@ -79,19 +79,16 @@ internal class LayoutPrefetchCollector(private val layoutInfo: LayoutInfo) {
         }
     }
 
-    private fun getViewAtLayoutEdge(layoutDirection: LayoutRequest.LayoutDirection): View? {
-        return if (layoutDirection == LayoutRequest.LayoutDirection.END) {
+    private fun getViewAtLayoutEdge(layoutDirection: LayoutDirection): View? {
+        return if (layoutDirection == LayoutDirection.END) {
             layoutInfo.getChildClosestToEnd()
         } else {
             layoutInfo.getChildClosestToStart()
         }
     }
 
-    private fun calculateAvailableScrollSpace(
-        view: View,
-        layoutDirection: LayoutRequest.LayoutDirection
-    ): Int {
-        return if (layoutDirection == LayoutRequest.LayoutDirection.END) {
+    private fun calculateAvailableScrollSpace(view: View, layoutDirection: LayoutDirection): Int {
+        return if (layoutDirection == LayoutDirection.END) {
             layoutInfo.getDecoratedEnd(view) - layoutInfo.getEndAfterPadding()
         } else {
             -layoutInfo.getDecoratedStart(view) + layoutInfo.getStartAfterPadding()
@@ -99,12 +96,12 @@ internal class LayoutPrefetchCollector(private val layoutInfo: LayoutInfo) {
     }
 
     private fun calculateItemDirection(
-        layoutDirection: LayoutRequest.LayoutDirection
-    ): LayoutRequest.ItemDirection {
-        var itemDirection = if (layoutDirection == LayoutRequest.LayoutDirection.END) {
-            LayoutRequest.ItemDirection.TAIL
+        layoutDirection: LayoutDirection
+    ): ItemDirection {
+        var itemDirection = if (layoutDirection == LayoutDirection.END) {
+            ItemDirection.TAIL
         } else {
-            LayoutRequest.ItemDirection.HEAD
+            ItemDirection.HEAD
         }
         if (layoutInfo.shouldReverseLayout()) {
             itemDirection = itemDirection.opposite()
@@ -112,11 +109,11 @@ internal class LayoutPrefetchCollector(private val layoutInfo: LayoutInfo) {
         return itemDirection
     }
 
-    private fun calculateLayoutDirection(scrollOffset: Int): LayoutRequest.LayoutDirection {
+    private fun calculateLayoutDirection(scrollOffset: Int): LayoutDirection {
         return if (scrollOffset > 0) {
-            LayoutRequest.LayoutDirection.END
+            LayoutDirection.END
         } else {
-            LayoutRequest.LayoutDirection.START
+            LayoutDirection.START
         }
     }
 

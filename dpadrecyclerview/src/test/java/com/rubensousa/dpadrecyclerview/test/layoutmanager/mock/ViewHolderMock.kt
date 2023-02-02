@@ -18,15 +18,30 @@ package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import io.mockk.every
 import io.mockk.mockk
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
 class ViewHolderMock(itemView: View) {
 
     private val mock = mockk<RecyclerView.ViewHolder>()
 
     init {
-        every { mock.itemView }.answers { itemView }
+        val itemViewField = mock::class.java.getField("itemView")
+        itemViewField.isAccessible = true
+        val modifiersField = Field::class.java.getDeclaredField("modifiers")
+        modifiersField.isAccessible = true
+        modifiersField.setInt(itemViewField, itemViewField.modifiers and Modifier.FINAL.inv())
+        itemViewField.set(mock, itemView)
+
+        every { mock.layoutPosition }.answers {
+            (itemView.layoutParams as DpadLayoutParams).viewLayoutPosition
+        }
+        every { mock.absoluteAdapterPosition }.answers {
+            (itemView.layoutParams as DpadLayoutParams).absoluteAdapterPosition
+        }
     }
 
     fun get(): RecyclerView.ViewHolder = mock
