@@ -16,12 +16,10 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider
 
-import android.util.Log
 import android.view.View
 import androidx.collection.SparseArrayCompat
 import androidx.collection.forEach
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 
