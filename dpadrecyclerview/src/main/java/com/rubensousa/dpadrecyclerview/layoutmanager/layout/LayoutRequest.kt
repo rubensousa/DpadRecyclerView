@@ -150,10 +150,10 @@ internal class LayoutRequest {
         checkpoint = 0
     }
 
-    fun append(
+    inline fun append(
         referencePosition: Int,
         itemDirection: ItemDirection = defaultItemDirection,
-        block: LayoutRequest.() -> Unit
+        crossinline block: LayoutRequest.() -> Unit
     ) {
         clear()
         direction = LayoutDirection.END
@@ -162,10 +162,10 @@ internal class LayoutRequest {
         block(this)
     }
 
-    fun prepend(
+    inline fun prepend(
         referencePosition: Int,
         itemDirection: ItemDirection = defaultItemDirection.opposite(),
-        block: LayoutRequest.() -> Unit
+        crossinline block: LayoutRequest.() -> Unit
     ) {
         clear()
         direction = LayoutDirection.START
