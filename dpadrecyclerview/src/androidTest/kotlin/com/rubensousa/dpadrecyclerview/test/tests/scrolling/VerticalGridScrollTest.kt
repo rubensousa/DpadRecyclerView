@@ -195,7 +195,7 @@ class VerticalGridScrollTest : DpadRecyclerViewTest() {
         val itemWidth = recyclerViewBounds.width() / spanCount
         val resources = InstrumentationRegistry.getInstrumentation().targetContext.resources
         val itemHeight = resources.getDimensionPixelOffset(
-            R.dimen.dpadrecyclerview_test_grid_item_height
+            R.dimen.dpadrecyclerview_test_grid_item_size
         )
 
         return VerticalGridLayout(

@@ -19,6 +19,8 @@ theme:
   font:
     text: 'Roboto'
     code: 'Roboto Mono'
+  features:
+    - content.code.copy
 
 extra:
   dpadrecyclerview:
@@ -40,6 +42,8 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  - toc:
+      permalink: true
 
 plugins:
   - markdownextradata: {}
@@ -56,6 +60,7 @@ nav:
   - 'XML attributes': xml.md
   - 'Recipes':
       - 'Layout': recipes/layout.md
+      - 'Spacing': recipes/spacing.md
       - 'Alignment': recipes/alignment.md
       - 'Focus': recipes/focus.md
       - 'Scrolling': recipes/scrolling.md

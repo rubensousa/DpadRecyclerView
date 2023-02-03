@@ -29,9 +29,9 @@ Since `DpadRecyclerView` is a custom view that extends from `RecyclerView`, you 
 
 Follow the [official RecyclerView guides](https://developer.android.com/develop/ui/views/layout/recyclerview) to render Views on the screen or use any RecyclerView library as you would for mobile apps.
 
-## Configuration
+## Recipes
 
-Take a look at the sections inside "Configuration" on this website to customise `DpadRecyclerView` according to your needs.
+Take a look at the sections inside "Recipes" on this website to customise `DpadRecyclerView` according to your needs.
 
 ## Sample
 

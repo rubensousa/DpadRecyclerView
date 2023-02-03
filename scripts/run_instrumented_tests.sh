@@ -39,7 +39,10 @@ testServicesClasspath=$(adb shell pm path androidx.test.services)
 
 echo "Running instrumented tests for $moduleName"
 
-adb shell CLASSPATH="$testServicesClasspath" app_process / androidx.test.services.shellexecutor.ShellMain am instrument -r -w -e targetInstrumentation "$packageName"/androidx.test.runner.AndroidJUnitRunner -e useTestStorageService true -e listener com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener androidx.test.orchestrator/androidx.test.orchestrator.AndroidTestOrchestrator 2>&1 | tee "$instrumentedLogFile"
+# Disabled test orchestrator to decrease runtime of tests
+# adb shell CLASSPATH="$testServicesClasspath" app_process / androidx.test.services.shellexecutor.ShellMain am instrument -r -w -e targetInstrumentation "$packageName"/androidx.test.runner.AndroidJUnitRunner -e useTestStorageService true -e listener com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener androidx.test.orchestrator/androidx.test.orchestrator.AndroidTestOrchestrator 2>&1 | tee "$instrumentedLogFile"
+
+adb shell CLASSPATH="$testServicesClasspath" app_process / androidx.test.services.shellexecutor.ShellMain am instrument -r -w -e debug false "$packageName"/androidx.test.runner.AndroidJUnitRunner -e useTestStorageService true -e listener com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener 2>&1 | tee "$instrumentedLogFile"
 testRunCode=$?
 
 if [ $testRunCode -ne 0 ]; then

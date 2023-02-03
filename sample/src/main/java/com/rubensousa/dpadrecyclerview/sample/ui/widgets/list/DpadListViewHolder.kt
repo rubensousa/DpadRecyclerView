@@ -24,6 +24,7 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.screen.list.LimitedScrollBehavior
+import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class DpadListViewHolder(
     view: View,
@@ -31,11 +32,18 @@ class DpadListViewHolder(
     itemLayoutId: Int,
     slowScroll: Boolean,
     reverseLayout: Boolean
-) : AbstractListViewHolder(view, dpadRecyclerView, itemLayoutId, reverseLayout) {
+) : AbstractListViewHolder(view, dpadRecyclerView, itemLayoutId) {
 
     private val selectionView = view.findViewById<View>(R.id.selectionOverlayView)
 
     init {
+        dpadRecyclerView.addItemDecoration(
+            DpadLinearSpacingDecoration.create(
+                itemSpacing = itemView.resources.getDimensionPixelOffset(
+                    R.dimen.horizontal_item_spacing
+                )
+            )
+        )
         onViewHolderDeselected()
         if (reverseLayout) {
             setupReversedLayout()

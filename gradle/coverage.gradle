@@ -21,7 +21,7 @@ task createJacocoTestReport(
     description = "Combines coverage of unit tests and instrumented tests"
 
     reports {
-        html.destination file("../test_coverage/${project.name}")
+        html.destination file("../test_coverage/unit_tests/${project.name}")
     }
 
     def exclusions = [
@@ -47,7 +47,7 @@ task createJacocoCombinedTestReport(
     description = "Combines coverage of unit tests and instrumented tests"
 
     reports {
-        html.destination file("../combined_test_coverage/${project.name}")
+        html.destination file("../test_coverage/all_tests/${project.name}")
     }
 
     def exclusions = [

@@ -87,15 +87,20 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
-        return if (configuration.isHorizontal()) {
+        return if (configuration.spanCount == 1) {
             DpadLayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-        } else {
+        } else if (configuration.isVertical()) {
             DpadLayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        } else {
+            DpadLayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
         }
     }

@@ -168,7 +168,6 @@ internal abstract class StructureEngineer(
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
     ) {
-        // If there were item changes out of bounds, we don't need to relayout
         if (!isNewLayoutRequired(state, itemChanges)) {
             if (DpadRecyclerView.DEBUG) {
                 Log.i(TAG, "layout changes are out of bounds, so skip full layout: $itemChanges")
@@ -231,8 +230,21 @@ internal abstract class StructureEngineer(
         }
     }
 
-    private fun isNewLayoutRequired(state: RecyclerView.State, itemChanges: ItemChanges): Boolean {
-        if (state.didStructureChange() || !itemChanges.isValid()) {
+    /**
+     * We only need to do a full layout in the following scenarios:
+     *
+     * 1. There's a structural change in the adapter
+     * 2. There are no items in the current layout
+     * 3. Pivot is no longer aligned
+     * 4. Item changes affect the current visible window
+     */
+    private fun isNewLayoutRequired(
+        state: RecyclerView.State,
+        itemChanges: ItemChanges
+    ): Boolean {
+        if (state.didStructureChange()
+            || !itemChanges.isValid()
+            || preLayoutRequest.extraLayoutSpace > 0) {
             return true
         }
         val firstPos = layoutInfo.findFirstAddedPosition()
@@ -240,11 +252,12 @@ internal abstract class StructureEngineer(
         if (firstPos == RecyclerView.NO_POSITION || lastPos == RecyclerView.NO_POSITION) {
             return true
         }
-        return if (!layoutRequest.reverseLayout) {
-            !itemChanges.isOutOfBounds(firstPos, lastPos)
+        val changesOutOfBounds = if (!layoutRequest.reverseLayout) {
+            itemChanges.isOutOfBounds(firstPos, lastPos)
         } else {
-            !itemChanges.isOutOfBounds(lastPos, firstPos)
+            itemChanges.isOutOfBounds(lastPos, firstPos)
         }
+        return !changesOutOfBounds
     }
 
     fun scrollBy(offset: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {

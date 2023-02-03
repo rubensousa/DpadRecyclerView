@@ -116,7 +116,15 @@ object DpadRecyclerViewActions {
     fun execute(label: String, action: (recyclerView: DpadRecyclerView) -> Unit): ViewAction {
         return object : DpadRecyclerViewAction(label) {
             override fun perform(uiController: UiController, recyclerView: DpadRecyclerView) {
-                action(recyclerView)
+                try {
+                    action(recyclerView)
+                } catch (exception: Exception) {
+                    throw PerformException.Builder()
+                        .withActionDescription(label)
+                        .withCause(exception)
+                        .withViewDescription(HumanReadables.describe(recyclerView))
+                        .build()
+                }
             }
         }
     }

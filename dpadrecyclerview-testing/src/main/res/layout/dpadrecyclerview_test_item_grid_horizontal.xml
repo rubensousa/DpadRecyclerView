@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/dpadrecyclerview_test_grid_item_size"
+    android:layout_width="@dimen/dpadrecyclerview_test_grid_item_size"
+    android:layout_height="match_parent"
     android:background="@drawable/dpadrecyclerview_test_item_background">
-    
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"

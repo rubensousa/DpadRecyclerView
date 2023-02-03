@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager.Properties
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
+import kotlin.math.max
 
 internal class LayoutConfiguration(properties: Properties) {
 
@@ -151,11 +152,16 @@ internal class LayoutConfiguration(properties: Properties) {
     }
 
     fun setOrientation(newOrientation: Int) {
+        require(
+            newOrientation == RecyclerView.HORIZONTAL || newOrientation == RecyclerView.VERTICAL
+        ) {
+            "Invalid orientation value. Must be RecyclerView.HORIZONTAL or RecyclerView.VERTICAL"
+        }
         orientation = newOrientation
     }
 
     fun setSpanCount(count: Int) {
-        spanCount = count
+        spanCount = max(1, count)
     }
 
     fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {

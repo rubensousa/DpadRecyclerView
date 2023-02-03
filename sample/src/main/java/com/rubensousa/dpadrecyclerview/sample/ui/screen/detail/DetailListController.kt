@@ -28,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListHeaderAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 
 class DetailListController {
 
@@ -120,6 +121,13 @@ class DetailListController {
                 }
             }
         })
+        recyclerView.addItemDecoration(
+            DpadGridSpacingDecoration.create(
+                itemSpacing = recyclerView.resources.getDimensionPixelOffset(
+                    R.dimen.grid_item_spacing
+                )
+            )
+        )
     }
 
     private fun setupPagination(

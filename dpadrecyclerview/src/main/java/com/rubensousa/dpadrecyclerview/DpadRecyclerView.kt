@@ -546,6 +546,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * @see setOrientation
+     */
+    fun getOrientation(): Int = requireLayout().getConfig().orientation
+
+    /**
      * Used to reverse item traversal and layout order.
      * This behaves similar to the layout change for RTL views. When set to true, first item is
      * laid out at the end of the UI, second item is laid out before it etc.

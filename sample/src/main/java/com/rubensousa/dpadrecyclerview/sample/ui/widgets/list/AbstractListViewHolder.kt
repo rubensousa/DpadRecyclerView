@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
@@ -30,7 +29,6 @@ abstract class AbstractListViewHolder(
     view: View,
     val recyclerView: RecyclerView,
     itemLayoutId: Int = R.layout.adapter_nested_item_start,
-    reverseLayout: Boolean = false
 ) : RecyclerView.ViewHolder(view), DpadViewHolder {
 
     var item: ListModel? = null
@@ -41,7 +39,7 @@ abstract class AbstractListViewHolder(
     )
 
     init {
-        setupRecyclerView(recyclerView, reverseLayout)
+        setupRecyclerView(recyclerView)
     }
 
     fun bind(list: ListModel, clickListener: ItemViewHolder.ItemClickListener) {
@@ -69,17 +67,7 @@ abstract class AbstractListViewHolder(
         textView.alpha = 0.5f
     }
 
-    private fun setupRecyclerView(recyclerView: RecyclerView, reverseLayout: Boolean) {
-        recyclerView.apply {
-            addItemDecoration(
-                LinearMarginDecoration.createHorizontal(
-                    horizontalMargin = itemView.resources.getDimensionPixelOffset(
-                        R.dimen.item_spacing
-                    ) / 2,
-                    inverted = reverseLayout
-                )
-            )
-        }
+    private fun setupRecyclerView(recyclerView: RecyclerView) {
         RecyclerViewLogger.logChildrenWhenIdle(recyclerView)
     }
 

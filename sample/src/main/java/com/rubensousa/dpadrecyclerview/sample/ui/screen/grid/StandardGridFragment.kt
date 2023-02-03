@@ -37,6 +37,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 import timber.log.Timber
 
 class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
@@ -55,14 +56,10 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
         setupVerticalGridView(binding.verticalGridView)
         setupDpadRecyclerView(binding.dpadRecyclerView)
         viewModel.listState.observe(viewLifecycleOwner) { state ->
-            itemAdapter.submitList(state) {
-                binding.dpadRecyclerView.invalidateItemDecorations()
-                binding.verticalGridView.invalidateItemDecorations()
-            }
+            itemAdapter.submitList(state)
         }
         viewModel.loadingState.observe(viewLifecycleOwner) { isLoading ->
             placeholderAdapter.show(isLoading)
-            binding.dpadRecyclerView.invalidateItemDecorations()
             binding.verticalGridView.invalidateItemDecorations()
         }
         binding.toggleGroup.addOnButtonCheckedListener { _, checkedId, isChecked ->
@@ -113,8 +110,8 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
         recyclerView.apply {
             addItemDecoration(
                 GridMarginDecoration(
-                    horizontalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
-                    verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
+                    horizontalMargin = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing),
+                    verticalMargin = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing),
                     columnProvider = object : ColumnProvider {
                         override fun getNumberOfColumns(): Int = spanCount
                     }
@@ -148,17 +145,12 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
         recyclerView.apply {
             RecyclerViewLogger.logChildrenWhenIdle(this)
             setReverseLayout(args.reverseLayout)
+            setSpanCount(spanCount)
             addItemDecoration(
-                GridMarginDecoration(
-                    horizontalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
-                    verticalMargin = resources.getDimensionPixelOffset(R.dimen.item_spacing),
-                    inverted = args.reverseLayout,
-                    columnProvider = object : ColumnProvider {
-                        override fun getNumberOfColumns(): Int = spanCount
-                    }
+                DpadGridSpacingDecoration.create(
+                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
                 )
             )
-            setSpanCount(spanCount)
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
                 override fun onViewHolderSelected(
                     parent: RecyclerView,
