@@ -138,9 +138,13 @@ If you were using `FacetProviderAdapter` for anything else, just write your own 
 
 ## Item spacing
 
-There's no public API for item spacings at the layout level for `DpadRecyclerView`. Please use the standard `RecyclerView.ItemDecoration` API for this.
+There's no public API for item spacings at the layout level for `DpadRecyclerView` like `setItemSpacing` from `BaseGridView`.
 
-This library provides some that might be helpful: [Decorator](https://github.com/rubensousa/Decorator/)
+However, we can use the standard `RecyclerView.ItemDecoration` API for this. 
+
+`DpadRecyclerView` ships with `DpadLinearSpacingDecoration` and `DpadGridSpacingDecoration` to achieve the same effect.
+
+Please check the examples in the recipes at [Spacing](recipes/spacing.md).
 
 ## Presenters
 
