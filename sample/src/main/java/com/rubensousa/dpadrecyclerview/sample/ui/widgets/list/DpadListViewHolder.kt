@@ -38,8 +38,8 @@ class DpadListViewHolder(
 
     init {
         dpadRecyclerView.addItemDecoration(
-            DpadLinearSpacingDecoration.createHorizontal(
-                horizontalItemSpacing = itemView.resources.getDimensionPixelOffset(
+            DpadLinearSpacingDecoration.create(
+                itemSpacing = itemView.resources.getDimensionPixelOffset(
                     R.dimen.horizontal_item_spacing
                 )
             )

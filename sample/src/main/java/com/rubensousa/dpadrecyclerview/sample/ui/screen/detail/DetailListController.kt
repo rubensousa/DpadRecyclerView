@@ -122,11 +122,8 @@ class DetailListController {
             }
         })
         recyclerView.addItemDecoration(
-            DpadGridSpacingDecoration(
-                horizontalItemSpacing = recyclerView.resources.getDimensionPixelOffset(
-                    R.dimen.grid_item_spacing
-                ),
-                verticalItemSpacing = recyclerView.resources.getDimensionPixelOffset(
+            DpadGridSpacingDecoration.create(
+                itemSpacing = recyclerView.resources.getDimensionPixelOffset(
                     R.dimen.grid_item_spacing
                 )
             )

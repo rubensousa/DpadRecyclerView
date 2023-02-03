@@ -23,7 +23,6 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
@@ -55,10 +54,53 @@ class DpadLinearSpacingDecorationTest : DpadRecyclerViewTest() {
     @Test
     fun testVerticalEvenDecoration() {
         val verticalSpacing = 48
+        val horizontalEdgeSpacing = 0
+        val decoration = DpadLinearSpacingDecoration.create(itemSpacing = verticalSpacing)
+        launchFragmentWithVerticalDecoration(decoration)
+
+        assertChildDecorations(
+            childIndex = 0,
+            insets = ViewBounds(
+                left = horizontalEdgeSpacing,
+                top = verticalSpacing,
+                right = horizontalEdgeSpacing,
+                bottom = verticalSpacing
+            )
+        )
+
+        repeat(4) { index ->
+            assertChildDecorations(
+                childIndex = index + 1,
+                insets = ViewBounds(
+                    left = horizontalEdgeSpacing,
+                    top = 0,
+                    right = horizontalEdgeSpacing,
+                    bottom = verticalSpacing
+                )
+            )
+        }
+
+        selectLastPosition()
+
+        assertChildDecorations(
+            childIndex = 0,
+            insets = ViewBounds(
+                left = horizontalEdgeSpacing,
+                top = 0,
+                right = horizontalEdgeSpacing,
+                bottom = verticalSpacing
+            ),
+            fromStart = false
+        )
+    }
+
+    @Test
+    fun testVerticalDecorationWithHorizontalEdgeSpacing() {
+        val verticalSpacing = 48
         val horizontalEdgeSpacing = 64
-        val decoration = DpadLinearSpacingDecoration.createVertical(
-            verticalItemSpacing = verticalSpacing,
-            horizontalEdgeSpacing = horizontalEdgeSpacing
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = verticalSpacing,
+            perpendicularEdgeSpacing = horizontalEdgeSpacing
         )
         launchFragmentWithVerticalDecoration(decoration)
 
@@ -103,10 +145,10 @@ class DpadLinearSpacingDecorationTest : DpadRecyclerViewTest() {
         val verticalSpacing = 48
         val verticalEdgeSpacing = verticalSpacing * 2
         val horizontalEdgeSpacing = 24
-        val decoration = DpadLinearSpacingDecoration.createVertical(
-            verticalItemSpacing = verticalSpacing,
-            verticalEdgeSpacing = verticalEdgeSpacing,
-            horizontalEdgeSpacing = horizontalEdgeSpacing
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = verticalSpacing,
+            edgeSpacing = verticalEdgeSpacing,
+            perpendicularEdgeSpacing = horizontalEdgeSpacing
         )
         launchFragmentWithVerticalDecoration(decoration)
 
@@ -151,10 +193,10 @@ class DpadLinearSpacingDecorationTest : DpadRecyclerViewTest() {
         val verticalSpacing = 48
         val verticalEdgeSpacing = verticalSpacing * 2
         val horizontalEdgeSpacing = 24
-        val decoration = DpadLinearSpacingDecoration.createVertical(
-            verticalItemSpacing = verticalSpacing,
-            verticalEdgeSpacing = verticalEdgeSpacing,
-            horizontalEdgeSpacing = horizontalEdgeSpacing
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = verticalSpacing,
+            edgeSpacing = verticalEdgeSpacing,
+            perpendicularEdgeSpacing = horizontalEdgeSpacing
         )
         launchFragmentWithVerticalDecoration(decoration, reverseLayout = true)
 
@@ -200,9 +242,9 @@ class DpadLinearSpacingDecorationTest : DpadRecyclerViewTest() {
     fun testHorizontalEvenDecoration() {
         val horizontalSpacing = 48
         val verticalEdgeSpacing = 64
-        val decoration = DpadLinearSpacingDecoration.createHorizontal(
-            horizontalItemSpacing = horizontalSpacing,
-            verticalEdgeSpacing = verticalEdgeSpacing
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = horizontalSpacing,
+            perpendicularEdgeSpacing = verticalEdgeSpacing
         )
         launchFragmentWithHorizontalDecoration(decoration)
 
@@ -246,10 +288,10 @@ class DpadLinearSpacingDecorationTest : DpadRecyclerViewTest() {
         val horizontalSpacing = 48
         val horizontalEdgeSpacing = horizontalSpacing * 2
         val verticalEdgeSpacing = 64
-        val decoration = DpadLinearSpacingDecoration.createHorizontal(
-            horizontalItemSpacing = horizontalSpacing,
-            horizontalEdgeSpacing = horizontalEdgeSpacing,
-            verticalEdgeSpacing = verticalEdgeSpacing
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = horizontalSpacing,
+            edgeSpacing = horizontalEdgeSpacing,
+            perpendicularEdgeSpacing = verticalEdgeSpacing
         )
         launchFragmentWithHorizontalDecoration(decoration)
 
@@ -294,10 +336,10 @@ class DpadLinearSpacingDecorationTest : DpadRecyclerViewTest() {
         val horizontalSpacing = 48
         val horizontalEdgeSpacing = horizontalSpacing * 2
         val verticalEdgeSpacing = 64
-        val decoration = DpadLinearSpacingDecoration.createHorizontal(
-            horizontalItemSpacing = horizontalSpacing,
-            horizontalEdgeSpacing = horizontalEdgeSpacing,
-            verticalEdgeSpacing = verticalEdgeSpacing
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = horizontalSpacing,
+            edgeSpacing = horizontalEdgeSpacing,
+            perpendicularEdgeSpacing = verticalEdgeSpacing
         )
         launchFragmentWithHorizontalDecoration(decoration, reverseLayout = true)
 

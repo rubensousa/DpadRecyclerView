@@ -234,10 +234,10 @@ class ListController(
 
     private fun setupSpacings(recyclerView: DpadRecyclerView) {
         recyclerView.addItemDecoration(
-            DpadLinearSpacingDecoration.createVertical(
-                verticalItemSpacing = recyclerView.resources.getDimensionPixelOffset(
+            DpadLinearSpacingDecoration.create(
+                itemSpacing = recyclerView.resources.getDimensionPixelOffset(
                     R.dimen.vertical_item_spacing
-                ),
+                )
             )
         )
     }

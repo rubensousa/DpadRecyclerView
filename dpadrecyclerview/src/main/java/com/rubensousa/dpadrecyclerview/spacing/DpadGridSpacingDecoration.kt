@@ -24,27 +24,38 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
 /**
- * An item decoration that applies a spacing to all sides of an grid item.
+ * An item decoration that applies a spacing to all sides of a view part of a grid.
  *
- * Check [setSpacingLookup] to customise weather individual ViewHolders
+ * @param itemSpacing default spacing between items that share a span group.
  *
- * @param horizontalItemSpacing horizontal spacing between items
+ * @param perpendicularItemSpacing spacing between items across different span groups.
+ * Default is [itemSpacing] if not specified.
  *
- * @param horizontalEdgeSpacing horizontal spacing in items bordering an edge.
- * Only applied to horizontal grids
- *
- * @param verticalItemSpacing vertical spacing between items
- *
- * @param verticalEdgeSpacing vertical spacing in items bordering an edge.
- * Only applied to vertical grids
- *
+ * @param edgeSpacing spacing between the start and end edges in the layout orientation.
+ * Default is [itemSpacing] if not specified.
  */
-class DpadGridSpacingDecoration constructor(
-    @Px private var horizontalItemSpacing: Int,
-    @Px private var verticalItemSpacing: Int,
-    @Px private var horizontalEdgeSpacing: Int = horizontalItemSpacing,
-    @Px private var verticalEdgeSpacing: Int = verticalItemSpacing
+class DpadGridSpacingDecoration private constructor(
+    @Px private val itemSpacing: Int,
+    @Px private val perpendicularItemSpacing: Int,
+    @Px private val edgeSpacing: Int
 ) : DpadSpacingDecoration() {
+
+    companion object {
+
+        @JvmStatic
+        fun create(
+            @Px itemSpacing: Int,
+            @Px perpendicularItemSpacing: Int = itemSpacing,
+            @Px edgeSpacing: Int = itemSpacing,
+        ): DpadGridSpacingDecoration {
+            return DpadGridSpacingDecoration(
+                itemSpacing = itemSpacing,
+                perpendicularItemSpacing = perpendicularItemSpacing,
+                edgeSpacing = edgeSpacing
+            )
+        }
+
+    }
 
     override fun getItemOffsets(
         outRect: Rect,
@@ -94,30 +105,30 @@ class DpadGridSpacingDecoration constructor(
     ) {
         val startSpanSpace = spanCount - spanIndex
         val endSpanSpace = spanIndex + spanSize
-        val startSpacing = horizontalItemSpacing * (startSpanSpace / spanCount.toFloat())
-        val endSpacing = horizontalItemSpacing * (endSpanSpace / spanCount.toFloat())
+        val startSpacing = itemSpacing * (startSpanSpace / spanCount.toFloat())
+        val endSpacing = itemSpacing * (endSpanSpace / spanCount.toFloat())
 
         outRect.left = startSpacing.toInt()
         outRect.right = endSpacing.toInt()
 
         if (isAtStartEdge) {
             if (!reverseLayout) {
-                outRect.top = verticalEdgeSpacing
-                outRect.bottom = verticalItemSpacing
+                outRect.top = edgeSpacing
+                outRect.bottom = perpendicularItemSpacing
             } else {
-                outRect.bottom = verticalEdgeSpacing
-                outRect.top = verticalItemSpacing
+                outRect.bottom = edgeSpacing
+                outRect.top = perpendicularItemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {
-                outRect.bottom = verticalEdgeSpacing
+                outRect.bottom = edgeSpacing
             } else {
-                outRect.top = verticalEdgeSpacing
+                outRect.top = edgeSpacing
             }
         } else if (!reverseLayout) {
-            outRect.bottom = verticalItemSpacing
+            outRect.bottom = perpendicularItemSpacing
         } else {
-            outRect.top = verticalItemSpacing
+            outRect.top = perpendicularItemSpacing
         }
     }
 
@@ -132,30 +143,30 @@ class DpadGridSpacingDecoration constructor(
     ) {
         val startSpanSpace = spanCount - spanIndex
         val endSpanSpace = spanIndex + spanSize
-        val startSpacing = verticalItemSpacing * (startSpanSpace / spanCount.toFloat())
-        val endSpacing = verticalItemSpacing * (endSpanSpace / spanCount.toFloat())
+        val startSpacing = itemSpacing * (startSpanSpace / spanCount.toFloat())
+        val endSpacing = itemSpacing * (endSpanSpace / spanCount.toFloat())
 
         outRect.top = startSpacing.toInt()
         outRect.bottom = endSpacing.toInt()
 
         if (isAtStartEdge) {
             if (!reverseLayout) {
-                outRect.left = horizontalEdgeSpacing
-                outRect.right = horizontalItemSpacing
+                outRect.left = edgeSpacing
+                outRect.right = perpendicularItemSpacing
             } else {
-                outRect.right = horizontalEdgeSpacing
-                outRect.left = horizontalItemSpacing
+                outRect.right = edgeSpacing
+                outRect.left = perpendicularItemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {
-                outRect.right = horizontalEdgeSpacing
+                outRect.right = edgeSpacing
             } else {
-                outRect.left = horizontalEdgeSpacing
+                outRect.left = edgeSpacing
             }
         } else if (!reverseLayout) {
-            outRect.right = horizontalItemSpacing
+            outRect.right = perpendicularItemSpacing
         } else {
-            outRect.left = horizontalItemSpacing
+            outRect.left = perpendicularItemSpacing
         }
     }
 }

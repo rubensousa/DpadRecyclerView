@@ -55,14 +55,68 @@ class DpadGridSpacingDecorationTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    fun testVerticalEvenDecoration() {
+        val itemSpacing = 32
+        val decoration = DpadGridSpacingDecoration.create(
+            itemSpacing = itemSpacing
+        )
+        launchFragmentWithVerticalDecoration(decoration)
+
+        // First row
+        repeat(spanCount) { spanIndex ->
+            assertChildDecorations(
+                childIndex = spanIndex,
+                insets = ViewBounds(
+                    left = getStartDecoration(itemSpacing, spanIndex),
+                    top = itemSpacing,
+                    right = getEndDecoration(itemSpacing, spanIndex),
+                    bottom = itemSpacing
+                )
+            )
+        }
+
+        // Middle row
+        repeat(spanCount) { spanIndex ->
+            val childIndex = spanCount + spanIndex
+            assertChildDecorations(
+                childIndex = childIndex,
+                insets = ViewBounds(
+                    left = getStartDecoration(itemSpacing, spanIndex),
+                    top = 0,
+                    right = getEndDecoration(itemSpacing, spanIndex),
+                    bottom = itemSpacing
+                )
+            )
+        }
+
+        // Last row
+        selectLastPosition()
+
+        repeat(spanCount) { spanIndex ->
+            val childIndex = spanCount - 1 - spanIndex
+            assertChildDecorations(
+                childIndex = childIndex,
+                insets = ViewBounds(
+                    left = getStartDecoration(itemSpacing, spanIndex),
+                    top = 0,
+                    right = getEndDecoration(itemSpacing, spanIndex),
+                    bottom = itemSpacing
+                ),
+                fromStart = false
+            )
+        }
+
+    }
+
+    @Test
     fun testVerticalDecoration() {
         val verticalItemSpacing = 48
         val verticalEdgeSpacing = 64
         val horizontalItemSpacing = 32
-        val decoration = DpadGridSpacingDecoration(
-            horizontalItemSpacing = horizontalItemSpacing,
-            verticalItemSpacing = verticalItemSpacing,
-            verticalEdgeSpacing = verticalEdgeSpacing
+        val decoration = DpadGridSpacingDecoration.create(
+            itemSpacing = horizontalItemSpacing,
+            perpendicularItemSpacing = verticalItemSpacing,
+            edgeSpacing = verticalEdgeSpacing
         )
         launchFragmentWithVerticalDecoration(decoration)
 
@@ -117,10 +171,10 @@ class DpadGridSpacingDecorationTest : DpadRecyclerViewTest() {
         val verticalItemSpacing = 48
         val verticalEdgeSpacing = 64
         val horizontalItemSpacing = 32
-        val decoration = DpadGridSpacingDecoration(
-            horizontalItemSpacing = horizontalItemSpacing,
-            verticalItemSpacing = verticalItemSpacing,
-            verticalEdgeSpacing = verticalEdgeSpacing
+        val decoration = DpadGridSpacingDecoration.create(
+            itemSpacing = horizontalItemSpacing,
+            perpendicularItemSpacing = verticalItemSpacing,
+            edgeSpacing = verticalEdgeSpacing
         )
         launchFragmentWithVerticalDecoration(decoration, reverseLayout = true)
 
@@ -176,10 +230,10 @@ class DpadGridSpacingDecorationTest : DpadRecyclerViewTest() {
         val verticalItemSpacing = 48
         val verticalEdgeSpacing = 64
         val horizontalItemSpacing = 32
-        val decoration = DpadGridSpacingDecoration(
-            horizontalItemSpacing = horizontalItemSpacing,
-            verticalItemSpacing = verticalItemSpacing,
-            verticalEdgeSpacing = verticalEdgeSpacing
+        val decoration = DpadGridSpacingDecoration.create(
+            itemSpacing = horizontalItemSpacing,
+            perpendicularItemSpacing = verticalItemSpacing,
+            edgeSpacing = verticalEdgeSpacing
         )
         launchFragmentWithVerticalDecoration(decoration,
             spanSizeLookup = object : DpadSpanSizeLookup() {
@@ -224,10 +278,10 @@ class DpadGridSpacingDecorationTest : DpadRecyclerViewTest() {
         val horizontalItemSpacing = 32
         val horizontalEdgeSpacing = 64
         val verticalItemSpacing = 48
-        val decoration = DpadGridSpacingDecoration(
-            verticalItemSpacing = verticalItemSpacing,
-            horizontalItemSpacing = horizontalItemSpacing,
-            horizontalEdgeSpacing = horizontalEdgeSpacing,
+        val decoration = DpadGridSpacingDecoration.create(
+            itemSpacing = verticalItemSpacing,
+            perpendicularItemSpacing = horizontalItemSpacing,
+            edgeSpacing = horizontalEdgeSpacing,
         )
         launchFragmentWithHorizontalDecoration(decoration)
 

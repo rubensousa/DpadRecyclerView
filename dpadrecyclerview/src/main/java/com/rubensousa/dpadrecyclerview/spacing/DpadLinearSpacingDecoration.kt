@@ -23,53 +23,35 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
 /**
- * An item decoration that applies a spacing to all sides of an grid item.
+ * An item decoration that applies a spacing to all sides of a view part of a Column or Row layout.
  *
- * Check [setSpacingLookup] to customise weather individual ViewHolders
+ * @param itemSpacing spacing between items in the layout direction
  *
- * @param horizontalItemSpacing horizontal spacing between items
+ * @param edgeSpacing spacing between the start and end edges in the layout orientation.
+ * Default is [itemSpacing] if not specified.
  *
- * @param horizontalEdgeSpacing horizontal spacing for the start and end edges
- *
- * @param verticalItemSpacing vertical spacing between items
- *
- * @param verticalEdgeSpacing vertical spacing for the top and bottom edges
+ * @param perpendicularEdgeSpacing spacing between the edges perpendicular to the layout orientation.
+ * Default is 0.
  *
  */
 class DpadLinearSpacingDecoration private constructor(
-    @Px private var horizontalItemSpacing: Int,
-    @Px private var horizontalEdgeSpacing: Int,
-    @Px private var verticalItemSpacing: Int,
-    @Px private var verticalEdgeSpacing: Int
+    @Px private val itemSpacing: Int,
+    @Px private val edgeSpacing: Int,
+    @Px private val perpendicularEdgeSpacing: Int
 ) : DpadSpacingDecoration() {
 
     companion object {
 
         @JvmStatic
-        fun createVertical(
-            @Px verticalItemSpacing: Int,
-            @Px verticalEdgeSpacing: Int = verticalItemSpacing,
-            @Px horizontalEdgeSpacing: Int = 0, // Start and end spacing
+        fun create(
+            @Px itemSpacing: Int,
+            @Px edgeSpacing: Int = itemSpacing,
+            @Px perpendicularEdgeSpacing: Int = 0,
         ): DpadLinearSpacingDecoration {
             return DpadLinearSpacingDecoration(
-                verticalItemSpacing = verticalItemSpacing,
-                verticalEdgeSpacing = verticalEdgeSpacing,
-                horizontalItemSpacing = 0,
-                horizontalEdgeSpacing = horizontalEdgeSpacing,
-            )
-        }
-
-        @JvmStatic
-        fun createHorizontal(
-            @Px horizontalItemSpacing: Int,
-            @Px horizontalEdgeSpacing: Int = horizontalItemSpacing,
-            @Px verticalEdgeSpacing: Int = 0, // Top and bottom spacing
-        ): DpadLinearSpacingDecoration {
-            return DpadLinearSpacingDecoration(
-                horizontalItemSpacing = horizontalItemSpacing,
-                horizontalEdgeSpacing = horizontalEdgeSpacing,
-                verticalItemSpacing = 0,
-                verticalEdgeSpacing = verticalEdgeSpacing
+                itemSpacing = itemSpacing,
+                edgeSpacing = edgeSpacing,
+                perpendicularEdgeSpacing = perpendicularEdgeSpacing
             )
         }
 
@@ -101,27 +83,27 @@ class DpadLinearSpacingDecoration private constructor(
         isAtEndEdge: Boolean,
         reverseLayout: Boolean
     ) {
-        outRect.left = horizontalEdgeSpacing
-        outRect.right = horizontalEdgeSpacing
+        outRect.left = perpendicularEdgeSpacing
+        outRect.right = perpendicularEdgeSpacing
 
         if (isAtStartEdge) {
             if (!reverseLayout) {
-                outRect.top = verticalEdgeSpacing
-                outRect.bottom = verticalItemSpacing
+                outRect.top = edgeSpacing
+                outRect.bottom = itemSpacing
             } else {
-                outRect.bottom = verticalEdgeSpacing
-                outRect.top = verticalItemSpacing
+                outRect.bottom = edgeSpacing
+                outRect.top = itemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {
-                outRect.bottom = verticalEdgeSpacing
+                outRect.bottom = edgeSpacing
             } else {
-                outRect.top = verticalEdgeSpacing
+                outRect.top = edgeSpacing
             }
         } else if (!reverseLayout) {
-            outRect.bottom = verticalItemSpacing
+            outRect.bottom = itemSpacing
         } else {
-            outRect.top = verticalItemSpacing
+            outRect.top = itemSpacing
         }
     }
 
@@ -131,27 +113,27 @@ class DpadLinearSpacingDecoration private constructor(
         isAtEndEdge: Boolean,
         reverseLayout: Boolean
     ) {
-        outRect.top = verticalEdgeSpacing
-        outRect.bottom = verticalEdgeSpacing
+        outRect.top = perpendicularEdgeSpacing
+        outRect.bottom = perpendicularEdgeSpacing
 
         if (isAtStartEdge) {
             if (!reverseLayout) {
-                outRect.left = horizontalEdgeSpacing
-                outRect.right = horizontalItemSpacing
+                outRect.left = edgeSpacing
+                outRect.right = itemSpacing
             } else {
-                outRect.right = horizontalEdgeSpacing
-                outRect.left = horizontalItemSpacing
+                outRect.right = edgeSpacing
+                outRect.left = itemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {
-                outRect.right = horizontalEdgeSpacing
+                outRect.right = edgeSpacing
             } else {
-                outRect.left = horizontalEdgeSpacing
+                outRect.left = edgeSpacing
             }
         } else if (!reverseLayout) {
-            outRect.right = horizontalItemSpacing
+            outRect.right = itemSpacing
         } else {
-            outRect.left = horizontalItemSpacing
+            outRect.left = itemSpacing
         }
     }
 

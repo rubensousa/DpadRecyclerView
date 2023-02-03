@@ -147,9 +147,8 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
             setReverseLayout(args.reverseLayout)
             setSpanCount(spanCount)
             addItemDecoration(
-                DpadGridSpacingDecoration(
-                    horizontalItemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing),
-                    verticalItemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing),
+                DpadGridSpacingDecoration.create(
+                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
                 )
             )
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
