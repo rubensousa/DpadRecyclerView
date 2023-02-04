@@ -52,6 +52,7 @@ internal abstract class StructureEngineer(
      * Used to update any internal layout state before [preLayoutChildren] or [layoutChildren]
      */
     open fun onLayoutStarted(state: RecyclerView.State) {
+        layoutAlignment.update()
         layoutRequest.init(
             gravity = layoutInfo.getConfiguration().gravity,
             isVertical = layoutInfo.isVertical(),
@@ -419,7 +420,11 @@ internal abstract class StructureEngineer(
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
     ) {
-        var remainingScroll = layoutInfo.getRemainingScroll(state)
+        var remainingScroll = if (layoutRequest.isVertical) {
+            state.remainingScrollVertical
+        } else {
+            state.remainingScrollHorizontal
+        }
 
         /**
          * Offset all views by the existing remaining scroll so that they're still scrolled
@@ -480,12 +485,18 @@ internal abstract class StructureEngineer(
         val endEdge = layoutInfo.getDecoratedEnd(endView)
         val currentLayoutSpace = endEdge - startEdge
 
-        // If the current layout already fills the entire space, skip this alignment
+        // If the current layout already fills the entire space,
+        // skip this alignment if the edges don't have gaps
         if (currentLayoutSpace >= layoutInfo.getTotalSpace()) {
-            return false
+            if (!layoutRequest.reverseLayout && startEdge <= layoutInfo.getStartAfterPadding()) {
+                return false
+            }
+            if (layoutRequest.reverseLayout && endEdge >= layoutInfo.getEndAfterPadding()) {
+                return false
+            }
         }
 
-        val emptyLayoutSpace = layoutInfo.getTotalSpace() - currentLayoutSpace
+        val emptyLayoutSpace = max(0, layoutInfo.getTotalSpace() - currentLayoutSpace)
 
         if (!layoutRequest.reverseLayout) {
             if (startEdge > 0) {

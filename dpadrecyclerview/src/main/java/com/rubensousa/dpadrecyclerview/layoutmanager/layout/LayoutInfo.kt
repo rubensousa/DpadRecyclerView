@@ -60,7 +60,6 @@ internal class LayoutInfo(
     var hasLaidOutViews = false
         private set
 
-
     private var recyclerView: RecyclerView? = null
 
     fun getConfiguration() = configuration
@@ -165,30 +164,6 @@ internal class LayoutInfo(
         }
         return configuration.spanSizeLookup
             .getCachedSpanGroupIndex(adapterPosition, configuration.spanCount)
-    }
-
-    fun getMeasuredSize(view: View): Int {
-        return if (configuration.isVertical()) {
-            view.measuredHeight
-        } else {
-            view.measuredWidth
-        }
-    }
-
-    fun getStartDecorationSize(view: View): Int {
-        return if (configuration.isVertical()) {
-            layout.getTopDecorationHeight(view)
-        } else {
-            layout.getLeftDecorationWidth(view)
-        }
-    }
-
-    fun getEndDecorationSize(view: View): Int {
-        return if (configuration.isVertical()) {
-            layout.getBottomDecorationHeight(view)
-        } else {
-            layout.getRightDecorationWidth(view)
-        }
     }
 
     fun getStartAfterPadding() = orientationHelper.startAfterPadding
@@ -440,14 +415,6 @@ internal class LayoutInfo(
             newPosition < startOldPosition || newPosition > endOldPosition
         } else {
             newPosition > startOldPosition || newPosition < endOldPosition
-        }
-    }
-
-    fun getRemainingScroll(state: RecyclerView.State): Int {
-        return if (isVertical()) {
-            state.remainingScrollVertical
-        } else {
-            state.remainingScrollHorizontal
         }
     }
 

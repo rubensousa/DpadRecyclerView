@@ -52,6 +52,49 @@ abstract class LayoutMatrix(
         clear()
         selectedPosition = position
         initializeLayout(position)
+        // Ensure layout starts from the start if needed
+        if (config.alignToStartEdge) {
+            ensureStartAlignment()
+        }
+    }
+
+    private fun ensureStartAlignment() {
+        val startView = getFirstView() ?: return
+        val endView = getLastView() ?: return
+        val startEdge = getDecoratedStart(startView)
+        val endEdge = getDecoratedEnd(endView)
+        val currentLayoutSpace = endEdge - startEdge
+
+        // If the current layout already fills the entire space, skip this
+        if (currentLayoutSpace >= getVisibleSpace()) {
+            return
+        }
+
+        val emptyLayoutSpace = getVisibleSpace() - currentLayoutSpace
+
+        if (!config.reversed) {
+            if (startEdge > 0) {
+                scrollBy(startEdge)
+            } else {
+                layoutRequest.prepend(startView.position) {
+                    checkpoint = startEdge
+                    space = emptyLayoutSpace + startEdge
+                }
+                val filledSpace = fill(layoutRequest)
+                scrollBy(startEdge - filledSpace)
+            }
+        } else if (endEdge < getVisibleSpace()) {
+            val distanceToEnd = getVisibleSpace() - endEdge
+            scrollBy(-distanceToEnd)
+        } else {
+            layoutRequest.append(endView.position) {
+                checkpoint = endEdge
+                space = emptyLayoutSpace
+            }
+            val filledSpace = fill(layoutRequest)
+            val availableScrollSpace = endEdge - getVisibleSpace()
+            scrollBy(availableScrollSpace + filledSpace)
+        }
     }
 
     fun getItemCount() = itemCount
@@ -145,7 +188,7 @@ abstract class LayoutMatrix(
         }
     }
 
-    protected fun fill(request: LayoutBlockRequest) {
+    protected fun fill(request: LayoutBlockRequest): Int {
         var remainingSpace = request.space
         while (canContinueLayout(remainingSpace, request)) {
             val result = layoutBlock(request)
@@ -165,6 +208,7 @@ abstract class LayoutMatrix(
                 }
             }
         }
+        return layoutRequest.space - remainingSpace
     }
 
     protected fun clear() {

@@ -21,7 +21,10 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutPrefetchCollector
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutInfoMock
+import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutManagerMock
+import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.RecyclerMock
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.RecyclerViewStateMock
+import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.TestViewAdapter
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.ViewMock
 import org.junit.Before
 import org.junit.Test
@@ -39,23 +42,27 @@ class LayoutPrefetchCollectorTest {
     private val bottomView = ViewMock(futureHeight = viewHeight, futureWidth = screenWidth)
     private val recyclerViewStateMock = RecyclerViewStateMock()
     private val configuration = LayoutConfiguration(RecyclerView.LayoutManager.Properties())
-    private val layoutInfoMock = LayoutInfoMock(configuration)
+    private val layoutManagerMock = LayoutManagerMock(
+       RecyclerMock(
+            TestViewAdapter(
+                viewWidth = screenWidth,
+                viewHeight = viewHeight
+            )
+        )
+    )
+    private val layoutInfoMock = LayoutInfoMock(layoutManagerMock.get(), configuration)
     private val prefetchCollector = LayoutPrefetchCollector(layoutInfoMock.get())
     private val registry = PrefetchRegistry()
 
     @Before
     fun setup() {
+        layoutInfoMock.setOrientation(RecyclerView.VERTICAL)
         topView.top = childTopCentered - viewHeight
         topView.bottom = childTopCentered
         bottomView.top = childBottomCentered
         bottomView.bottom = childBottomCentered + viewHeight
-        layoutInfoMock.reverseLayout = false
-        layoutInfoMock.childCount = 3
-        layoutInfoMock.isVertical = true
-        layoutInfoMock.endAfterPadding = screenHeight
-        layoutInfoMock.startAfterPadding = 0
-        layoutInfoMock.childClosestToStart = topView.get()
-        layoutInfoMock.childClosestToEnd = bottomView.get()
+        layoutManagerMock.addView(topView.get())
+        layoutManagerMock.addView(bottomView.get())
     }
 
     @Test
@@ -197,7 +204,7 @@ class LayoutPrefetchCollectorTest {
 
     @Test
     fun `collect adjacent start for grid`() {
-        layoutInfoMock.spanCount = 3
+        configuration.setSpanCount(3)
         topView.layoutPosition = 3
 
         prefetchCollector.collectAdjacentPrefetchPositions(
@@ -227,7 +234,7 @@ class LayoutPrefetchCollectorTest {
 
     @Test
     fun `collect adjacent end for grid`() {
-        layoutInfoMock.spanCount = 3
+        configuration.setSpanCount(3)
         bottomView.layoutPosition = 11
 
         prefetchCollector.collectAdjacentPrefetchPositions(

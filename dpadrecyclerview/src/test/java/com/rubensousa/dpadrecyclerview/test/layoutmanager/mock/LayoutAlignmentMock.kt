@@ -17,17 +17,22 @@
 package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.ParentScrollAlignment
 import io.mockk.every
 import io.mockk.mockk
 
-internal class LayoutAlignmentMock(private val parentKeyline: Int) {
+internal class LayoutAlignmentMock(
+    private val parentAlignment: ParentScrollAlignment
+) {
 
     private val mock = mockk<LayoutAlignment>()
 
     init {
         every { mock.calculateScrollForAlignment(any()) }.answers { 0 }
-        every { mock.getParentKeyline() }.answers { parentKeyline }
-        every { mock.updateScrollLimits() }.answers {  }
+        every { mock.getParentAlignment() }.answers { parentAlignment.defaultAlignment }
+        every { mock.getParentKeyline() }.answers { parentAlignment.calculateKeyline() }
+        every { mock.updateScrollLimits() }.answers { }
+        every { mock.update() }.answers {  }
     }
 
     fun get(): LayoutAlignment = mock

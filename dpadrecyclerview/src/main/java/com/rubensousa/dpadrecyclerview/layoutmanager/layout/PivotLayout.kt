@@ -64,9 +64,8 @@ internal class PivotLayout(
         if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")
         }
-        structureEngineer.onLayoutStarted(state)
         layoutInfo.setLayoutInProgress()
-        layoutAlignment.update()
+        structureEngineer.onLayoutStarted(state)
 
         // Fast removal
         if (state.itemCount == 0) {

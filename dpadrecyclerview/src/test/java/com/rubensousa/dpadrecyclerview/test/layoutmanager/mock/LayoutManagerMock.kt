@@ -143,11 +143,11 @@ internal class LayoutManagerMock(
         }
     }
 
-    private fun addView(view: View, disappearing: Boolean) {
+    fun addView(view: View, disappearing: Boolean = false) {
         views.add(ViewEntry(view, disappearing))
     }
 
-    private fun addViewAt(view: View, index: Int, disappearing: Boolean) {
+    fun addViewAt(view: View, index: Int, disappearing: Boolean = false) {
         views.add(index, ViewEntry(view, disappearing))
     }
 

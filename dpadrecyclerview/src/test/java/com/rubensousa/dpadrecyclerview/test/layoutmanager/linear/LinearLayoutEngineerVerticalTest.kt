@@ -20,11 +20,12 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
+import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.ParentScrollAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemChanges
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutEngineer
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutAlignmentMock
+import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutInfoMock
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutManagerMock
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.RecyclerMock
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.RecyclerViewStateMock
@@ -39,18 +40,18 @@ class LinearLayoutEngineerVerticalTest {
 
     private val screenWidth = 1920
     private val screenHeight = 1080
-    private val keyline = screenHeight / 2
     private val viewWidth = screenWidth
     private val viewHeight = 280
     private val viewAdapter = TestViewAdapter(viewWidth, viewHeight)
-    private val layoutAlignmentMock = LayoutAlignmentMock(parentKeyline = keyline)
+    private val parentScrollAlignment = ParentScrollAlignment()
+    private val layoutAlignmentMock = LayoutAlignmentMock(parentAlignment = parentScrollAlignment)
     private val listener = Listener()
     private val recyclerMock = RecyclerMock(viewAdapter)
     private val layoutManagerMock = LayoutManagerMock(recyclerMock)
     private val layoutManager: RecyclerView.LayoutManager = layoutManagerMock.get()
     private val recyclerViewStateMock = RecyclerViewStateMock()
-    private val layoutInfo = LayoutInfo(
-        layoutManagerMock.get(),
+    private val layoutInfoMock = LayoutInfoMock(
+        layoutManager,
         LayoutConfiguration(RecyclerView.LayoutManager.Properties()).also {
             it.setOrientation(RecyclerView.VERTICAL)
         }
@@ -65,6 +66,7 @@ class LinearLayoutEngineerVerticalTest {
             viewHeight = viewHeight,
             defaultItemCount = 1000,
             parentKeyline = screenHeight / 2,
+            alignToStartEdge = true,
             childKeyline = 0.5f
         )
     )
@@ -72,42 +74,42 @@ class LinearLayoutEngineerVerticalTest {
 
     @Before
     fun setup() {
+        parentScrollAlignment.updateLayoutInfo(
+            layoutManager,
+            RecyclerView.VERTICAL, false
+        )
         engineer = LinearLayoutEngineer(
-            layoutManagerMock.get(), layoutInfo, layoutAlignmentMock.get(), listener
+            layoutManagerMock.get(), layoutInfoMock.get(), layoutAlignmentMock.get(), listener
         )
     }
 
     @Test
     fun `initial layout pass places views in their correct places and in order`() {
-        initLayout()
-
+        column.init(position = 0)
         layout(pivotPosition = 0)
 
         LayoutManagerAssertions.assertChildrenBounds(layoutManager, column)
 
-        assertThat(listener.created).hasSize(3)
-        assertThat(listener.laidOut).hasSize(3)
+        assertThat(listener.created).hasSize(column.getChildCount())
+        assertThat(listener.laidOut).hasSize(column.getChildCount())
     }
 
     @Test
     fun `second layout pass keeps layout integrity`() {
-        initLayout()
+        column.init(position = 0)
         layout(pivotPosition = 0)
 
-        repeat(3) {
-            column.scrollDown()
-        }
+        column.init(position = 3)
         layout(pivotPosition = 3)
-
         LayoutManagerAssertions.assertChildrenBounds(layoutManager, column)
     }
 
     @Test
     fun `pivot moves against remaining scroll for a future alignment`() {
-        initLayout()
+        column.init(position = 0)
         column.scrollBy(viewHeight / 2)
 
-        recyclerViewStateMock.remainingScrollVertical = viewHeight / 2
+        recyclerViewStateMock.remainingScrollVertical = -viewHeight / 2
         layout(pivotPosition = 1)
 
         LayoutManagerAssertions.assertChildrenBounds(layoutManager, column)
@@ -115,20 +117,14 @@ class LinearLayoutEngineerVerticalTest {
 
     @Test
     fun `do not allow values of remainingScroll too high`() {
-        initLayout()
-        repeat(3) {
-            column.scrollDown()
-        }
+        column.init(position = 3)
         recyclerViewStateMock.remainingScrollVertical = column.getSize() * 2
         layout(pivotPosition = 3)
         LayoutManagerAssertions.assertChildrenBounds(layoutManager, column)
     }
 
-    private fun initLayout(position: Int = 0) {
-        column.init(position)
-    }
-
     private fun layout(pivotPosition: Int) {
+        engineer.onLayoutStarted(recyclerViewStateMock.get())
         engineer.layoutChildren(
             pivotPosition,
             itemChanges,

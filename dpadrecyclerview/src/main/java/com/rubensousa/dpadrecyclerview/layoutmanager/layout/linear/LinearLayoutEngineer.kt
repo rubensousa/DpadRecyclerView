@@ -147,10 +147,14 @@ internal class LinearLayoutEngineer(
      */
     private fun updatePivotBounds(view: View, bounds: ViewBounds, layoutRequest: LayoutRequest) {
         layoutManager.measureChildWithMargins(view, 0, 0)
-        val size = layoutInfo.getMeasuredSize(view)
+        val size = if (layoutRequest.isVertical) {
+            view.measuredHeight
+        } else {
+            view.measuredWidth
+        }
         val viewCenter = layoutAlignment.getParentKeyline()
-        val headOffset = viewCenter - size / 2 - layoutInfo.getStartDecorationSize(view)
-        val tailOffset = viewCenter + size / 2 + layoutInfo.getEndDecorationSize(view)
+        val headOffset = viewCenter - size / 2 - getStartDecorationSize(view, layoutRequest)
+        val tailOffset = viewCenter + size / 2 + getEndDecorationSize(view, layoutRequest)
 
         if (layoutRequest.isVertical) {
             bounds.top = headOffset
@@ -272,6 +276,22 @@ internal class LinearLayoutEngineer(
                 bounds.top = layoutManager.paddingTop
                 bounds.bottom = bounds.top + layoutInfo.getPerpendicularDecoratedSize(view)
             }
+        }
+    }
+
+    private fun getStartDecorationSize(view: View, layoutRequest: LayoutRequest): Int {
+        return if (layoutRequest.isVertical) {
+            layoutManager.getTopDecorationHeight(view)
+        } else {
+            layoutManager.getLeftDecorationWidth(view)
+        }
+    }
+
+    private fun getEndDecorationSize(view: View, layoutRequest: LayoutRequest): Int {
+        return if (layoutRequest.isVertical) {
+            layoutManager.getBottomDecorationHeight(view)
+        } else {
+            layoutManager.getRightDecorationWidth(view)
         }
     }
 
