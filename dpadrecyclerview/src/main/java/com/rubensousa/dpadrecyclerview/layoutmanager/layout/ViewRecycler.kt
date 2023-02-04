@@ -27,7 +27,7 @@ internal open class ViewRecycler(
         if (!layoutRequest.isRecyclingEnabled || layoutRequest.isInfinite) {
             return
         }
-        if (layoutRequest.isLayingOutStart()) {
+        if (layoutRequest.isPrepending()) {
             recycleFromEnd(recycler, layoutRequest)
         } else {
             recycleFromStart(recycler, layoutRequest)

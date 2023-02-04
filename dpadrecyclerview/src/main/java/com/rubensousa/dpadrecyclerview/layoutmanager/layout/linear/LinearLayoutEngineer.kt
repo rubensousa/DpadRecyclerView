@@ -21,23 +21,17 @@ import android.view.Gravity
 import android.view.View
 import androidx.collection.forEach
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import androidx.recyclerview.widget.RecyclerView.Recycler
-import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ExtraLayoutSpaceCalculator
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutResult
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PreLayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ScrapViewProvider
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ViewProvider
-import kotlin.math.abs
 import kotlin.math.max
 
 /**
@@ -49,7 +43,7 @@ import kotlin.math.max
  * fill towards the top/start until there's no more space
  */
 internal class LinearLayoutEngineer(
-    layoutManager: LayoutManager,
+    layoutManager: RecyclerView.LayoutManager,
     layoutInfo: LayoutInfo,
     layoutAlignment: LayoutAlignment,
     private val onChildLayoutListener: OnChildLayoutListener,
@@ -59,42 +53,35 @@ internal class LinearLayoutEngineer(
         const val TAG = "LinearLayoutEngineer"
     }
 
-    private val extraLayoutSpaceCalculator = ExtraLayoutSpaceCalculator(layoutInfo)
-
-    override fun updateLayoutRequestForScroll(
-        layoutRequest: LayoutRequest,
-        state: State,
-        scrollOffset: Int
-    ) {
-        val scrollDistance = abs(scrollOffset)
-
-        if (scrollOffset < 0) {
-            val view = layoutInfo.getChildClosestToStart() ?: return
-            layoutRequest.prepend(layoutInfo.getLayoutPositionOf(view)) {
-                setCheckpoint(layoutInfo.getDecoratedStart(view))
-                extraLayoutSpaceCalculator.update(layoutRequest, state)
-                setAvailableScrollSpace(max(0, layoutInfo.getStartAfterPadding() - checkpoint))
-                setFillSpace(scrollDistance + extraLayoutSpaceStart - availableScrollSpace)
-            }
-        } else {
-            val view = layoutInfo.getChildClosestToEnd() ?: return
-            layoutRequest.append(layoutInfo.getLayoutPositionOf(view)) {
-                setCheckpoint(layoutInfo.getDecoratedEnd(view))
-                extraLayoutSpaceCalculator.update(layoutRequest, state)
-                setAvailableScrollSpace(max(0, checkpoint - layoutInfo.getEndAfterPadding()))
-                setFillSpace(scrollDistance + extraLayoutSpaceEnd - availableScrollSpace)
-            }
-        }
-    }
-
     override fun initLayout(
         pivotPosition: Int,
         layoutRequest: LayoutRequest,
         viewProvider: ViewProvider,
         recycler: RecyclerView.Recycler,
-        state: State
+        state: RecyclerView.State
     ): View {
-        val pivotView = addPivot(pivotPosition, recycler)
+        val pivotView = recycler.getViewForPosition(pivotPosition)
+        layoutPivot(pivotView, layoutRequest)
+
+        // Layout from pivot to start
+        layoutRequest.prepend(pivotPosition) {
+            setCheckpoint(layoutInfo.getDecoratedStart(pivotView))
+            setFillSpace(max(0, checkpoint - layoutInfo.getStartAfterPadding()))
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+
+        // Layout from pivot to end
+        layoutRequest.append(pivotPosition) {
+            setCheckpoint(layoutInfo.getDecoratedEnd(pivotView))
+            setFillSpace(max(0, layoutInfo.getEndAfterPadding() - checkpoint))
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+
+        return pivotView
+    }
+
+    private fun layoutPivot(pivotView: View, layoutRequest: LayoutRequest) {
+        layoutManager.addView(pivotView)
         updatePivotBounds(pivotView, viewBounds, layoutRequest)
         onChildLayoutListener.onChildCreated(pivotView)
 
@@ -104,60 +91,6 @@ internal class LinearLayoutEngineer(
         }
         viewBounds.setEmpty()
         onChildLayoutListener.onChildLaidOut(pivotView)
-
-        // Layout from pivot to start
-        prepend(layoutRequest, pivotPosition) {
-            setCheckpoint(layoutInfo.getDecoratedStart(pivotView))
-            val startFillSpace = max(
-                0, checkpoint - layoutInfo.getStartAfterPadding()
-            )
-            setFillSpace(startFillSpace)
-        }
-        fill(layoutRequest, viewProvider, recycler, state)
-
-        // Layout from pivot to end
-        append(layoutRequest, pivotPosition) {
-            setCheckpoint(layoutInfo.getDecoratedEnd(pivotView))
-            val endFillSpace = max(
-                0, layoutInfo.getEndAfterPadding() - checkpoint
-            )
-            setFillSpace(endFillSpace)
-        }
-        fill(layoutRequest, viewProvider, recycler, state)
-
-        return pivotView
-    }
-
-    override fun preLayout(
-        preLayoutRequest: PreLayoutRequest,
-        layoutRequest: LayoutRequest,
-        viewProvider: ViewProvider,
-        recycler: Recycler,
-        state: State
-    ) {
-        val firstView = preLayoutRequest.firstView
-        if (firstView != null) {
-            layoutRequest.prepend(preLayoutRequest.firstPosition) {
-                setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-                setAvailableScrollSpace(
-                    max(0, layoutInfo.getStartAfterPadding() - preLayoutRequest.extraLayoutSpace)
-                )
-                setFillSpace(preLayoutRequest.extraLayoutSpace)
-            }
-            fill(layoutRequest, viewProvider, recycler, state)
-        }
-
-        val lastView = preLayoutRequest.lastView
-        if (lastView != null) {
-            layoutRequest.append(preLayoutRequest.lastPosition) {
-                setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-                setAvailableScrollSpace(
-                    max(0, preLayoutRequest.extraLayoutSpace - layoutInfo.getEndAfterPadding())
-                )
-                setFillSpace(preLayoutRequest.extraLayoutSpace)
-            }
-            fill(layoutRequest, viewProvider, recycler, state)
-        }
     }
 
     override fun layoutDisappearingViews(
@@ -165,13 +98,13 @@ internal class LinearLayoutEngineer(
         lastView: View,
         layoutRequest: LayoutRequest,
         scrapViewProvider: ScrapViewProvider,
-        recycler: Recycler,
-        state: State
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
     ) {
         val firstViewPosition = layoutInfo.getLayoutPositionOf(firstView)
         var scrapExtraStart = 0
         var scrapExtraEnd = 0
-        scrapViewProvider.getScrap()?.forEach { position, viewHolder ->
+        scrapViewProvider.getScrap().forEach { position, viewHolder ->
             val direction = if (position < firstViewPosition != layoutRequest.reverseLayout) {
                 LayoutDirection.START
             } else {
@@ -193,7 +126,7 @@ internal class LinearLayoutEngineer(
                 setRecyclingEnabled(false)
                 setCheckpoint(layoutInfo.getDecoratedStart(firstView))
                 setFillSpace(scrapExtraStart)
-                scrapViewProvider.updateLayoutPosition(this)
+                scrapViewProvider.setNextLayoutPosition(this)
             }
             fill(layoutRequest, scrapViewProvider, recycler, state)
         }
@@ -203,41 +136,10 @@ internal class LinearLayoutEngineer(
                 setRecyclingEnabled(false)
                 setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
                 setFillSpace(scrapExtraEnd)
-                scrapViewProvider.updateLayoutPosition(this)
+                scrapViewProvider.setNextLayoutPosition(this)
             }
             fill(layoutRequest, scrapViewProvider, recycler, state)
         }
-    }
-
-    override fun layoutExtraSpace(
-        layoutRequest: LayoutRequest,
-        viewProvider: ViewProvider,
-        recycler: Recycler,
-        state: State
-    ) {
-        val firstView = layoutInfo.getChildClosestToStart() ?: return
-        prepend(layoutRequest, layoutInfo.getLayoutPositionOf(firstView)) {
-
-            extraLayoutSpaceCalculator.update(layoutRequest, state)
-            setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-            setFillSpace(extraLayoutSpaceStart)
-        }
-        fill(layoutRequest, viewProvider, recycler, state)
-
-        val lastView = layoutInfo.getChildClosestToEnd() ?: return
-        append(layoutRequest, layoutInfo.getLayoutPositionOf(lastView)) {
-            setRecyclingEnabled(false)
-            extraLayoutSpaceCalculator.update(layoutRequest, state)
-            setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-            setFillSpace(extraLayoutSpaceEnd)
-        }
-        fill(layoutRequest, viewProvider, recycler, state)
-    }
-
-    private fun addPivot(pivotPosition: Int, recycler: Recycler): View {
-        val view = recycler.getViewForPosition(pivotPosition)
-        layoutManager.addView(view)
-        return view
     }
 
     /**
@@ -264,17 +166,16 @@ internal class LinearLayoutEngineer(
     override fun layoutBlock(
         layoutRequest: LayoutRequest,
         viewProvider: ViewProvider,
-        recycler: Recycler,
-        state: State,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State,
         layoutResult: LayoutResult
     ) {
-        // Exit early if we're out of views to layout
-        val view = viewProvider.next(layoutRequest, state) ?: return
+        val view = viewProvider.next(layoutRequest, state)
         addView(view, layoutRequest)
         onChildLayoutListener.onChildCreated(view)
         layoutManager.measureChildWithMargins(view, 0, 0)
 
-        layoutResult.consumedSpace = if (layoutRequest.isLayingOutEnd()) {
+        layoutResult.consumedSpace = if (layoutRequest.isAppending()) {
             append(view, viewBounds, layoutRequest)
         } else {
             prepend(view, viewBounds, layoutRequest)
@@ -321,24 +222,6 @@ internal class LinearLayoutEngineer(
             bounds.left = bounds.right - decoratedSize
         }
         return decoratedSize
-    }
-
-    private fun prepend(
-        request: LayoutRequest,
-        fromPosition: Int,
-        block: LayoutRequest.() -> Unit
-    ) {
-        request.prepend(fromPosition, request.defaultItemDirection.opposite()) {
-            setRecyclingEnabled(false)
-            block(this)
-        }
-    }
-
-    private fun append(request: LayoutRequest, fromPosition: Int, block: LayoutRequest.() -> Unit) {
-        request.append(fromPosition) {
-            setRecyclingEnabled(false)
-            block(this)
-        }
     }
 
     private fun applyHorizontalGravity(

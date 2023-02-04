@@ -59,10 +59,6 @@ internal class LayoutRequest {
     var extraLayoutSpaceEnd: Int = 0
         private set
 
-    // How much we can scroll without adding new children at the edges
-    var availableScrollSpace: Int = 0
-        private set
-
     // Pixel offset where layout should start
     // For grids, this only serves as an indicator of where the next/previous row should be laid out
     var checkpoint: Int = 0
@@ -124,9 +120,9 @@ internal class LayoutRequest {
         currentPosition += currentItemDirection.value
     }
 
-    fun isLayingOutStart() = direction == LayoutDirection.START
+    fun isPrepending() = direction == LayoutDirection.START
 
-    fun isLayingOutEnd() = direction == LayoutDirection.END
+    fun isAppending() = direction == LayoutDirection.END
 
     fun setLayingOutScrap(layoutScrap: Boolean) {
         isLayingOutScrap = layoutScrap
@@ -137,12 +133,7 @@ internal class LayoutRequest {
         extraLayoutSpaceEnd = end
     }
 
-    fun setAvailableScrollSpace(space: Int) {
-        availableScrollSpace = space
-    }
-
     fun clear() {
-        availableScrollSpace = 0
         currentPosition = RecyclerView.NO_POSITION
         extraLayoutSpaceEnd = 0
         extraLayoutSpaceStart = 0
@@ -150,26 +141,18 @@ internal class LayoutRequest {
         checkpoint = 0
     }
 
-    inline fun append(
-        referencePosition: Int,
-        itemDirection: ItemDirection = defaultItemDirection,
-        crossinline block: LayoutRequest.() -> Unit
-    ) {
+    inline fun append(referencePosition: Int, crossinline block: LayoutRequest.() -> Unit) {
         clear()
         direction = LayoutDirection.END
-        currentItemDirection = itemDirection
+        currentItemDirection = defaultItemDirection
         currentPosition = referencePosition + currentItemDirection.value
         block(this)
     }
 
-    inline fun prepend(
-        referencePosition: Int,
-        itemDirection: ItemDirection = defaultItemDirection.opposite(),
-        crossinline block: LayoutRequest.() -> Unit
-    ) {
+    inline fun prepend(referencePosition: Int, crossinline block: LayoutRequest.() -> Unit) {
         clear()
         direction = LayoutDirection.START
-        currentItemDirection = itemDirection
+        currentItemDirection = defaultItemDirection.opposite()
         currentPosition = referencePosition + currentItemDirection.value
         block(this)
     }
@@ -178,7 +161,6 @@ internal class LayoutRequest {
         return "LayoutRequest(direction=$direction, " +
                 "fillSpace=$fillSpace, " +
                 "currentPosition=$currentPosition, " +
-                "availableScrollSpace=$availableScrollSpace, " +
                 "checkpoint=$checkpoint, "
     }
 

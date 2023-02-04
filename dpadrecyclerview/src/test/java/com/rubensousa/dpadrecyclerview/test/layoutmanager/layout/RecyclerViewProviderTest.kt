@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.test.layoutmanager.layout
 import android.view.Gravity
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.RecyclerViewProvider
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.RecyclerMock
@@ -45,12 +44,7 @@ class RecyclerViewProviderTest {
 
     @Before
     fun setup() {
-        layoutRequest.init(
-            gravity = Gravity.START,
-            isVertical = true,
-            reverseLayout = false,
-            infinite = false
-        )
+        initLayoutRequest(reverseLayout = false)
         stateMock.itemCount = recyclerMock.getItemCount()
         viewProvider.updateRecycler(recycler)
     }
@@ -61,14 +55,14 @@ class RecyclerViewProviderTest {
 
         viewProvider.clearRecycler()
 
-        assertThat(viewProvider.next(layoutRequest, state)).isNull()
+        assertThat(viewProvider.hasNext(layoutRequest, state)).isFalse()
     }
 
     @Test
     fun `layout request is updated with primary direction`() {
         layoutRequest.setCurrentPosition(0)
         var currentPosition = layoutRequest.currentPosition
-        var view = viewProvider.next(layoutRequest, state)!!
+        var view = viewProvider.next(layoutRequest, state)
         var layoutParams = view.layoutParams as DpadLayoutParams
 
         assertThat(layoutParams.viewLayoutPosition).isEqualTo(currentPosition)
@@ -77,7 +71,7 @@ class RecyclerViewProviderTest {
         layoutRequest.prepend(referencePosition = recyclerMock.getItemCount()) {}
         currentPosition = layoutRequest.currentPosition
 
-        view = viewProvider.next(layoutRequest, state)!!
+        view = viewProvider.next(layoutRequest, state)
         layoutParams = view.layoutParams as DpadLayoutParams
 
         assertThat(layoutParams.viewLayoutPosition).isEqualTo(currentPosition)
@@ -86,35 +80,23 @@ class RecyclerViewProviderTest {
 
     @Test
     fun `layout request is updated with reverse direction`() {
-        layoutRequest.prepend(referencePosition = -1, itemDirection = ItemDirection.TAIL) {}
+        initLayoutRequest(reverseLayout = true)
+        layoutRequest.prepend(referencePosition = -1) {}
         var currentPosition = layoutRequest.currentPosition
-        var view = viewProvider.next(layoutRequest, state)!!
+        var view = viewProvider.next(layoutRequest, state)
         var layoutParams = view.layoutParams as DpadLayoutParams
 
         assertThat(layoutParams.viewLayoutPosition).isEqualTo(currentPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(currentPosition + 1)
 
-        layoutRequest.append(
-            referencePosition = recyclerMock.getItemCount(),
-            itemDirection = ItemDirection.HEAD
-        ) {}
+        layoutRequest.append(referencePosition = recyclerMock.getItemCount()) {}
         currentPosition = layoutRequest.currentPosition
 
-        view = viewProvider.next(layoutRequest, state)!!
+        view = viewProvider.next(layoutRequest, state)
         layoutParams = view.layoutParams as DpadLayoutParams
 
         assertThat(layoutParams.viewLayoutPosition).isEqualTo(currentPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(currentPosition - 1)
-    }
-
-    @Test
-    fun `layout request is not updated if views are not found`() {
-        stateMock.itemCount = 0
-        val currentPosition = layoutRequest.currentPosition
-
-        assertThat(viewProvider.hasNext(layoutPosition = 0, state)).isFalse()
-        assertThat(viewProvider.next(layoutRequest, state)).isNull()
-        assertThat(layoutRequest.currentPosition).isEqualTo(currentPosition)
     }
 
     @Test
@@ -123,17 +105,24 @@ class RecyclerViewProviderTest {
 
         layoutRequest.setCurrentPosition(position = 0)
 
-        assertThat(viewProvider.hasNext(layoutRequest.currentPosition, state)).isTrue()
+        assertThat(viewProvider.hasNext(layoutRequest, state)).isTrue()
         assertThat(viewProvider.next(layoutRequest, state)).isNotNull()
         assertThat(layoutRequest.currentPosition).isEqualTo(1)
 
-        assertThat(viewProvider.hasNext(layoutRequest.currentPosition, state)).isFalse()
-        assertThat(viewProvider.next(layoutRequest, state)).isNull()
+        assertThat(viewProvider.hasNext(layoutRequest, state)).isFalse()
 
         layoutRequest.setCurrentPosition(position = -1)
 
-        assertThat(viewProvider.hasNext(layoutRequest.currentPosition, state)).isFalse()
-        assertThat(viewProvider.next(layoutRequest, state)).isNull()
+        assertThat(viewProvider.hasNext(layoutRequest, state)).isFalse()
         assertThat(layoutRequest.currentPosition).isEqualTo(-1)
+    }
+
+    private fun initLayoutRequest(reverseLayout: Boolean = false) {
+        layoutRequest.init(
+            gravity = Gravity.START,
+            isVertical = true,
+            reverseLayout = reverseLayout,
+            infinite = false
+        )
     }
 }

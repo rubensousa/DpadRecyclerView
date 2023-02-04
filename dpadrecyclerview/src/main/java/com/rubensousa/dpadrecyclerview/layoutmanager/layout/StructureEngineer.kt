@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.RecyclerVie
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ScrapViewProvider
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ViewProvider
 import kotlin.math.abs
+import kotlin.math.max
 
 internal abstract class StructureEngineer(
     protected val layoutManager: RecyclerView.LayoutManager,
@@ -38,6 +39,7 @@ internal abstract class StructureEngineer(
 
     // Holds the bounds of the view to be laid out
     protected val viewBounds = ViewBounds()
+    private val extraLayoutSpaceCalculator = ExtraLayoutSpaceCalculator(layoutInfo)
     private val viewRecycler = ViewRecycler(layoutManager, layoutInfo)
     private val preLayoutRequest = PreLayoutRequest()
     private val layoutRequest = LayoutRequest()
@@ -46,7 +48,7 @@ internal abstract class StructureEngineer(
     private val scrapViewProvider = ScrapViewProvider()
 
     /**
-     * Used to update any internal layout state before onLayoutChildren starts its job
+     * Used to update any internal layout state before [preLayoutChildren] or [layoutChildren]
      */
     open fun onLayoutStarted(state: RecyclerView.State) {
         layoutRequest.init(
@@ -57,21 +59,17 @@ internal abstract class StructureEngineer(
         )
     }
 
-    open fun onLayoutChildrenFinished() {
+    open fun onLayoutFinished() {
 
     }
 
-    open fun onChildrenOffset(offset: Int) {
+    open fun onLayoutCleared() {
 
     }
 
-    protected abstract fun preLayout(
-        preLayoutRequest: PreLayoutRequest,
-        layoutRequest: LayoutRequest,
-        viewProvider: ViewProvider,
-        recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
-    )
+    protected open fun onChildrenOffset(offset: Int) {
+
+    }
 
     /**
      * Starts a new layout from scratch with the pivot view aligned
@@ -96,19 +94,6 @@ internal abstract class StructureEngineer(
         scrapViewProvider: ScrapViewProvider,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
-    )
-
-    protected abstract fun layoutExtraSpace(
-        layoutRequest: LayoutRequest,
-        viewProvider: ViewProvider,
-        recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
-    )
-
-    protected abstract fun updateLayoutRequestForScroll(
-        layoutRequest: LayoutRequest,
-        state: RecyclerView.State,
-        scrollOffset: Int
     )
 
     /**
@@ -156,10 +141,34 @@ internal abstract class StructureEngineer(
         }
 
         if (preLayoutRequest.extraLayoutSpace > 0) {
-            preLayout(preLayoutRequest, layoutRequest, recyclerViewProvider, recycler, state)
+            preLayout(preLayoutRequest, layoutRequest, recycler, state)
         }
 
         recyclerViewProvider.clearRecycler()
+    }
+
+    private fun preLayout(
+        preLayoutRequest: PreLayoutRequest,
+        layoutRequest: LayoutRequest,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ) {
+        val firstView = preLayoutRequest.firstView
+        if (firstView != null) {
+            layoutRequest.prepend(preLayoutRequest.firstPosition) {
+                setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+                setFillSpace(preLayoutRequest.extraLayoutSpace)
+            }
+            fill(layoutRequest, recyclerViewProvider, recycler, state)
+        }
+        val lastView = preLayoutRequest.lastView
+        if (lastView != null) {
+            layoutRequest.append(preLayoutRequest.lastPosition) {
+                setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+                setFillSpace(preLayoutRequest.extraLayoutSpace)
+            }
+            fill(layoutRequest, recyclerViewProvider, recycler, state)
+        }
     }
 
     fun layoutChildren(
@@ -204,9 +213,31 @@ internal abstract class StructureEngineer(
         finishLayout()
     }
 
+    private fun layoutExtraSpace(
+        layoutRequest: LayoutRequest,
+        viewProvider: ViewProvider,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ) {
+        val firstView = layoutInfo.getChildClosestToStart() ?: return
+        layoutRequest.prepend(layoutInfo.getLayoutPositionOf(firstView)) {
+            extraLayoutSpaceCalculator.update(layoutRequest, state)
+            setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+            setFillSpace(extraLayoutSpaceStart)
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+
+        val lastView = layoutInfo.getChildClosestToEnd() ?: return
+        layoutRequest.append(layoutInfo.getLayoutPositionOf(lastView)) {
+            extraLayoutSpaceCalculator.update(layoutRequest, state)
+            setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+            setFillSpace(extraLayoutSpaceEnd)
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+    }
+
     private fun finishLayout() {
         recyclerViewProvider.clearRecycler()
-        onLayoutChildrenFinished()
         layoutAlignment.updateScrollLimits()
         preLayoutRequest.clear()
     }
@@ -220,11 +251,11 @@ internal abstract class StructureEngineer(
             && recycler.scrapList.isNotEmpty()
         ) {
             layoutRequest.setLayingOutScrap(true)
-            scrapViewProvider.update(recycler.scrapList)
+            scrapViewProvider.updateScrap(recycler.scrapList)
             layoutDisappearingViews(
                 firstView, lastView, layoutRequest, scrapViewProvider, recycler, state
             )
-            scrapViewProvider.update(null)
+            scrapViewProvider.updateScrap(null)
             layoutRequest.setLayingOutScrap(false)
 
         }
@@ -244,7 +275,8 @@ internal abstract class StructureEngineer(
     ): Boolean {
         if (state.didStructureChange()
             || !itemChanges.isValid()
-            || preLayoutRequest.extraLayoutSpace > 0) {
+            || preLayoutRequest.extraLayoutSpace > 0
+        ) {
             return true
         }
         val firstPos = layoutInfo.findFirstAddedPosition()
@@ -260,14 +292,17 @@ internal abstract class StructureEngineer(
         return !changesOutOfBounds
     }
 
-    fun scrollBy(offset: Int, recycler: RecyclerView.Recycler, state: RecyclerView.State): Int {
-        recyclerViewProvider.updateRecycler(recycler)
-
+    fun scrollBy(
+        offset: Int,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State,
+        recycleChildren: Boolean
+    ): Int {
+        if (recycleChildren) {
+            recyclerViewProvider.updateRecycler(recycler)
+        }
         // Update the layout request for scrolling before offsetting the views
-        updateLayoutRequestForScroll(layoutRequest, state, offset)
-
-        // Enable recycling since we might add new views now
-        layoutRequest.setRecyclingEnabled(true)
+        updateLayoutRequestForScroll(layoutRequest, state, offset, recycleChildren)
 
         // Now offset the views and the next layout checkpoint
         offsetChildren(-offset)
@@ -275,8 +310,38 @@ internal abstract class StructureEngineer(
         // Layout the next views and recycle the ones we don't need along the way
         fill(layoutRequest, recyclerViewProvider, recycler, state)
 
-        recyclerViewProvider.clearRecycler()
+        if (recycleChildren) {
+            recyclerViewProvider.clearRecycler()
+        }
+        layoutRequest.setRecyclingEnabled(false)
         return offset
+    }
+
+    private fun updateLayoutRequestForScroll(
+        layoutRequest: LayoutRequest,
+        state: RecyclerView.State,
+        scrollOffset: Int,
+        recycleChildren: Boolean
+    ) {
+        val scrollDistance = abs(scrollOffset)
+        layoutRequest.setRecyclingEnabled(recycleChildren)
+        if (scrollOffset < 0) {
+            val view = layoutInfo.getChildClosestToStart() ?: return
+            layoutRequest.prepend(layoutInfo.getLayoutPositionOf(view)) {
+                setCheckpoint(layoutInfo.getDecoratedStart(view))
+                extraLayoutSpaceCalculator.update(layoutRequest, state)
+                val availableScrollSpace = max(0, layoutInfo.getStartAfterPadding() - checkpoint)
+                setFillSpace(scrollDistance + extraLayoutSpaceStart - availableScrollSpace)
+            }
+        } else {
+            val view = layoutInfo.getChildClosestToEnd() ?: return
+            layoutRequest.append(layoutInfo.getLayoutPositionOf(view)) {
+                setCheckpoint(layoutInfo.getDecoratedEnd(view))
+                extraLayoutSpaceCalculator.update(layoutRequest, state)
+                val availableScrollSpace = max(0, checkpoint - layoutInfo.getEndAfterPadding())
+                setFillSpace(scrollDistance + extraLayoutSpaceEnd - availableScrollSpace)
+            }
+        }
     }
 
     /**
@@ -353,29 +418,33 @@ internal abstract class StructureEngineer(
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
     ) {
-        // Offset all views by the existing remaining scroll so that they're still scrolled
-        // to their final locations when RecyclerView resumes scrolling
         var remainingScroll = layoutInfo.getRemainingScroll(state)
+
+        /**
+         * Offset all views by the existing remaining scroll so that they're still scrolled
+         * to their final locations when RecyclerView resumes scrolling.
+         * But we can't allow the remaining scroll to exceed the total space available.
+         * This might happen when RecyclerView keeps adding up scroll changes
+         * from previous alignments without consuming them until the next layout pass.
+         * When this happens, we just ignore the existing remaining scroll
+         * since it's considered no longer applicable.
+         */
         if (abs(remainingScroll) > layoutInfo.getTotalSpace()) {
-            // Do not allow remaining scroll to exceed the total space available
-            // This might happen when RecyclerView keeps adding up scroll changes
-            // from previous alignments without consuming them until the next layout pass
             remainingScroll = 0
         }
+
         val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView) - remainingScroll
-        updateLayoutRequestForScroll(layoutRequest, state, scrollOffset)
-        offsetChildren(-scrollOffset)
-        fill(layoutRequest, recyclerViewProvider, recycler, state)
+        scrollBy(scrollOffset, recycler, state, recycleChildren = false)
     }
 
     protected fun addView(view: View, layoutRequest: LayoutRequest) {
         if (!layoutRequest.isLayingOutScrap) {
-            if (layoutRequest.isLayingOutEnd()) {
+            if (layoutRequest.isAppending()) {
                 layoutManager.addView(view)
             } else {
                 layoutManager.addView(view, 0)
             }
-        } else if (layoutRequest.isLayingOutEnd()) {
+        } else if (layoutRequest.isAppending()) {
             layoutManager.addDisappearingView(view)
         } else {
             layoutManager.addDisappearingView(view, 0)
@@ -407,7 +476,7 @@ internal abstract class StructureEngineer(
         layoutRequest: LayoutRequest,
         state: RecyclerView.State
     ): Boolean {
-        return viewProvider.hasNext(layoutRequest.currentPosition, state)
+        return viewProvider.hasNext(layoutRequest, state)
                 && (remainingSpace > 0 || layoutRequest.isInfinite)
     }
 

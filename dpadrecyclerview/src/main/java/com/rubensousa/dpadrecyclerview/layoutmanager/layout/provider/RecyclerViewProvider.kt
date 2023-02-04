@@ -30,14 +30,16 @@ internal class RecyclerViewProvider : ViewProvider {
 
     private var recycler: Recycler? = null
 
-    override fun next(layoutRequest: LayoutRequest, state: RecyclerView.State): View? {
-        if (!hasNext(layoutRequest.currentPosition, state)) {
-            return null
+    override fun hasNext(layoutRequest: LayoutRequest, state: RecyclerView.State): Boolean {
+        if (recycler == null) {
+            return false
         }
-        val view = recycler?.getViewForPosition(layoutRequest.currentPosition)
-        if (view != null) {
-            layoutRequest.moveToNextPosition()
-        }
+        return layoutRequest.currentPosition >= 0 && layoutRequest.currentPosition < state.itemCount
+    }
+
+    override fun next(layoutRequest: LayoutRequest, state: RecyclerView.State): View {
+        val view = requireNotNull(recycler).getViewForPosition(layoutRequest.currentPosition)
+        layoutRequest.moveToNextPosition()
         return view
     }
 

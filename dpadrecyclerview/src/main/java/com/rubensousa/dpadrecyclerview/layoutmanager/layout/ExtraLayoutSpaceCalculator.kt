@@ -26,7 +26,7 @@ internal class ExtraLayoutSpaceCalculator(private val layoutInfo: LayoutInfo) {
             // Skip our logic if user specified a custom strategy for extra layout space
             return
         }
-        if (layoutRequest.isLayingOutEnd()) {
+        if (layoutRequest.isAppending()) {
             layoutRequest.setExtraLayoutSpace(
                 end = getDefaultExtraLayoutSpace(),
                 start = 0
@@ -48,7 +48,7 @@ internal class ExtraLayoutSpaceCalculator(private val layoutInfo: LayoutInfo) {
             var endSpace = strategy.calculateEndExtraLayoutSpace(state)
 
             // Ensure minimum extra layout space for target scrolling
-            if (layoutRequest.isLayingOutEnd()) {
+            if (layoutRequest.isAppending()) {
                 endSpace = max(getDefaultExtraLayoutSpace(), endSpace)
             } else {
                 startSpace = max(getDefaultExtraLayoutSpace(), startSpace)

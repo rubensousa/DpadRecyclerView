@@ -28,9 +28,11 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
  */
 internal interface ViewProvider {
 
-    fun next(layoutRequest: LayoutRequest, state: RecyclerView.State): View?
+    fun hasNext(layoutRequest: LayoutRequest, state: RecyclerView.State): Boolean
 
-    fun hasNext(layoutPosition: Int, state: RecyclerView.State): Boolean {
-        return layoutPosition >= 0 && layoutPosition < state.itemCount
-    }
+    /**
+     * This is only safe to call after a call to [hasNext]
+     */
+    fun next(layoutRequest: LayoutRequest, state: RecyclerView.State): View
+
 }

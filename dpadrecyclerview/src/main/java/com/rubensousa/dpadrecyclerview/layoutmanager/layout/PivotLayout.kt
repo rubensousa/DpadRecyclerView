@@ -119,6 +119,8 @@ internal class PivotLayout(
             Log.i(TAG, "LayoutFinished")
             structureEngineer.logChildren()
         }
+
+        structureEngineer.onLayoutFinished()
     }
 
     fun reset() {
@@ -193,7 +195,7 @@ internal class PivotLayout(
             return 0
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
-        return structureEngineer.scrollBy(scrollOffset, recycler, state)
+        return structureEngineer.scrollBy(scrollOffset, recycler, state, recycleChildren = true)
     }
 
     private fun State.asString(): String {
