@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.RecyclerViewProvider
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ScrapViewProvider
@@ -195,11 +196,11 @@ internal abstract class StructureEngineer(
             pivotPosition, layoutRequest, recyclerViewProvider, recycler, state
         )
 
-        // Now relayout detached views to ensure animations work as expected
-        layoutScrap(recycler, state)
-
         // Now that all views are laid out, make sure the pivot is still in the correct position
         alignPivot(pivotView, recycler, state)
+
+        // Now relayout detached views to ensure animations work as expected
+        layoutScrap(recycler, state)
 
         // Layout extra space if user requested it
         layoutExtraSpace(layoutRequest, recyclerViewProvider, recycler, state)
@@ -433,8 +434,83 @@ internal abstract class StructureEngineer(
             remainingScroll = 0
         }
 
+        if (alignToStartEdge(recycler, state, remainingScroll)) {
+            layoutAlignment.updateScrollLimits()
+            return
+        }
+
         val scrollOffset = layoutAlignment.calculateScrollForAlignment(pivotView) - remainingScroll
         scrollBy(scrollOffset, recycler, state, recycleChildren = false)
+    }
+
+    /**
+     * Since the pivot is laid out in the keyline position, two things can happen:
+     *
+     * - Gap at the start edge if the items don't fill the entire size
+     * (e.g low count of adapter items).
+     * - Alignment not respecting the contract of [ParentAlignment.Edge.MIN]
+     * or [ParentAlignment.Edge.MIN_MAX] since the layout was built with a wrong pivot alignment.
+     *
+     * This method takes care of both scenarios by scrolling and laying out more views if needed.
+     *
+     * Steps:
+     * 1. Check if we want to align to the start edge and if not return false.
+     * 2. Check if we already filled the entire layout and if yes return false.
+     * 3. If the start edge is within layout bounds, scroll immediately to it and return true
+     * 4. If the start edge is out of the layout bounds, it means we might need to add more items.
+     * We'll keep laying out items until we exhaust the empty layout space
+     * or we run out of items to layout, whichever happens first.
+     * Then scroll by the new filled space plus the previous available scroll space and return true
+     *
+     * @return true if layout was aligned to the start edge
+     */
+    private fun alignToStartEdge(
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State,
+        remainingScroll: Int
+    ): Boolean {
+        val edge = layoutAlignment.getParentAlignment().edge
+        // If the client didn't request start edge alignment, just skip it
+        if (edge == ParentAlignment.Edge.NONE || edge == ParentAlignment.Edge.MAX) {
+            return false
+        }
+        val startView = layoutInfo.getChildClosestToStart() ?: return false
+        val endView = layoutInfo.getChildClosestToEnd() ?: return false
+        val startEdge = layoutInfo.getDecoratedStart(startView)
+        val endEdge = layoutInfo.getDecoratedEnd(endView)
+        val currentLayoutSpace = endEdge - startEdge
+
+        // If the current layout already fills the entire space, skip this alignment
+        if (currentLayoutSpace >= layoutInfo.getTotalSpace()) {
+            return false
+        }
+
+        val emptyLayoutSpace = layoutInfo.getTotalSpace() - currentLayoutSpace
+
+        if (!layoutRequest.reverseLayout) {
+            if (startEdge > 0) {
+                scrollBy(startEdge - remainingScroll, recycler, state, false)
+            } else {
+                layoutRequest.prepend(layoutInfo.getLayoutPositionOf(startView)) {
+                    setCheckpoint(startEdge)
+                    setFillSpace(emptyLayoutSpace + startEdge)
+                }
+                val filledSpace = fill(layoutRequest, recyclerViewProvider, recycler, state)
+                scrollBy(startEdge - filledSpace - remainingScroll, recycler, state, false)
+            }
+        } else if (endEdge < layoutInfo.getEndAfterPadding()) {
+            val distanceToEnd = layoutInfo.getEndAfterPadding() - endEdge
+            scrollBy(-distanceToEnd - remainingScroll, recycler, state, false)
+        } else {
+            layoutRequest.append(layoutInfo.getLayoutPositionOf(endView)) {
+                setCheckpoint(endEdge)
+                setFillSpace(emptyLayoutSpace)
+            }
+            val filledSpace = fill(layoutRequest, recyclerViewProvider, recycler, state)
+            val availableScrollSpace = endEdge - layoutInfo.getEndAfterPadding()
+            scrollBy(availableScrollSpace + filledSpace - remainingScroll, recycler, state, false)
+        }
+        return true
     }
 
     protected fun addView(view: View, layoutRequest: LayoutRequest) {
