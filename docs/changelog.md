@@ -6,6 +6,8 @@
 
 ### Bug fixes
 
+- Fixed `DpadRecyclerView` not searching for focus if it's currently retaining focus due to a pivot removal. This prevented accumulating pending moves during smooth scrolling.
+
 ### Testing
 
 - `DisableIdleTimeoutRule` will now wait for idle input after the test is over to avoid dispatching key events to other tests

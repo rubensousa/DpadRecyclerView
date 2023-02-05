@@ -251,21 +251,14 @@ open class DpadRecyclerView @JvmOverloads constructor(
         return super.dispatchGenericFocusedEvent(event)
     }
 
-    final override fun focusSearch(focused: View?, direction: Int): View? {
-        if (focused == null) {
-            return null
-        }
-        return pivotLayoutManager?.onInterceptFocusSearch(focused, direction)
-    }
-
     final override fun focusSearch(direction: Int): View? {
         val currentLayout = pivotLayoutManager
         if (isFocused && currentLayout != null) {
-            // focusSearch will be called when RecyclerView itself is focused.
-            // Calling focusSearch(view, int) to get next sibling of current selected child.
             val view = currentLayout.findViewByPosition(currentLayout.getSelectedPosition())
-            if (view != null) {
-                return focusSearch(view, direction)
+            return if (view != null) {
+                focusSearch(view, direction)
+            } else {
+                focusSearch(this, direction)
             }
         }
         return super.focusSearch(direction)
