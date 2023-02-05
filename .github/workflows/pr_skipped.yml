@@ -20,3 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: 'echo "No build required"'
+  ui_test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "No build required"'
