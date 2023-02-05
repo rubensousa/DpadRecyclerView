@@ -105,27 +105,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         }
     }
 
-    override fun getDecoratedLeft(child: View): Int = layoutInfo.getDecoratedLeft(
-        child, super.getDecoratedLeft(child)
-    )
-
-    override fun getDecoratedTop(child: View): Int = layoutInfo.getDecoratedTop(
-        child, super.getDecoratedTop(child)
-    )
-
-    override fun getDecoratedRight(child: View): Int = layoutInfo.getDecoratedRight(
-        child, super.getDecoratedRight(child)
-    )
-
-    override fun getDecoratedBottom(child: View): Int = layoutInfo.getDecoratedBottom(
-        child, super.getDecoratedBottom(child)
-    )
-
-    override fun getDecoratedBoundsWithMargins(view: View, outBounds: Rect) {
-        super.getDecoratedBoundsWithMargins(view, outBounds)
-        layoutInfo.getDecoratedBoundsWithMargins(view, outBounds)
-    }
-
     override fun canScrollHorizontally(): Boolean = configuration.isHorizontal()
 
     override fun canScrollVertically(): Boolean = configuration.isVertical()

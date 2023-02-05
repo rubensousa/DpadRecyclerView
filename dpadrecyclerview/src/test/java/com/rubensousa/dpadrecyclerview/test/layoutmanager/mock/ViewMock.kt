@@ -17,7 +17,6 @@
 package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import io.mockk.every
 import io.mockk.mockk
@@ -28,9 +27,11 @@ class ViewMock(
 ) {
 
     private val mock = mockk<View>()
-    private val layoutParams = mockk<DpadLayoutParams>(relaxed = true)
+    private val layoutParams = mockk<DpadLayoutParams>()
 
     var isRemoved = false
+    var isChanged = false
+    private var isLaidOut = false
     var layoutPosition = 0
     var measuredWidth = 0
     var measuredHeight = 0
@@ -38,10 +39,15 @@ class ViewMock(
     var top = 0
     var right = 0
     var bottom = 0
+    var alignmentAnchor: Int = 0
 
     init {
-        every { layoutParams.isItemRemoved }.answers { isRemoved }
-        every { layoutParams.viewLayoutPosition }.answers { layoutPosition }
+        mockLayoutParams()
+
+        every { mock.isLaidOut }.answers { isLaidOut }
+        every { mock.layout(any(), any(), any(), any()) }.answers {
+            isLaidOut = true
+        }
         every { mock.layoutParams }.answers { layoutParams }
         every { mock.measuredWidth }.answers { measuredWidth }
         every { mock.measuredHeight }.answers { measuredHeight }
@@ -67,6 +73,17 @@ class ViewMock(
             left += offset
             right += offset
         }
+    }
+
+    private fun mockLayoutParams() {
+        every { layoutParams.isItemRemoved }.answers { isRemoved }
+        every { layoutParams.isItemChanged }.answers { isChanged }
+        every { layoutParams.viewLayoutPosition }.answers { layoutPosition }
+        every { layoutParams.absoluteAdapterPosition }.answers { layoutPosition }
+        every { layoutParams.setAlignmentAnchor(any()) }.answers {
+            alignmentAnchor = it.invocation.args.first() as Int
+        }
+        every { layoutParams.alignmentAnchor }.answers { alignmentAnchor }
     }
 
     fun get(): View = mock

@@ -20,10 +20,9 @@ import androidx.collection.CircularArray
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
+import kotlin.math.min
 
-abstract class LayoutMatrix(
-    protected val config: LayoutConfig
-) {
+abstract class LayoutMatrix(val config: LayoutConfig) {
     var selectedPosition = RecyclerView.NO_POSITION
         private set
 
@@ -80,8 +79,8 @@ abstract class LayoutMatrix(
                     checkpoint = startEdge
                     space = emptyLayoutSpace + startEdge
                 }
-                val filledSpace = fill(layoutRequest)
-                scrollBy(startEdge - filledSpace)
+                val scrollSpace = min(fill(layoutRequest), emptyLayoutSpace)
+                scrollBy(startEdge - scrollSpace)
             }
         } else if (endEdge < getVisibleSpace()) {
             val distanceToEnd = getVisibleSpace() - endEdge
@@ -91,9 +90,9 @@ abstract class LayoutMatrix(
                 checkpoint = endEdge
                 space = emptyLayoutSpace
             }
-            val filledSpace = fill(layoutRequest)
+            val scrollSpace = min(fill(layoutRequest), emptyLayoutSpace)
             val availableScrollSpace = endEdge - getVisibleSpace()
-            scrollBy(availableScrollSpace + filledSpace)
+            scrollBy(availableScrollSpace + scrollSpace)
         }
     }
 

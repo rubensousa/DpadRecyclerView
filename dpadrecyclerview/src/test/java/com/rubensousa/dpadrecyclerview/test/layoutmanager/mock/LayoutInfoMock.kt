@@ -39,6 +39,7 @@ internal class LayoutInfoMock(
 
     init {
         every { mock.isVertical() }.answers { realInstance.isVertical() }
+        every { mock.isHorizontal() }.answers { realInstance.isHorizontal() }
         every { mock.isInfinite() }.answers { isInfinite }
         every { mock.isScrollingToTarget }.answers { isScrollingToTarget }
         every { mock.getDecoratedStart(any()) }.answers {
@@ -57,11 +58,24 @@ internal class LayoutInfoMock(
         every { mock.getConfiguration() }.answers { configuration }
         every { mock.hasCreatedFirstItem() }.answers { hasCreatedFirstItem }
         every { mock.hasCreatedLastItem() }.answers { hasCreatedLastItem }
+        every { mock.getChildViewHolder(any()) }.answers {
+            val view = it.invocation.args.first() as View
+            ViewHolderMock(view).get()
+        }
         every { mock.getChildClosestToEnd() }.answers {
             realInstance.getChildClosestToEnd()
         }
         every { mock.getChildClosestToStart() }.answers {
             realInstance.getChildClosestToStart()
+        }
+        every { mock.findFirstAddedPosition() }.answers {
+            realInstance.findFirstAddedPosition()
+        }
+        every { mock.findLastAddedPosition() }.answers {
+            realInstance.findLastAddedPosition()
+        }
+        every { mock.findViewByPosition(any()) }.answers {
+            realInstance.findViewByPosition(it.invocation.args.first() as Int)
         }
         every { mock.getChildAt(any()) }.answers {
             realInstance.getChildAt(it.invocation.args.first() as Int)

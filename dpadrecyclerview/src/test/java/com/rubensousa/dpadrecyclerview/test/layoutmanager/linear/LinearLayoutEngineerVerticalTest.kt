@@ -20,11 +20,10 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
-import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.ParentScrollAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemChanges
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.OnChildLayoutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutEngineer
-import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutAlignmentMock
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutInfoMock
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutManagerMock
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.RecyclerMock
@@ -42,9 +41,9 @@ class LinearLayoutEngineerVerticalTest {
     private val screenHeight = 1080
     private val viewWidth = screenWidth
     private val viewHeight = 280
-    private val viewAdapter = TestViewAdapter(viewWidth, viewHeight)
-    private val parentScrollAlignment = ParentScrollAlignment()
-    private val layoutAlignmentMock = LayoutAlignmentMock(parentAlignment = parentScrollAlignment)
+    private val itemCount = 100
+    private val viewCenter = screenHeight / 2 - viewHeight / 2
+    private val viewAdapter = TestViewAdapter(viewWidth, viewHeight, numberOfItems = itemCount)
     private val listener = Listener()
     private val recyclerMock = RecyclerMock(viewAdapter)
     private val layoutManagerMock = LayoutManagerMock(recyclerMock)
@@ -64,7 +63,7 @@ class LinearLayoutEngineerVerticalTest {
             parentHeight = screenHeight,
             viewWidth = viewWidth,
             viewHeight = viewHeight,
-            defaultItemCount = 1000,
+            defaultItemCount = itemCount,
             parentKeyline = screenHeight / 2,
             alignToStartEdge = true,
             childKeyline = 0.5f
@@ -74,12 +73,11 @@ class LinearLayoutEngineerVerticalTest {
 
     @Before
     fun setup() {
-        parentScrollAlignment.updateLayoutInfo(
-            layoutManager,
-            RecyclerView.VERTICAL, false
-        )
+        recyclerViewStateMock.itemCount = itemCount
         engineer = LinearLayoutEngineer(
-            layoutManagerMock.get(), layoutInfoMock.get(), layoutAlignmentMock.get(), listener
+            layoutManagerMock.get(), layoutInfoMock.get(), LayoutAlignment(
+                layoutManager, layoutInfoMock.get()
+            ), listener
         )
     }
 
@@ -98,6 +96,7 @@ class LinearLayoutEngineerVerticalTest {
     fun `second layout pass keeps layout integrity`() {
         column.init(position = 0)
         layout(pivotPosition = 0)
+        LayoutManagerAssertions.assertChildrenBounds(layoutManager, column)
 
         column.init(position = 3)
         layout(pivotPosition = 3)
