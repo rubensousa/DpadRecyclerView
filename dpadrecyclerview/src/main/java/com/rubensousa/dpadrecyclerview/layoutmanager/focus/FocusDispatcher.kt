@@ -271,7 +271,7 @@ internal class FocusDispatcher(
         val previousSpanSize = layoutInfo.getSpanSize(previousPosition)
         val newSpanSize = layoutInfo.getSpanSize(newPosition)
         if (previousSpanSize != newSpanSize && previousSpanSize != configuration.spanCount) {
-            val row = layoutInfo.getRowIndex(previousPosition)
+            val row = layoutInfo.getSpanGroupIndex(previousPosition)
             focusedSpans[row] = previousPosition
         }
     }
@@ -362,8 +362,8 @@ internal class FocusDispatcher(
                 index += increment
                 continue
             }
-            val position = layoutInfo.getAdapterPositionOfChildAt(index)
-            val childColumn = layoutInfo.getStartColumnIndex(position)
+            val position = layoutInfo.getAdapterPositionOf(child)
+            val spanIndex = layoutInfo.getStartColumnIndex(position)
             if (request.focusDirection == FocusDirection.NEXT_ITEM) {
                 // Add first focusable item on the same row
                 if (position > request.focusedAdapterPosition) {
@@ -376,19 +376,19 @@ internal class FocusDispatcher(
                 }
             } else if (request.focusDirection == FocusDirection.NEXT_COLUMN) {
                 // Add all focusable items after this item whose row index is bigger
-                if (childColumn == request.focusedColumn) {
+                if (spanIndex == request.focusedSpanIndex) {
                     index += increment
                     continue
-                } else if (childColumn < request.focusedColumn) {
+                } else if (spanIndex < request.focusedSpanIndex) {
                     break
                 }
                 child.addFocusables(views, direction, focusableMode)
             } else if (request.focusDirection == FocusDirection.PREVIOUS_COLUMN) {
                 // Add all focusable items before this item whose column index is smaller
-                if (childColumn == request.focusedColumn) {
+                if (spanIndex == request.focusedSpanIndex) {
                     index += increment
                     continue
-                } else if (childColumn > request.focusedColumn) {
+                } else if (spanIndex > request.focusedSpanIndex) {
                     break
                 }
                 child.addFocusables(views, direction, focusableMode)
@@ -409,7 +409,7 @@ internal class FocusDispatcher(
         ) {
             return false
         }
-        val row = layoutInfo.getRowIndex(focusedPosition)
+        val row = layoutInfo.getSpanGroupIndex(focusedPosition)
         val nextRow = if (movement == FocusDirection.NEXT_ITEM) {
             row + 1
         } else {
@@ -457,7 +457,7 @@ internal class FocusDispatcher(
         var focusDirection: FocusDirection = FocusDirection.NEXT_ITEM
             private set
 
-        var focusedColumn: Int = RecyclerView.NO_POSITION
+        var focusedSpanIndex: Int = RecyclerView.NO_POSITION
             private set
 
         fun update(
@@ -469,7 +469,7 @@ internal class FocusDispatcher(
             this.focused = focusedChild
             this.focusedAdapterPosition = focusedAdapterPosition
             this.focusDirection = focusDirection
-            this.focusedColumn = if (focusedChild != null) {
+            this.focusedSpanIndex = if (focusedChild != null) {
                 layoutInfo.getStartColumnIndex(focusedAdapterPosition)
             } else {
                 RecyclerView.NO_POSITION

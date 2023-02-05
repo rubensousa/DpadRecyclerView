@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 import android.graphics.PointF
 import android.util.DisplayMetrics
 import android.view.View
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
@@ -32,19 +31,13 @@ internal class PivotSelectionSmoothScroller(
     private val recyclerView: RecyclerView,
     private val position: Int,
     private val subPosition: Int,
-    private val layoutInfo: LayoutInfo,
+    layoutInfo: LayoutInfo,
     private val alignment: LayoutAlignment,
     private val listener: Listener
-) : LinearSmoothScroller(recyclerView.context){
-
-    private var isCanceled = false
+) : BaseSmoothScroller(recyclerView, layoutInfo){
 
     init {
         targetPosition = position
-    }
-
-    fun cancel() {
-        isCanceled = true
     }
 
     override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
@@ -94,7 +87,7 @@ internal class PivotSelectionSmoothScroller(
 
     override fun onStop() {
         super.onStop()
-        if (!isCanceled) {
+        if (!isCanceled()) {
             val pivotView = findViewByPosition(targetPosition)
             if (pivotView != null) {
                 listener.onPivotFound(pivotView, targetPosition, subPosition)

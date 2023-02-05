@@ -248,8 +248,7 @@ internal class GridLayoutEngineer(
         layoutResult.consumedSpace = rowHeight
         reMeasureChildren(layoutRow, viewCount, layoutRequest)
 
-        layoutResult.skipConsumption =
-            layoutRow(viewCount, layoutRow, viewBounds, layoutRequest)
+        layoutResult.skipConsumption = layoutRow(viewCount, layoutRow, viewBounds, layoutRequest)
     }
 
     /**
@@ -617,7 +616,7 @@ internal class GridLayoutEngineer(
 
     private fun getSpanGroupIndex(recycler: Recycler, state: State, position: Int): Int {
         if (!state.isPreLayout) {
-            return layoutInfo.getRowIndex(position)
+            return layoutInfo.getSpanGroupIndex(position)
         }
         val groupIndex = gridState.getSpanGroupIndex(position)
         if (groupIndex != -1) {
@@ -631,7 +630,7 @@ internal class GridLayoutEngineer(
             )
             return 1
         }
-        return layoutInfo.getRowIndex(adapterPosition)
+        return layoutInfo.getSpanGroupIndex(adapterPosition)
     }
 
     private fun getRowViewAt(index: Int): View {

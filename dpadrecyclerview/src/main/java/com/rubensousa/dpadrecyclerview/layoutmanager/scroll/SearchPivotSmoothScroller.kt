@@ -17,9 +17,7 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 
 import android.graphics.PointF
-import android.util.DisplayMetrics
 import android.view.View
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
@@ -36,27 +34,21 @@ import kotlin.math.sqrt
 internal class SearchPivotSmoothScroller(
     recyclerView: RecyclerView,
     maxPendingMoves: Int,
-    private val layoutInfo: LayoutInfo,
+    layoutInfo: LayoutInfo,
     private val pivotSelector: PivotSelector,
     private val alignment: LayoutAlignment,
     private val listener: Listener
-) : LinearSmoothScroller(recyclerView.context) {
+) : BaseSmoothScroller(recyclerView, layoutInfo) {
 
     companion object {
         // Forces smooth scroller to run until target is actually set
         const val UNDEFINED_TARGET = -2
     }
 
-    private var isCanceled = false
     private val movements = PendingScrollMovements(maxPendingMoves, layoutInfo)
 
     init {
         targetPosition = UNDEFINED_TARGET
-    }
-
-    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
-        val smoothScrollSpeedFactor = layoutInfo.getConfiguration().smoothScrollSpeedFactor
-        return super.calculateSpeedPerPixel(displayMetrics) * smoothScrollSpeedFactor
     }
 
     override fun onTargetFound(targetView: View, state: RecyclerView.State, action: Action) {
@@ -107,64 +99,20 @@ internal class SearchPivotSmoothScroller(
 
     fun onChildLaidOut(view: View) {
         if (layoutInfo.isGrid()) {
-            consumeGridMoves()
+            val newPivotView = movements.consumeGridMovements(pivotSelector.position)
+            if (newPivotView != null) {
+                listener.onPivotAttached(layoutInfo.getAdapterPositionOf(newPivotView))
+                listener.onPivotLaidOut(newPivotView)
+            }
         } else {
             val viewHolder = layoutInfo.getChildViewHolder(view)
             if (viewHolder?.absoluteAdapterPosition == pivotSelector.position) {
                 listener.onPivotLaidOut(view)
             }
         }
-        if (movements.shouldStopScrolling() && isRunning) {
+        if (movements.shouldStopScrolling()) {
             targetPosition = pivotSelector.position
             stop()
-        }
-    }
-
-    private fun consumeGridMoves() {
-        if (!movements.hasPendingMoves()) {
-            return
-        }
-        val currentPosition = pivotSelector.position
-        var focusedColumn = if (currentPosition != RecyclerView.NO_POSITION) {
-            layoutInfo.getStartColumnIndex(currentPosition)
-        } else {
-            RecyclerView.NO_POSITION
-        }
-        var targetPosition = currentPosition
-        var targetView: View? = null
-
-        // Start searching for the new view in the same column
-        val childCount = layoutInfo.getChildCount()
-        var i = 0
-        val moves = movements.pendingMoves
-        while (i < childCount && moves != 0) {
-            val childIndex = if (moves > 0) {
-                i
-            } else {
-                childCount - 1 - i
-            }
-            i++
-            val child = layoutInfo.getChildAt(childIndex)
-            if (child == null || !layoutInfo.isViewFocusable(child)) {
-                continue
-            }
-            val childPosition = layoutInfo.getAdapterPositionOf(child)
-            val columnIndex = layoutInfo.getStartColumnIndex(childPosition)
-            if (focusedColumn == RecyclerView.NO_POSITION) {
-                targetPosition = childPosition
-                targetView = child
-                focusedColumn = columnIndex
-            } else if (columnIndex == focusedColumn) {
-                // TODO Support different span sizes
-                targetPosition = childPosition
-                targetView = child
-                movements.consume()
-            }
-        }
-
-        if (targetView != null) {
-            pivotSelector.update(position = targetPosition, subPosition = 0)
-            listener.onPivotLaidOut(targetView)
         }
     }
 
@@ -172,13 +120,9 @@ internal class SearchPivotSmoothScroller(
         movements.add(forward)
     }
 
-    fun cancel() {
-        isCanceled = true
-    }
-
     override fun onStop() {
         super.onStop()
-        if (isCanceled) {
+        if (isCanceled()) {
             listener.onSmoothScrollerStopped()
             return
         }

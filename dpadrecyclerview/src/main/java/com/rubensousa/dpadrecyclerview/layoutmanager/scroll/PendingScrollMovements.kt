@@ -16,7 +16,9 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 
+import android.view.View
 import androidx.annotation.VisibleForTesting
+import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.max
 
@@ -93,6 +95,95 @@ internal class PendingScrollMovements(
         if (pendingMoves > -maxPendingMoves) {
             pendingMoves--
         }
+    }
+
+    fun consumeGridMovements(pivotPosition: Int): View? {
+        if (!hasPendingMoves()) {
+            return null
+        }
+
+        var focusedSpanIndex = if (pivotPosition != RecyclerView.NO_POSITION) {
+            layoutInfo.getStartColumnIndex(pivotPosition)
+        } else {
+            RecyclerView.NO_POSITION
+        }
+        var focusedSpanGroup = if (pivotPosition != RecyclerView.NO_POSITION) {
+            layoutInfo.getSpanGroupIndex(pivotPosition)
+        } else {
+            0
+        }
+
+        var currentIndex = getIndexOfPivotView(pivotPosition)
+        val childCount = layoutInfo.getChildCount()
+
+        val increment = if (pendingMoves > 0) {
+            1
+        } else {
+            -1
+        }
+        currentIndex += increment
+
+        var targetView: View? = null
+
+        /**
+         * Search in the scrolling direction
+         */
+        while (currentIndex in 1 until childCount && hasPendingMoves()) {
+            val child = layoutInfo.getChildAt(currentIndex)
+            currentIndex += increment
+            if (child == null || !layoutInfo.isViewFocusable(child)) {
+                continue
+            }
+            val childPosition = layoutInfo.getAdapterPositionOf(child)
+            val spanSize = layoutInfo.getSpanSize(childPosition)
+            val spanIndex = layoutInfo.getStartColumnIndex(childPosition)
+            val spanGroup = layoutInfo.getSpanGroupIndex(childPosition)
+            if (shouldFocusChildAt(
+                    spanIndex, spanSize, spanGroup, focusedSpanIndex, focusedSpanGroup
+                )
+            ) {
+                focusedSpanGroup = spanGroup
+                focusedSpanIndex = spanIndex
+                targetView = child
+                consume()
+            }
+        }
+        return targetView
+    }
+
+    private fun shouldFocusChildAt(
+        spanIndex: Int,
+        spanSize: Int,
+        spanGroup: Int,
+        focusedSpanIndex: Int,
+        focusedSpanGroup: Int
+    ): Boolean {
+        // If there's no current span focused, we need to focus the new one
+        // if it
+        if (focusedSpanIndex == RecyclerView.NO_POSITION) {
+            return true
+        }
+        // Don't allow changing focus within the same span group
+        if (spanGroup == focusedSpanGroup) {
+            return false
+        }
+        // If we're scrolling forwards, accept spans after the current one
+        val scrollingForwards = if (!layoutInfo.shouldReverseLayout()) {
+            pendingMoves > 0
+        } else {
+            pendingMoves < 0
+        }
+        if (scrollingForwards && spanIndex + spanSize - 1 >= focusedSpanIndex) {
+            return true
+        }
+        // If we're scrolling backwards, accept spans before the current one
+        return !scrollingForwards && spanIndex - (spanSize - 1) <= focusedSpanIndex
+    }
+
+    private fun getIndexOfPivotView(pivotPosition: Int): Int {
+        val pivotView = layoutInfo.findViewByAdapterPosition(pivotPosition)
+            ?: layoutInfo.findViewByPosition(pivotPosition)
+        return layoutInfo.findIndexOf(pivotView)
     }
 
     fun consume(): Boolean {

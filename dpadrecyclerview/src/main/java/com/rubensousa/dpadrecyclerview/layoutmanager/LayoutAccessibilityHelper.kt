@@ -49,7 +49,7 @@ internal class LayoutAccessibilityHelper(
             0
         } else {
             // Row count is one more than the last item's row index
-            layoutInfo.getSpanGroupIndex(recycler, state, state.itemCount - 1) + 1
+            layoutInfo.getSpanGroupIndex(state.itemCount - 1) + 1
         }
     }
 
@@ -64,7 +64,7 @@ internal class LayoutAccessibilityHelper(
             0
         } else {
             // Column count is one more than the last item's column index.
-            layoutInfo.getSpanGroupIndex(recycler, state, state.itemCount - 1) + 1
+            layoutInfo.getSpanGroupIndex(state.itemCount - 1) + 1
         }
     }
 
@@ -109,7 +109,7 @@ internal class LayoutAccessibilityHelper(
         }
         val position = layoutParams.absoluteAdapterPosition
         val rowIndex = if (position >= 0) {
-            layoutInfo.getRowIndex(position)
+            layoutInfo.getSpanGroupIndex(position)
         } else {
             -1
         }

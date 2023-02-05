@@ -55,7 +55,7 @@ internal class CircularFocusInterceptor(
             return null
         }
 
-        val startRow = layoutInfo.getRowIndex(position)
+        val startRow = layoutInfo.getSpanGroupIndex(position)
 
         var currentPosition = if (direction == FocusDirection.NEXT_COLUMN) {
             position + 1
@@ -63,7 +63,7 @@ internal class CircularFocusInterceptor(
             position - 1
         }
 
-        var currentRow = layoutInfo.getRowIndex(currentPosition)
+        var currentRow = layoutInfo.getSpanGroupIndex(currentPosition)
         val lastColumnIndex = layoutInfo.getEndColumnIndex(position)
 
         // If we still have focusable views in the movement direction, bail out
@@ -77,14 +77,14 @@ internal class CircularFocusInterceptor(
             } else {
                 currentPosition--
             }
-            currentRow = layoutInfo.getRowIndex(currentPosition)
+            currentRow = layoutInfo.getSpanGroupIndex(currentPosition)
         }
 
         var circularPosition: Int
         if (direction == FocusDirection.NEXT_COLUMN) {
             circularPosition = position - configuration.spanCount + 1
             while (circularPosition <= position - 1) {
-                currentRow = layoutInfo.getRowIndex(circularPosition)
+                currentRow = layoutInfo.getSpanGroupIndex(circularPosition)
                 val currentColumn = layoutInfo.getStartColumnIndex(circularPosition)
                 val view = layoutInfo.findViewByPosition(circularPosition)
                 if (currentRow == startRow
@@ -100,7 +100,7 @@ internal class CircularFocusInterceptor(
             circularPosition = position + configuration.spanCount - 1
             while (circularPosition >= position + 1) {
                 val lastColumn = layoutInfo.getEndColumnIndex(circularPosition)
-                currentRow = layoutInfo.getRowIndex(circularPosition)
+                currentRow = layoutInfo.getSpanGroupIndex(circularPosition)
                 val view = layoutInfo.findViewByPosition(circularPosition)
                 if (currentRow == startRow
                     && lastColumn != lastColumnIndex
