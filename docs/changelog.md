@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.0-alpha04 (2023-02-??)
+
+### Improvements
+
+### Bug fixes
+
+### Testing
+
+- `DisableIdleTimeoutRule` will now wait for idle input after the test is over to avoid dispatching key events to other tests
+
 ## 1.0.0-alpha03 (2023-01-26)
 
 - Replaced `DpadLayoutManager` with new `PivotLayoutManager` for proper customization of layout logic ([#10](https://github.com/rubensousa/DpadRecyclerView/issues/10)), ([#16](https://github.com/rubensousa/DpadRecyclerView/issues/16))

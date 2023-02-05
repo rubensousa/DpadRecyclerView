@@ -16,7 +16,9 @@
 
 package com.rubensousa.dpadrecyclerview.testing.rules
 
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.Configurator
+import androidx.test.uiautomator.UiDevice
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -35,6 +37,8 @@ class DisableIdleTimeoutRule : TestRule {
                     base.evaluate()
                 } finally {
                     Configurator.getInstance().waitForIdleTimeout = previousTimeout
+                    // Wait for idle to avoid passing key events across different tests
+                    UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).waitForIdle()
                 }
             }
         }
