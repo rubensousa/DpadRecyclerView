@@ -24,37 +24,46 @@ class ColumnLayoutTest {
 
     private val screenWidth = 1920
     private val screenHeight = 1080
+    private val itemCount = 1000
     private val childWidth = screenWidth
     private val childHeight = 300
-    private val column = ColumnLayout(
-        LayoutConfig(
-            parentWidth = screenWidth,
-            parentHeight = screenHeight,
-            viewWidth = childWidth,
-            viewHeight = childHeight,
-            defaultItemCount = 1000,
-            parentKeyline = screenHeight / 2,
-            childKeyline = 0.5f
-        )
+    private val config = LayoutConfig(
+        parentWidth = screenWidth,
+        parentHeight = screenHeight,
+        viewWidth = childWidth,
+        viewHeight = childHeight,
+        defaultItemCount = itemCount,
+        parentKeyline = screenHeight / 2,
+        childKeyline = 0.5f
+    )
+    private var column = ColumnLayout(config)
+    private val centeredBounds = ViewBounds(
+        top = 390, bottom = 690, left = 0, right = screenWidth
+    )
+    private val topBounds = ViewBounds(
+        top = 0, bottom = childHeight, left = 0, right = screenWidth
+    )
+    private val bottomBounds = ViewBounds(
+        top = screenHeight - childHeight, bottom = screenHeight, left = 0, right = screenWidth
     )
 
     private val expectedFirstBounds = listOf(
-        ViewBounds(left = 0, top = 390, right = screenWidth, bottom = 690),
-        ViewBounds(left = 0, top = 690, right = screenWidth, bottom = 990),
-        ViewBounds(left = 0, top = 990, right = screenWidth, bottom = 1290)
+        centeredBounds,
+        centeredBounds.next(1),
+        centeredBounds.next(2)
     )
     private val expectedSecondBounds = listOf(
-        ViewBounds(left = 0, top = 90, right = screenWidth, bottom = 390),
-        ViewBounds(left = 0, top = 390, right = screenWidth, bottom = 690),
-        ViewBounds(left = 0, top = 690, right = screenWidth, bottom = 990),
-        ViewBounds(left = 0, top = 990, right = screenWidth, bottom = 1290)
+        centeredBounds.next(-1),
+        centeredBounds,
+        centeredBounds.next(1),
+        centeredBounds.next(2)
     )
     private val expectedOtherBounds = listOf(
-        ViewBounds(left = 0, top = -210, right = screenWidth, bottom = 90),
-        ViewBounds(left = 0, top = 90, right = screenWidth, bottom = 390),
-        ViewBounds(left = 0, top = 390, right = screenWidth, bottom = 690),
-        ViewBounds(left = 0, top = 690, right = screenWidth, bottom = 990),
-        ViewBounds(left = 0, top = 990, right = screenWidth, bottom = 1290)
+        centeredBounds.next(-2),
+        centeredBounds.next(-1),
+        centeredBounds,
+        centeredBounds.next(1),
+        centeredBounds.next(2)
     )
 
     @Test
@@ -110,6 +119,27 @@ class ColumnLayoutTest {
         val scrollDistance = childHeight / 2
         column.scrollBy(scrollDistance)
         column.assertViewBounds(expectedFirstBounds.offsetVerticallyBy(-scrollDistance))
+    }
+
+    @Test
+    fun `last view is aligned to keyline`() {
+        column.init(position = itemCount - 1)
+        column.assertViewBounds(
+            listOf(
+                centeredBounds.next(-2),
+                centeredBounds.next(-1),
+                centeredBounds
+            )
+        )
+    }
+
+    private fun ViewBounds.next(index: Int): ViewBounds {
+        return ViewBounds(
+            top = this.top + childHeight * index,
+            bottom = this.bottom + childHeight * index,
+            left = this.left,
+            right = this.right
+        )
     }
 
 

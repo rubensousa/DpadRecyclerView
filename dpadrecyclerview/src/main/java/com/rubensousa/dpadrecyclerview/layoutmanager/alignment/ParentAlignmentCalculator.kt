@@ -16,22 +16,19 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import kotlin.math.max
 import kotlin.math.min
 
-internal class ParentScrollAlignment {
+internal class ParentAlignmentCalculator {
 
     val isStartUnknown: Boolean
         get() = isScrollLimitInvalid(startEdge)
 
     val isEndUnknown: Boolean
         get() = isScrollLimitInvalid(endEdge)
-
-    var defaultAlignment = ParentAlignment(edge = Edge.MIN_MAX)
 
     var startScrollLimit = Int.MIN_VALUE
         private set
@@ -46,19 +43,23 @@ internal class ParentScrollAlignment {
     private var endEdge = Int.MAX_VALUE
     private var startEdge = Int.MIN_VALUE
 
-    fun updateLayoutInfo(layoutManager: LayoutManager, orientation: Int, reverseLayout: Boolean) {
-        size = if (orientation == RecyclerView.HORIZONTAL) {
-            layoutManager.width
-        } else {
+    fun updateLayoutInfo(
+        layoutManager: LayoutManager,
+        isVertical: Boolean,
+        reverseLayout: Boolean
+    ) {
+        size = if (isVertical) {
             layoutManager.height
+        } else {
+            layoutManager.width
         }
         this.reverseLayout = reverseLayout
-        if (orientation == RecyclerView.HORIZONTAL) {
-            paddingStart = layoutManager.paddingStart
-            paddingEnd = layoutManager.paddingEnd
-        } else {
+        if (isVertical) {
             paddingStart = layoutManager.paddingTop
             paddingEnd = layoutManager.paddingBottom
+        } else {
+            paddingStart = layoutManager.paddingStart
+            paddingEnd = layoutManager.paddingEnd
         }
     }
 
@@ -74,28 +75,28 @@ internal class ParentScrollAlignment {
         endScrollLimit = Int.MAX_VALUE
     }
 
-    fun updateStartLimit(edge: Int, viewAnchor: Int) {
+    fun updateStartLimit(edge: Int, viewAnchor: Int, alignment: ParentAlignment) {
         startEdge = edge
         if (isStartUnknown) {
             startScrollLimit = Int.MIN_VALUE
             return
         }
-        val keyLine = calculateKeyline(defaultAlignment)
-        startScrollLimit = if (shouldAlignViewToStart(viewAnchor, keyLine, defaultAlignment.edge)) {
+        val keyLine = calculateKeyline(alignment)
+        startScrollLimit = if (shouldAlignViewToStart(viewAnchor, keyLine, alignment.edge)) {
             calculateScrollOffsetToStartEdge(edge)
         } else {
             calculateScrollOffsetToKeyline(viewAnchor, keyLine)
         }
     }
 
-    fun updateEndLimit(edge: Int, viewAnchor: Int) {
+    fun updateEndLimit(edge: Int, viewAnchor: Int, alignment: ParentAlignment) {
         this.endEdge = edge
         if (isEndUnknown) {
             endScrollLimit = Int.MAX_VALUE
             return
         }
-        val keyLine = calculateKeyline(defaultAlignment)
-        endScrollLimit = if (shouldAlignViewToEnd(viewAnchor, keyLine, defaultAlignment.edge)) {
+        val keyLine = calculateKeyline(alignment)
+        endScrollLimit = if (shouldAlignViewToEnd(viewAnchor, keyLine, alignment.edge)) {
             calculateScrollOffsetToEndEdge(edge)
         } else {
             calculateScrollOffsetToKeyline(viewAnchor, keyLine)
@@ -113,12 +114,9 @@ internal class ParentScrollAlignment {
     /**
      * Returns the scroll target position to align an item centered around [viewAnchor].
      * Item will either be aligned to the keyline position or to either min or max edges
-     * according to the current [defaultAlignment].
+     * according to the current [alignment].
      */
-    fun calculateScrollOffset(
-        viewAnchor: Int, subPositionAlignment: ParentAlignment? = null
-    ): Int {
-        val alignment = subPositionAlignment ?: defaultAlignment
+    fun calculateScrollOffset(viewAnchor: Int, alignment: ParentAlignment): Int {
         val keyline = calculateKeyline(alignment)
         val alignToStartEdge = shouldAlignViewToStart(viewAnchor, keyline, alignment.edge)
         val alignToEndEdge = shouldAlignViewToEnd(viewAnchor, keyline, alignment.edge)
@@ -140,7 +138,7 @@ internal class ParentScrollAlignment {
         return calculateScrollOffsetToKeyline(viewAnchor, keyline)
     }
 
-    fun calculateKeyline(alignment: ParentAlignment = defaultAlignment): Int {
+    fun calculateKeyline(alignment: ParentAlignment): Int {
         var keyLine = 0
         if (!reverseLayout) {
             if (alignment.isOffsetRatioEnabled) {

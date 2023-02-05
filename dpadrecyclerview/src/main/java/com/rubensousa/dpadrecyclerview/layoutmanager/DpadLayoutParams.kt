@@ -18,7 +18,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
@@ -32,23 +31,10 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
         const val INVALID_SPAN_ID = -1
     }
 
-    // TODO For custom placement
-    var leftInset = 0
-        private set
-
-    var topInset = 0
-        private set
-
-    var rightInset = 0
-        private set
-
-    var bottomInset = 0
-        private set
-
     /**
-     * Anchor alignment position. Always measured from start to end
+     * Anchor alignment position. Always applied from start to end
      */
-    var absoluteAnchor: Int = 0
+    var alignmentAnchor: Int = 0
         private set
 
     /**
@@ -69,7 +55,7 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
     var spanGroupIndex = INVALID_SPAN_ID
         private set
 
-    private var alignmentPositions: IntArray? = null
+    private var subPositionAnchors: IntArray? = null
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
     constructor(width: Int, height: Int) : super(width, height)
@@ -84,55 +70,21 @@ class DpadLayoutParams : RecyclerView.LayoutParams {
         spanSize = size
     }
 
-    fun getOpticalLeft(view: View): Int {
-        return view.left + leftInset
+    internal fun getSubPositionAnchors(): IntArray? {
+        return subPositionAnchors
     }
 
-    fun getOpticalTop(view: View): Int {
-        return view.top + topInset
+    internal fun setAlignmentAnchor(anchor: Int) {
+        alignmentAnchor = anchor
     }
 
-    fun getOpticalRight(view: View): Int {
-        return view.right - rightInset
-    }
-
-    fun getOpticalBottom(view: View): Int {
-        return view.bottom - bottomInset
-    }
-
-    fun getOpticalWidth(view: View): Int {
-        val width = if (view.isLaidOut) {
-            view.width
-        } else {
-            view.measuredWidth
-        }
-        return width - leftInset - rightInset
-    }
-
-    fun getOpticalHeight(view: View): Int {
-        val height = if (view.isLaidOut) {
-            view.height
-        } else {
-            view.measuredHeight
-        }
-        return height - topInset - bottomInset
-    }
-
-    internal fun getAlignmentPositions(): IntArray? {
-        return alignmentPositions
-    }
-
-    internal fun setAbsoluteAnchor(anchor: Int) {
-        absoluteAnchor = anchor
-    }
-
-    internal fun setAlignments(newAlignments: IntArray?) {
-        alignmentPositions = newAlignments
+    internal fun setSubPositionAnchors(newAlignments: IntArray?) {
+        subPositionAnchors = newAlignments
         if (newAlignments == null) {
-            absoluteAnchor = 0
+            alignmentAnchor = 0
             return
         }
-        absoluteAnchor = newAlignments[0]
+        alignmentAnchor = newAlignments[0]
     }
 
 }

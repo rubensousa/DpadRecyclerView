@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
 import android.graphics.Rect
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import io.mockk.every
 import io.mockk.mockk
@@ -61,6 +62,12 @@ internal class LayoutManagerMock(
         every { mock.measureChildWithMargins(any(), any(), any()) }.answers {
             val view = it.invocation.args.first() as View
             view.measure(it.invocation.args[1] as Int, it.invocation.args[2] as Int)
+        }
+        every { mock.findViewByPosition(any()) }.answers {
+            val position = it.invocation.args.first() as Int
+            views.firstOrNull { viewEntry ->
+                (viewEntry.view.layoutParams as RecyclerView.LayoutParams).viewLayoutPosition == position
+            }?.view
         }
         every { mock.paddingLeft }.answers { leftPadding }
         every { mock.paddingTop }.answers { topPadding }
@@ -143,11 +150,11 @@ internal class LayoutManagerMock(
         }
     }
 
-    private fun addView(view: View, disappearing: Boolean) {
+    fun addView(view: View, disappearing: Boolean = false) {
         views.add(ViewEntry(view, disappearing))
     }
 
-    private fun addViewAt(view: View, index: Int, disappearing: Boolean) {
+    fun addViewAt(view: View, index: Int, disappearing: Boolean = false) {
         views.add(index, ViewEntry(view, disappearing))
     }
 

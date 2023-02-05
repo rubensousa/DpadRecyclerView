@@ -18,11 +18,9 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 
 import android.view.View
-import androidx.annotation.MainThread
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
-@MainThread
 internal class ChildScrollAlignment {
 
     private var alignment = ChildAlignment(offset = 0)
@@ -36,15 +34,15 @@ internal class ChildScrollAlignment {
     fun updateAlignments(
         view: View,
         layoutParams: DpadLayoutParams,
-        orientation: Int,
+        isVertical: Boolean,
         reverseLayout: Boolean
     ) {
         val anchor = ViewAnchorHelper.calculateAnchor(
             itemView = view,
             alignmentView = view,
-            layoutParams, alignment, orientation, reverseLayout
+            alignment, isVertical, reverseLayout
         )
-        layoutParams.setAbsoluteAnchor(anchor)
+        layoutParams.setAlignmentAnchor(anchor)
     }
 
 }

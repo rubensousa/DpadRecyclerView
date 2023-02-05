@@ -17,59 +17,71 @@
 package com.rubensousa.dpadrecyclerview.test.layoutmanager.mock
 
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import io.mockk.every
 import io.mockk.mockk
 
 internal class LayoutInfoMock(
+    layoutManager: LayoutManager,
     private val configuration: LayoutConfiguration
 ) {
 
     private val mock = mockk<LayoutInfo>()
-    private val realInstance = LayoutInfo(mockk(), configuration)
-    var spanCount = 1
-    var childCount = 0
-    var isVertical = true
+    private val realInstance = LayoutInfo(layoutManager, configuration)
+    var isInfinite = false
     var reverseLayout = false
     var isScrolling = false
-    var totalSpace = 0
+    var isScrollingToTarget = false
     var hasCreatedFirstItem = false
     var hasCreatedLastItem = false
-    var endAfterPadding = 0
-    var startAfterPadding = 0
-    var childClosestToStart: View? = null
-    var childClosestToEnd: View? = null
 
     init {
-        every { mock.isVertical() }.answers { isVertical }
+        every { mock.isVertical() }.answers { realInstance.isVertical() }
+        every { mock.isHorizontal() }.answers { realInstance.isHorizontal() }
+        every { mock.isInfinite() }.answers { isInfinite }
+        every { mock.isScrollingToTarget }.answers { isScrollingToTarget }
         every { mock.getDecoratedStart(any()) }.answers {
-            val view = it.invocation.args.first() as View
-            if (isVertical) {
-                view.top
-            } else {
-                view.left
-            }
+            realInstance.getDecoratedStart(it.invocation.args.first() as View)
         }
         every { mock.getDecoratedEnd(any()) }.answers {
-            val view = it.invocation.args.first() as View
-            if (isVertical) {
-                view.bottom
-            } else {
-                view.right
-            }
+            realInstance.getDecoratedEnd(it.invocation.args.first() as View)
         }
-        every { mock.getStartAfterPadding() }.answers { startAfterPadding }
-        every { mock.getEndAfterPadding() }.answers { endAfterPadding }
+        every { mock.getDecoratedSize(any()) }.answers {
+            realInstance.getDecoratedSize(it.invocation.args.first() as View)
+        }
+        every { mock.getStartAfterPadding() }.answers { realInstance.getStartAfterPadding() }
+        every { mock.getEndAfterPadding() }.answers { realInstance.getEndAfterPadding() }
         every { mock.isScrolling }.answers { isScrolling }
-        every { mock.getTotalSpace() }.answers { totalSpace }
+        every { mock.getTotalSpace() }.answers { realInstance.getTotalSpace() }
         every { mock.getConfiguration() }.answers { configuration }
         every { mock.hasCreatedFirstItem() }.answers { hasCreatedFirstItem }
         every { mock.hasCreatedLastItem() }.answers { hasCreatedLastItem }
-        every { mock.getChildClosestToEnd() }.answers { childClosestToEnd }
-        every { mock.getChildClosestToStart() }.answers { childClosestToStart }
-        every { mock.getChildCount() }.answers { childCount }
-        every { mock.getSpanCount() }.answers { spanCount }
+        every { mock.getChildViewHolder(any()) }.answers {
+            val view = it.invocation.args.first() as View
+            ViewHolderMock(view).get()
+        }
+        every { mock.getChildClosestToEnd() }.answers {
+            realInstance.getChildClosestToEnd()
+        }
+        every { mock.getChildClosestToStart() }.answers {
+            realInstance.getChildClosestToStart()
+        }
+        every { mock.findFirstAddedPosition() }.answers {
+            realInstance.findFirstAddedPosition()
+        }
+        every { mock.findLastAddedPosition() }.answers {
+            realInstance.findLastAddedPosition()
+        }
+        every { mock.findViewByPosition(any()) }.answers {
+            realInstance.findViewByPosition(it.invocation.args.first() as Int)
+        }
+        every { mock.getChildAt(any()) }.answers {
+            realInstance.getChildAt(it.invocation.args.first() as Int)
+        }
+        every { mock.getChildCount() }.answers { realInstance.getChildCount() }
+        every { mock.getSpanCount() }.answers {  realInstance.getSpanCount() }
         every { mock.shouldReverseLayout() }.answers { reverseLayout }
         every { mock.getLayoutPositionOf(any()) }.answers {
             realInstance.getLayoutPositionOf(it.invocation.args.first() as View)
@@ -77,9 +89,20 @@ internal class LayoutInfoMock(
         every { mock.getSpanSize(any()) }.answers {
             realInstance.getSpanSize(it.invocation.args.first() as Int)
         }
+        every { mock.getPerpendicularDecoratedSize(any()) }.answers {
+            realInstance.getPerpendicularDecoratedSize(it.invocation.args.first() as View)
+        }
+        every { mock.orientationHelper }.answers {
+            realInstance.orientationHelper
+        }
     }
 
     fun get(): LayoutInfo = mock
+
+    fun setOrientation(orientation: Int) {
+        configuration.setOrientation(orientation)
+        realInstance.updateOrientation()
+    }
 
 
 }

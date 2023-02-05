@@ -21,7 +21,6 @@ import android.view.View
 import androidx.collection.forEach
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ScrapViewProvider
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.RecyclerViewStateMock
@@ -39,19 +38,14 @@ class ScrapViewProviderTest {
 
     @Before
     fun setup() {
-        layoutRequest.init(
-            gravity = Gravity.START,
-            isVertical = true,
-            reverseLayout = false,
-            infinite = false
-        )
+        initLayoutRequest(reverseLayout = false)
         stateMock.itemCount = 20
     }
 
     @Test
     fun `scrap does not return anything if it is empty`() {
-        scrapViewProvider.update(null)
-        assertThat(scrapViewProvider.next(layoutRequest, state)).isNull()
+        scrapViewProvider.updateScrap(null)
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isFalse()
     }
 
     @Test
@@ -60,15 +54,16 @@ class ScrapViewProviderTest {
         repeat(10) { layoutPosition ->
             scrap.add(createViewHolder(layoutPosition, isRemoved = true))
         }
-        scrapViewProvider.update(scrap)
+        scrapViewProvider.updateScrap(scrap)
 
         var foundViewHolder = false
-        scrapViewProvider.getScrap()!!.forEach { _, _ ->
+        scrapViewProvider.getScrap().forEach { _, _ ->
             foundViewHolder = true
         }
         assertThat(foundViewHolder).isFalse()
         layoutRequest.setCurrentPosition(0)
-        assertThat(scrapViewProvider.next(layoutRequest, state)).isNull()
+
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isFalse()
     }
 
     @Test
@@ -87,13 +82,14 @@ class ScrapViewProviderTest {
             scrap.add(createViewHolder(layoutPosition = currentLayoutPosition + 1 + index))
         }
 
-        scrapViewProvider.update(scrap)
+        scrapViewProvider.updateScrap(scrap)
 
         // Prepend should only find views after the current layout position
         layoutRequest.prepend(currentLayoutPosition) {}
 
         repeat(startScrapCount) { index ->
-            val view = scrapViewProvider.next(layoutRequest, state)!!
+            assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+            val view = scrapViewProvider.next(layoutRequest, state)
             assertViewLayoutPosition(view, currentLayoutPosition - 1 - index)
         }
 
@@ -101,7 +97,8 @@ class ScrapViewProviderTest {
         layoutRequest.append(currentLayoutPosition) {}
 
         repeat(endScrapCount) { index ->
-            val view = scrapViewProvider.next(layoutRequest, state)!!
+            assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+            val view = scrapViewProvider.next(layoutRequest, state)
             assertViewLayoutPosition(view, currentLayoutPosition + 1 + index)
         }
 
@@ -119,14 +116,16 @@ class ScrapViewProviderTest {
 
         layoutRequest.prepend(currentLayoutPosition) {}
 
-        scrapViewProvider.update(scrap)
+        scrapViewProvider.updateScrap(scrap)
 
-        var view = scrapViewProvider.next(layoutRequest, state)!!
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+        var view = scrapViewProvider.next(layoutRequest, state)
 
         assertViewLayoutPosition(view, firstScrapLayoutPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(secondScrapLayoutPosition)
 
-        view = scrapViewProvider.next(layoutRequest, state)!!
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+        view = scrapViewProvider.next(layoutRequest, state)
 
         assertViewLayoutPosition(view, secondScrapLayoutPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(RecyclerView.NO_POSITION)
@@ -142,16 +141,19 @@ class ScrapViewProviderTest {
         scrap.add(createViewHolder(firstScrapLayoutPosition))
         scrap.add(createViewHolder(secondScrapLayoutPosition))
 
-        layoutRequest.append(currentLayoutPosition, itemDirection = ItemDirection.HEAD) {}
+        initLayoutRequest(reverseLayout = true)
+        layoutRequest.append(currentLayoutPosition) {}
 
-        scrapViewProvider.update(scrap)
+        scrapViewProvider.updateScrap(scrap)
 
-        var view = scrapViewProvider.next(layoutRequest, state)!!
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+        var view = scrapViewProvider.next(layoutRequest, state)
 
         assertViewLayoutPosition(view, firstScrapLayoutPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(secondScrapLayoutPosition)
 
-        view = scrapViewProvider.next(layoutRequest, state)!!
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+        view = scrapViewProvider.next(layoutRequest, state)
 
         assertViewLayoutPosition(view, secondScrapLayoutPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(RecyclerView.NO_POSITION)
@@ -169,14 +171,16 @@ class ScrapViewProviderTest {
 
         layoutRequest.append(currentLayoutPosition) {}
 
-        scrapViewProvider.update(scrap)
+        scrapViewProvider.updateScrap(scrap)
 
-        var view = scrapViewProvider.next(layoutRequest, state)!!
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+        var view = scrapViewProvider.next(layoutRequest, state)
 
         assertViewLayoutPosition(view, firstScrapLayoutPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(secondScrapLayoutPosition)
 
-        view = scrapViewProvider.next(layoutRequest, state)!!
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+        view = scrapViewProvider.next(layoutRequest, state)
 
         assertViewLayoutPosition(view, secondScrapLayoutPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(RecyclerView.NO_POSITION)
@@ -192,16 +196,19 @@ class ScrapViewProviderTest {
         scrap.add(createViewHolder(firstScrapLayoutPosition))
         scrap.add(createViewHolder(secondScrapLayoutPosition))
 
-        layoutRequest.prepend(currentLayoutPosition, itemDirection = ItemDirection.TAIL) {}
+        initLayoutRequest(reverseLayout = true)
+        layoutRequest.prepend(currentLayoutPosition) {}
 
-        scrapViewProvider.update(scrap)
+        scrapViewProvider.updateScrap(scrap)
 
-        var view = scrapViewProvider.next(layoutRequest, state)!!
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+        var view = scrapViewProvider.next(layoutRequest, state)
 
         assertViewLayoutPosition(view, firstScrapLayoutPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(secondScrapLayoutPosition)
 
-        view = scrapViewProvider.next(layoutRequest, state)!!
+        assertThat(scrapViewProvider.hasNext(layoutRequest,state)).isTrue()
+        view = scrapViewProvider.next(layoutRequest, state)
 
         assertViewLayoutPosition(view, secondScrapLayoutPosition)
         assertThat(layoutRequest.currentPosition).isEqualTo(RecyclerView.NO_POSITION)
@@ -214,13 +221,22 @@ class ScrapViewProviderTest {
         val scrapPosition = currentLayoutPosition + 2
         viewHolders.add(createViewHolder(scrapPosition))
 
-        scrapViewProvider.update(viewHolders)
+        scrapViewProvider.updateScrap(viewHolders)
 
         layoutRequest.setCurrentPosition(currentLayoutPosition)
 
-        scrapViewProvider.updateLayoutPosition(layoutRequest)
+        scrapViewProvider.setNextLayoutPosition(layoutRequest)
 
         assertThat(layoutRequest.currentPosition).isEqualTo(scrapPosition)
+    }
+
+    private fun initLayoutRequest(reverseLayout: Boolean = false) {
+        layoutRequest.init(
+            gravity = Gravity.START,
+            isVertical = true,
+            reverseLayout = reverseLayout,
+            infinite = false
+        )
     }
 
     private fun assertViewLayoutPosition(view: View, layoutPosition: Int) {

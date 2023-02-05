@@ -20,7 +20,6 @@ import android.view.View
 import androidx.collection.SparseArrayCompat
 import androidx.collection.forEach
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ItemDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 
 /**
@@ -30,65 +29,61 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
  */
 internal class ScrapViewProvider : ViewProvider {
 
-    private var scrap: SparseArrayCompat<RecyclerView.ViewHolder>? = null
+    private val scrap = SparseArrayCompat<RecyclerView.ViewHolder>()
 
-    override fun next(layoutRequest: LayoutRequest, state: RecyclerView.State): View? {
-        val currentScrap = scrap ?: return null
-        val nextViewHolder = findNextViewHolder(
-            layoutRequest.currentPosition, layoutRequest.currentItemDirection
-        ) ?: return null
+    override fun hasNext(layoutRequest: LayoutRequest, state: RecyclerView.State): Boolean {
+        if (scrap.isEmpty()) {
+            return false
+        }
+        val nextViewHolder = findNextViewHolder(layoutRequest) ?: return false
+        /**
+         * Cache the ViewHolder in its expected position for faster lookups in [next]
+         */
+        scrap.remove(nextViewHolder.layoutPosition)
+        scrap.put(layoutRequest.currentPosition, nextViewHolder)
+        return true
+    }
 
-        val currentPosition = nextViewHolder.layoutPosition
-        currentScrap.remove(currentPosition)
-        layoutRequest.setCurrentPosition(
-            findNextScrapPosition(currentPosition, layoutRequest.currentItemDirection)
-        )
+    override fun next(layoutRequest: LayoutRequest, state: RecyclerView.State): View {
+        val nextViewHolder = findNextViewHolder(layoutRequest) ?: throw IllegalStateException()
+        scrap.remove(layoutRequest.currentPosition)
+        setNextLayoutPosition(layoutRequest)
         return nextViewHolder.itemView
     }
 
-    fun update(newScrap: List<RecyclerView.ViewHolder>?) {
-        if (newScrap == null) {
-            this.scrap = null
-            return
-        }
-        val newViewHolders = SparseArrayCompat<RecyclerView.ViewHolder>(newScrap.size)
-        newScrap.forEach { viewHolder ->
+    fun updateScrap(newScrap: List<RecyclerView.ViewHolder>?) {
+        scrap.clear()
+        newScrap?.forEach { viewHolder ->
             val layoutParams = viewHolder.itemView.layoutParams as RecyclerView.LayoutParams
             if (!layoutParams.isItemRemoved) {
-                newViewHolders.put(viewHolder.layoutPosition, viewHolder)
+                scrap.put(viewHolder.layoutPosition, viewHolder)
             }
         }
-        scrap = newViewHolders
     }
 
-    fun updateLayoutPosition(layoutRequest: LayoutRequest) {
-        layoutRequest.setCurrentPosition(
-            findNextScrapPosition(layoutRequest.currentPosition, layoutRequest.currentItemDirection)
-        )
+    fun setNextLayoutPosition(layoutRequest: LayoutRequest) {
+        val nextViewHolder = findNextViewHolder(layoutRequest)
+        if (nextViewHolder == null) {
+            layoutRequest.setCurrentPosition(RecyclerView.NO_POSITION)
+            return
+        }
+        layoutRequest.setCurrentPosition(nextViewHolder.layoutPosition)
     }
 
-    fun getScrap(): SparseArrayCompat<RecyclerView.ViewHolder>? {
+    fun getScrap(): SparseArrayCompat<RecyclerView.ViewHolder> {
         return scrap
     }
 
-    private fun findNextScrapPosition(currentPosition: Int, itemDirection: ItemDirection): Int {
-        val nextViewHolder = findNextViewHolder(currentPosition, itemDirection)
-        return nextViewHolder?.layoutPosition ?: RecyclerView.NO_POSITION
-    }
-
-    private fun findNextViewHolder(
-        currentPosition: Int,
-        itemDirection: ItemDirection,
-    ): RecyclerView.ViewHolder? {
-        val currentScrap = scrap ?: return null
-        val viewHolderAtCurrentPosition = currentScrap[currentPosition]
+    private fun findNextViewHolder(layoutRequest: LayoutRequest): RecyclerView.ViewHolder? {
+        val viewHolderAtCurrentPosition = scrap[layoutRequest.currentPosition]
         if (viewHolderAtCurrentPosition != null) {
             return viewHolderAtCurrentPosition
         }
         var closest: RecyclerView.ViewHolder? = null
         var closestDistance = Int.MAX_VALUE
-        currentScrap.forEach { layoutPosition, viewHolder ->
-            val distance = (layoutPosition - currentPosition) * itemDirection.value
+        scrap.forEach { layoutPosition, viewHolder ->
+            val distance = ((layoutPosition - layoutRequest.currentPosition)
+                    * layoutRequest.currentItemDirection.value)
             if (distance in 0 until closestDistance) {
                 closest = viewHolder
                 closestDistance = distance

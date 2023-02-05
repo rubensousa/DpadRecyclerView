@@ -20,10 +20,9 @@ import androidx.collection.CircularArray
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
+import kotlin.math.min
 
-abstract class LayoutMatrix(
-    protected val config: LayoutConfig
-) {
+abstract class LayoutMatrix(val config: LayoutConfig) {
     var selectedPosition = RecyclerView.NO_POSITION
         private set
 
@@ -52,6 +51,49 @@ abstract class LayoutMatrix(
         clear()
         selectedPosition = position
         initializeLayout(position)
+        // Ensure layout starts from the start if needed
+        if (config.alignToStartEdge) {
+            ensureStartAlignment()
+        }
+    }
+
+    private fun ensureStartAlignment() {
+        val startView = getFirstView() ?: return
+        val endView = getLastView() ?: return
+        val startEdge = getDecoratedStart(startView)
+        val endEdge = getDecoratedEnd(endView)
+        val currentLayoutSpace = endEdge - startEdge
+
+        // If the current layout already fills the entire space, skip this
+        if (currentLayoutSpace >= getVisibleSpace()) {
+            return
+        }
+
+        val emptyLayoutSpace = getVisibleSpace() - currentLayoutSpace
+
+        if (!config.reversed) {
+            if (startEdge > 0) {
+                scrollBy(startEdge)
+            } else {
+                layoutRequest.prepend(startView.position) {
+                    checkpoint = startEdge
+                    space = emptyLayoutSpace + startEdge
+                }
+                val scrollSpace = min(fill(layoutRequest), emptyLayoutSpace)
+                scrollBy(startEdge - scrollSpace)
+            }
+        } else if (endEdge < getVisibleSpace()) {
+            val distanceToEnd = getVisibleSpace() - endEdge
+            scrollBy(-distanceToEnd)
+        } else {
+            layoutRequest.append(endView.position) {
+                checkpoint = endEdge
+                space = emptyLayoutSpace
+            }
+            val scrollSpace = min(fill(layoutRequest), emptyLayoutSpace)
+            val availableScrollSpace = endEdge - getVisibleSpace()
+            scrollBy(availableScrollSpace + scrollSpace)
+        }
     }
 
     fun getItemCount() = itemCount
@@ -145,7 +187,7 @@ abstract class LayoutMatrix(
         }
     }
 
-    protected fun fill(request: LayoutBlockRequest) {
+    protected fun fill(request: LayoutBlockRequest): Int {
         var remainingSpace = request.space
         while (canContinueLayout(remainingSpace, request)) {
             val result = layoutBlock(request)
@@ -165,6 +207,7 @@ abstract class LayoutMatrix(
                 }
             }
         }
+        return layoutRequest.space - remainingSpace
     }
 
     protected fun clear() {

@@ -28,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.updateChildAlignment
 import com.rubensousa.dpadrecyclerview.test.helpers.updateParentAlignment
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
@@ -327,6 +328,35 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
         viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
         assertThat(viewBounds.left).isEqualTo(recyclerViewBounds.left)
+    }
+
+    @Test
+    fun testLayoutAlignsToStartEdgeWhenThereAreNotManyItems() {
+        launchFragment(
+            getDefaultLayoutConfiguration(),
+            getDefaultAdapterConfiguration().copy(numberOfItems = 4)
+        )
+        selectPosition(position = 3)
+        onRecyclerView("Request new layout") { recyclerView ->
+            recyclerView.requestLayout()
+        }
+        val viewBounds = getItemViewBounds(position = 0)
+        assertThat(viewBounds.top).isEqualTo(0)
+    }
+
+    @Test
+    fun testReverseLayoutAlignsToStartEdgeWhenThereAreNotManyItems() {
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(reverseLayout = true),
+            getDefaultAdapterConfiguration().copy(numberOfItems = 4)
+        )
+        selectPosition(position = 3)
+        onRecyclerView("Request new layout") { recyclerView ->
+            recyclerView.requestLayout()
+        }
+        val recyclerViewBounds = getRecyclerViewBounds()
+        val viewBounds = getItemViewBounds(position = 0)
+        assertThat(viewBounds.bottom).isEqualTo(recyclerViewBounds.bottom)
     }
 
 }

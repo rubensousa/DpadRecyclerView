@@ -18,6 +18,9 @@ package com.rubensousa.dpadrecyclerview
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
+import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge.MAX
+import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge.MIN
 
 /**
  * Alignment configuration for aligning views in relation to the RecyclerView bounds
@@ -92,7 +95,11 @@ data class ParentAlignment(
     }
 
     /**
-     * Overrides the keyline alignment and instead aligns to a certain edge
+     * Overrides the keyline alignment and instead aligns to a certain edge.
+     *
+     * [MIN] and [MAX] are considered from the layout direction,
+     * so in case reverse layout is enabled, [MIN] and [MAX] will point instead
+     * to bottom/top for vertical layouts and left/right for horizontal layouts.
      */
     enum class Edge {
         /**

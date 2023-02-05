@@ -21,13 +21,14 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.PendingScrollMovements
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.LayoutInfoMock
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 
 class PendingScrollMovementsTest {
 
     private val configuration = LayoutConfiguration(RecyclerView.LayoutManager.Properties())
-    private val mockLayoutInfo = LayoutInfoMock(configuration)
+    private val mockLayoutInfo = LayoutInfoMock(mockk(), configuration)
     private lateinit var scrollMovements: PendingScrollMovements
 
     @Before

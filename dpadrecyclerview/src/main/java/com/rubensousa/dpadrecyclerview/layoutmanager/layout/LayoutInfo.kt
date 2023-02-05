@@ -60,7 +60,6 @@ internal class LayoutInfo(
     var hasLaidOutViews = false
         private set
 
-
     private var recyclerView: RecyclerView? = null
 
     fun getConfiguration() = configuration
@@ -167,30 +166,6 @@ internal class LayoutInfo(
             .getCachedSpanGroupIndex(adapterPosition, configuration.spanCount)
     }
 
-    fun getMeasuredSize(view: View): Int {
-        return if (configuration.isVertical()) {
-            view.measuredHeight
-        } else {
-            view.measuredWidth
-        }
-    }
-
-    fun getStartDecorationSize(view: View): Int {
-        return if (configuration.isVertical()) {
-            layout.getTopDecorationHeight(view)
-        } else {
-            layout.getLeftDecorationWidth(view)
-        }
-    }
-
-    fun getEndDecorationSize(view: View): Int {
-        return if (configuration.isVertical()) {
-            layout.getBottomDecorationHeight(view)
-        } else {
-            layout.getRightDecorationWidth(view)
-        }
-    }
-
     fun getStartAfterPadding() = orientationHelper.startAfterPadding
 
     fun getSecondaryStartAfterPadding() = secondaryOrientationHelper.startAfterPadding
@@ -213,30 +188,6 @@ internal class LayoutInfo(
 
     fun getDecoratedSize(view: View): Int {
         return orientationHelper.getDecoratedMeasurement(view)
-    }
-
-    fun getDecoratedLeft(child: View, decoratedLeft: Int): Int {
-        return decoratedLeft + getLayoutParams(child).leftInset
-    }
-
-    fun getDecoratedTop(child: View, decoratedTop: Int): Int {
-        return decoratedTop + getLayoutParams(child).topInset
-    }
-
-    fun getDecoratedRight(child: View, decoratedRight: Int): Int {
-        return decoratedRight - getLayoutParams(child).rightInset
-    }
-
-    fun getDecoratedBottom(child: View, decoratedBottom: Int): Int {
-        return decoratedBottom - getLayoutParams(child).bottomInset
-    }
-
-    fun getDecoratedBoundsWithMargins(view: View, outBounds: Rect) {
-        val params = view.layoutParams as DpadLayoutParams
-        outBounds.left += params.leftInset
-        outBounds.top += params.topInset
-        outBounds.right -= params.rightInset
-        outBounds.bottom -= params.bottomInset
     }
 
     fun hasCreatedLastItem(): Boolean {
@@ -440,14 +391,6 @@ internal class LayoutInfo(
             newPosition < startOldPosition || newPosition > endOldPosition
         } else {
             newPosition > startOldPosition || newPosition < endOldPosition
-        }
-    }
-
-    fun getRemainingScroll(state: RecyclerView.State): Int {
-        return if (isVertical()) {
-            state.remainingScrollVertical
-        } else {
-            state.remainingScrollHorizontal
         }
     }
 

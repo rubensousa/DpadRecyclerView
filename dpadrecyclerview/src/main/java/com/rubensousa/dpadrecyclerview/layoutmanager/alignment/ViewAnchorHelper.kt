@@ -19,9 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ViewAlignment
-import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
 internal object ViewAnchorHelper {
 
@@ -31,15 +29,14 @@ internal object ViewAnchorHelper {
     fun calculateAnchor(
         itemView: View,
         alignmentView: View,
-        layoutParams: DpadLayoutParams,
         alignment: ViewAlignment,
-        orientation: Int,
+        isVertical: Boolean,
         reverseLayout: Boolean
     ): Int {
-        return if (orientation == RecyclerView.HORIZONTAL) {
-            getHorizontalAnchor(itemView, reverseLayout, layoutParams, alignmentView, alignment)
+        return if (isVertical) {
+            getVerticalAnchor(itemView, reverseLayout, alignmentView, alignment)
         } else {
-            getVerticalAnchor(itemView, reverseLayout, layoutParams, alignmentView, alignment)
+            getHorizontalAnchor(itemView, reverseLayout, alignmentView, alignment)
         }
     }
 
@@ -47,13 +44,16 @@ internal object ViewAnchorHelper {
     private fun getVerticalAnchor(
         itemView: View,
         reverseLayout: Boolean,
-        layoutParams: DpadLayoutParams,
         alignmentView: View,
         alignment: ViewAlignment,
     ): Int {
         var anchor = 0
         val height = if (alignmentView === itemView) {
-            layoutParams.getOpticalHeight(alignmentView)
+            if (itemView.isLaidOut) {
+                itemView.height
+            } else {
+                itemView.measuredHeight
+            }
         } else {
             alignmentView.height
         }
@@ -81,7 +81,7 @@ internal object ViewAnchorHelper {
             if (itemView !== alignmentView) {
                 tmpRect.top = anchor
                 (itemView as ViewGroup).offsetDescendantRectToMyCoords(alignmentView, tmpRect)
-                anchor = tmpRect.top - layoutParams.topInset
+                anchor = tmpRect.top // - layoutParams.topInset
             }
 
         } else {
@@ -102,7 +102,7 @@ internal object ViewAnchorHelper {
             if (itemView !== alignmentView) {
                 tmpRect.bottom = anchor
                 (itemView as ViewGroup).offsetDescendantRectToMyCoords(alignmentView, tmpRect)
-                anchor = tmpRect.bottom - layoutParams.bottomInset
+                anchor = tmpRect.bottom //- layoutParams.bottomInset
             }
 
         }
@@ -114,13 +114,16 @@ internal object ViewAnchorHelper {
     private fun getHorizontalAnchor(
         itemView: View,
         reverseLayout: Boolean,
-        layoutParams: DpadLayoutParams,
         alignmentView: View,
         alignment: ViewAlignment
     ): Int {
         var anchor = 0
         val alignmentWidth = if (alignmentView === itemView) {
-            layoutParams.getOpticalWidth(alignmentView)
+            if (itemView.isLaidOut) {
+                itemView.width
+            } else {
+                itemView.measuredWidth
+            }
         } else {
             alignmentView.width
         }
@@ -149,7 +152,7 @@ internal object ViewAnchorHelper {
             if (itemView !== alignmentView) {
                 tmpRect.left = anchor
                 (itemView as ViewGroup).offsetDescendantRectToMyCoords(alignmentView, tmpRect)
-                anchor = tmpRect.left - layoutParams.leftInset
+                anchor = tmpRect.left // - layoutParams.leftInset
             }
 
         } else {
@@ -170,7 +173,7 @@ internal object ViewAnchorHelper {
             if (itemView !== alignmentView) {
                 tmpRect.right = anchor
                 (itemView as ViewGroup).offsetDescendantRectToMyCoords(alignmentView, tmpRect)
-                anchor = tmpRect.right + layoutParams.rightInset
+                anchor = tmpRect.right // + layoutParams.rightInset
             }
         }
         return anchor

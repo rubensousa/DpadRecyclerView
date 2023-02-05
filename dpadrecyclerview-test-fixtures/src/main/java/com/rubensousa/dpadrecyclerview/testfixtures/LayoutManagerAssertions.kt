@@ -35,7 +35,6 @@ object LayoutManagerAssertions {
     fun assertChildrenBounds(layoutManager: LayoutManager, bounds: List<ViewBounds>) {
         val horizontalHelper = OrientationHelper.createHorizontalHelper(layoutManager)
         val verticalHelper = OrientationHelper.createVerticalHelper(layoutManager)
-        assertThat(layoutManager.childCount).isEqualTo(bounds.size)
 
         for (i in 0 until layoutManager.childCount) {
             val view = layoutManager.getChildAt(i)!!
@@ -49,6 +48,8 @@ object LayoutManagerAssertions {
             assertThat(verticalHelper.getDecoratedEnd(view))
                 .isEqualTo(viewBounds.bottom)
         }
+
+        assertThat(layoutManager.childCount).isEqualTo(bounds.size)
     }
 
 }
