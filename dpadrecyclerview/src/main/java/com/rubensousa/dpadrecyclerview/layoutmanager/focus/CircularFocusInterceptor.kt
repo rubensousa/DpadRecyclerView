@@ -47,7 +47,7 @@ internal class CircularFocusInterceptor(
         if (direction != FocusDirection.PREVIOUS_COLUMN && direction != FocusDirection.NEXT_COLUMN) {
             return null
         }
-        val firstColumnIndex = layoutInfo.getStartColumnIndex(position)
+        val firstColumnIndex = layoutInfo.getStartSpanIndex(position)
         val configuration = layoutInfo.getConfiguration()
 
         // Do nothing for the items that take the entire span count
@@ -64,7 +64,7 @@ internal class CircularFocusInterceptor(
         }
 
         var currentRow = layoutInfo.getSpanGroupIndex(currentPosition)
-        val lastColumnIndex = layoutInfo.getEndColumnIndex(position)
+        val lastColumnIndex = layoutInfo.getEndSpanIndex(position)
 
         // If we still have focusable views in the movement direction, bail out
         while (currentRow == startRow && currentPosition >= 0) {
@@ -85,7 +85,7 @@ internal class CircularFocusInterceptor(
             circularPosition = position - configuration.spanCount + 1
             while (circularPosition <= position - 1) {
                 currentRow = layoutInfo.getSpanGroupIndex(circularPosition)
-                val currentColumn = layoutInfo.getStartColumnIndex(circularPosition)
+                val currentColumn = layoutInfo.getStartSpanIndex(circularPosition)
                 val view = layoutInfo.findViewByPosition(circularPosition)
                 if (currentRow == startRow
                     && currentColumn != firstColumnIndex
@@ -99,7 +99,7 @@ internal class CircularFocusInterceptor(
         } else {
             circularPosition = position + configuration.spanCount - 1
             while (circularPosition >= position + 1) {
-                val lastColumn = layoutInfo.getEndColumnIndex(circularPosition)
+                val lastColumn = layoutInfo.getEndSpanIndex(circularPosition)
                 currentRow = layoutInfo.getSpanGroupIndex(circularPosition)
                 val view = layoutInfo.findViewByPosition(circularPosition)
                 if (currentRow == startRow

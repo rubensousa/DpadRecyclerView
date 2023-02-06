@@ -12,7 +12,12 @@ class VerticalGridLayout(
     val isRTL: Boolean = false
 ) : LayoutMatrix(config) {
 
-    private var spanSizeLookup = DpadSpanSizeLookup.default()
+    private var spanSizeLookup : DpadSpanSizeLookup = object : DpadSpanSizeLookup() {
+        override fun getSpanSize(position: Int): Int = 1
+        override fun getSpanIndex(position: Int, spanCount: Int): Int {
+            return position % spanCount
+        }
+    }
     private var layoutRow = GridRow(numberOfSpans = spanCount, width = config.parentWidth)
     private var pivotRow = GridRow(layoutRow)
     private val rowViews = Array<ViewItem?>(spanCount) { null }

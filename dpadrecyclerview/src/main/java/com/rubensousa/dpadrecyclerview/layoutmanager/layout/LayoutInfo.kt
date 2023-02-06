@@ -110,20 +110,16 @@ internal class LayoutInfo(
         return configuration.spanSizeLookup.getSpanSize(position)
     }
 
-    fun getCachedSpanIndex(position: Int): Int {
+    fun getStartSpanIndex(position: Int): Int {
         return configuration.spanSizeLookup.getCachedSpanIndex(position, configuration.spanCount)
     }
 
-    fun getStartColumnIndex(position: Int): Int {
-        return configuration.spanSizeLookup.getSpanIndex(position, configuration.spanCount)
-    }
-
-    fun getEndColumnIndex(position: Int): Int {
-        return getStartColumnIndex(position) + configuration.spanSizeLookup.getSpanSize(position) - 1
+    fun getEndSpanIndex(position: Int): Int {
+        return getStartSpanIndex(position) + configuration.spanSizeLookup.getSpanSize(position) - 1
     }
 
     fun getSpanGroupIndex(position: Int): Int {
-        return configuration.spanSizeLookup.getSpanGroupIndex(position, configuration.spanCount)
+        return configuration.spanSizeLookup.getCachedSpanGroupIndex(position, configuration.spanCount)
     }
 
     fun getAdapterPositionOfChildAt(index: Int): Int {

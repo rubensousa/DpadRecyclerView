@@ -352,6 +352,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun setSpanCount(spanCount: Int) {
         if (configuration.spanCount != spanCount) {
             configuration.setSpanCount(spanCount)
+            focusDispatcher.resetSpanFocusCache(spanCount)
             pivotLayout.updateStructure()
             requestLayout()
         }
@@ -360,8 +361,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun getSpanCount(): Int = configuration.spanCount
 
     fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
-        configuration.setSpanSizeLookup(spanSizeLookup)
-        requestLayout()
+        if (spanSizeLookup !== configuration.spanSizeLookup) {
+            configuration.setSpanSizeLookup(spanSizeLookup)
+            focusDispatcher.resetSpanFocusCache(configuration.spanCount)
+            requestLayout()
+        }
     }
 
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {

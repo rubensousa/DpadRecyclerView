@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.ColumnProvider
 import com.rubensousa.decorator.GridMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenStandardGridBinding

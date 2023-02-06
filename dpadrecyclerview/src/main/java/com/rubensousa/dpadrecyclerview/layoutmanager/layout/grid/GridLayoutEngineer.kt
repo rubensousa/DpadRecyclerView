@@ -578,7 +578,7 @@ internal class GridLayoutEngineer(
 
     private fun getSpanIndex(recycler: Recycler, state: State, position: Int): Int {
         if (!state.isPreLayout) {
-            return layoutInfo.getCachedSpanIndex(position)
+            return layoutInfo.getStartSpanIndex(position)
         }
         val spanIndex = gridState.getSpanIndex(position)
         if (spanIndex != -1) {
@@ -592,7 +592,7 @@ internal class GridLayoutEngineer(
             )
             return 1
         }
-        return layoutInfo.getCachedSpanIndex(adapterPosition)
+        return layoutInfo.getStartSpanIndex(adapterPosition)
     }
 
     private fun getSpanSize(recycler: Recycler, state: State, position: Int): Int {

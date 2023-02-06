@@ -103,7 +103,7 @@ internal class PendingScrollMovements(
         }
 
         var focusedSpanIndex = if (pivotPosition != RecyclerView.NO_POSITION) {
-            layoutInfo.getStartColumnIndex(pivotPosition)
+            layoutInfo.getStartSpanIndex(pivotPosition)
         } else {
             RecyclerView.NO_POSITION
         }
@@ -121,7 +121,6 @@ internal class PendingScrollMovements(
         } else {
             -1
         }
-        currentIndex += increment
 
         var targetView: View? = null
 
@@ -136,7 +135,7 @@ internal class PendingScrollMovements(
             }
             val childPosition = layoutInfo.getAdapterPositionOf(child)
             val spanSize = layoutInfo.getSpanSize(childPosition)
-            val spanIndex = layoutInfo.getStartColumnIndex(childPosition)
+            val spanIndex = layoutInfo.getStartSpanIndex(childPosition)
             val spanGroup = layoutInfo.getSpanGroupIndex(childPosition)
             if (shouldFocusChildAt(
                     spanIndex, spanSize, spanGroup, focusedSpanIndex, focusedSpanGroup
@@ -159,7 +158,6 @@ internal class PendingScrollMovements(
         focusedSpanGroup: Int
     ): Boolean {
         // If there's no current span focused, we need to focus the new one
-        // if it
         if (focusedSpanIndex == RecyclerView.NO_POSITION) {
             return true
         }

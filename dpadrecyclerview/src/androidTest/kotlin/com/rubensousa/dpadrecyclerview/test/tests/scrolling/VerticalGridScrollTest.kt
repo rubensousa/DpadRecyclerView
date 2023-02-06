@@ -19,11 +19,17 @@ package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.platform.app.InstrumentationRegistry
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
 import com.rubensousa.dpadrecyclerview.testfixtures.VerticalGridLayout
@@ -177,6 +183,36 @@ class VerticalGridScrollTest : DpadRecyclerViewTest() {
             }
             KeyEvents.pressLeft()
             assertFocusAndSelection(position = startPosition)
+        }
+    }
+
+    @Test
+    fun testMultipleSpanFocusChanges() {
+        launchFragment()
+        onRecyclerView("Change span size lookup") { recyclerView ->
+            recyclerView.setSpanSizeLookup(object : DpadSpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (position == 0) {
+                        spanCount
+                    } else {
+                        1
+                    }
+                }
+            })
+        }
+        val scrollDownTimes = 10
+        KeyEvents.pressDown()
+        assertFocusAndSelection(position = 1)
+        repeat(spanCount) { spanIndex ->
+            KeyEvents.pressDown(times = scrollDownTimes)
+            KeyEvents.pressUp(times = scrollDownTimes + 1)
+            assertFocusAndSelection(position = 0)
+            KeyEvents.pressDown()
+            assertFocusAndSelection(position = spanIndex + 1)
+            if (spanIndex != spanCount - 1) {
+                KeyEvents.pressRight()
+                assertFocusAndSelection(position = spanIndex + 2)
+            }
         }
     }
 
