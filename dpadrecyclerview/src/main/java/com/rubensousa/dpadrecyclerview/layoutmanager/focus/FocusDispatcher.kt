@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
@@ -41,7 +42,7 @@ internal class FocusDispatcher(
     private val pivotSelector: PivotSelector
 ) {
 
-    private val spanFocusCache = SpanFocusCache()
+    private val spanFocusFinder = SpanFocusFinder()
     private val addFocusableChildrenRequest = AddFocusableChildrenRequest(layoutInfo)
     private val defaultFocusInterceptor = DefaultFocusInterceptor(
         layoutInfo, configuration
@@ -73,7 +74,7 @@ internal class FocusDispatcher(
     }
 
     fun resetSpanFocusCache(spanCount: Int) {
-        spanFocusCache.reset(spanCount)
+        spanFocusFinder.reset(spanCount)
     }
 
     /**
@@ -259,10 +260,7 @@ internal class FocusDispatcher(
         if (childPosition == RecyclerView.NO_POSITION) {
             return true
         }
-        spanFocusCache.updateFocus(
-            childPosition,
-            configuration.spanSizeLookup
-        )
+        spanFocusFinder.updateFocus(childPosition, configuration.spanSizeLookup)
         val canScrollToView = !scroller.isSelectionInProgress && !layoutInfo.isLayoutInProgress
         if (canScrollToView) {
             scroller.scrollToView(
@@ -401,29 +399,28 @@ internal class FocusDispatcher(
         focusableMode: Int
     ): Boolean {
         if (configuration.spanCount == 1
+            || configuration.spanSizeLookup === DpadSpanSizeLookup.DEFAULT
             || (movement != FocusDirection.PREVIOUS_ITEM && movement != FocusDirection.NEXT_ITEM)
         ) {
             return false
         }
-        var nextPosition = spanFocusCache.findNextSpanPosition(
+        val reverseLayout = layoutInfo.shouldReverseLayout()
+        val edgeView = if (movement != FocusDirection.NEXT_ITEM != reverseLayout) {
+            layoutInfo.getChildClosestToStart()
+        } else {
+            layoutInfo.getChildClosestToEnd()
+        }
+        if (edgeView == null) {
+            return false
+        }
+        val edgePosition = layout.getPosition(edgeView)
+        val nextPosition = spanFocusFinder.findNextSpanPosition(
             focusedPosition,
             spanSizeLookup = configuration.spanSizeLookup,
             forward = movement == FocusDirection.NEXT_ITEM,
-            itemCount = layout.itemCount,
+            edgePosition = edgePosition,
             reverseLayout = layoutInfo.shouldReverseLayout()
         )
-        if (nextPosition == RecyclerView.NO_POSITION) {
-            // Span not found from cache, so just align to the nearest edge
-            // if the current focused view uses more than one span
-            if (layoutInfo.getSpanSize(focusedPosition) == 1) {
-                return false
-            }
-            nextPosition = if (movement == FocusDirection.NEXT_ITEM) {
-                focusedPosition + 1
-            } else {
-                focusedPosition - 1
-            }
-        }
         if (nextPosition == RecyclerView.NO_POSITION) {
             return false
         }

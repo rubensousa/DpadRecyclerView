@@ -216,6 +216,38 @@ class VerticalGridScrollTest : DpadRecyclerViewTest() {
         }
     }
 
+    @Test
+    fun testMultipleDifferentSpanFocusChanges() {
+        launchFragment()
+        onRecyclerView("Change span size lookup") { recyclerView ->
+            recyclerView.setSpanSizeLookup(object : DpadSpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (position == 0 || position.rem(spanCount + 1) == 0) {
+                        spanCount
+                    } else {
+                        1
+                    }
+                }
+            })
+        }
+        KeyEvents.pressDown()
+        assertFocusAndSelection(position = 1)
+        repeat(spanCount) { spanIndex ->
+            KeyEvents.pressDown()
+            assertFocusAndSelection(position = spanCount + 1)
+            KeyEvents.pressDown()
+            assertFocusAndSelection(position = spanCount + 2 + spanIndex)
+            KeyEvents.pressUp()
+            assertFocusAndSelection(position = spanCount + 1)
+            KeyEvents.pressUp()
+            assertFocusAndSelection(spanIndex + 1)
+            if (spanIndex != spanCount - 1) {
+                KeyEvents.pressRight()
+                assertFocusAndSelection(position = spanIndex + 2)
+            }
+        }
+    }
+
     private fun scrollUp(grid: VerticalGridLayout) {
         KeyEvents.pressUp()
         grid.scrollUp()
