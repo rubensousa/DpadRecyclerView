@@ -234,10 +234,11 @@ internal class LayoutScroller(
         pivotSelectionScroller = null
     }
 
-    fun addScrollMovement(forward: Boolean) {
+    fun addScrollMovement(forward: Boolean, consume: Boolean = false) {
         // Skip action if there's no need to scroll already
-        if (forward && layoutInfo.hasCreatedLastItem()
-            || (!forward && layoutInfo.hasCreatedFirstItem())
+        if (!consume
+            && ((forward && layoutInfo.hasCreatedLastItem())
+                    || (!forward && layoutInfo.hasCreatedFirstItem()))
         ) {
             return
         }
@@ -258,6 +259,9 @@ internal class LayoutScroller(
             layoutManager.startSmoothScroll(newSmoothScroller)
         } else {
             searchPivotScroller?.addScrollMovement(forward)
+        }
+        if (consume) {
+            searchPivotScroller?.consumeOneMovement()
         }
     }
 
