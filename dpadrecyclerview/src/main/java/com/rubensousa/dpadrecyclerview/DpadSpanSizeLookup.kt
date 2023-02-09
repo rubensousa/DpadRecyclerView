@@ -46,6 +46,16 @@ abstract class DpadSpanSizeLookup {
 
     companion object {
 
+        internal val DEFAULT = object : DpadSpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int = 1
+            override fun getSpanIndex(position: Int, spanCount: Int): Int {
+                return position % spanCount
+            }
+            override fun getSpanGroupIndex(position: Int, spanCount: Int): Int {
+                return position / spanCount
+            }
+        }
+
         @JvmStatic
         fun findFirstKeyLessThan(cache: SparseIntArray, position: Int): Int {
             var lo = 0
@@ -65,16 +75,6 @@ abstract class DpadSpanSizeLookup {
             return if (index >= 0 && index < cache.size()) {
                 cache.keyAt(index)
             } else -1
-        }
-
-        @JvmStatic
-        fun default(): DpadSpanSizeLookup {
-            return object : DpadSpanSizeLookup() {
-                override fun getSpanSize(position: Int): Int = 1
-                override fun getSpanIndex(position: Int, spanCount: Int): Int {
-                    return position % spanCount
-                }
-            }
         }
     }
 
@@ -178,13 +178,13 @@ abstract class DpadSpanSizeLookup {
         } else 0
     }
 
-    fun getSpanGroupIndex(adapterPosition: Int, spanCount: Int): Int {
+    open fun getSpanGroupIndex(position: Int, spanCount: Int): Int {
         var span = 0
         var group = 0
         var start = 0
         if (cacheSpanGroupIndices) {
             // This finds the first non empty cached group cache key.
-            val prevKey = findFirstKeyLessThan(spanGroupIndexCache, adapterPosition)
+            val prevKey = findFirstKeyLessThan(spanGroupIndexCache, position)
             if (prevKey != -1) {
                 group = spanGroupIndexCache[prevKey]
                 start = prevKey + 1
@@ -195,8 +195,8 @@ abstract class DpadSpanSizeLookup {
                 }
             }
         }
-        val positionSpanSize = getSpanSize(adapterPosition)
-        for (i in start until adapterPosition) {
+        val positionSpanSize = getSpanSize(position)
+        for (i in start until position) {
             val size = getSpanSize(i)
             span += size
             if (span == spanCount) {

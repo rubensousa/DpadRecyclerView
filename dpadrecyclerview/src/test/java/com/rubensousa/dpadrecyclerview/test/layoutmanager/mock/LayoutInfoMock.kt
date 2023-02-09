@@ -41,6 +41,7 @@ internal class LayoutInfoMock(
         every { mock.isVertical() }.answers { realInstance.isVertical() }
         every { mock.isHorizontal() }.answers { realInstance.isHorizontal() }
         every { mock.isInfinite() }.answers { isInfinite }
+        every { mock.isViewFocusable(any()) }.answers { true }
         every { mock.isScrollingToTarget }.answers { isScrollingToTarget }
         every { mock.getDecoratedStart(any()) }.answers {
             realInstance.getDecoratedStart(it.invocation.args.first() as View)

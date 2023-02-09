@@ -113,7 +113,7 @@ internal class LayoutConfiguration(properties: Properties) {
     var isChildDrawingOrderEnabled = true
         private set
 
-    var spanSizeLookup: DpadSpanSizeLookup = DpadSpanSizeLookup.default()
+    var spanSizeLookup: DpadSpanSizeLookup = DpadSpanSizeLookup.DEFAULT
         private set
 
     var smoothScrollSpeedFactor: Float = 1f

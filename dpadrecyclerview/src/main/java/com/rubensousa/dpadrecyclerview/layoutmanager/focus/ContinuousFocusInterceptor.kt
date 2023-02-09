@@ -49,13 +49,13 @@ internal class ContinuousFocusInterceptor(
         ) {
             return null
         }
-        val startRow = layoutInfo.getRowIndex(position)
+        val startRow = layoutInfo.getSpanGroupIndex(position)
         var nextPosition = if (direction == FocusDirection.NEXT_COLUMN) {
             position + 1
         } else {
             position - 1
         }
-        var nextRow = layoutInfo.getRowIndex(nextPosition)
+        var nextRow = layoutInfo.getSpanGroupIndex(nextPosition)
 
         // If we still have focusable views in the movement direction, bail out
         while (nextRow == startRow && nextPosition >= 0) {
@@ -68,7 +68,7 @@ internal class ContinuousFocusInterceptor(
             } else {
                 nextPosition--
             }
-            nextRow = layoutInfo.getRowIndex(nextPosition)
+            nextRow = layoutInfo.getSpanGroupIndex(nextPosition)
         }
 
         if (nextRow == 0 && startRow == 0) {

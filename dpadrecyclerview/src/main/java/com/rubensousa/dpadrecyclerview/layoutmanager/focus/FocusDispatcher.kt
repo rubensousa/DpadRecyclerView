@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
@@ -38,11 +39,10 @@ internal class FocusDispatcher(
     private val configuration: LayoutConfiguration,
     private val scroller: LayoutScroller,
     private val layoutInfo: LayoutInfo,
-    private val pivotSelector: PivotSelector
+    private val pivotSelector: PivotSelector,
+    private val spanFocusFinder: SpanFocusFinder
 ) {
 
-    // key - row / value - previous focused span
-    private val focusedSpans = LinkedHashMap<Int, Int>()
     private val addFocusableChildrenRequest = AddFocusableChildrenRequest(layoutInfo)
     private val defaultFocusInterceptor = DefaultFocusInterceptor(
         layoutInfo, configuration
@@ -251,29 +251,19 @@ internal class FocusDispatcher(
         if (!isFocusSearchEnabled(recyclerView)) {
             return true
         }
-        val newViewPosition = layoutInfo.getAdapterPositionOf(child)
+        val childPosition = layoutInfo.getAdapterPositionOf(child)
         // This could be the last view in DISAPPEARING animation, so ignore immediately
-        if (newViewPosition == RecyclerView.NO_POSITION) {
+        if (childPosition == RecyclerView.NO_POSITION) {
             return true
         }
+        spanFocusFinder.save(childPosition, configuration.spanSizeLookup)
         val canScrollToView = !scroller.isSelectionInProgress && !layoutInfo.isLayoutInProgress
         if (canScrollToView) {
-            saveSpanFocus(newViewPosition)
             scroller.scrollToView(
                 child, focused, configuration.isSmoothFocusChangesEnabled, requestFocus = true
             )
         }
         return true
-    }
-
-    private fun saveSpanFocus(newPosition: Int) {
-        val previousPosition = pivotSelector.position
-        val previousSpanSize = layoutInfo.getSpanSize(previousPosition)
-        val newSpanSize = layoutInfo.getSpanSize(newPosition)
-        if (previousSpanSize != newSpanSize && previousSpanSize != configuration.spanCount) {
-            val row = layoutInfo.getRowIndex(previousPosition)
-            focusedSpans[row] = previousPosition
-        }
     }
 
     private fun addFocusableChildren(
@@ -308,13 +298,13 @@ internal class FocusDispatcher(
 
         if ((focusDirection == FocusDirection.NEXT_COLUMN
                     || focusDirection == FocusDirection.PREVIOUS_COLUMN)
-            && configuration.spanCount <= 1
+            && configuration.spanCount == 1
         ) {
             // In single spans we cannot navigate to previous/next columns.
             return
         }
-        // TODO This should probably also be considered in interceptFocusSearch
-        if (focusPreviousSpan(
+
+        if (focusSpan(
                 focusedAdapterPosition,
                 focusDirection,
                 views,
@@ -362,8 +352,8 @@ internal class FocusDispatcher(
                 index += increment
                 continue
             }
-            val position = layoutInfo.getAdapterPositionOfChildAt(index)
-            val childColumn = layoutInfo.getStartColumnIndex(position)
+            val position = layoutInfo.getAdapterPositionOf(child)
+            val spanIndex = layoutInfo.getStartSpanIndex(position)
             if (request.focusDirection == FocusDirection.NEXT_ITEM) {
                 // Add first focusable item on the same row
                 if (position > request.focusedAdapterPosition) {
@@ -376,19 +366,19 @@ internal class FocusDispatcher(
                 }
             } else if (request.focusDirection == FocusDirection.NEXT_COLUMN) {
                 // Add all focusable items after this item whose row index is bigger
-                if (childColumn == request.focusedColumn) {
+                if (spanIndex == request.focusedSpanIndex) {
                     index += increment
                     continue
-                } else if (childColumn < request.focusedColumn) {
+                } else if (spanIndex < request.focusedSpanIndex) {
                     break
                 }
                 child.addFocusables(views, direction, focusableMode)
             } else if (request.focusDirection == FocusDirection.PREVIOUS_COLUMN) {
                 // Add all focusable items before this item whose column index is smaller
-                if (childColumn == request.focusedColumn) {
+                if (spanIndex == request.focusedSpanIndex) {
                     index += increment
                     continue
-                } else if (childColumn > request.focusedColumn) {
+                } else if (spanIndex > request.focusedSpanIndex) {
                     break
                 }
                 child.addFocusables(views, direction, focusableMode)
@@ -397,7 +387,7 @@ internal class FocusDispatcher(
         }
     }
 
-    private fun focusPreviousSpan(
+    private fun focusSpan(
         focusedPosition: Int,
         movement: FocusDirection,
         views: ArrayList<View>,
@@ -405,36 +395,34 @@ internal class FocusDispatcher(
         focusableMode: Int
     ): Boolean {
         if (configuration.spanCount == 1
+            || configuration.spanSizeLookup === DpadSpanSizeLookup.DEFAULT
             || (movement != FocusDirection.PREVIOUS_ITEM && movement != FocusDirection.NEXT_ITEM)
         ) {
             return false
         }
-        val row = layoutInfo.getRowIndex(focusedPosition)
-        val nextRow = if (movement == FocusDirection.NEXT_ITEM) {
-            row + 1
+        val reverseLayout = layoutInfo.shouldReverseLayout()
+        val edgeView = if (movement == FocusDirection.NEXT_ITEM != reverseLayout) {
+            layoutInfo.getChildClosestToEnd()
         } else {
-            row - 1
+            layoutInfo.getChildClosestToStart()
         }
-        var previousPosition = getPreviousSpanFocus(nextRow)
-        if (previousPosition == RecyclerView.NO_POSITION || previousPosition >= layout.itemCount) {
-            if (layoutInfo.getSpanSize(focusedPosition) == configuration.spanCount) {
-                previousPosition = if (movement == FocusDirection.NEXT_ITEM) {
-                    focusedPosition + 1
-                } else {
-                    focusedPosition - 1
-                }
-            } else {
-                return false
-            }
+        if (edgeView == null) {
+            return false
         }
-        val newView = layout.findViewByPosition(previousPosition) ?: return false
+        val edgePosition = layout.getPosition(edgeView)
+        val nextPosition = spanFocusFinder.findNextSpanPosition(
+            focusedPosition,
+            spanSizeLookup = configuration.spanSizeLookup,
+            forward = movement == FocusDirection.NEXT_ITEM,
+            edgePosition = edgePosition,
+            reverseLayout = layoutInfo.shouldReverseLayout()
+        )
+        if (nextPosition == RecyclerView.NO_POSITION) {
+            return false
+        }
+        val newView = layout.findViewByPosition(nextPosition) ?: return false
         newView.addFocusables(views, direction, focusableMode)
-        focusedSpans.remove(nextRow)
         return true
-    }
-
-    private fun getPreviousSpanFocus(row: Int): Int {
-        return focusedSpans[row] ?: RecyclerView.NO_POSITION
     }
 
     class AddFocusableChildrenRequest(private val layoutInfo: LayoutInfo) {
@@ -457,7 +445,7 @@ internal class FocusDispatcher(
         var focusDirection: FocusDirection = FocusDirection.NEXT_ITEM
             private set
 
-        var focusedColumn: Int = RecyclerView.NO_POSITION
+        var focusedSpanIndex: Int = RecyclerView.NO_POSITION
             private set
 
         fun update(
@@ -469,8 +457,8 @@ internal class FocusDispatcher(
             this.focused = focusedChild
             this.focusedAdapterPosition = focusedAdapterPosition
             this.focusDirection = focusDirection
-            this.focusedColumn = if (focusedChild != null) {
-                layoutInfo.getStartColumnIndex(focusedAdapterPosition)
+            this.focusedSpanIndex = if (focusedChild != null) {
+                layoutInfo.getStartSpanIndex(focusedAdapterPosition)
             } else {
                 RecyclerView.NO_POSITION
             }
@@ -507,4 +495,5 @@ internal class FocusDispatcher(
         }
 
     }
+
 }

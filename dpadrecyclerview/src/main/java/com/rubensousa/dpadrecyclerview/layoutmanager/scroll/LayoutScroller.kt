@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.SpanFocusFinder
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
 internal class LayoutScroller(
@@ -32,7 +33,8 @@ internal class LayoutScroller(
     private val layoutInfo: LayoutInfo,
     private val layoutAlignment: LayoutAlignment,
     private val configuration: LayoutConfiguration,
-    private val pivotSelector: PivotSelector
+    private val pivotSelector: PivotSelector,
+    private val spanFocusFinder: SpanFocusFinder
 ) {
 
     companion object {
@@ -245,6 +247,7 @@ internal class LayoutScroller(
                 currentRecyclerView,
                 configuration.maxPendingMoves,
                 layoutInfo,
+                spanFocusFinder,
                 pivotSelector,
                 layoutAlignment,
                 searchPivotListener
@@ -345,6 +348,10 @@ internal class LayoutScroller(
 
     fun onChildLaidOut(view: View) {
         searchPivotScroller?.onChildLaidOut(view)
+    }
+
+    fun onBlockLaidOut() {
+        searchPivotScroller?.onBlockLaidOut()
     }
 
     fun hasReachedPendingAlignmentLimit(): Boolean {

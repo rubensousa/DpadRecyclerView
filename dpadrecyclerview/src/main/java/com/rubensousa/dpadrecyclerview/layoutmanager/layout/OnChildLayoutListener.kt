@@ -21,4 +21,5 @@ import android.view.View
 internal interface OnChildLayoutListener {
     fun onChildCreated(view: View)
     fun onChildLaidOut(view: View)
+    fun onBlockLaidOut()
 }

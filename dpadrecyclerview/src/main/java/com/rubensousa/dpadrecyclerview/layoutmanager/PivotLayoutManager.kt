@@ -34,6 +34,7 @@ import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.focus.FocusDispatcher
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.SpanFocusFinder
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutPrefetchCollector
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PivotLayout
@@ -50,15 +51,17 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     private val layoutInfo = LayoutInfo(this, configuration)
     private val pivotSelector = PivotSelector(this, layoutInfo)
     private val layoutAlignment = LayoutAlignment(this, layoutInfo)
+    private val spanFocusFinder = SpanFocusFinder()
     private val scroller = LayoutScroller(
-        this, layoutInfo, layoutAlignment, configuration, pivotSelector
+        this, layoutInfo, layoutAlignment, configuration, pivotSelector, spanFocusFinder
     )
     private val pivotLayout = PivotLayout(
         this, layoutAlignment, configuration, pivotSelector, scroller, layoutInfo
     )
     private val prefetchCollector = LayoutPrefetchCollector(layoutInfo)
+
     private val focusDispatcher = FocusDispatcher(
-        this, configuration, scroller, layoutInfo, pivotSelector
+        this, configuration, scroller, layoutInfo, pivotSelector, spanFocusFinder
     )
     private val accessibilityHelper = LayoutAccessibilityHelper(
         this, configuration, layoutInfo, pivotSelector, scroller
@@ -352,6 +355,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun setSpanCount(spanCount: Int) {
         if (configuration.spanCount != spanCount) {
             configuration.setSpanCount(spanCount)
+            spanFocusFinder.setSpanCount(spanCount)
             pivotLayout.updateStructure()
             requestLayout()
         }
@@ -360,8 +364,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun getSpanCount(): Int = configuration.spanCount
 
     fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
-        configuration.setSpanSizeLookup(spanSizeLookup)
-        requestLayout()
+        if (spanSizeLookup !== configuration.spanSizeLookup) {
+            configuration.setSpanSizeLookup(spanSizeLookup)
+            spanFocusFinder.setSpanCount(configuration.spanCount)
+            requestLayout()
+        }
     }
 
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {

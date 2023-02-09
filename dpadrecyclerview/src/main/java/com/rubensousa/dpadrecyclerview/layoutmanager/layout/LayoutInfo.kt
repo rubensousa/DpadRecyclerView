@@ -17,14 +17,12 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
-import android.util.Log
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
@@ -112,25 +110,16 @@ internal class LayoutInfo(
         return configuration.spanSizeLookup.getSpanSize(position)
     }
 
-    fun getCachedSpanIndex(position: Int): Int {
+    fun getStartSpanIndex(position: Int): Int {
         return configuration.spanSizeLookup.getCachedSpanIndex(position, configuration.spanCount)
     }
 
-    fun getStartColumnIndex(position: Int): Int {
-        return configuration.spanSizeLookup.getSpanIndex(position, configuration.spanCount)
+    fun getEndSpanIndex(position: Int): Int {
+        return getStartSpanIndex(position) + configuration.spanSizeLookup.getSpanSize(position) - 1
     }
 
-    fun getEndColumnIndex(position: Int): Int {
-        return getStartColumnIndex(position) + configuration.spanSizeLookup.getSpanSize(position) - 1
-    }
-
-    fun getRowIndex(position: Int): Int {
-        return configuration.spanSizeLookup
-            .getSpanGroupIndex(position, configuration.spanCount)
-    }
-
-    fun isPositionAtLastColumn(position: Int): Boolean {
-        return getEndColumnIndex(position) == configuration.spanCount - 1
+    fun getSpanGroupIndex(position: Int): Int {
+        return configuration.spanSizeLookup.getCachedSpanGroupIndex(position, configuration.spanCount)
     }
 
     fun getAdapterPositionOfChildAt(index: Int): Int {
@@ -144,26 +133,6 @@ internal class LayoutInfo(
 
     fun getLayoutPositionOf(view: View): Int {
         return getLayoutParams(view).viewLayoutPosition
-    }
-
-    fun getSpanGroupIndex(
-        recycler: RecyclerView.Recycler,
-        state: RecyclerView.State,
-        viewPosition: Int
-    ): Int {
-        if (!state.isPreLayout) {
-            return configuration.spanSizeLookup
-                .getCachedSpanGroupIndex(viewPosition, configuration.spanCount)
-        }
-        val adapterPosition = recycler.convertPreLayoutPositionToPostLayout(viewPosition)
-        if (adapterPosition == RecyclerView.NO_POSITION) {
-            Log.w(
-                DpadRecyclerView.TAG, "Cannot find span size for pre layout position. $viewPosition"
-            )
-            return 0
-        }
-        return configuration.spanSizeLookup
-            .getCachedSpanGroupIndex(adapterPosition, configuration.spanCount)
     }
 
     fun getStartAfterPadding() = orientationHelper.startAfterPadding
@@ -337,6 +306,10 @@ internal class LayoutInfo(
 
     fun findViewByPosition(position: Int): View? {
         return layout.findViewByPosition(position)
+    }
+
+    fun findViewByAdapterPosition(position: Int): View? {
+        return recyclerView?.findViewHolderForAdapterPosition(position)?.itemView
     }
 
     fun getChildCount() = layout.childCount

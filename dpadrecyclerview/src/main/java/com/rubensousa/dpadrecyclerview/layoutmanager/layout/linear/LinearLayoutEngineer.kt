@@ -196,6 +196,7 @@ internal class LinearLayoutEngineer(
         performLayout(view, viewBounds)
         viewBounds.setEmpty()
         onChildLayoutListener.onChildLaidOut(view)
+        onChildLayoutListener.onBlockLaidOut()
     }
 
     private fun append(view: View, bounds: ViewBounds, layoutRequest: LayoutRequest): Int {

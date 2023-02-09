@@ -47,7 +47,7 @@ internal class CircularFocusInterceptor(
         if (direction != FocusDirection.PREVIOUS_COLUMN && direction != FocusDirection.NEXT_COLUMN) {
             return null
         }
-        val firstColumnIndex = layoutInfo.getStartColumnIndex(position)
+        val firstColumnIndex = layoutInfo.getStartSpanIndex(position)
         val configuration = layoutInfo.getConfiguration()
 
         // Do nothing for the items that take the entire span count
@@ -55,7 +55,7 @@ internal class CircularFocusInterceptor(
             return null
         }
 
-        val startRow = layoutInfo.getRowIndex(position)
+        val startRow = layoutInfo.getSpanGroupIndex(position)
 
         var currentPosition = if (direction == FocusDirection.NEXT_COLUMN) {
             position + 1
@@ -63,8 +63,8 @@ internal class CircularFocusInterceptor(
             position - 1
         }
 
-        var currentRow = layoutInfo.getRowIndex(currentPosition)
-        val lastColumnIndex = layoutInfo.getEndColumnIndex(position)
+        var currentRow = layoutInfo.getSpanGroupIndex(currentPosition)
+        val lastColumnIndex = layoutInfo.getEndSpanIndex(position)
 
         // If we still have focusable views in the movement direction, bail out
         while (currentRow == startRow && currentPosition >= 0) {
@@ -77,15 +77,15 @@ internal class CircularFocusInterceptor(
             } else {
                 currentPosition--
             }
-            currentRow = layoutInfo.getRowIndex(currentPosition)
+            currentRow = layoutInfo.getSpanGroupIndex(currentPosition)
         }
 
         var circularPosition: Int
         if (direction == FocusDirection.NEXT_COLUMN) {
             circularPosition = position - configuration.spanCount + 1
             while (circularPosition <= position - 1) {
-                currentRow = layoutInfo.getRowIndex(circularPosition)
-                val currentColumn = layoutInfo.getStartColumnIndex(circularPosition)
+                currentRow = layoutInfo.getSpanGroupIndex(circularPosition)
+                val currentColumn = layoutInfo.getStartSpanIndex(circularPosition)
                 val view = layoutInfo.findViewByPosition(circularPosition)
                 if (currentRow == startRow
                     && currentColumn != firstColumnIndex
@@ -99,8 +99,8 @@ internal class CircularFocusInterceptor(
         } else {
             circularPosition = position + configuration.spanCount - 1
             while (circularPosition >= position + 1) {
-                val lastColumn = layoutInfo.getEndColumnIndex(circularPosition)
-                currentRow = layoutInfo.getRowIndex(circularPosition)
+                val lastColumn = layoutInfo.getEndSpanIndex(circularPosition)
+                currentRow = layoutInfo.getSpanGroupIndex(circularPosition)
                 val view = layoutInfo.findViewByPosition(circularPosition)
                 if (currentRow == startRow
                     && lastColumn != lastColumnIndex

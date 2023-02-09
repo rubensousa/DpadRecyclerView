@@ -16,7 +16,10 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 
+import android.view.View
 import androidx.annotation.VisibleForTesting
+import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.SpanFocusFinder
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.max
 
@@ -68,18 +71,10 @@ internal class PendingScrollMovements(
     }
 
     fun add(forward: Boolean) {
-        if (layoutInfo.shouldReverseLayout()) {
-            if (forward) {
-                decrease()
-            } else {
-                increase()
-            }
+        if (forward != layoutInfo.shouldReverseLayout()) {
+            increase()
         } else {
-            if (forward) {
-                increase()
-            } else {
-                decrease()
-            }
+            decrease()
         }
     }
 
@@ -93,6 +88,51 @@ internal class PendingScrollMovements(
         if (pendingMoves > -maxPendingMoves) {
             pendingMoves--
         }
+    }
+
+    fun consumeGridMovements(pivotPosition: Int, spanFocusFinder: SpanFocusFinder): View? {
+        if (!hasPendingMoves()) {
+            return null
+        }
+        val reverseLayout = layoutInfo.shouldReverseLayout()
+        val isScrollingForwards =  if (!reverseLayout) pendingMoves > 0 else pendingMoves < 0
+        val edgeView = if (isScrollingForwards != reverseLayout) {
+            layoutInfo.getChildClosestToEnd()
+        } else {
+            layoutInfo.getChildClosestToStart()
+        }
+        if (edgeView == null) {
+            return null
+        }
+        val spanSizeLookup = layoutInfo.getConfiguration().spanSizeLookup
+        val edgePosition = layoutInfo.getLayoutPositionOf(edgeView)
+        var targetView: View? = null
+        var targetPosition: Int = pivotPosition
+
+        while (targetPosition != edgePosition && hasPendingMoves()) {
+            targetPosition = spanFocusFinder.findNextSpanPosition(
+                focusedPosition = targetPosition,
+                spanSizeLookup = spanSizeLookup,
+                forward = isScrollingForwards,
+                edgePosition = edgePosition,
+                reverseLayout = reverseLayout
+            )
+            if (targetPosition == RecyclerView.NO_POSITION) {
+                break
+            }
+            spanFocusFinder.save(targetPosition, spanSizeLookup)
+            val view = layoutInfo.findViewByPosition(targetPosition)
+            if (view == null || !layoutInfo.isViewFocusable(view)) {
+                continue
+            }
+            targetView = view
+            consume()
+        }
+        // Reset the focus back to the original position
+        if (targetView == null) {
+            spanFocusFinder.save(pivotPosition, spanSizeLookup)
+        }
+        return targetView
     }
 
     fun consume(): Boolean {

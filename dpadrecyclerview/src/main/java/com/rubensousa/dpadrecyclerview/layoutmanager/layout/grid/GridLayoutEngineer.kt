@@ -248,8 +248,7 @@ internal class GridLayoutEngineer(
         layoutResult.consumedSpace = rowHeight
         reMeasureChildren(layoutRow, viewCount, layoutRequest)
 
-        layoutResult.skipConsumption =
-            layoutRow(viewCount, layoutRow, viewBounds, layoutRequest)
+        layoutResult.skipConsumption = layoutRow(viewCount, layoutRow, viewBounds, layoutRequest)
     }
 
     /**
@@ -318,6 +317,7 @@ internal class GridLayoutEngineer(
             val layoutParams = layoutInfo.getLayoutParams(view)
             updateViewBounds(view, layoutRequest, layoutParams, bounds)
             performLayout(view, bounds)
+            onChildLayoutListener.onChildLaidOut(view)
 
             if (DpadRecyclerView.DEBUG) {
                 Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
@@ -329,11 +329,7 @@ internal class GridLayoutEngineer(
         }
 
         bounds.setEmpty()
-        rowViews.forEach { view ->
-            if (view != null) {
-                onChildLayoutListener.onChildLaidOut(view)
-            }
-        }
+        onChildLayoutListener.onBlockLaidOut()
         // Clear view references since we no longer need them
         rowViews.fill(null)
         return skipConsumption
@@ -579,7 +575,7 @@ internal class GridLayoutEngineer(
 
     private fun getSpanIndex(recycler: Recycler, state: State, position: Int): Int {
         if (!state.isPreLayout) {
-            return layoutInfo.getCachedSpanIndex(position)
+            return layoutInfo.getStartSpanIndex(position)
         }
         val spanIndex = gridState.getSpanIndex(position)
         if (spanIndex != -1) {
@@ -593,7 +589,7 @@ internal class GridLayoutEngineer(
             )
             return 1
         }
-        return layoutInfo.getCachedSpanIndex(adapterPosition)
+        return layoutInfo.getStartSpanIndex(adapterPosition)
     }
 
     private fun getSpanSize(recycler: Recycler, state: State, position: Int): Int {
@@ -617,7 +613,7 @@ internal class GridLayoutEngineer(
 
     private fun getSpanGroupIndex(recycler: Recycler, state: State, position: Int): Int {
         if (!state.isPreLayout) {
-            return layoutInfo.getRowIndex(position)
+            return layoutInfo.getSpanGroupIndex(position)
         }
         val groupIndex = gridState.getSpanGroupIndex(position)
         if (groupIndex != -1) {
@@ -631,7 +627,7 @@ internal class GridLayoutEngineer(
             )
             return 1
         }
-        return layoutInfo.getRowIndex(adapterPosition)
+        return layoutInfo.getSpanGroupIndex(adapterPosition)
     }
 
     private fun getRowViewAt(index: Int): View {
