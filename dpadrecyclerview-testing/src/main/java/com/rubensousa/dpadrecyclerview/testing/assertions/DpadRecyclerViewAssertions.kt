@@ -23,7 +23,7 @@ import androidx.test.espresso.util.HumanReadables
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
-import com.rubensousa.dpadrecyclerview.ViewHolderAlignment
+import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import junit.framework.AssertionFailedError
 import java.util.Collections
 
@@ -92,11 +92,11 @@ object DpadRecyclerViewAssertions {
             }
         }
 
-        private fun getAlignments(viewHolder: RecyclerView.ViewHolder): List<ViewHolderAlignment> {
+        private fun getAlignments(viewHolder: RecyclerView.ViewHolder): List<SubPositionAlignment> {
             if (viewHolder !is DpadViewHolder) {
                 return Collections.emptyList()
             }
-            return viewHolder.getAlignments()
+            return viewHolder.getSubPositionAlignments()
         }
 
     }

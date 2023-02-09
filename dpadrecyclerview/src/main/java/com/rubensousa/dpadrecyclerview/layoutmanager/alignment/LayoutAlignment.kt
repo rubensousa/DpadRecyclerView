@@ -36,7 +36,7 @@ internal class LayoutAlignment(
     private var parentAlignment = ParentAlignment()
     private val parentAlignmentCalculator = ParentAlignmentCalculator()
     private val childAlignment = ChildScrollAlignment()
-    private val viewHolderAlignment = ViewHolderScrollAlignment()
+    private val viewHolderAlignment = SubPositionScrollAlignment()
     // Also saved here so that they're kept for the same layout pass
     private var isVertical: Boolean = true
     private var reverseLayout: Boolean = false
@@ -67,7 +67,7 @@ internal class LayoutAlignment(
 
     fun getViewAtSubPosition(view: View, subPosition: Int): View? {
         val viewHolder = layoutInfo.getChildViewHolder(view)
-        val childAlignments = (viewHolder as? DpadViewHolder)?.getAlignments() ?: return null
+        val childAlignments = (viewHolder as? DpadViewHolder)?.getSubPositionAlignments() ?: return null
         if (subPosition >= childAlignments.size) {
             return null
         }
@@ -83,7 +83,7 @@ internal class LayoutAlignment(
         if (viewHolder !is DpadViewHolder) {
             return 0
         }
-        val alignments = viewHolder.getAlignments()
+        val alignments = viewHolder.getSubPositionAlignments()
         if (alignments.isEmpty()) {
             return 0
         }
@@ -147,7 +147,7 @@ internal class LayoutAlignment(
         val layoutParams = view.layoutParams as DpadLayoutParams
         val viewHolder = layoutInfo.getChildViewHolder(view) ?: return
         val alignments = if (viewHolder is DpadViewHolder) {
-            viewHolder.getAlignments()
+            viewHolder.getSubPositionAlignments()
         } else {
             null
         }

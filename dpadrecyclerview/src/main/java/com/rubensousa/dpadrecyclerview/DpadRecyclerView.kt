@@ -37,7 +37,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
  * Items are aligned based on the following configurations:
  * * [ParentAlignment] aligns items in relation to this RecyclerView's dimensions
  * * [ChildAlignment] aligns items in relation to their View's dimensions
- * * Individual ViewHolder configurations returned by [DpadViewHolder.getAlignments]
+ * * Individual sub position configurations returned by [DpadViewHolder.getSubPositionAlignments]
  *
  * This [DpadRecyclerView] will only scroll automatically when it has focus
  * and receives DPAD key events.
@@ -749,7 +749,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     /**
      * Changes the main selection and sub selected view immediately without any scroll animation.
      * @param position Adapter position of the item to select
-     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     * @param subPosition index of the alignment from [DpadViewHolder.getSubPositionAlignments]
      */
     fun setSelectedSubPosition(position: Int, subPosition: Int) {
         requireLayout().selectPosition(position, subPosition, smooth = false)
@@ -757,7 +757,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     /**
      * Changes the sub selected view immediately without any scroll animation.
-     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     * @param subPosition index of the alignment from [DpadViewHolder.getSubPositionAlignments]
      */
     fun setSelectedSubPosition(subPosition: Int) {
         requireLayout().selectSubPosition(subPosition, smooth = false)
@@ -765,7 +765,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     /**
      * Changes the sub selected view and runs and animation to scroll to it.
-     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     * @param subPosition index of the alignment from [DpadViewHolder.getSubPositionAlignments]
      */
     fun setSelectedSubPositionSmooth(subPosition: Int) {
         requireLayout().selectSubPosition(subPosition, smooth = true)
@@ -774,7 +774,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     /**
      * Changes the sub selected view and runs and animation to scroll to it.
      * @param position Adapter position of the item to select
-     * @param subPosition index of the alignment from [DpadViewHolder.getAlignments]
+     * @param subPosition index of the alignment from [DpadViewHolder.getSubPositionAlignments]
      */
     fun setSelectedSubPositionSmooth(position: Int, subPosition: Int) {
         requireLayout().selectPosition(position, subPosition, smooth = true)
@@ -792,7 +792,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     /**
      * @return the number of available sub positions for the current selected item
-     * or 0 if there's none. See [DpadViewHolder.getAlignments]
+     * or 0 if there's none. See [DpadViewHolder.getSubPositionAlignments]
      */
     fun getCurrentSubPositions(): Int = pivotLayoutManager?.getCurrentSubPositions() ?: 0
 

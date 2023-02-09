@@ -23,7 +23,7 @@ import android.widget.TextView
 import androidx.annotation.CallSuper
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
-import com.rubensousa.dpadrecyclerview.ViewHolderAlignment
+import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import java.util.Collections
 
 class DpadTestAdapter(private val showSubPositions: Boolean = false) :
@@ -115,12 +115,12 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
 
     class SubPositionVH(view: View) : VH(view), DpadViewHolder {
 
-        private val alignments = ArrayList<ViewHolderAlignment>()
+        private val alignments = ArrayList<SubPositionAlignment>()
 
         init {
             alignments.apply {
                 add(
-                    ViewHolderAlignment(
+                    SubPositionAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition0TextView,
@@ -128,7 +128,7 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
                     )
                 )
                 add(
-                    ViewHolderAlignment(
+                    SubPositionAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition1TextView,
@@ -136,7 +136,7 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
                     )
                 )
                 add(
-                    ViewHolderAlignment(
+                    SubPositionAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition2TextView,
@@ -146,7 +146,7 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
             }
         }
 
-        override fun getAlignments(): List<ViewHolderAlignment> {
+        override fun getSubPositionAlignments(): List<SubPositionAlignment> {
             return alignments
         }
 
