@@ -51,6 +51,9 @@ abstract class DpadSpanSizeLookup {
             override fun getSpanIndex(position: Int, spanCount: Int): Int {
                 return position % spanCount
             }
+            override fun getSpanGroupIndex(position: Int, spanCount: Int): Int {
+                return position / spanCount
+            }
         }
 
         @JvmStatic
@@ -175,7 +178,7 @@ abstract class DpadSpanSizeLookup {
         } else 0
     }
 
-    fun getSpanGroupIndex(position: Int, spanCount: Int): Int {
+    open fun getSpanGroupIndex(position: Int, spanCount: Int): Int {
         var span = 0
         var group = 0
         var start = 0

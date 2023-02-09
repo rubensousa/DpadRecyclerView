@@ -39,10 +39,10 @@ internal class FocusDispatcher(
     private val configuration: LayoutConfiguration,
     private val scroller: LayoutScroller,
     private val layoutInfo: LayoutInfo,
-    private val pivotSelector: PivotSelector
+    private val pivotSelector: PivotSelector,
+    private val spanFocusFinder: SpanFocusFinder
 ) {
 
-    private val spanFocusFinder = SpanFocusFinder()
     private val addFocusableChildrenRequest = AddFocusableChildrenRequest(layoutInfo)
     private val defaultFocusInterceptor = DefaultFocusInterceptor(
         layoutInfo, configuration
@@ -71,10 +71,6 @@ internal class FocusDispatcher(
             FocusableDirection.CIRCULAR -> CircularFocusInterceptor(layoutInfo)
             FocusableDirection.STANDARD -> defaultFocusInterceptor
         }
-    }
-
-    fun resetSpanFocusCache(spanCount: Int) {
-        spanFocusFinder.reset(spanCount)
     }
 
     /**
@@ -260,7 +256,7 @@ internal class FocusDispatcher(
         if (childPosition == RecyclerView.NO_POSITION) {
             return true
         }
-        spanFocusFinder.updateFocus(childPosition, configuration.spanSizeLookup)
+        spanFocusFinder.save(childPosition, configuration.spanSizeLookup)
         val canScrollToView = !scroller.isSelectionInProgress && !layoutInfo.isLayoutInProgress
         if (canScrollToView) {
             scroller.scrollToView(
@@ -405,10 +401,10 @@ internal class FocusDispatcher(
             return false
         }
         val reverseLayout = layoutInfo.shouldReverseLayout()
-        val edgeView = if (movement != FocusDirection.NEXT_ITEM != reverseLayout) {
-            layoutInfo.getChildClosestToStart()
-        } else {
+        val edgeView = if (movement == FocusDirection.NEXT_ITEM != reverseLayout) {
             layoutInfo.getChildClosestToEnd()
+        } else {
+            layoutInfo.getChildClosestToStart()
         }
         if (edgeView == null) {
             return false

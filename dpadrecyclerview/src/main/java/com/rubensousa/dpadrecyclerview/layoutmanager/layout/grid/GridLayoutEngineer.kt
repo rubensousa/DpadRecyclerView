@@ -317,6 +317,7 @@ internal class GridLayoutEngineer(
             val layoutParams = layoutInfo.getLayoutParams(view)
             updateViewBounds(view, layoutRequest, layoutParams, bounds)
             performLayout(view, bounds)
+            onChildLayoutListener.onChildLaidOut(view)
 
             if (DpadRecyclerView.DEBUG) {
                 Log.i(TAG, "Laid out view ${layoutInfo.getLayoutPositionOf(view)} at: $viewBounds")
@@ -328,11 +329,7 @@ internal class GridLayoutEngineer(
         }
 
         bounds.setEmpty()
-        rowViews.forEach { view ->
-            if (view != null) {
-                onChildLayoutListener.onChildLaidOut(view)
-            }
-        }
+        onChildLayoutListener.onBlockLaidOut()
         // Clear view references since we no longer need them
         rowViews.fill(null)
         return skipConsumption

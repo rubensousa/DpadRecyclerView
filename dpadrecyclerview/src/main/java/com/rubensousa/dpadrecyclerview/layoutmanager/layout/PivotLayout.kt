@@ -217,6 +217,10 @@ internal class PivotLayout(
         override fun onChildLaidOut(view: View) {
             scroller.onChildLaidOut(view)
         }
+
+        override fun onBlockLaidOut() {
+            scroller.onBlockLaidOut()
+        }
     }
 
 }

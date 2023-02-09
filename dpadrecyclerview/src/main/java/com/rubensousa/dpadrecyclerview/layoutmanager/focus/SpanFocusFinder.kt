@@ -27,15 +27,32 @@ class SpanFocusFinder {
     private var spanCount = 1
     private var cachedSpanIndex = RecyclerView.NO_POSITION
     private var cachedSpanSize = 1
-    private var focusedSpanIndex = RecyclerView.NO_POSITION
-    private var focusedSpanSize = 1
 
-    fun reset(newSpanCount: Int) {
+    fun setSpanCount(newSpanCount: Int) {
         spanCount = newSpanCount
         cachedSpanIndex = RecyclerView.NO_POSITION
         cachedSpanSize = 1
-        focusedSpanSize = 1
-        focusedSpanIndex = RecyclerView.NO_POSITION
+    }
+
+    /**
+     * Caches the new span focus if needed.
+     */
+    fun save(position: Int, spanSizeLookup: DpadSpanSizeLookup) {
+        // Skip caching for single spans
+        if (spanCount == 1 || spanSizeLookup === DpadSpanSizeLookup.DEFAULT) {
+            return
+        }
+
+        val newSpanIndex = spanSizeLookup.getCachedSpanIndex(position, spanCount)
+        val newSpanSize = spanSizeLookup.getSpanSize(position)
+
+        // There's no need to cache full spans, so exit early
+        if (newSpanSize == spanCount) {
+            return
+        }
+
+        cachedSpanIndex = newSpanIndex
+        cachedSpanSize = newSpanSize
     }
 
     fun findNextSpanPosition(
@@ -45,13 +62,23 @@ class SpanFocusFinder {
         edgePosition: Int,
         reverseLayout: Boolean
     ): Int {
-        val layoutDirection = if (forward) 1 else -1
-        val spanDirection = getSpanDirection(layoutDirection, reverseLayout)
+        if (spanCount == 1) {
+            return RecyclerView.NO_POSITION
+        }
+        val positionDirection = if (forward) 1 else -1
+        val spanDirection = getSpanDirection(forward, reverseLayout)
+        if (spanSizeLookup === DpadSpanSizeLookup.DEFAULT) {
+            return findNextEvenSpanPosition(
+                spanSizeLookup, focusedPosition, edgePosition, positionDirection
+            )
+        }
+        val focusedSpanIndex = spanSizeLookup.getCachedSpanIndex(focusedPosition, spanCount)
+        val focusedSpanSize = spanSizeLookup.getSpanSize(focusedPosition)
         val currentSpanIndex = focusedSpanIndex + focusedSpanSize * spanDirection - spanDirection
 
         // Move position to the start of the next span group
         val firstPositionInNextSpanGroup = moveToStartOfNextSpanGroup(
-            focusedPosition, currentSpanIndex, spanSizeLookup, spanDirection, layoutDirection
+            focusedPosition, currentSpanIndex, spanSizeLookup, spanDirection, positionDirection
         )
         var currentPosition = firstPositionInNextSpanGroup
 
@@ -69,16 +96,10 @@ class SpanFocusFinder {
 
         // Now search until we find the cached span index or we go outside the edge
         while (!isPositionOutOfBounds(currentPosition, edgePosition, forward)) {
-            if (isPositionAtCachedSpan(
-                    currentPosition,
-                    spanSizeLookup,
-                    spanDirection,
-                    reverseLayout
-                )
-            ) {
+            if (isPositionAtCachedSpan(currentPosition, spanSizeLookup, spanDirection)) {
                 return currentPosition
             }
-            currentPosition += layoutDirection
+            currentPosition += positionDirection
         }
 
         return firstPositionInNextSpanGroup
@@ -88,37 +109,35 @@ class SpanFocusFinder {
         return cachedSpanIndex
     }
 
-    /**
-     * Caches the new span focus if needed.
-     */
-    fun updateFocus(position: Int, spanSizeLookup: DpadSpanSizeLookup) {
-        // Skip caching for single spans or even grids
-        if (spanCount == 1 || spanSizeLookup === DpadSpanSizeLookup.DEFAULT) {
-            return
+    private fun findNextEvenSpanPosition(
+        spanSizeLookup: DpadSpanSizeLookup,
+        focusedPosition: Int,
+        edgePosition: Int,
+        positionDirection: Int
+    ): Int {
+        val nextPosition = focusedPosition + spanCount * positionDirection
+        if (nextPosition <= edgePosition && edgePosition > focusedPosition) {
+            return nextPosition
         }
-        val newSpanIndex = spanSizeLookup.getCachedSpanIndex(position, spanCount)
-        val newSpanSize = spanSizeLookup.getSpanSize(position)
-
-        focusedSpanIndex = newSpanIndex
-        focusedSpanSize = newSpanSize
-
-        // There's no need to cache full spans, so exit early
-        if (newSpanSize == spanCount) {
-            return
+        if (nextPosition >= edgePosition && edgePosition < focusedPosition) {
+            return nextPosition
         }
-
-        cachedSpanIndex = newSpanIndex
-        cachedSpanSize = newSpanSize
+        val focusedSpanGroup = spanSizeLookup.getSpanGroupIndex(focusedPosition, spanCount)
+        val edgeSpanGroup = spanSizeLookup.getSpanGroupIndex(edgePosition, spanCount)
+        // There's no way to go from here
+        if (focusedSpanGroup == edgeSpanGroup) {
+            return RecyclerView.NO_POSITION
+        }
+        return edgePosition
     }
 
     private fun isPositionAtCachedSpan(
         position: Int,
         spanSizeLookup: DpadSpanSizeLookup,
-        spanDirection: Int,
-        reverseLayout: Boolean
+        spanDirection: Int
     ): Boolean {
         val spanIndex = spanSizeLookup.getCachedSpanIndex(position, spanCount)
-        return if (spanDirection > 0 != reverseLayout) {
+        return if (spanDirection > 0) {
             spanIndex >= cachedSpanIndex
         } else {
             spanIndex <= cachedSpanIndex
@@ -130,43 +149,38 @@ class SpanFocusFinder {
         currentSpanIndex: Int,
         spanSizeLookup: DpadSpanSizeLookup,
         spanDirection: Int,
-        layoutDirection: Int,
+        positionDirection: Int,
     ): Int {
-        val targetSpanIndex = getSpanEndEdge(spanDirection)
+        val targetSpanIndex = getEndSpanIndex(spanDirection)
         val position = moveSpanIndexToTarget(
             currentPosition,
             currentSpanIndex,
             targetSpanIndex,
             spanSizeLookup,
             spanDirection,
-            layoutDirection
+            positionDirection
         )
-        return position + layoutDirection
+        return position + positionDirection
     }
 
     private fun isPositionOutOfBounds(position: Int, edgePosition: Int, forward: Boolean): Boolean {
         return (position > edgePosition && forward) || (position < edgePosition && !forward)
     }
 
-    private fun getSpanStartEdge(spanDirection: Int): Int {
+    private fun getStartSpanIndex(spanDirection: Int): Int {
         return if (spanDirection > 0) 0 else spanCount - 1
     }
 
-    private fun getSpanEndEdge(spanDirection: Int): Int {
-        return getSpanStartEdge(-spanDirection)
+    private fun getEndSpanIndex(spanDirection: Int): Int {
+        return getStartSpanIndex(-spanDirection)
     }
 
-    private fun getSpanDirection(layoutDirection: Int, reverseLayout: Boolean): Int {
+    private fun getSpanDirection(forward: Boolean, reverseLayout: Boolean): Int {
+        val layoutDirection = if (forward != reverseLayout) 1 else -1
         return if (!reverseLayout) {
-            if (layoutDirection > 0) {
-                1
-            } else {
-                -1
-            }
-        } else if (layoutDirection > 0) {
-            -1
+            if (layoutDirection > 0) 1 else -1
         } else {
-            1
+            if (layoutDirection > 0) -1 else 1
         }
     }
 
@@ -176,7 +190,7 @@ class SpanFocusFinder {
         targetSpanIndex: Int,
         spanSizeLookup: DpadSpanSizeLookup,
         spanDirection: Int,
-        layoutDirection: Int
+        positionDirection: Int
     ): Int {
         if (spanIndex == targetSpanIndex) {
             return position
@@ -188,7 +202,7 @@ class SpanFocusFinder {
             && currentSpanIndex < spanCount
         ) {
             currentSpanIndex += spanSizeLookup.getSpanSize(position) * spanDirection
-            currentPosition += layoutDirection
+            currentPosition += positionDirection
         }
         return currentPosition
     }

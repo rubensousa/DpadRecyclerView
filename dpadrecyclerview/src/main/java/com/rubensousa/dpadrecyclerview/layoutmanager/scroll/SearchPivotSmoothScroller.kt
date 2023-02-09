@@ -21,6 +21,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.SpanFocusFinder
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.sqrt
 
@@ -35,6 +36,7 @@ internal class SearchPivotSmoothScroller(
     recyclerView: RecyclerView,
     maxPendingMoves: Int,
     layoutInfo: LayoutInfo,
+    private val spanFocusFinder: SpanFocusFinder,
     private val pivotSelector: PivotSelector,
     private val alignment: LayoutAlignment,
     private val listener: Listener
@@ -99,16 +101,26 @@ internal class SearchPivotSmoothScroller(
 
     fun onChildLaidOut(view: View) {
         if (layoutInfo.isGrid()) {
-            val newPivotView = movements.consumeGridMovements(pivotSelector.position)
-            if (newPivotView != null) {
-                listener.onPivotAttached(layoutInfo.getAdapterPositionOf(newPivotView))
-                listener.onPivotLaidOut(newPivotView)
-            }
-        } else {
-            val viewHolder = layoutInfo.getChildViewHolder(view)
-            if (viewHolder?.absoluteAdapterPosition == pivotSelector.position) {
-                listener.onPivotLaidOut(view)
-            }
+            return
+        }
+        val viewHolder = layoutInfo.getChildViewHolder(view)
+        if (viewHolder?.absoluteAdapterPosition == pivotSelector.position) {
+            listener.onPivotLaidOut(view)
+        }
+        if (movements.shouldStopScrolling()) {
+            targetPosition = pivotSelector.position
+            stop()
+        }
+    }
+
+    fun onBlockLaidOut() {
+        if (!layoutInfo.isGrid()) {
+            return
+        }
+        val newPivotView = movements.consumeGridMovements(pivotSelector.position, spanFocusFinder)
+        if (newPivotView != null) {
+            listener.onPivotAttached(layoutInfo.getAdapterPositionOf(newPivotView))
+            listener.onPivotLaidOut(newPivotView)
         }
         if (movements.shouldStopScrolling()) {
             targetPosition = pivotSelector.position

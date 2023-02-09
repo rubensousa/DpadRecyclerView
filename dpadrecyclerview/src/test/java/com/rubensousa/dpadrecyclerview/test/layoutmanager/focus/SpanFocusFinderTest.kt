@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.test.layoutmanager.focus
 
+import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.layoutmanager.focus.SpanFocusFinder
@@ -50,14 +51,90 @@ class SpanFocusFinderTest {
 
     @Before
     fun setup() {
-        finder.reset(newSpanCount = spanCount)
+        finder.setSpanCount(newSpanCount = spanCount)
+    }
+
+    @Test
+    fun `next span focus is correctly set for even grid`() {
+        repeat(spanCount) { spanIndex ->
+            assertThat(
+                finder.findNextSpanPosition(
+                    focusedPosition = spanIndex,
+                    spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                    forward = true,
+                    edgePosition = 100,
+                    reverseLayout = false
+                )
+            ).isEqualTo(spanCount + spanIndex)
+        }
+    }
+
+    @Test
+    fun `previous span focus is correctly set for even grid`() {
+        repeat(spanCount) { spanIndex ->
+            assertThat(
+                finder.findNextSpanPosition(
+                    focusedPosition = spanIndex + spanCount,
+                    spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                    forward = false,
+                    edgePosition = 100,
+                    reverseLayout = false
+                )
+            ).isEqualTo(spanIndex)
+        }
+    }
+
+    @Test
+    fun `next span focus is correctly set for last possible view`() {
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 0,
+                spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                forward = true,
+                edgePosition = 1,
+                reverseLayout = false
+            )
+        ).isEqualTo(RecyclerView.NO_POSITION)
+
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 2,
+                spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                forward = true,
+                edgePosition = 6,
+                reverseLayout = false
+            )
+        ).isEqualTo(6)
+    }
+
+    @Test
+    fun `previous span focus is correctly set for last possible view`() {
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = spanCount + 1,
+                spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                forward = true,
+                edgePosition = spanCount + 2,
+                reverseLayout = true
+            )
+        ).isEqualTo(RecyclerView.NO_POSITION)
+
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = spanCount - 1,
+                spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                forward = true,
+                edgePosition = spanCount + 2,
+                reverseLayout = true
+            )
+        ).isEqualTo( spanCount + 2)
     }
 
     @Test
     fun `span focus is saved for single span items`() {
         repeat(spanCount) { spanIndex ->
             val position = spanIndex + 1
-            finder.updateFocus(position, headerSpanSizeLookup)
+            finder.save(position, headerSpanSizeLookup)
             assertThat(finder.getCachedSpanIndex()).isEqualTo(
                 headerSpanSizeLookup.getSpanIndex(position, spanCount)
             )
@@ -67,8 +144,8 @@ class SpanFocusFinderTest {
     @Test
     fun `span focus is kept saved for single span items if full span item gains focus`() {
         val itemPosition = headerPosition + 1
-        finder.updateFocus(position = itemPosition, headerSpanSizeLookup)
-        finder.updateFocus(position = headerPosition, headerSpanSizeLookup)
+        finder.save(position = itemPosition, headerSpanSizeLookup)
+        finder.save(position = headerPosition, headerSpanSizeLookup)
 
         assertThat(
             finder.getCachedSpanIndex()
@@ -79,8 +156,8 @@ class SpanFocusFinderTest {
     fun `span index is saved when focus changes between different span sizes`() {
         repeat(spanCount) { index ->
             val itemPosition = headerPosition + 1 + index
-            finder.updateFocus(itemPosition, headerSpanSizeLookup)
-            finder.updateFocus(headerPosition, headerSpanSizeLookup)
+            finder.save(itemPosition, headerSpanSizeLookup)
+            finder.save(headerPosition, headerSpanSizeLookup)
             assertThat(
                 finder.getCachedSpanIndex()
             ).isEqualTo(headerSpanSizeLookup.getSpanIndex(itemPosition, spanCount))
@@ -91,8 +168,8 @@ class SpanFocusFinderTest {
     fun `next adapter position is returned for saved span indexes`() {
         repeat(spanCount) { index ->
             val itemPosition = headerPosition + 1 + index
-            finder.updateFocus(itemPosition, headerSpanSizeLookup)
-            finder.updateFocus(headerPosition, headerSpanSizeLookup)
+            finder.save(itemPosition, headerSpanSizeLookup)
+            finder.save(headerPosition, headerSpanSizeLookup)
             assertThat(
                 finder.findNextSpanPosition(
                     focusedPosition = headerPosition,
@@ -109,8 +186,8 @@ class SpanFocusFinderTest {
     fun `previous adapter position is returned for saved span indexes`() {
         repeat(spanCount) { index ->
             val itemPosition = headerPosition + 1 + index
-            finder.updateFocus(itemPosition, multipleHeadersLookup)
-            finder.updateFocus(secondHeaderPosition, multipleHeadersLookup)
+            finder.save(itemPosition, multipleHeadersLookup)
+            finder.save(secondHeaderPosition, multipleHeadersLookup)
             assertThat(
                 finder.findNextSpanPosition(
                     focusedPosition = secondHeaderPosition,
@@ -127,8 +204,8 @@ class SpanFocusFinderTest {
     fun `previous adapter position is returned for saved span indexes in reverse layout`() {
         repeat(spanCount) { index ->
             val itemPosition = headerPosition + 1 + index
-            finder.updateFocus(itemPosition, multipleHeadersLookup)
-            finder.updateFocus(secondHeaderPosition, multipleHeadersLookup)
+            finder.save(itemPosition, multipleHeadersLookup)
+            finder.save(secondHeaderPosition, multipleHeadersLookup)
             assertThat(
                 finder.findNextSpanPosition(
                     focusedPosition = secondHeaderPosition,
