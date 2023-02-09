@@ -22,11 +22,13 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
+import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.ColumnLayout
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
-import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
@@ -157,6 +159,19 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
         }
         column.setExtraLayoutSpace(start = column.getSize())
         assertChildrenPositions(column)
+    }
+
+    @Test
+    fun testLayoutListenerIsInvoked() {
+        val childCount = column.getChildCount()
+        val viewHolders = ArrayList<RecyclerView.ViewHolder>()
+        executeOnFragment { fragment ->
+            viewHolders.addAll(fragment.getLayoutEvents())
+        }
+        assertThat(viewHolders.size).isEqualTo(childCount)
+        repeat(childCount) { index ->
+            assertThat(viewHolders[index].absoluteAdapterPosition).isEqualTo(index)
+        }
     }
 
     private fun scrollUp() {

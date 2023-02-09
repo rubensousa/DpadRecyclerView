@@ -920,6 +920,15 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Registers a callback to be invoked when an item of this [DpadRecyclerView] has been laid out.
+     *
+     * @param listener the listener to be invoked.
+     */
+    fun setOnChildLaidOutListener(listener: OnChildLaidOutListener?) {
+        requireLayout().setOnChildLaidOutListener(listener)
+    }
+
+    /**
      * Sets the generic motion intercept listener.
      *
      * @param listener The motion intercept listener.

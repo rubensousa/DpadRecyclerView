@@ -30,6 +30,7 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
+import com.rubensousa.dpadrecyclerview.OnChildLaidOutListener
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
@@ -495,6 +496,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     fun findLastCompletelyVisibleItemPosition(): Int {
         return layoutInfo.findLastCompletelyVisiblePosition()
+    }
+
+    fun setOnChildLaidOutListener(listener: OnChildLaidOutListener?) {
+        pivotLayout.setOnChildLaidOutListener(listener)
     }
 
     fun addOnLayoutCompletedListener(

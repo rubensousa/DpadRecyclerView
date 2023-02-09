@@ -68,6 +68,8 @@ internal class LayoutInfo(
 
     fun isVertical() = configuration.isVertical()
 
+    fun getRecyclerView(): RecyclerView? = recyclerView
+
     fun updateOrientation() {
         orientationHelper = OrientationHelper.createOrientationHelper(
             layout, configuration.orientation

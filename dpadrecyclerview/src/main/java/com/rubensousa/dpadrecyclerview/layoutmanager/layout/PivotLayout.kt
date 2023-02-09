@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.OnChildLaidOutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
@@ -43,6 +44,7 @@ internal class PivotLayout(
     }
 
     private val childLayoutListener = ChildLayoutListener()
+    private var layoutListener: OnChildLaidOutListener? = null
     private var structureEngineer = createStructureEngineer()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
     private val itemChanges = ItemChanges()
@@ -150,6 +152,10 @@ internal class PivotLayout(
         }
     }
 
+    fun setOnChildLaidOutListener(listener: OnChildLaidOutListener?) {
+        layoutListener = listener
+    }
+
     fun addOnLayoutCompletedListener(listener: DpadRecyclerView.OnLayoutCompletedListener) {
         layoutCompleteListeners.add(listener)
     }
@@ -216,6 +222,11 @@ internal class PivotLayout(
 
         override fun onChildLaidOut(view: View) {
             scroller.onChildLaidOut(view)
+            layoutListener?.let { listener ->
+                val recyclerView = layoutInfo.getRecyclerView() ?: return@let
+                val viewHolder = layoutInfo.getChildViewHolder(view) ?: return
+                listener.onChildLaidOut(recyclerView, viewHolder)
+            }
         }
 
         override fun onBlockLaidOut() {
