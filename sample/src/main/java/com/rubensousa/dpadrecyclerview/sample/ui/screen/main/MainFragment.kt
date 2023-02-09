@@ -21,8 +21,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavDirections
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
@@ -30,46 +32,36 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemNavigationB
 
 class MainFragment : Fragment(R.layout.screen_main) {
 
+    private val viewModel by viewModels<MainViewModel>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.load()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val recyclerView = view as RecyclerView
-        recyclerView.adapter = NavigationAdapter(items = createScreenDestinations())
+        val adapter = NavigationAdapter()
+        recyclerView.adapter = adapter
         recyclerView.requestFocus()
+        viewModel.getDestinations().observe(viewLifecycleOwner) { destinations ->
+            adapter.submitList(destinations)
+        }
     }
 
-    private fun createScreenDestinations(): List<ScreenDestination> {
-        return listOf(
-            ScreenDestination(
-                direction = MainFragmentDirections.openList(),
-                title = "Nested List -> Detail"
-            ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openStandardGrid(),
-                title = "Standard grid"
-            ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openList().apply { slowScroll = true },
-                title = "Nested List Slow Scroll"
-            ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openList().apply { reverseLayout = true },
-                title = "Nested Reversed list"
-            ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openStandardGrid()
-                    .apply { reverseLayout = true },
-                title = "Reversed grid"
-            ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openHorizontalLeanback(),
-                title = "Horizontal Leanback comparison"
-            )
-        )
-    }
+    class NavigationAdapter : ListAdapter<ScreenDestination, NavigationViewHolder>(
+        object : DiffUtil.ItemCallback<ScreenDestination>() {
+            override fun areItemsTheSame(
+                oldItem: ScreenDestination,
+                newItem: ScreenDestination
+            ): Boolean = oldItem.title == newItem.title
 
-    class NavigationAdapter(
-        private val items: List<ScreenDestination>
-    ) : RecyclerView.Adapter<NavigationViewHolder>() {
+            override fun areContentsTheSame(
+                oldItem: ScreenDestination,
+                newItem: ScreenDestination
+            ): Boolean = oldItem == newItem
+        }) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NavigationViewHolder {
             return NavigationViewHolder(
@@ -80,10 +72,8 @@ class MainFragment : Fragment(R.layout.screen_main) {
         }
 
         override fun onBindViewHolder(holder: NavigationViewHolder, position: Int) {
-            holder.bind(items[position])
+            holder.bind(getItem(position))
         }
-
-        override fun getItemCount(): Int = items.size
 
     }
 
@@ -109,5 +99,4 @@ class MainFragment : Fragment(R.layout.screen_main) {
         }
     }
 
-    data class ScreenDestination(val direction: NavDirections, val title: String)
 }
