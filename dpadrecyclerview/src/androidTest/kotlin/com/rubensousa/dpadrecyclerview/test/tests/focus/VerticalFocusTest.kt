@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressUp
@@ -118,8 +119,8 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
 
         val lastFocusablePosition = increment * (steps - 1)
 
-        selectPosition(lastFocusablePosition, 0)
-
+        selectPosition(lastFocusablePosition, smooth = true)
+        waitForIdleScrollState()
         pressDown()
 
         assertFocusAndSelection(position = lastFocusablePosition)
