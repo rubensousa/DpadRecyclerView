@@ -26,6 +26,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.ColumnLayout
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
@@ -35,7 +36,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-// TODO: Add focus position assertions
 class VerticalColumnTest : DpadRecyclerViewTest() {
 
     @get:Rule
@@ -172,6 +172,50 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
         repeat(childCount) { index ->
             assertThat(viewHolders[index].absoluteAdapterPosition).isEqualTo(index)
         }
+    }
+
+    @Test
+    fun testDisablingLayoutRemovesAllViews() {
+        onRecyclerView("Disable layout") { recyclerView ->
+            recyclerView.setLayoutEnabled(false)
+        }
+        assertThat(getChildrenBounds()).isEmpty()
+    }
+
+    @Test
+    fun testEnablingLayoutRestoresViews() {
+        val viewBounds = getChildrenBounds()
+        onRecyclerView("Disable layout") { recyclerView ->
+            recyclerView.setLayoutEnabled(false)
+        }
+        onRecyclerView("Enable layout") { recyclerView ->
+            recyclerView.setLayoutEnabled(true)
+        }
+        assertChildrenPositions(viewBounds)
+        assertFocusAndSelection(position = 0)
+    }
+
+    @Test
+    fun testSelectionIsUpdatedWhenLayoutIsDisabled() {
+        // Clear past events
+        executeOnFragment { fragment ->
+            fragment.clearEvents()
+        }
+        onRecyclerView("Disable layout") { recyclerView ->
+            recyclerView.setLayoutEnabled(false)
+        }
+        selectPosition(position = 1)
+
+        var position = RecyclerView.NO_POSITION
+        onRecyclerView("Get selected position") { recyclerView ->
+            position = recyclerView.getSelectedPosition()
+        }
+
+        assertThat(position).isEqualTo(1)
+
+        // No selection events should be dispatched
+        assertThat(getSelectionEvents()).isEmpty()
+        assertThat(getSelectionAndAlignedEvents()).isEmpty()
     }
 
     private fun scrollUp() {

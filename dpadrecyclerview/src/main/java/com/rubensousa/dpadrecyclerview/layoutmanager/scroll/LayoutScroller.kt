@@ -83,6 +83,13 @@ internal class LayoutScroller(
             return
         }
 
+        // If layout is disabled, skip scrolling and just update the new pivot
+        if (!configuration.isLayoutEnabled) {
+            pivotSelector.update(position, subPosition)
+            pivotSelector.disablePositionOffset()
+            return
+        }
+
         // Otherwise update the selection and start searching for the new pivot
         if (smooth && recyclerView?.isLayoutRequested == false) {
             pivotSelector.update(position, subPosition)

@@ -118,9 +118,9 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     override fun supportsPredictiveItemAnimations(): Boolean = true
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
-        pivotSelector.onLayoutChildren(state)
         // If we have focus, save it temporarily since the views will change and we might lose it
         hadFocusBeforeLayout = hasFocus()
+        pivotSelector.onLayoutChildren(state)
         pivotLayout.onLayoutChildren(recycler, state)
     }
 
@@ -330,6 +330,15 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun setRecycleChildrenOnDetach(recycle: Boolean) {
         configuration.setRecycleChildrenOnDetach(recycle)
     }
+
+    fun setLayoutEnabled(enabled: Boolean) {
+        if (configuration.isLayoutEnabled != enabled) {
+            configuration.setLayoutEnabled(enabled)
+            requestLayout()
+        }
+    }
+
+    fun isLayoutEnabled(): Boolean = configuration.isLayoutEnabled
 
     fun setGravity(gravity: Int) {
         if (configuration.gravity != gravity) {
