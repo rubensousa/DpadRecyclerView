@@ -104,7 +104,7 @@ internal class PivotSelector(
     }
 
     fun getCurrentSubPositions(): Int {
-        return selectedViewHolder?.getAlignments()?.size ?: 0
+        return selectedViewHolder?.getSubPositionAlignments()?.size ?: 0
     }
 
     fun setSelectionUpdatePending() {

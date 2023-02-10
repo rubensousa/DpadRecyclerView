@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
-import com.rubensousa.dpadrecyclerview.ViewHolderAlignment
+import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListHeaderBinding
 
@@ -63,12 +63,12 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
         binding: AdapterListHeaderBinding
     ) : RecyclerView.ViewHolder(binding.root), DpadViewHolder {
 
-        private val childAlignments = ArrayList<ViewHolderAlignment>()
+        private val childAlignments = ArrayList<SubPositionAlignment>()
 
         init {
             childAlignments.apply {
                 add(
-                    ViewHolderAlignment(
+                    SubPositionAlignment(
                         offset = 0,
                         offsetRatio = 0f,
                         alignmentViewId = R.id.subPosition0TextView,
@@ -76,7 +76,7 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
                     )
                 )
                 add(
-                    ViewHolderAlignment(
+                    SubPositionAlignment(
                         offset = 0,
                         offsetRatio = 0f,
                         alignmentViewId = R.id.subPosition0TextView,
@@ -86,7 +86,7 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
             }
         }
 
-        override fun getAlignments(): List<ViewHolderAlignment> {
+        override fun getSubPositionAlignments(): List<SubPositionAlignment> {
             return childAlignments
         }
 

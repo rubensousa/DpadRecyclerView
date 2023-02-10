@@ -21,11 +21,11 @@ import android.os.Parcelable
 import android.view.View
 
 /**
- * Alignment configuration specific to a certain ViewHolder.
+ * Alignment configuration specific to a certain sub position.
  *
- * This will override the default alignment set from [ChildAlignment]
+ * This will override the default alignment set from [ChildAlignment].
  */
-data class ViewHolderAlignment(
+data class SubPositionAlignment(
     override val offset: Int = ViewAlignment.DEFAULT_OFFSET,
     override val offsetRatio: Float = ViewAlignment.DEFAULT_OFFSET_RATIO,
     override val isOffsetRatioEnabled: Boolean = true,
@@ -44,12 +44,12 @@ data class ViewHolderAlignment(
     private val focusViewId: Int = View.NO_ID,
 ) : ViewAlignment, Parcelable {
 
-    companion object CREATOR : Parcelable.Creator<ViewHolderAlignment> {
-        override fun createFromParcel(parcel: Parcel): ViewHolderAlignment {
-            return ViewHolderAlignment(parcel)
+    companion object CREATOR : Parcelable.Creator<SubPositionAlignment> {
+        override fun createFromParcel(parcel: Parcel): SubPositionAlignment {
+            return SubPositionAlignment(parcel)
         }
 
-        override fun newArray(size: Int): Array<ViewHolderAlignment?> {
+        override fun newArray(size: Int): Array<SubPositionAlignment?> {
             return arrayOfNulls(size)
         }
     }

@@ -17,15 +17,15 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 import android.view.View
-import com.rubensousa.dpadrecyclerview.ViewHolderAlignment
+import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
-internal class ViewHolderScrollAlignment {
+internal class SubPositionScrollAlignment {
 
     fun updateAlignments(
         view: View,
         layoutParams: DpadLayoutParams,
-        alignments: List<ViewHolderAlignment>,
+        alignments: List<SubPositionAlignment>,
         isVertical: Boolean,
         reverseLayout: Boolean,
     ) {
@@ -38,7 +38,7 @@ internal class ViewHolderScrollAlignment {
 
     private fun getSubPositionAnchors(
         itemView: View,
-        alignments: List<ViewHolderAlignment>,
+        alignments: List<SubPositionAlignment>,
         currentAnchors: IntArray?,
         isVertical: Boolean,
         reverseLayout: Boolean
@@ -59,7 +59,7 @@ internal class ViewHolderScrollAlignment {
 
     private fun calculateAnchor(
         itemView: View,
-        alignment: ViewHolderAlignment,
+        alignment: SubPositionAlignment,
         isVertical: Boolean,
         reverseLayout: Boolean
     ): Int {
@@ -69,7 +69,7 @@ internal class ViewHolderScrollAlignment {
         )
     }
 
-    private fun getAlignmentView(itemView: View, alignment: ViewHolderAlignment): View {
+    private fun getAlignmentView(itemView: View, alignment: SubPositionAlignment): View {
         if (alignment.alignmentViewId != View.NO_ID) {
             val alignmentView: View? = itemView.findViewById(alignment.alignmentViewId)
             if (alignmentView != null) {

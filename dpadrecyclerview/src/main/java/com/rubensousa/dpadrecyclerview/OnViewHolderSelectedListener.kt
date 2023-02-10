@@ -36,7 +36,7 @@ interface OnViewHolderSelectedListener {
      * view is selected.
      * @param position    The position of the view in the adapter, or NO_POSITION
      * if no view is selected.
-     * @param subPosition The index of the alignment from [DpadViewHolder.getAlignments],
+     * @param subPosition The index of the alignment from [DpadViewHolder.getSubPositionAlignments],
      * or 0 if there is no custom alignment
      */
     fun onViewHolderSelected(
@@ -55,7 +55,7 @@ interface OnViewHolderSelectedListener {
      * view is selected.
      * @param position    The position of the view in the adapter, or NO_POSITION
      * if no view is selected.
-     * @param subPosition The index of the alignment from [DpadViewHolder.getAlignments],
+     * @param subPosition The index of the alignment from [DpadViewHolder.getSubPositionAlignments],
      * or 0 if there is no custom alignment
      */
     fun onViewHolderSelectedAndAligned(

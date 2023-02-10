@@ -25,7 +25,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.*
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
@@ -159,12 +163,12 @@ class SubSelectionTest : DpadRecyclerViewTest() {
 
         }
 
-        private val viewHolderAlignments = ArrayList<ViewHolderAlignment>()
+        private val subPositionAlignments = ArrayList<SubPositionAlignment>()
 
         init {
-            viewHolderAlignments.apply {
+            subPositionAlignments.apply {
                 add(
-                    ViewHolderAlignment(
+                    SubPositionAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition0TextView,
@@ -172,7 +176,7 @@ class SubSelectionTest : DpadRecyclerViewTest() {
                     )
                 )
                 add(
-                    ViewHolderAlignment(
+                    SubPositionAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition1TextView,
@@ -180,7 +184,7 @@ class SubSelectionTest : DpadRecyclerViewTest() {
                     )
                 )
                 add(
-                    ViewHolderAlignment(
+                    SubPositionAlignment(
                         offset = 0,
                         offsetRatio = 0.5f,
                         alignmentViewId = R.id.subPosition2TextView,
@@ -193,7 +197,7 @@ class SubSelectionTest : DpadRecyclerViewTest() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
             val viewHolder = VH(
                 view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false),
-                alignments = viewHolderAlignments
+                alignments = subPositionAlignments
             )
             viewHolder.itemView.isFocusable = true
             viewHolder.itemView.isFocusableInTouchMode = true
@@ -204,10 +208,10 @@ class SubSelectionTest : DpadRecyclerViewTest() {
 
         class VH(
             view: View,
-            private val alignments: List<ViewHolderAlignment>
+            private val alignments: List<SubPositionAlignment>
         ) : TestViewHolder(view), DpadViewHolder {
 
-            override fun getAlignments(): List<ViewHolderAlignment> {
+            override fun getSubPositionAlignments(): List<SubPositionAlignment> {
                 return alignments
             }
 

@@ -56,7 +56,7 @@ interface DpadViewHolder {
      * @return the alignment configurations to use for this ViewHolder,
      * or empty if it should be aligned using the configuration of the [DpadRecyclerView]
      */
-    fun getAlignments(): List<ViewHolderAlignment> {
+    fun getSubPositionAlignments(): List<SubPositionAlignment> {
         return Collections.emptyList()
     }
 
