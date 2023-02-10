@@ -26,6 +26,7 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -83,14 +84,20 @@ class AccessibilityTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testVerticalScroll() {
+    fun testVerticalScrollForward() {
         assertFocusAndSelection(position = 0)
 
         performAccessibilityAction(AccessibilityAction.ACTION_SCROLL_FORWARD)
         assertFocusAndSelection(position = spanCount)
+    }
+
+    @Test
+    fun testVerticalScrollBackward() {
+        val position = 20
+        selectPosition(position)
 
         performAccessibilityAction(AccessibilityAction.ACTION_SCROLL_BACKWARD)
-        assertFocusAndSelection(position = 0)
+        assertFocusAndSelection(position = position - spanCount)
     }
 
     private fun initializeAccessibility() {
