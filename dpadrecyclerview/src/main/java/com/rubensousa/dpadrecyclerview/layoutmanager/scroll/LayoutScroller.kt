@@ -234,7 +234,7 @@ internal class LayoutScroller(
         pivotSelectionScroller = null
     }
 
-    fun addScrollMovement(forward: Boolean): Boolean {
+    fun addScrollMovement(forward: Boolean, consume: Boolean = false): Boolean {
         // Skip action if there's no need to scroll already
         val reverseLayout = layoutInfo.shouldReverseLayout()
         if (!reverseLayout) {
@@ -267,6 +267,9 @@ internal class LayoutScroller(
             layoutManager.startSmoothScroll(newSmoothScroller)
         } else {
             searchPivotScroller?.addScrollMovement(forward)
+        }
+        if (consume) {
+            searchPivotScroller?.consumeOneMovement()
         }
         return true
     }

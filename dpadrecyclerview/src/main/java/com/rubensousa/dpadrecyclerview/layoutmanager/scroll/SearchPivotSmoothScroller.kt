@@ -113,11 +113,23 @@ internal class SearchPivotSmoothScroller(
         }
     }
 
+    fun consumeOneMovement() {
+        val targetView = if (layoutInfo.isGrid()) {
+            consumeGridMovements(pivotSelector.position, spanFocusFinder, consumeAll = false)
+        } else {
+            consumeOneLinearMovement(pivotSelector.position)
+        }
+        if (targetView != null) {
+            listener.onPivotAttached(layoutInfo.getAdapterPositionOf(targetView))
+            listener.onPivotLaidOut(targetView)
+        }
+    }
+
     fun onBlockLaidOut() {
         if (!layoutInfo.isGrid()) {
             return
         }
-        val newPivotView = movements.consumeGridMovements(pivotSelector.position, spanFocusFinder)
+        val newPivotView = consumeGridMovements(pivotSelector.position, spanFocusFinder)
         if (newPivotView != null) {
             listener.onPivotAttached(layoutInfo.getAdapterPositionOf(newPivotView))
             listener.onPivotLaidOut(newPivotView)
@@ -149,6 +161,99 @@ internal class SearchPivotSmoothScroller(
         }
 
         listener.onSmoothScrollerStopped()
+    }
+
+    private fun consumeOneLinearMovement(
+        pivotPosition: Int
+    ): View? {
+        if (!movements.hasPendingMoves()) {
+            return null
+        }
+        val reverseLayout = layoutInfo.shouldReverseLayout()
+        val isScrollingForwards = if (!reverseLayout) {
+            movements.pendingMoves > 0
+        } else {
+            movements.pendingMoves < 0
+        }
+        val edgeView = if (isScrollingForwards != reverseLayout) {
+            layoutInfo.getChildClosestToEnd()
+        } else {
+            layoutInfo.getChildClosestToStart()
+        }
+        if (edgeView == null) {
+            return null
+        }
+        val edgePosition = layoutInfo.getLayoutPositionOf(edgeView)
+        var targetView: View? = null
+        val positionIncrement = if (isScrollingForwards) 1 else -1
+        var targetPosition = pivotPosition
+        while (targetPosition != edgePosition && movements.hasPendingMoves()) {
+            val view = layoutInfo.findViewByPosition(targetPosition)
+            targetPosition += positionIncrement
+            if (view == null || !layoutInfo.isViewFocusable(view)) {
+                continue
+            }
+            targetView = view
+            movements.consume()
+            break
+        }
+        return targetView
+    }
+
+    private fun consumeGridMovements(
+        pivotPosition: Int,
+        spanFocusFinder: SpanFocusFinder,
+        consumeAll: Boolean = true
+    ): View? {
+        if (!movements.hasPendingMoves()) {
+            return null
+        }
+        val reverseLayout = layoutInfo.shouldReverseLayout()
+        val isScrollingForwards = if (!reverseLayout) {
+            movements.pendingMoves > 0
+        } else {
+            movements.pendingMoves < 0
+        }
+        val edgeView = if (isScrollingForwards != reverseLayout) {
+            layoutInfo.getChildClosestToEnd()
+        } else {
+            layoutInfo.getChildClosestToStart()
+        }
+        if (edgeView == null) {
+            return null
+        }
+        val spanSizeLookup = layoutInfo.getConfiguration().spanSizeLookup
+        val edgePosition = layoutInfo.getLayoutPositionOf(edgeView)
+        var targetView: View? = null
+        var targetPosition: Int = pivotPosition
+
+        while (targetPosition != edgePosition && movements.hasPendingMoves()) {
+            targetPosition = spanFocusFinder.findNextSpanPosition(
+                focusedPosition = targetPosition,
+                spanSizeLookup = spanSizeLookup,
+                forward = isScrollingForwards,
+                edgePosition = edgePosition,
+                reverseLayout = reverseLayout
+            )
+            if (targetPosition == RecyclerView.NO_POSITION) {
+                break
+            }
+            spanFocusFinder.save(targetPosition, spanSizeLookup)
+            val view = layoutInfo.findViewByPosition(targetPosition)
+            if (view == null || !layoutInfo.isViewFocusable(view)) {
+                continue
+            }
+            targetView = view
+            movements.consume()
+            if (!consumeAll) {
+                break
+            }
+        }
+        // Reset the focus back to the original position
+        if (targetView == null) {
+            spanFocusFinder.save(pivotPosition, spanSizeLookup)
+        }
+        return targetView
     }
 
     interface Listener {

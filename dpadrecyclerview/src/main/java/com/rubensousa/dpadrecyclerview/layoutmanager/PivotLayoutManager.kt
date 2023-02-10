@@ -270,14 +270,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
     ): Int {
-        return accessibilityHelper.getRowCountForAccessibility(recycler, state)
+        return accessibilityHelper.getRowCountForAccessibility(state)
     }
 
     override fun getColumnCountForAccessibility(
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
     ): Int {
-        return accessibilityHelper.getColumnCountForAccessibility(recycler, state)
+        return accessibilityHelper.getColumnCountForAccessibility(state)
     }
 
     override fun onInitializeAccessibilityNodeInfo(
