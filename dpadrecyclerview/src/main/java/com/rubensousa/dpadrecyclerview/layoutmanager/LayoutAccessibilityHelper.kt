@@ -38,10 +38,7 @@ internal class LayoutAccessibilityHelper(
     private val scroller: LayoutScroller
 ) {
 
-    fun getRowCountForAccessibility(
-        recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
-    ): Int {
+    fun getRowCountForAccessibility(state: RecyclerView.State): Int {
         if (configuration.isHorizontal()) {
             return configuration.spanCount
         }
@@ -53,10 +50,7 @@ internal class LayoutAccessibilityHelper(
         }
     }
 
-    fun getColumnCountForAccessibility(
-        recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
-    ): Int {
+    fun getColumnCountForAccessibility(state: RecyclerView.State): Int {
         if (configuration.isVertical()) {
             return configuration.spanCount
         }
@@ -91,8 +85,8 @@ internal class LayoutAccessibilityHelper(
         info.setCollectionInfo(
             CollectionInfoCompat
                 .obtain(
-                    getRowCountForAccessibility(recycler, state),
-                    getColumnCountForAccessibility(recycler, state),
+                    getRowCountForAccessibility(state),
+                    getColumnCountForAccessibility(state),
                     layoutManager.isLayoutHierarchical(recycler, state),
                     layoutManager.getSelectionModeForAccessibility(recycler, state)
                 )
@@ -107,26 +101,19 @@ internal class LayoutAccessibilityHelper(
         if (layoutParams !is DpadLayoutParams) {
             return
         }
-        val position = layoutParams.absoluteAdapterPosition
-        val rowIndex = if (position >= 0) {
-            layoutInfo.getSpanGroupIndex(position)
-        } else {
-            -1
-        }
-        if (rowIndex < 0) {
-            return
-        }
-        val guessSpanIndex: Int = position / configuration.spanCount
-        if (configuration.isHorizontal()) {
+        val spanGroupIndex = layoutInfo.getSpanGroupIndex(layoutParams.viewLayoutPosition)
+        if (layoutInfo.isHorizontal()) {
             info.setCollectionItemInfo(
                 AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
-                    rowIndex, 1, guessSpanIndex, 1, false, false
+                    layoutParams.spanIndex, layoutParams.spanSize,
+                    spanGroupIndex, 1, false, false
                 )
             )
         } else {
             info.setCollectionItemInfo(
                 AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
-                    guessSpanIndex, 1, rowIndex, 1, false, false
+                    spanGroupIndex, 1,
+                    layoutParams.spanIndex, layoutParams.spanSize, false, false
                 )
             )
         }
@@ -152,25 +139,21 @@ internal class LayoutAccessibilityHelper(
                 && translatedAction == AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD)
 
         if (scrollingReachedStart || scrollingReachedEnd) {
-            // Send a fake scroll completion event to notify Talkback that the scroll event was
-            // successful. Hence, Talkback will only look for next focus within the RecyclerView.
-            // Not sending this will result in Talkback classifying it as a failed scroll event, and
-            // will try to jump focus out of the RecyclerView.
-            // We know at this point that either focusOutFront or focusOutBack is true (or both),
-            // because otherwise, we never hit ACTION_SCROLL_BACKWARD/FORWARD here.
+            /**
+             * Send a fake scroll completion event to notify Talkback
+             * that the scroll event was handled.
+             * This will happen when focusing out from DpadRecyclerView is not allowed.
+             */
             sendViewScrolledAccessibilityEvent(recyclerView)
         } else {
-            // TODO
-            /*  when (translatedAction) {
-                  AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD -> {
-                      scroller.addScrollMovement(false)
-                      scroller.dispatchSelectionMoves(false, -1)
-                  }
-                  AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD -> {
-                      scroller.addScrollMovement(true)
-                      scroller.dispatchSelectionMoves(false, 1)
-                  }
-              }*/
+            when (translatedAction) {
+                AccessibilityNodeInfoCompat.ACTION_SCROLL_FORWARD -> {
+                    scroller.addScrollMovement(forward = true, consume = true)
+                }
+                AccessibilityNodeInfoCompat.ACTION_SCROLL_BACKWARD -> {
+                    scroller.addScrollMovement(forward = false, consume = true)
+                }
+            }
         }
         return true
     }
