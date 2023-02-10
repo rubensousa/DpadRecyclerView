@@ -21,6 +21,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.OnChildLaidOutListener
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
@@ -29,7 +30,7 @@ import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 
 open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
-    OnViewHolderSelectedListener {
+    OnViewHolderSelectedListener, OnChildLaidOutListener {
 
     companion object {
 
@@ -57,6 +58,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     private val selectionEvents = ArrayList<DpadSelectionEvent>()
     private val tasks = ArrayList<DpadSelectionEvent>()
     private val alignedEvents = ArrayList<DpadSelectionEvent>()
+    private val layoutEvents  = ArrayList<RecyclerView.ViewHolder>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,6 +70,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
             recyclerView.setRecycledViewPool(viewPool)
         }
         recyclerView.addOnViewHolderSelectedListener(this)
+        recyclerView.setOnChildLaidOutListener(this)
         
         recyclerView.apply {
             setReverseLayout(layoutConfig.reverseLayout)
@@ -150,6 +153,12 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     fun getSelectionEvents(): List<DpadSelectionEvent> = selectionEvents
 
     fun getSelectedAndAlignedEvents(): List<DpadSelectionEvent> = alignedEvents
+
+    fun getLayoutEvents(): List<RecyclerView.ViewHolder> = layoutEvents
+
+    override fun onChildLaidOut(parent: RecyclerView, child: RecyclerView.ViewHolder) {
+        layoutEvents.add(child)
+    }
 
     private fun getDpadRecyclerView(): DpadRecyclerView? = view?.findViewById(R.id.recyclerView)
 
