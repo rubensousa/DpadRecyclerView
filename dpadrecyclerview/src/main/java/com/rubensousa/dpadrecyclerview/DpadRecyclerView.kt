@@ -709,6 +709,22 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Enables or disables scrolling.
+     * When this is disabled, [DpadRecyclerView] can still change focus on DPAD events
+     * unless [setFocusSearchDisabled] is also set.
+     *
+     * @param enabled true if scrolling should be enabled, false otherwise
+     */
+    fun setScrollEnabled(enabled: Boolean) {
+        requireLayout().setScrollEnabled(enabled)
+    }
+
+    /**
+     * See [setScrollEnabled].
+     */
+    fun isScrollEnabled(): Boolean = requireLayout().getConfig().isScrollEnabled
+
+    /**
      * Changes the selected item immediately without any scroll animation.
      * @param position adapter position of the item to select
      */

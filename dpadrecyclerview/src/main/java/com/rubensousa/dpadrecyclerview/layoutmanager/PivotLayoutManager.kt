@@ -418,6 +418,16 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     fun getSmoothScrollSpeedFactor(): Float = configuration.smoothScrollSpeedFactor
 
+    fun setScrollEnabled(enabled: Boolean) {
+        if (configuration.isScrollEnabled == enabled) {
+            return
+        }
+        configuration.setScrollEnabled(enabled)
+        if (enabled) {
+            scroller.scrollToSelectedPosition(smooth = configuration.isSmoothFocusChangesEnabled)
+        }
+    }
+
     fun setFocusSearchDisabled(disabled: Boolean) {
         configuration.setFocusSearchDisabled(disabled)
     }

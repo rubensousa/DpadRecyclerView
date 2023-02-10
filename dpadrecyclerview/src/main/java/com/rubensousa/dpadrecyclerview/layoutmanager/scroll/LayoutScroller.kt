@@ -234,14 +234,23 @@ internal class LayoutScroller(
         pivotSelectionScroller = null
     }
 
-    fun addScrollMovement(forward: Boolean) {
+    fun addScrollMovement(forward: Boolean): Boolean {
         // Skip action if there's no need to scroll already
-        if (forward && layoutInfo.hasCreatedLastItem()
-            || (!forward && layoutInfo.hasCreatedFirstItem())
-        ) {
-            return
+        val reverseLayout = layoutInfo.shouldReverseLayout()
+        if (!reverseLayout) {
+            if (forward && layoutInfo.hasCreatedLastItem()
+                || (!forward && layoutInfo.hasCreatedFirstItem())
+            ) {
+                return false
+            }
+        } else {
+            if (forward && layoutInfo.hasCreatedFirstItem()
+                || (!forward && layoutInfo.hasCreatedLastItem())
+            ) {
+                return false
+            }
         }
-        val currentRecyclerView = recyclerView ?: return
+        val currentRecyclerView = recyclerView ?: return false
         if (searchPivotScroller == null) {
             val newSmoothScroller = SearchPivotSmoothScroller(
                 currentRecyclerView,
@@ -259,6 +268,7 @@ internal class LayoutScroller(
         } else {
             searchPivotScroller?.addScrollMovement(forward)
         }
+        return true
     }
 
     private fun scrollToView(view: View?, smooth: Boolean, requestFocus: Boolean) {
@@ -297,7 +307,6 @@ internal class LayoutScroller(
         } else if (requestFocus) {
             view.requestFocus()
         }
-
         performScrollToView(view, subPositionView, selectViewHolder, smooth)
     }
 
@@ -307,8 +316,12 @@ internal class LayoutScroller(
         selectViewHolder: Boolean,
         smooth: Boolean
     ) {
-        val scrollOffset = layoutAlignment.calculateScrollOffset(view, subPositionView)
-        scrollBy(scrollOffset, smooth)
+        var scrollOffset = 0
+
+        if (configuration.isScrollEnabled) {
+            scrollOffset = layoutAlignment.calculateScrollOffset(view, subPositionView)
+            scrollBy(scrollOffset, smooth)
+        }
 
         if (selectViewHolder) {
             pivotSelector.dispatchViewHolderSelected()
