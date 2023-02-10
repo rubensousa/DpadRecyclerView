@@ -159,6 +159,25 @@ abstract class DpadRecyclerViewTest {
         fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
     }
 
+    protected fun getChildrenBounds(fromStart: Boolean = true): List<ViewBounds> {
+        val bounds = ArrayList<ViewBounds>()
+        onRecyclerView("Assert child bounds") { recyclerView ->
+            val layoutManager = recyclerView.layoutManager!!
+            for (i in 0 until layoutManager.childCount) {
+                val view = getChildAt(layoutManager, i, fromStart)
+                bounds.add(
+                    ViewBounds(
+                        left = view.left,
+                        top = view.top,
+                        right = view.right,
+                        bottom = view.bottom
+                    )
+                )
+            }
+        }
+        return bounds
+    }
+
     protected fun assertChildBounds(
         childIndex: Int,
         bounds: ViewBounds,

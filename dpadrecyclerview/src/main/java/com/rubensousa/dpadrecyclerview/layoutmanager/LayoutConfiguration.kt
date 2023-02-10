@@ -213,6 +213,10 @@ internal class LayoutConfiguration(properties: Properties) {
         smoothScrollSpeedFactor = speedFactor
     }
 
+    fun setScrollEnabled(enabled: Boolean) {
+        isScrollEnabled = enabled
+    }
+
     fun setInitialPrefetchItemCount(count: Int) {
         require(count >= 0)
         initialPrefetchItemCount = count

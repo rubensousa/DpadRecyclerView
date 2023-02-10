@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 
 import androidx.recyclerview.widget.RecyclerView
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
@@ -24,6 +25,9 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
@@ -111,4 +115,32 @@ class HorizontalRowScrollTest : DpadRecyclerViewTest() {
         waitForIdleScrollState()
         assertFocusPosition(position = 0)
     }
+
+    @Test
+    fun testDisablingAndEnablingScroll() {
+        val boundsBeforeKeyEvents = getChildrenBounds()
+        onRecyclerView("Disable scroll") { recyclerView ->
+            recyclerView.setScrollEnabled(false)
+            assertThat(recyclerView.isScrollEnabled()).isFalse()
+        }
+
+        KeyEvents.pressRight(times = 10)
+        assertFocusAndSelection(position = 4)
+
+        val boundsAfterKeyEvents = getChildrenBounds()
+        assertThat(boundsAfterKeyEvents).isEqualTo(boundsBeforeKeyEvents)
+
+        onRecyclerView("Disable scroll") { recyclerView ->
+            recyclerView.setScrollEnabled(true)
+            assertThat(recyclerView.isScrollEnabled()).isTrue()
+        }
+
+        waitForIdleScrollState()
+
+        assertFocusAndSelection(position = 4)
+
+        assertThat(getItemViewBounds(position = 4).centerX())
+            .isEqualTo(getRecyclerViewBounds().centerX())
+    }
+
 }
