@@ -370,6 +370,20 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Allows disabling the layout of children. All children are removed if layout is disabled
+     *
+     * @param enabled true to enable layout, false otherwise.
+     */
+    fun setLayoutEnabled(enabled: Boolean) {
+        requireLayout().setLayoutEnabled(enabled)
+    }
+
+    /**
+     * See: [setLayoutEnabled]
+     */
+    fun isLayoutEnabled(): Boolean = requireLayout().isLayoutEnabled()
+
+    /**
      * Enables or disables the default rule of drawing the selected view after all other views.
      * Default is true
      *

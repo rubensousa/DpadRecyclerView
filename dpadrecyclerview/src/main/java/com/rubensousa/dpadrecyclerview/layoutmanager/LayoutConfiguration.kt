@@ -113,6 +113,9 @@ internal class LayoutConfiguration(properties: Properties) {
     var isChildDrawingOrderEnabled = true
         private set
 
+    var isLayoutEnabled = true
+        private set
+
     var spanSizeLookup: DpadSpanSizeLookup = DpadSpanSizeLookup.DEFAULT
         private set
 
@@ -170,6 +173,10 @@ internal class LayoutConfiguration(properties: Properties) {
 
     fun setChildDrawingOrderEnabled(enabled: Boolean) {
         isChildDrawingOrderEnabled = enabled
+    }
+
+    fun setLayoutEnabled(enabled: Boolean) {
+        isLayoutEnabled = enabled
     }
 
     fun isHorizontal() = orientation == RecyclerView.HORIZONTAL

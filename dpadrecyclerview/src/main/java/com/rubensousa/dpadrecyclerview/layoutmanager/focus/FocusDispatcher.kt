@@ -85,6 +85,15 @@ internal class FocusDispatcher(
         if (gainFocus && scroller.isSearchingPivot()) {
             return
         }
+
+        /**
+         * If we gain focus while layout is disabled,
+         * we shouldn't do anything since we're still removing Views
+         */
+        if (gainFocus && !configuration.isLayoutEnabled) {
+            return
+        }
+
         // Skip if we didn't gain focus or no view is selected
         if (!gainFocus || pivotSelector.position == RecyclerView.NO_POSITION) {
             return

@@ -67,15 +67,15 @@ internal class PivotLayout(
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")
         }
         layoutInfo.setLayoutInProgress()
-        structureEngineer.onLayoutStarted(state)
 
         // Fast removal
-        if (state.itemCount == 0) {
+        if (state.itemCount == 0 || !configuration.isLayoutEnabled) {
             layoutManager.removeAndRecycleAllViews(recycler)
             reset()
             return
         }
 
+        structureEngineer.onLayoutStarted(state)
         pivotSelector.consumePendingSelectionChanges()
 
         if (state.isPreLayout) {
@@ -196,7 +196,7 @@ internal class PivotLayout(
         state: State
     ): Int {
         // Do nothing if we don't have children
-        if (state.itemCount == 0 || offset == 0) {
+        if (state.itemCount == 0 || offset == 0 || !configuration.isLayoutEnabled) {
             return 0
         }
         val scrollOffset = layoutAlignment.getCappedScroll(offset)
