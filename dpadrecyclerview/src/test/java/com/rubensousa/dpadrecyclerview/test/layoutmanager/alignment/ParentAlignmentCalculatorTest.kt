@@ -30,6 +30,8 @@ class ParentAlignmentCalculatorTest {
     private val alignmentCalculator = ParentAlignmentCalculator()
     private val width = 1920
     private val height = 1080
+    private val verticalCenterKeyline = height / 2
+    private val horizontalCenterKeyline = width / 2
     private val verticalViewWidth = width
     private val verticalViewHeight = 400
     private val horizontalViewWidth = 400
@@ -206,6 +208,119 @@ class ParentAlignmentCalculatorTest {
                 alignment = centerParentAlignment
             )
         ).isEqualTo(alignmentCalculator.startScrollLimit)
+    }
+
+    @Test
+    fun `child is aligned to start edge if client does not prefer keyline`() {
+        setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MIN,
+            offset = 0,
+            offsetRatio = 0.5f,
+            preferKeylineOverEdge = false
+        )
+        alignmentCalculator.updateStartLimit(
+            edge = verticalCenterKeyline - verticalViewHeight / 2,
+            viewAnchor = verticalCenterKeyline,
+            alignment = alignment
+        )
+        alignmentCalculator.updateEndLimit(
+            edge = verticalCenterKeyline + verticalViewHeight / 2,
+            viewAnchor = verticalCenterKeyline,
+            alignment = alignment
+        )
+
+        val distanceToStart = verticalCenterKeyline - verticalViewHeight / 2
+
+        assertThat(
+            alignmentCalculator.calculateScrollOffset(
+                viewAnchor = verticalCenterKeyline,
+                alignment = alignment
+            )
+        ).isEqualTo(distanceToStart)
+    }
+
+    @Test
+    fun `child is aligned to end edge if client does not prefer keyline`() {
+        setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MAX,
+            offset = 0,
+            offsetRatio = 0.5f,
+            preferKeylineOverEdge = false
+        )
+        alignmentCalculator.updateStartLimit(
+            edge = -verticalViewHeight / 2,
+            viewAnchor = verticalViewHeight / 2,
+            alignment = alignment
+        )
+        alignmentCalculator.updateEndLimit(
+            edge = verticalCenterKeyline + verticalViewHeight,
+            viewAnchor = verticalCenterKeyline + verticalViewHeight / 2,
+            alignment = alignment
+        )
+
+        assertThat(
+            alignmentCalculator.calculateScrollOffset(
+                viewAnchor = verticalCenterKeyline + verticalViewHeight / 2,
+                alignment = alignment
+            )
+        ).isEqualTo(alignmentCalculator.endScrollLimit)
+    }
+
+    @Test
+    fun `child is not aligned to start edge if client prefers keyline`() {
+        setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MIN,
+            offset = 0,
+            offsetRatio = 0.5f,
+            preferKeylineOverEdge = true
+        )
+        alignmentCalculator.updateStartLimit(
+            edge = verticalCenterKeyline - verticalViewHeight / 2,
+            viewAnchor = verticalCenterKeyline,
+            alignment = alignment
+        )
+        alignmentCalculator.updateEndLimit(
+            edge = verticalCenterKeyline + verticalViewHeight / 2,
+            viewAnchor = verticalCenterKeyline,
+            alignment = alignment
+        )
+
+        val distanceToKeyline = 0
+
+        assertThat(
+            alignmentCalculator.calculateScrollOffset(
+                viewAnchor = height / 2,
+                alignment = alignment
+            )
+        ).isEqualTo(distanceToKeyline)
+    }
+
+    @Test
+    fun `child is not aligned to end edge if client prefers keyline`() {
+        setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MAX,
+            offset = 0,
+            offsetRatio = 0.5f,
+            preferKeylineOverEdge = true
+        )
+        alignmentCalculator.updateEndLimit(
+            edge = verticalCenterKeyline + verticalViewHeight / 2,
+            viewAnchor = verticalCenterKeyline,
+            alignment = alignment
+        )
+
+        val distanceToKeyline = 0
+
+        assertThat(
+            alignmentCalculator.calculateScrollOffset(
+                viewAnchor = verticalCenterKeyline,
+                alignment = alignment
+            )
+        ).isEqualTo(distanceToKeyline)
     }
 
     private fun setLayoutProperties(orientation: Int, reverseLayout: Boolean) {

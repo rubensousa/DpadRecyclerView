@@ -82,7 +82,7 @@ internal class ParentAlignmentCalculator {
             return
         }
         val keyLine = calculateKeyline(alignment)
-        startScrollLimit = if (shouldAlignViewToStart(viewAnchor, keyLine, alignment.edge)) {
+        startScrollLimit = if (shouldAlignViewToStart(viewAnchor, keyLine, alignment)) {
             calculateScrollOffsetToStartEdge(edge)
         } else {
             calculateScrollOffsetToKeyline(viewAnchor, keyLine)
@@ -95,11 +95,11 @@ internal class ParentAlignmentCalculator {
             endScrollLimit = Int.MAX_VALUE
             return
         }
-        val keyLine = calculateKeyline(alignment)
-        endScrollLimit = if (shouldAlignViewToEnd(viewAnchor, keyLine, alignment.edge)) {
+        val keyline = calculateKeyline(alignment)
+        endScrollLimit = if (shouldAlignViewToEnd(viewAnchor, keyline, alignment)) {
             calculateScrollOffsetToEndEdge(edge)
         } else {
-            calculateScrollOffsetToKeyline(viewAnchor, keyLine)
+            calculateScrollOffsetToKeyline(viewAnchor, keyline)
         }
     }
 
@@ -118,8 +118,8 @@ internal class ParentAlignmentCalculator {
      */
     fun calculateScrollOffset(viewAnchor: Int, alignment: ParentAlignment): Int {
         val keyline = calculateKeyline(alignment)
-        val alignToStartEdge = shouldAlignViewToStart(viewAnchor, keyline, alignment.edge)
-        val alignToEndEdge = shouldAlignViewToEnd(viewAnchor, keyline, alignment.edge)
+        val alignToStartEdge = shouldAlignViewToStart(viewAnchor, keyline, alignment)
+        val alignToEndEdge = shouldAlignViewToEnd(viewAnchor, keyline, alignment)
         if (!reverseLayout) {
             if (alignToStartEdge) {
                 return min(startScrollLimit, calculateScrollOffsetToStartEdge(viewAnchor))
@@ -156,15 +156,33 @@ internal class ParentAlignmentCalculator {
         return keyLine
     }
 
-    private fun shouldAlignViewToStart(viewAnchor: Int, keyline: Int, edge: Edge): Boolean {
-        if (isStartUnknown || !shouldAlignToStartEdge(edge)) {
+    private fun shouldAlignViewToStart(
+        viewAnchor: Int,
+        keyline: Int,
+        alignment: ParentAlignment
+    ): Boolean {
+        if (isStartUnknown || !shouldAlignToStartEdge(alignment.edge)) {
+            return false
+        }
+        if (alignment.preferKeylineOverEdge
+            && isStartEdge(alignment.edge)
+            && startEdge >= getLayoutStartEdge()) {
             return false
         }
         return viewAnchor + getLayoutStartEdge() <= startEdge + keyline
     }
 
-    private fun shouldAlignViewToEnd(viewAnchor: Int, keyline: Int, edge: Edge): Boolean {
-        if (isEndUnknown || !shouldAlignToEndEdge(edge)) {
+    private fun shouldAlignViewToEnd(
+        viewAnchor: Int,
+        keyline: Int,
+        alignment: ParentAlignment
+    ): Boolean {
+        if (isEndUnknown || !shouldAlignToEndEdge(alignment.edge)) {
+            return false
+        }
+        if (alignment.preferKeylineOverEdge
+            && isEndEdge(alignment.edge)
+            && endEdge <= getLayoutEndEdge()) {
             return false
         }
         return viewAnchor + getLayoutEndEdge() >= endEdge + keyline
@@ -182,18 +200,20 @@ internal class ParentAlignmentCalculator {
         return paddingStart
     }
 
-    private fun shouldAlignToStartEdge(edge: Edge): Boolean {
-        if (edge == Edge.MIN_MAX) {
-            return true
-        }
+    private fun isStartEdge(edge: Edge): Boolean {
         return (!reverseLayout && edge == Edge.MIN) || (reverseLayout && edge == Edge.MAX)
     }
 
-    private fun shouldAlignToEndEdge(edge: Edge): Boolean {
-        if (edge == Edge.MIN_MAX) {
-            return true
-        }
+    private fun isEndEdge(edge: Edge): Boolean {
         return (!reverseLayout && edge == Edge.MAX) || (reverseLayout && edge == Edge.MIN)
+    }
+
+    private fun shouldAlignToStartEdge(edge: Edge): Boolean {
+        return edge == Edge.MIN_MAX || isStartEdge(edge)
+    }
+
+    private fun shouldAlignToEndEdge(edge: Edge): Boolean {
+        return edge == Edge.MIN_MAX || isEndEdge(edge)
     }
 
 }

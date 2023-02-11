@@ -443,9 +443,9 @@ internal abstract class StructureEngineer(
             remainingScroll = 0
         }
 
-        val edge = layoutAlignment.getParentEdgePreference()
-        if (edge != ParentAlignment.Edge.NONE
-            && alignToEdge(edge, recycler, state, remainingScroll)
+        val parentAlignment = layoutAlignment.getParentAlignment()
+        if (parentAlignment.edge != ParentAlignment.Edge.NONE
+            && alignToEdge(parentAlignment, recycler, state, remainingScroll)
         ) {
             layoutAlignment.updateScrollLimits()
             return
@@ -468,7 +468,7 @@ internal abstract class StructureEngineer(
      * @return true if layout was aligned to an edge
      */
     private fun alignToEdge(
-        edge: ParentAlignment.Edge,
+        alignment: ParentAlignment,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
         remainingScroll: Int
@@ -487,16 +487,23 @@ internal abstract class StructureEngineer(
         ) {
             return false
         }
-
+        val edge = alignment.edge
+        val preferKeylineOverEdge = alignment.preferKeylineOverEdge
         /**
          * Scenario 2: The view at the min edge starts after the layout bounds
          * Action: Align the view at the min edge to the layout bounds
          */
         if (edge == ParentAlignment.Edge.MIN || edge == ParentAlignment.Edge.MIN_MAX) {
             if (!layoutRequest.reverseLayout && startEdge >= layoutInfo.getStartAfterPadding()) {
+                if (preferKeylineOverEdge) {
+                    return false
+                }
                 scrollBy(startEdge - remainingScroll, recycler, state, false)
                 return true
             } else if (layoutRequest.reverseLayout && endEdge <= layoutInfo.getEndAfterPadding()) {
+                if (preferKeylineOverEdge) {
+                    return false
+                }
                 val distanceToEnd = layoutInfo.getEndAfterPadding() - endEdge
                 scrollBy(-distanceToEnd - remainingScroll, recycler, state, false)
                 return true
@@ -552,6 +559,23 @@ internal abstract class StructureEngineer(
                     }
                 }
                 scrollBy(scrollOffset - remainingScroll, recycler, state, false)
+                return true
+            }
+        }
+        if (edge == ParentAlignment.Edge.MAX) {
+            if (!layoutRequest.reverseLayout && endEdge <= layoutInfo.getEndAfterPadding()) {
+                if (startEdge >= layoutInfo.getStartAfterPadding() && preferKeylineOverEdge) {
+                    return false
+                }
+                val distanceToEnd = layoutInfo.getEndAfterPadding() - endEdge
+                scrollBy(-distanceToEnd - remainingScroll, recycler, state, false)
+                return true
+            } else if (layoutRequest.reverseLayout && startEdge >= layoutInfo.getStartAfterPadding()) {
+                if (endEdge <= layoutInfo.getEndAfterPadding() && preferKeylineOverEdge) {
+                    return false
+                }
+                val distanceToStart = startEdge - layoutInfo.getStartAfterPadding()
+                scrollBy(distanceToStart - remainingScroll, recycler, state, false)
                 return true
             }
         }
