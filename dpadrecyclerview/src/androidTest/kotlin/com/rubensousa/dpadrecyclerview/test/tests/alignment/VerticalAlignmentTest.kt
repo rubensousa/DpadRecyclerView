@@ -345,6 +345,57 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    fun testLayoutAlignsToKeylineWhenThereAreNotManyItems() {
+        val parentAlignment = ParentAlignment(
+            edge = Edge.MIN,
+            offset = 0,
+            offsetRatio = 0.5f,
+            preferKeylineOverEdge = true
+        )
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),
+            getDefaultAdapterConfiguration().copy(numberOfItems = 2)
+        )
+        val viewBounds = getItemViewBounds(position = 0)
+        assertThat(viewBounds.centerY()).isEqualTo(getRecyclerViewBounds().centerY())
+    }
+
+    @Test
+    fun testLayoutAlignsToMaxEdgeWhenThereAreNotManyItems() {
+        val parentAlignment = ParentAlignment(
+            edge = Edge.MAX,
+            offset = 0,
+            offsetRatio = 0.5f,
+            preferKeylineOverEdge = false
+        )
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),
+            getDefaultAdapterConfiguration().copy(numberOfItems = 3)
+        )
+        val viewBounds = getItemViewBounds(position = 2)
+        assertThat(viewBounds.bottom).isEqualTo(getRecyclerViewBounds().bottom)
+    }
+
+    @Test
+    fun testLayoutAlignsToKeylineInsteadOfMaxEdgeWhenThereAreNotManyItems() {
+        val parentAlignment = ParentAlignment(
+            edge = Edge.MAX,
+            offset = 0,
+            offsetRatio = 0.5f
+        )
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),
+            getDefaultAdapterConfiguration().copy(numberOfItems = 3)
+        )
+        var viewBounds = getItemViewBounds(position = 0)
+        assertThat(viewBounds.centerY()).isEqualTo(getRecyclerViewBounds().centerY())
+
+        val lastPosition = selectLastPosition()
+        viewBounds = getItemViewBounds(position = lastPosition)
+        assertThat(viewBounds.centerY()).isEqualTo(getRecyclerViewBounds().centerY())
+    }
+
+    @Test
     fun testReverseLayoutAlignsToStartEdgeWhenThereAreNotManyItems() {
         launchFragment(
             getDefaultLayoutConfiguration().copy(reverseLayout = true),
