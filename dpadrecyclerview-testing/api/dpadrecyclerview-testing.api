@@ -1,0 +1,95 @@
+public final class com/rubensousa/dpadrecyclerview/testing/DpadSelectionEvent {
+	public fun <init> (II)V
+	public synthetic fun <init> (IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun copy (II)Lcom/rubensousa/dpadrecyclerview/testing/DpadSelectionEvent;
+	public static synthetic fun copy$default (Lcom/rubensousa/dpadrecyclerview/testing/DpadSelectionEvent;IIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/testing/DpadSelectionEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPosition ()I
+	public final fun getSubPosition ()I
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/rubensousa/dpadrecyclerview/testing/KeyEvents {
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/KeyEvents;
+	public static final fun pressDown (IJ)V
+	public static synthetic fun pressDown$default (IJILjava/lang/Object;)V
+	public static final fun pressKey (IIJ)V
+	public static synthetic fun pressKey$default (IIJILjava/lang/Object;)V
+	public static final fun pressLeft (IJ)V
+	public static synthetic fun pressLeft$default (IJILjava/lang/Object;)V
+	public static final fun pressRight (IJ)V
+	public static synthetic fun pressRight$default (IJILjava/lang/Object;)V
+	public static final fun pressUp (IJ)V
+	public static synthetic fun pressUp$default (IJILjava/lang/Object;)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/testing/actions/ActionWaiter {
+	public fun <init> (JLjava/util/concurrent/TimeUnit;)V
+	public final fun getTimeoutMillis ()J
+	public final fun waitFor (Landroidx/test/espresso/IdlingResource;Landroidx/test/espresso/UiController;)Z
+}
+
+public final class com/rubensousa/dpadrecyclerview/testing/actions/DpadRecyclerViewActions {
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/actions/DpadRecyclerViewActions;
+	public static final fun execute (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Landroidx/test/espresso/ViewAction;
+	public static final fun executeForViewHolderItemViewAt (ILandroidx/test/espresso/ViewAction;)Landroidx/test/espresso/ViewAction;
+	public static final fun getItemViewBounds (ILandroid/graphics/Rect;)Landroidx/test/espresso/ViewAction;
+	public static final fun getRelativeItemViewBounds (ILandroid/graphics/Rect;)Landroidx/test/espresso/ViewAction;
+	public static final fun selectLastPosition (ZLkotlin/jvm/functions/Function1;)Landroidx/test/espresso/ViewAction;
+	public static synthetic fun selectLastPosition$default (ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Landroidx/test/espresso/ViewAction;
+	public static final fun selectPosition (IIZ)Landroidx/test/espresso/ViewAction;
+	public static synthetic fun selectPosition$default (IIZILjava/lang/Object;)Landroidx/test/espresso/ViewAction;
+	public static final fun selectSubPosition (IZ)Landroidx/test/espresso/ViewAction;
+	public static synthetic fun selectSubPosition$default (IZILjava/lang/Object;)Landroidx/test/espresso/ViewAction;
+	public static final fun updateChildAlignment (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;)Landroidx/test/espresso/ViewAction;
+	public static final fun updateParentAlignment (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;)Landroidx/test/espresso/ViewAction;
+	public static final fun waitForAdapterUpdate (IZJLjava/util/concurrent/TimeUnit;)Landroidx/test/espresso/ViewAction;
+	public static synthetic fun waitForAdapterUpdate$default (IZJLjava/util/concurrent/TimeUnit;ILjava/lang/Object;)Landroidx/test/espresso/ViewAction;
+	public static final fun waitForIdleScroll (JLjava/util/concurrent/TimeUnit;)Landroidx/test/espresso/ViewAction;
+	public static synthetic fun waitForIdleScroll$default (JLjava/util/concurrent/TimeUnit;ILjava/lang/Object;)Landroidx/test/espresso/ViewAction;
+}
+
+public final class com/rubensousa/dpadrecyclerview/testing/actions/DpadViewActions {
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/actions/DpadViewActions;
+	public static final fun clearFocus ()Landroidx/test/espresso/ViewAction;
+	public static final fun getRelativeViewBounds (Landroid/graphics/Rect;)Landroidx/test/espresso/ViewAction;
+	public static final fun getViewBounds (Landroid/graphics/Rect;)Landroidx/test/espresso/ViewAction;
+	public static final fun requestFocus ()Landroidx/test/espresso/ViewAction;
+	public static final fun waitForCondition (Ljava/lang/String;Lkotlin/jvm/functions/Function1;JLjava/util/concurrent/TimeUnit;)Landroidx/test/espresso/ViewAction;
+	public static synthetic fun waitForCondition$default (Ljava/lang/String;Lkotlin/jvm/functions/Function1;JLjava/util/concurrent/TimeUnit;ILjava/lang/Object;)Landroidx/test/espresso/ViewAction;
+}
+
+public abstract class com/rubensousa/dpadrecyclerview/testing/actions/DpadViewActions$DpadViewAction : androidx/test/espresso/ViewAction {
+	public fun <init> (Ljava/lang/String;)V
+	public fun getConstraints ()Lorg/hamcrest/Matcher;
+	public fun getDescription ()Ljava/lang/String;
+}
+
+public final class com/rubensousa/dpadrecyclerview/testing/assertions/DpadRecyclerViewAssertions {
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/assertions/DpadRecyclerViewAssertions;
+	public static final fun isFocused (II)Landroidx/test/espresso/ViewAssertion;
+	public static synthetic fun isFocused$default (IIILjava/lang/Object;)Landroidx/test/espresso/ViewAssertion;
+	public static final fun isNotFocused ()Landroidx/test/espresso/ViewAssertion;
+	public static final fun isSelected (II)Landroidx/test/espresso/ViewAssertion;
+	public static synthetic fun isSelected$default (IIILjava/lang/Object;)Landroidx/test/espresso/ViewAssertion;
+}
+
+public abstract class com/rubensousa/dpadrecyclerview/testing/assertions/DpadRvAssertion : androidx/test/espresso/ViewAssertion {
+	public fun <init> ()V
+	public fun check (Landroid/view/View;Landroidx/test/espresso/NoMatchingViewException;)V
+	public abstract fun check (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/testing/matchers/DpadRecyclerViewMatchers {
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/matchers/DpadRecyclerViewMatchers;
+	public final fun withDescendantOfItemViewAt (I)Lorg/hamcrest/Matcher;
+}
+
+public final class com/rubensousa/dpadrecyclerview/testing/rules/DisableIdleTimeoutRule : org/junit/rules/TestRule {
+	public fun <init> ()V
+	public fun apply (Lorg/junit/runners/model/Statement;Lorg/junit/runner/Description;)Lorg/junit/runners/model/Statement;
+}
+

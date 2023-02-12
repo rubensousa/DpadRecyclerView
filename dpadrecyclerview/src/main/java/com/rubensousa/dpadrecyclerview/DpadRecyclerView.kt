@@ -49,9 +49,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.dpadRecyclerViewStyle
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
-    companion object {
-        const val TAG = "DpadRecyclerView"
-
+    internal companion object {
+        internal const val TAG = "DpadRecyclerView"
         internal val DEBUG = BuildConfig.DEBUG
     }
 

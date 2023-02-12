@@ -16,7 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
-class LayoutResult {
+internal class LayoutResult {
     /**
      * New space added to the layout
      */

@@ -35,8 +35,8 @@ jobs:
       - name: Install Android SDK
         uses: malinskiy/action-android/install-sdk@release/0.1.4
 
-      - name: Run unit tests
-        run: ./gradlew --build-cache testDebugUnitTest --stacktrace
+      - name: Run quality checks
+        run: ./gradlew --build-cache check --stacktrace
 
       - name: Assemble library
         run: ./gradlew --build-cache assembleRelease

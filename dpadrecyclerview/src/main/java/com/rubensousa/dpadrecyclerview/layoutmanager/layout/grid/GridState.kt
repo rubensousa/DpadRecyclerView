@@ -20,7 +20,7 @@ import android.util.SparseIntArray
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
-class GridState(private val layoutManager: LayoutManager) {
+internal class GridState(private val layoutManager: LayoutManager) {
 
     private val preLayoutSpanSizeCache = SparseIntArray()
     private val preLayoutSpanIndexCache = SparseIntArray()
