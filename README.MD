@@ -6,6 +6,23 @@ See the project website for more information: https://rubensousa.github.io/DpadR
 
 Motivation for this library: https://rubensousa.com/2022/11/08/dpadrecyclerview/
 
+## Getting started
+
+Add the following dependency to your app's `build.gradle`:
+
+```groovy
+implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview:$latestVersion"
+```
+
+You can also import the Espresso test helpers for your instrumented tests:
+
+```groovy
+androidTestImplementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:$latestVersion"
+```
+
+Check the official website for more information and recipes: https://rubensousa.github.io/DpadRecyclerView
+
+
 ## Sample app
 
 Check the sample app for a complete example of integration of this library.
