@@ -12,26 +12,27 @@ Motivation for this library is available in my [blog](https://rubensousa.com/202
 - minSDK: 21
 - Java 8
 
-## Features supported
+## New Features compared to Leanback's `BaseGridView`
 
+### Layout
 
-| Feature                          | BaseGridView | DpadRecyclerView |
-|----------------------------------|--------------|------------------|
-| Smooth view alignment changes    | ❌            | ✅                |
-| Throttle focus changes           | ❌            | ✅                |
-| Multiple span sizes              | ❌            | ✅                |
-| Change orientation at runtime    | ❌            | ✅                |
-| Disabling smooth scrolling       | ❌            | ✅                |
-| Circular grid focus              | ❌            | ✅                |
-| Continuous grid focus            | ❌            | ✅                |
-| XML attributes for configuration | ❌            | ✅                |
-| Touch event scrolling            | ✅            | ❌                |
-| Save children state*             | ✅            | ❌                |
-| setLayoutEnabled*                | ✅            | ❌                |
-| setScrollEnabled*                | ✅            | ❌                |
-| Scroll in secondary direction    | ✅            | ❌                |
+- Supports grids with different span sizes
+- Supports reverse layout
+- XML attributes for easier configuration
 
-`*` features still planned
+### Scrolling and focus
+
+- Supports changing the alignment configuration smoothly
+- Supports limiting the number of pending alignments
+- Supports non smooth scroll changes
+- Supports continuous and circular grid focus
+
+## Features missing from Leanback's `BaseGridView`
+
+- Scrolling in secondary direction
+- Disabling recycling of children
+- Saving and restoring children states: clients can save and restore children on the appropriate RecyclerView.Adapter callbacks
+- `setChildrenVisibility`: clients can do this by iterating over the children
 
 
 ## License

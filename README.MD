@@ -6,6 +6,34 @@ See the project website for more information: https://rubensousa.github.io/DpadR
 
 Motivation for this library: https://rubensousa.com/2022/11/08/dpadrecyclerview/
 
+```groovy
+implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview:$latest"
+androidTestImplementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:$latest"
+```
+
+## New Features compared to Leanback's `BaseGridView`
+
+### Layout
+
+- Supports grids with different span sizes
+- Supports reverse layout
+- XML attributes for easier configuration
+
+### Scrolling and focus
+
+- Supports changing the alignment configuration smoothly
+- Supports limiting the number of pending alignments
+- Supports non smooth scroll changes
+- Supports continuous and circular grid focus
+
+## Features missing from Leanback's `BaseGridView`
+
+- Scrolling in secondary direction
+- Disabling recycling of children
+- Saving and restoring children states: clients can save and restore children on the appropriate RecyclerView.Adapter callbacks
+- Touch event scrolling: on purpose, since `DpadRecyclerView` is only meant to react to focus changes
+- `setChildrenVisibility`: clients can do this by iterating over the children
+
 ## Sample app
 
 Check the sample app for a complete example of integration of this library.
