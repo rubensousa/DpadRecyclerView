@@ -20,9 +20,8 @@ You can combine `DpadRecyclerView` with `BaseGridView` as follows:
 Instead of using `VerticalGridView` or `HorizontalGridView`, use `DpadRecyclerView` and set the orientation either programmatically
 with `setOrientation` or with plain XML:
 
-```xml linenums="1" hl_lines="6"
-<com.rubensousa.dpadrecyclerview.DpadRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+```xml linenums="1" hl_lines="5"
+<com.rubensousa.dpadrecyclerview.DpadRecyclerView 
     android:id="@+id/recyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -39,6 +38,8 @@ The window alignment APIs from `BaseGridView` can now be found in the `ParentAli
     recyclerView.windowAlignment = BaseGridView.WINDOW_ALIGN_NO_EDGE
     recyclerView.windowAlignmentOffset = 0
     recyclerView.windowAlignmentOffsetPercent = 100f
+    recyclerView.windowAlignmentPreferKeyLineOverLowEdge = false
+    recyclerView.windowAlignmentPreferKeyLineOverHighEdge = false
     ```
 
 === "DpadRecyclerView"
@@ -48,7 +49,8 @@ The window alignment APIs from `BaseGridView` can now be found in the `ParentAli
         ParentAlignment(
             edge = ParentAlignment.Edge.NONE,
             offset = 0,
-            offsetRatio = 1f
+            offsetRatio = 1f,
+            preferKeylineOverEdge = false
         )
     )
     ```
@@ -148,4 +150,5 @@ Please check the examples in the recipes at [Spacing](recipes/spacing.md).
 
 ## Presenters
 
-These will still work out of the box with `DpadRecyclerView`, but feel free to use any other RecyclerView framework in case you want to get rid completely of the Leanback library.
+These will still work out of the box with `DpadRecyclerView` since they're just a wrapper over `RecyclerView.Adapter`,
+ but feel free to use any other RecyclerView framework in case you want to get rid completely of the Leanback library.
