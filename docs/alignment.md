@@ -28,7 +28,7 @@ You can also create a top anchor:
 In this case, the configuration would be:
 
 ```kotlin
-ParentAlignment(offset = resources.dpToPx(16), offsetRatio = 0.0f)
+ParentAlignment(offset = 16.dp.toPx(), offsetRatio = 0f)
 ```
 
 Both `offset` and `offsetRatio` start counting from the minimum edge of the `DpadRecyclerView`. For horizontal orientations, this would be the start and for vertical orientation this would be the top.
@@ -52,15 +52,16 @@ The `ChildAlignment` class will take care of calculating the anchor position for
 
 Consider the following example for a **horizontal** `DpadRecyclerView`:
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/10662096/200148250-72ddb35f-c9e9-46a8-b7ba-0d28286eaeee.png">
+![Start alignment](../img/start_alignment.png)
 
-The red circle shows the keyline position defined by `ParentAlignment` and the green circles shows the anchor position of each child.
+The blue circle shows the keyline position defined by `ParentAlignment` and the green circles shows the anchor position of each child
+defined by `ChildAlignment`.
 
 In this case, the combined configuration would be:
 
 ```kotlin
-ParentAlignment(offset = resources.dpToPx(16), offsetRatio = 0.0f)
-ChildAlignment(offsetRatio = 0.0f)
+ParentAlignment(offset = 24.dp.toPx(), offsetRatio = 0f)
+ChildAlignment(offsetRatio = 0f)
 ```
 
 ## Examples

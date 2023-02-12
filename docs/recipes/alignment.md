@@ -1,78 +1,157 @@
 # Alignment Recipes
 
-
-## Centering views
+## Center alignment
 
 Example of centering views in a vertical `DpadRecyclerView`:
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/10662096/200148368-8d09094d-0703-466b-9568-cd2c4f81a2e2.png">
+![Center alignment](../img/center_alignment.png)
 
-```kotlin
-ParentAlignment(offsetRatio = 0.5f)
-ChildAlignment(offsetRatio = 0.5f)
-```
+=== "XML"
+
+    ```xml linenums="1"
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:dpadRecyclerViewChildAlignmentOffsetRatio="0.5"
+        app:dpadRecyclerViewParentAlignmentOffsetRatio="0.5" />
+    ```
+
+=== "Kotlin"
+
+    ```kotlin linenums="1"
+    recyclerView.setParentAlignment(
+        ParentAlignment(offsetRatio = 0.5f)
+    )
+    recyclerView.setChildAlignment(
+        ChildAlignment(offsetRatio = 0.5f)
+    )
+    ```
+
+
+## Start alignment
+
+Example of aligning views in a horizontal `DpadRecyclerView`:
+
+![Start alignment](../img/start_alignment.png)
+
+=== "XML"
+
+    ```xml linenums="1"
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
+        app:dpadRecyclerViewParentAlignmentOffset="24dp"
+        app:dpadRecyclerViewParentAlignmentOffsetRatio="0" />
+    ```
+
+=== "Kotlin"
+
+    ```kotlin linenums="1"
+    recyclerView.setParentAlignment(
+        ParentAlignment(
+            offsetRatio = 0f, 
+            offset = 24.dp.toPx()
+        )
+    )
+    recyclerView.setChildAlignment(
+        ChildAlignment(offsetRatio = 0f)
+    )
+    ```
+
+If you want all items to be aligned to the keyline, even the ones at the start or end of the list,
+you need to set an edge preference of `ParentAlignment.Edge.NONE`
+
+=== "XML"
+
+    ```xml linenums="1"
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+        <!-- Other attributes -->
+        app:dpadRecyclerViewParentAlignmentEdge="none" />
+    ```
+
+=== "Kotlin"
+
+    ```kotlin linenums="1"
+    recyclerView.setParentAlignment(
+        ParentAlignment(
+            offsetRatio = 0f, 
+            offset = 24.dp.toPx()
+            edge = ParentAlignment.Edge.NONE
+        )
+    )
+    ```
 
 ## Including padding in child alignment
+
+![Start alignment with padding](../img/start_alignment_padding.png)
 
 In case you want to include padding for the alignment position, set the `includePadding` to true:
 
 ```kotlin
-ChildAlignment(offsetRatio = 0.0f, includePadding = true)
+recyclerView.setChildAlignment(
+    ChildAlignment(offsetRatio = 0f, includePadding = true)
+)
 ```
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/10662096/200148453-c629fd46-f37a-42c7-91ea-4dc24d7c4c02.png">
+Padding will only be considered in the same orientation of the `DpadRecyclerView` and when the ratio is either `0f` or `1f`:
 
-Padding will only be considered in the same orientation of the `DpadRecyclerView` and when the ratio is either `0.0f` or `1.0f`:
-
-* start/top padding for horizontal/vertical when `offsetRatio` is 0.0f
-* end/bottom padding for horizontal/vertical when `offsetRatio` is 1.0f
+* start/top padding for horizontal/vertical when `offsetRatio` is 0f
+* end/bottom padding for horizontal/vertical when `offsetRatio` is 1f
 
 ## Sub position alignment
 
 You can define custom sub positions for every `ViewHolder` to align its children differently.
 Each sub position alignment is essentially an extension of `ChildAlignment`.
 
-<img width="600" alt="image" src="https://user-images.githubusercontent.com/10662096/200148760-7af0b610-b24e-4b9f-9c4b-f5ba54b83234.png">
+![Sub position alignment](../img/subposition_alignment.png)
 
-In this example, the sub positions 1 and 2 are both aligned by the first view and not themselves.
+In this example, we have 3 sub position alignments:
 
-To achieve this, make sure your `ViewHolder` implements `DpadViewHolder` and return the configuration in `getAlignments`:
+1. Sub position 0 is aligned to the parent keyline
+2. Sub position 1 is aligned to the half of the view at sub position 0
+3. Sub position 2 is aligned to the top of the view at sub position 1
 
+To achieve this, make your `RecyclerView.ViewHolder` implement `DpadViewHolder` and return the configuration in `getSubPositionAlignments`:
 
 ```kotlin linenums="1"
 class ExampleViewHolder(
     view: View
 ) : RecyclerView.ViewHolder(view), DpadViewHolder {
 
-    private val alignments = ArrayList<ViewHolderAlignment>()
+    private val alignments = ArrayList<SubPositionAlignment>()
 
     init {
         alignments.apply {
             add(
-                ViewHolderAlignment(
-                    offsetRatio = 0.0f,
+                SubPositionAlignment(
+                    offsetRatio = 0f,
                     alignmentViewId = R.id.firstView,
                     focusViewId = R.id.firstView
                 )
             )
             add(
-                ViewHolderAlignment(
-                    offsetRatio = 0.0f,
+                SubPositionAlignment(
+                    offsetRatio = 0.5f,
                     alignmentViewId = R.id.firstView,
                     focusViewId = R.id.secondView
                 )
             )
             add(
-                ViewHolderAlignment(
-                    offsetRatio = 0.0f,
-                    alignmentViewId = R.id.firstView,
+                SubPositionAlignment(
+                    offsetRatio = 0f,
+                    alignmentViewId = R.id.secondView,
                     focusViewId = R.id.thirdView
                 )
             )
         }
     }
 
-    override fun getAlignments(): List<ViewHolderAlignment> {
+    override fun getSubPositionAlignments(): List<SubPositionAlignment> {
         return alignments
     }
 
