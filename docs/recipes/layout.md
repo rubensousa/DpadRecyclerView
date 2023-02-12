@@ -42,10 +42,10 @@ Do the following either in XML or Kotlin:
 === "XML"
     ```xml linenums="1" hl_lines="5"
     <com.rubensousa.dpadrecyclerview.DpadRecyclerView
-    android:id="@+id/recyclerView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" />
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" />
     ```
 
 === "Kotlin"
@@ -61,10 +61,10 @@ The API is similar to the one of `GridLayoutManager` from androidx.recyclerview:
 === "XML"
     ```xml linenums="1" hl_lines="5"
     <com.rubensousa.dpadrecyclerview.DpadRecyclerView
-    android:id="@+id/recyclerView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:spanCount="5" />
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:spanCount="5" />
     ```
 
 === "Kotlin"
