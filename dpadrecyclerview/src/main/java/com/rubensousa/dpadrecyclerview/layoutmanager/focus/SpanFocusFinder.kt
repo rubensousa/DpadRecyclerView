@@ -22,7 +22,7 @@ import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 /**
  * Holds information about the previous focused spanIndex on all spanGroups
  */
-class SpanFocusFinder {
+internal class SpanFocusFinder {
 
     private var spanCount = 1
     private var cachedSpanIndex = RecyclerView.NO_POSITION

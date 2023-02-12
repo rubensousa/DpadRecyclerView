@@ -44,20 +44,21 @@ import androidx.recyclerview.widget.GridLayoutManager
  */
 abstract class DpadSpanSizeLookup {
 
-    companion object {
+    internal companion object {
 
         internal val DEFAULT = object : DpadSpanSizeLookup() {
             override fun getSpanSize(position: Int): Int = 1
             override fun getSpanIndex(position: Int, spanCount: Int): Int {
                 return position % spanCount
             }
+
             override fun getSpanGroupIndex(position: Int, spanCount: Int): Int {
                 return position / spanCount
             }
         }
 
         @JvmStatic
-        fun findFirstKeyLessThan(cache: SparseIntArray, position: Int): Int {
+        internal fun findFirstKeyLessThan(cache: SparseIntArray, position: Int): Int {
             var lo = 0
             var hi = cache.size() - 1
             while (lo <= hi) {
