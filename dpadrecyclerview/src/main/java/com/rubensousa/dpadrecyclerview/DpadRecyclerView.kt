@@ -224,7 +224,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
         return isOverlappingRenderingEnabled
     }
 
-    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         touchInterceptListener?.let { listener ->
             if (listener.onInterceptTouchEvent(event)) {
                 return true

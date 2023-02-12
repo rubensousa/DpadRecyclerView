@@ -41,6 +41,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun clearOnViewHolderSelectedListeners ()V
 	protected final fun dispatchGenericFocusedEvent (Landroid/view/MotionEvent;)Z
 	public final fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
+	public fun dispatchTouchEvent (Landroid/view/MotionEvent;)Z
 	public final fun findFirstCompletelyVisibleItemPosition ()I
 	public final fun findFirstVisibleItemPosition ()I
 	public final fun findLastCompletelyVisibleItemPosition ()I
@@ -69,7 +70,6 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun isLayoutReversed ()Z
 	public final fun isScrollEnabled ()Z
 	protected final fun onFocusChanged (ZILandroid/graphics/Rect;)V
-	public fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 	protected final fun onRequestFocusInDescendants (ILandroid/graphics/Rect;)Z
 	public final fun onRtlPropertiesChanged (I)V
 	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
