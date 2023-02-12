@@ -314,12 +314,20 @@ internal abstract class StructureEngineer(
         offsetChildren(-offset)
 
         // Layout the next views and recycle the ones we don't need along the way
-        fill(layoutRequest, recyclerViewProvider, recycler, state)
+        val filledSpace = fill(layoutRequest, recyclerViewProvider, recycler, state)
 
         if (recycleChildren) {
             recyclerViewProvider.clearRecycler()
         }
+
+        // If we didn't fill anything, it means we tried to scroll from a touch event,
+        // so just update the scroll limits to ensure everything is still visible
+        if (filledSpace == 0) {
+            layoutAlignment.updateScrollLimits()
+        }
+
         layoutRequest.setRecyclingEnabled(false)
+
         return offset
     }
 

@@ -20,9 +20,14 @@ import android.graphics.Rect
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.action.CoordinatesProvider
+import androidx.test.espresso.action.GeneralSwipeAction
+import androidx.test.espresso.action.Press
+import androidx.test.espresso.action.Swipe
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -37,12 +42,12 @@ import org.hamcrest.Matchers.allOf
 
 fun selectLastPosition(smooth: Boolean = false, id: Int = R.id.recyclerView): Int {
     var selectedPosition: Int = RecyclerView.NO_POSITION
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .perform(DpadRecyclerViewActions.selectLastPosition(smooth) { position ->
             selectedPosition = position
         })
     if (smooth) {
-        Espresso.onView(ViewMatchers.withId(id))
+        Espresso.onView(withId(id))
             .perform(DpadRecyclerViewActions.waitForIdleScroll())
     }
     return selectedPosition
@@ -54,10 +59,10 @@ fun selectPosition(
     smooth: Boolean = false,
     id: Int = R.id.recyclerView
 ) {
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .perform(DpadRecyclerViewActions.selectPosition(position, subPosition, smooth))
     if (smooth) {
-        Espresso.onView(ViewMatchers.withId(id))
+        Espresso.onView(withId(id))
             .perform(DpadRecyclerViewActions.waitForIdleScroll())
     }
 }
@@ -67,10 +72,10 @@ fun selectSubPosition(
     smooth: Boolean = false,
     id: Int = R.id.recyclerView
 ) {
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .perform(DpadRecyclerViewActions.selectSubPosition(subPosition, smooth))
     if (smooth) {
-        Espresso.onView(ViewMatchers.withId(id))
+        Espresso.onView(withId(id))
             .perform(DpadRecyclerViewActions.waitForIdleScroll())
     }
 }
@@ -92,7 +97,7 @@ fun assertFocusAndSelection(position: Int, subPosition: Int = 0, id: Int = R.id.
 }
 
 fun assertSelectedPosition(position: Int, subPosition: Int = 0, id: Int = R.id.recyclerView) {
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .check(DpadRecyclerViewAssertions.isSelected(position, subPosition))
 }
 
@@ -101,24 +106,24 @@ fun assertViewHolderSelected(
     isSelected: Boolean = true,
     id: Int = R.id.recyclerView
 ) {
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .check(ViewHolderSelectedAssertion(position, isSelected))
 }
 
 fun assertFocusPosition(position: Int, subPosition: Int = 0, id: Int = R.id.recyclerView) {
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .check(DpadRecyclerViewAssertions.isFocused(position, subPosition))
 }
 
 fun assertOnRecyclerView(assertion: ViewAssertion, id: Int = R.id.recyclerView) {
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .check(assertion)
 }
 
 
 fun getItemViewBounds(position: Int, id: Int = R.id.recyclerView): Rect {
     val rect = Rect()
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .perform(
             DpadRecyclerViewActions.waitForIdleScroll(),
             DpadRecyclerViewActions.getItemViewBounds(position, rect)
@@ -128,7 +133,7 @@ fun getItemViewBounds(position: Int, id: Int = R.id.recyclerView): Rect {
 
 fun getRelativeItemViewBounds(position: Int, id: Int = R.id.recyclerView): Rect {
     val rect = Rect()
-    Espresso.onView(ViewMatchers.withId(id))
+    Espresso.onView(withId(id))
         .perform(
             DpadRecyclerViewActions.waitForIdleScroll(),
             DpadRecyclerViewActions.getRelativeItemViewBounds(position, rect)
@@ -138,7 +143,7 @@ fun getRelativeItemViewBounds(position: Int, id: Int = R.id.recyclerView): Rect 
 
 fun getRecyclerViewBounds(id: Int = R.id.recyclerView): Rect {
     val rect = Rect()
-    Espresso.onView(ViewMatchers.withId(id)).perform(
+    Espresso.onView(withId(id)).perform(
         DpadRecyclerViewActions.waitForIdleScroll(),
         DpadViewActions.getViewBounds(rect)
     )
@@ -146,7 +151,7 @@ fun getRecyclerViewBounds(id: Int = R.id.recyclerView): Rect {
 }
 
 fun updateParentAlignment(alignment: ParentAlignment, id: Int = R.id.recyclerView) {
-    Espresso.onView(ViewMatchers.withId(id)).perform(
+    Espresso.onView(withId(id)).perform(
         DpadRecyclerViewActions.waitForIdleScroll(),
         DpadRecyclerViewActions.updateParentAlignment(alignment),
         DpadRecyclerViewActions.waitForIdleScroll()
@@ -154,7 +159,7 @@ fun updateParentAlignment(alignment: ParentAlignment, id: Int = R.id.recyclerVie
 }
 
 fun updateChildAlignment(alignment: ChildAlignment, id: Int = R.id.recyclerView) {
-    Espresso.onView(ViewMatchers.withId(id)).perform(
+    Espresso.onView(withId(id)).perform(
         DpadRecyclerViewActions.waitForIdleScroll(),
         DpadRecyclerViewActions.updateChildAlignment(alignment),
         DpadRecyclerViewActions.waitForIdleScroll()
@@ -162,11 +167,11 @@ fun updateChildAlignment(alignment: ChildAlignment, id: Int = R.id.recyclerView)
 }
 
 fun waitForIdleScrollState(id: Int = R.id.recyclerView) {
-    Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.waitForIdleScroll())
+    Espresso.onView(withId(id)).perform(DpadRecyclerViewActions.waitForIdleScroll())
 }
 
 fun waitForAdapterUpdate(id: Int = R.id.recyclerView) {
-    Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.waitForAdapterUpdate())
+    Espresso.onView(withId(id)).perform(DpadRecyclerViewActions.waitForAdapterUpdate())
 }
 
 fun waitForAnimation() {
@@ -182,7 +187,7 @@ fun waitForCondition(
     description: String,
     condition: (recyclerView: DpadRecyclerView) -> Boolean
 ) {
-    Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
+    Espresso.onView(withId(R.id.recyclerView))
         .perform(DpadViewActions.waitForCondition(description, condition))
 }
 
@@ -191,5 +196,29 @@ fun onRecyclerView(
     id: Int = R.id.recyclerView,
     action: (recyclerView: DpadRecyclerView) -> Unit
 ) {
-    Espresso.onView(ViewMatchers.withId(id)).perform(DpadRecyclerViewActions.execute(description, action))
+    Espresso.onView(withId(id))
+        .perform(DpadRecyclerViewActions.execute(description, action))
 }
+
+fun swipeVerticallyBy(dy: Int) {
+    val centerCoordinatesProvider = CoordinatesProvider { view ->
+        val xy = IntArray(2)
+        view.getLocationOnScreen(xy)
+        xy[0] = xy[0] + view.width / 2
+        xy[1] = xy[1] + view.height / 2
+        floatArrayOf(xy[0].toFloat(), xy[1].toFloat())
+    }
+    Espresso.onView(withId(R.id.recyclerView))
+        .perform(
+            GeneralSwipeAction(
+                Swipe.FAST,
+                centerCoordinatesProvider,
+                { view ->
+                    val location = centerCoordinatesProvider.calculateCoordinates(view)
+                    location[1] = location[1] + dy
+                    location
+                }, Press.FINGER
+            )
+        )
+}
+
