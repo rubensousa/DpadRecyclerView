@@ -16,7 +16,6 @@
 
 package com.rubensousa.dpadrecyclerview
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Rect
@@ -219,15 +218,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun setHasFixedSize(hasFixedSize: Boolean) {
         super.setHasFixedSize(hasFixedSize)
-    }
-
-    final override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
-        return false
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    final override fun onTouchEvent(e: MotionEvent?): Boolean {
-        return false
     }
 
     final override fun hasOverlappingRendering(): Boolean {

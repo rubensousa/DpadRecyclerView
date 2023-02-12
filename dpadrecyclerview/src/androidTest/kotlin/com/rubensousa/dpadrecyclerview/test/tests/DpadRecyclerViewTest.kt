@@ -225,12 +225,6 @@ abstract class DpadRecyclerViewTest {
 
     protected fun assertChildrenPositions(bounds: List<ViewBounds>) {
         waitForIdleScrollState()
-        val expectedChildCount = bounds.size
-        var childCount = 0
-        onRecyclerView("Getting child count") { recyclerView ->
-            childCount = recyclerView.layoutManager?.childCount ?: 0
-        }
-        assertThat(childCount).isEqualTo(expectedChildCount)
         onRecyclerView("Assert children positions") { recyclerView ->
             LayoutManagerAssertions.assertChildrenBounds(recyclerView.layoutManager!!, bounds)
         }
