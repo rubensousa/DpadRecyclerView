@@ -56,7 +56,7 @@ nav:
   - 'Migrating from Leanback': migrating_leanback.md
   - 'Focus and selection': selection.md
   - 'Alignment': alignment.md
-  - 'Compose interoperability': compose.md
+  #- 'Compose interoperability': compose.md
   - 'Testing': testing.md
   - 'XML attributes': xml.md
   - 'Recipes':
