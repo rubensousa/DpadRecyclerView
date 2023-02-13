@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid
+package com.rubensousa.dpadrecyclerview.testfixtures
 
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.max
 
-internal class GridRow(
+class GridRow(
     val numberOfSpans: Int,
     // This is the primary space, which would be height for horizontal grids
     private var width: Int

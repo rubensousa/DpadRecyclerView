@@ -2,7 +2,6 @@ package com.rubensousa.dpadrecyclerview.testfixtures
 
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
-import com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid.GridRow
 import kotlin.math.abs
 import kotlin.math.max
 

@@ -25,8 +25,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemNavigationBinding
 
@@ -41,7 +41,7 @@ class MainFragment : Fragment(R.layout.screen_main) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val recyclerView = view as RecyclerView
+        val recyclerView = view as DpadRecyclerView
         val adapter = NavigationAdapter()
         recyclerView.adapter = adapter
         recyclerView.requestFocus()

@@ -52,7 +52,17 @@ data class ParentAlignment(
      *
      * Default is true.
      */
-    val isOffsetRatioEnabled: Boolean = true
+    val isOffsetRatioEnabled: Boolean = true,
+    /**
+     * When [Edge.MAX] or [Edge.MIN] are used,
+     * this flag decides if the Views should be aligned to the keyline
+     * when there are few items, overriding the edge preference.
+     *
+     * Default is:
+     * True for [Edge.MAX], which means we prefer aligning to the keyline
+     * False for [Edge.MIN], which means we prefer aligning to the min edge.
+     */
+    val preferKeylineOverEdge: Boolean = edge == MAX,
 ) : Parcelable {
 
     companion object CREATOR : Parcelable.Creator<ParentAlignment> {
@@ -81,6 +91,7 @@ data class ParentAlignment(
         parcel.readInt(),
         parcel.readFloat(),
         parcel.readByte() != 0.toByte(),
+        parcel.readByte() != 0.toByte(),
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -88,6 +99,7 @@ data class ParentAlignment(
         parcel.writeInt(offset)
         parcel.writeFloat(offsetRatio)
         parcel.writeByte(if (isOffsetRatioEnabled) 1 else 0)
+        parcel.writeByte(if (preferKeylineOverEdge) 1 else 0)
     }
 
     override fun describeContents(): Int {

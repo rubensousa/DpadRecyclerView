@@ -1,0 +1,500 @@
+public final class com/rubensousa/dpadrecyclerview/ChildAlignment : android/os/Parcelable, com/rubensousa/dpadrecyclerview/ViewAlignment {
+	public static final field CREATOR Lcom/rubensousa/dpadrecyclerview/ChildAlignment$CREATOR;
+	public fun <init> ()V
+	public fun <init> (IFZZZ)V
+	public synthetic fun <init> (IFZZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/os/Parcel;)V
+	public final fun component1 ()I
+	public final fun component2 ()F
+	public final fun component3 ()Z
+	public final fun component4 ()Z
+	public final fun component5 ()Z
+	public final fun copy (IFZZZ)Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
+	public static synthetic fun copy$default (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;IFZZZILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
+	public fun describeContents ()I
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getAlignToBaseline ()Z
+	public fun getIncludePadding ()Z
+	public fun getOffset ()I
+	public fun getOffsetRatio ()F
+	public fun hashCode ()I
+	public fun isOffsetRatioEnabled ()Z
+	public fun toString ()Ljava/lang/String;
+	public fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/ChildAlignment$CREATOR : android/os/Parcelable$Creator {
+	public fun createFromParcel (Landroid/os/Parcel;)Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public fun newArray (I)[Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recyclerview/widget/RecyclerView {
+	public fun <init> (Landroid/content/Context;)V
+	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
+	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;I)V
+	public synthetic fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
+	public final fun addOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
+	public final fun clearOnLayoutCompletedListeners ()V
+	public final fun clearOnViewHolderSelectedListeners ()V
+	protected final fun dispatchGenericFocusedEvent (Landroid/view/MotionEvent;)Z
+	public final fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
+	public fun dispatchTouchEvent (Landroid/view/MotionEvent;)Z
+	public final fun findFirstCompletelyVisibleItemPosition ()I
+	public final fun findFirstVisibleItemPosition ()I
+	public final fun findLastCompletelyVisibleItemPosition ()I
+	public final fun findLastVisibleItemPosition ()I
+	public final fun focusSearch (I)Landroid/view/View;
+	public final fun getChildAlignment ()Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
+	public final fun getCurrentSubPositions ()I
+	public final fun getFocusableDirection ()Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+	public final fun getInitialPrefetchItemCount ()I
+	public final fun getOnKeyInterceptListener ()Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnKeyInterceptListener;
+	public final fun getOnMotionInterceptListener ()Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnMotionInterceptListener;
+	public final fun getOnUnhandledKeyListener ()Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnUnhandledKeyListener;
+	public final fun getOrientation ()I
+	public final fun getParentAlignment ()Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
+	public final fun getSelectedPosition ()I
+	public final fun getSelectedSubPosition ()I
+	public final fun getSmoothScrollMaxPendingAlignments ()I
+	public final fun getSmoothScrollMaxPendingMoves ()I
+	public final fun getSmoothScrollSpeedFactor ()F
+	public final fun getSpanCount ()I
+	public final fun hasOverlappingRendering ()Z
+	public final fun isFocusDrawingOrderEnabled ()Z
+	public final fun isFocusSearchDisabled ()Z
+	public final fun isItemPrefetchEnabled ()Z
+	public final fun isLayoutEnabled ()Z
+	public final fun isLayoutReversed ()Z
+	public final fun isScrollEnabled ()Z
+	protected final fun onFocusChanged (ZILandroid/graphics/Rect;)V
+	protected final fun onRequestFocusInDescendants (ILandroid/graphics/Rect;)Z
+	public final fun onRtlPropertiesChanged (I)V
+	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
+	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
+	public final fun removeView (Landroid/view/View;)V
+	public final fun removeViewAt (I)V
+	public final fun setAlignments (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
+	public final fun setChildAlignment (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
+	public static synthetic fun setChildAlignment$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;ZILjava/lang/Object;)V
+	public final fun setChildDrawingOrderCallback (Landroidx/recyclerview/widget/RecyclerView$ChildDrawingOrderCallback;)V
+	public final fun setExtraLayoutSpaceStrategy (Lcom/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy;)V
+	public final fun setFocusDrawingOrderEnabled (Z)V
+	public final fun setFocusOutAllowed (ZZ)V
+	public final fun setFocusOutSideAllowed (ZZ)V
+	public final fun setFocusSearchDisabled (Z)V
+	public final fun setFocusSearchEnabledDuringAnimations (Z)V
+	public final fun setFocusableDirection (Lcom/rubensousa/dpadrecyclerview/FocusableDirection;)V
+	public final fun setGravity (I)V
+	public final fun setHasFixedSize (Z)V
+	public final fun setHasOverlappingRendering (Z)V
+	public final fun setInitialPrefetchItemCount (I)V
+	public final fun setItemAnimator (Landroidx/recyclerview/widget/RecyclerView$ItemAnimator;)V
+	public final fun setItemPrefetchEnabled (Z)V
+	public final fun setLayoutEnabled (Z)V
+	public final fun setLayoutManager (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)V
+	public final fun setOnChildLaidOutListener (Lcom/rubensousa/dpadrecyclerview/OnChildLaidOutListener;)V
+	public final fun setOnKeyInterceptListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnKeyInterceptListener;)V
+	public final fun setOnMotionInterceptListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnMotionInterceptListener;)V
+	public final fun setOnTouchInterceptListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnTouchInterceptListener;)V
+	public final fun setOnUnhandledKeyListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnUnhandledKeyListener;)V
+	public final fun setOrientation (I)V
+	public final fun setParentAlignment (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Z)V
+	public static synthetic fun setParentAlignment$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/ParentAlignment;ZILjava/lang/Object;)V
+	public final fun setRecycleChildrenOnDetach (Z)V
+	public final fun setReverseLayout (Z)V
+	public final fun setScrollEnabled (Z)V
+	public final fun setSelectedPosition (I)V
+	public final fun setSelectedPosition (ILcom/rubensousa/dpadrecyclerview/ViewHolderTask;)V
+	public final fun setSelectedPositionSmooth (I)V
+	public final fun setSelectedPositionSmooth (ILcom/rubensousa/dpadrecyclerview/ViewHolderTask;)V
+	public final fun setSelectedSubPosition (I)V
+	public final fun setSelectedSubPosition (II)V
+	public final fun setSelectedSubPositionSmooth (I)V
+	public final fun setSelectedSubPositionSmooth (II)V
+	public final fun setSmoothFocusChangesEnabled (Z)V
+	public final fun setSmoothScrollBehavior (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$SmoothScrollByBehavior;)V
+	public final fun setSmoothScrollMaxPendingAlignments (I)V
+	public final fun setSmoothScrollMaxPendingMoves (I)V
+	public final fun setSmoothScrollSpeedFactor (F)V
+	public final fun setSpanCount (I)V
+	public final fun setSpanSizeLookup (Lcom/rubensousa/dpadrecyclerview/DpadSpanSizeLookup;)V
+	public final fun setWillNotDraw (Z)V
+	public final fun smoothScrollBy (II)V
+	public final fun smoothScrollBy (IILandroid/view/animation/Interpolator;)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnKeyInterceptListener {
+	public abstract fun onInterceptKeyEvent (Landroid/view/KeyEvent;)Z
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener {
+	public abstract fun onLayoutCompleted (Landroidx/recyclerview/widget/RecyclerView$State;)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnMotionInterceptListener {
+	public abstract fun onInterceptMotionEvent (Landroid/view/MotionEvent;)Z
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnTouchInterceptListener {
+	public abstract fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnUnhandledKeyListener {
+	public abstract fun onUnhandledKey (Landroid/view/KeyEvent;)Z
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$SmoothScrollByBehavior {
+	public abstract fun configSmoothScrollByDuration (II)I
+	public abstract fun configSmoothScrollByInterpolator (II)Landroid/view/animation/Interpolator;
+}
+
+public abstract class com/rubensousa/dpadrecyclerview/DpadSpanSizeLookup {
+	public fun <init> ()V
+	public static final fun findFirstKeyLessThan$dpadrecyclerview_release (Landroid/util/SparseIntArray;I)I
+	public final fun getCachedSpanGroupIndex (II)I
+	public final fun getCachedSpanIndex (II)I
+	public fun getSpanGroupIndex (II)I
+	public fun getSpanIndex (II)I
+	public abstract fun getSpanSize (I)I
+	public final fun invalidateSpanGroupIndexCache ()V
+	public final fun invalidateSpanIndexCache ()V
+	public final fun setSpanGroupIndexCacheEnabled (Z)V
+	public final fun setSpanIndexCacheEnabled (Z)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadViewHolder {
+	public abstract fun getSubPositionAlignments ()Ljava/util/List;
+	public abstract fun onViewHolderDeselected ()V
+	public abstract fun onViewHolderSelected ()V
+}
+
+public final class com/rubensousa/dpadrecyclerview/DpadViewHolder$DefaultImpls {
+	public static fun getSubPositionAlignments (Lcom/rubensousa/dpadrecyclerview/DpadViewHolder;)Ljava/util/List;
+	public static fun onViewHolderDeselected (Lcom/rubensousa/dpadrecyclerview/DpadViewHolder;)V
+	public static fun onViewHolderSelected (Lcom/rubensousa/dpadrecyclerview/DpadViewHolder;)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy {
+	public abstract fun calculateEndExtraLayoutSpace (Landroidx/recyclerview/widget/RecyclerView$State;)I
+	public abstract fun calculateStartExtraLayoutSpace (Landroidx/recyclerview/widget/RecyclerView$State;)I
+}
+
+public final class com/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy$DefaultImpls {
+	public static fun calculateEndExtraLayoutSpace (Lcom/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy;Landroidx/recyclerview/widget/RecyclerView$State;)I
+	public static fun calculateStartExtraLayoutSpace (Lcom/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy;Landroidx/recyclerview/widget/RecyclerView$State;)I
+}
+
+public final class com/rubensousa/dpadrecyclerview/FocusableDirection : java/lang/Enum {
+	public static final field CIRCULAR Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+	public static final field CONTINUOUS Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+	public static final field STANDARD Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+	public static fun valueOf (Ljava/lang/String;)Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+	public static fun values ()[Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/OnChildLaidOutListener {
+	public abstract fun onChildLaidOut (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener {
+	public abstract fun onViewHolderSelected (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;II)V
+	public abstract fun onViewHolderSelectedAndAligned (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;II)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener$DefaultImpls {
+	public static fun onViewHolderSelected (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;II)V
+	public static fun onViewHolderSelectedAndAligned (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;II)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/ParentAlignment : android/os/Parcelable {
+	public static final field CREATOR Lcom/rubensousa/dpadrecyclerview/ParentAlignment$CREATOR;
+	public static final field DEFAULT_OFFSET I
+	public static final field DEFAULT_OFFSET_RATIO F
+	public fun <init> ()V
+	public fun <init> (Landroid/os/Parcel;)V
+	public fun <init> (Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;IFZZ)V
+	public synthetic fun <init> (Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;IFZZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public final fun component2 ()I
+	public final fun component3 ()F
+	public final fun component4 ()Z
+	public final fun component5 ()Z
+	public final fun copy (Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;IFZZ)Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
+	public static synthetic fun copy$default (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;IFZZILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
+	public fun describeContents ()I
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getEdge ()Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public final fun getOffset ()I
+	public final fun getOffsetRatio ()F
+	public final fun getPreferKeylineOverEdge ()Z
+	public fun hashCode ()I
+	public final fun isOffsetRatioEnabled ()Z
+	public fun toString ()Ljava/lang/String;
+	public fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/ParentAlignment$CREATOR : android/os/Parcelable$Creator {
+	public fun createFromParcel (Landroid/os/Parcel;)Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun getDEFAULT_EDGE ()Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public fun newArray (I)[Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/rubensousa/dpadrecyclerview/ParentAlignment$Edge : java/lang/Enum {
+	public static final field MAX Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public static final field MIN Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public static final field MIN_MAX Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public static final field NONE Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public static fun valueOf (Ljava/lang/String;)Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public static fun values ()[Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+}
+
+public final class com/rubensousa/dpadrecyclerview/SubPositionAlignment : android/os/Parcelable, com/rubensousa/dpadrecyclerview/ViewAlignment {
+	public static final field CREATOR Lcom/rubensousa/dpadrecyclerview/SubPositionAlignment$CREATOR;
+	public fun <init> ()V
+	public fun <init> (IFZZZII)V
+	public synthetic fun <init> (IFZZZIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/os/Parcel;)V
+	public final fun component1 ()I
+	public final fun component2 ()F
+	public final fun component3 ()Z
+	public final fun component4 ()Z
+	public final fun component5 ()Z
+	public final fun component6 ()I
+	public final fun copy (IFZZZII)Lcom/rubensousa/dpadrecyclerview/SubPositionAlignment;
+	public static synthetic fun copy$default (Lcom/rubensousa/dpadrecyclerview/SubPositionAlignment;IFZZZIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/SubPositionAlignment;
+	public fun describeContents ()I
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getAlignToBaseline ()Z
+	public final fun getAlignmentViewId ()I
+	public final fun getFocusViewId ()I
+	public fun getIncludePadding ()Z
+	public fun getOffset ()I
+	public fun getOffsetRatio ()F
+	public fun hashCode ()I
+	public fun isOffsetRatioEnabled ()Z
+	public fun toString ()Ljava/lang/String;
+	public fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/SubPositionAlignment$CREATOR : android/os/Parcelable$Creator {
+	public fun createFromParcel (Landroid/os/Parcel;)Lcom/rubensousa/dpadrecyclerview/SubPositionAlignment;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public fun newArray (I)[Lcom/rubensousa/dpadrecyclerview/SubPositionAlignment;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/rubensousa/dpadrecyclerview/UnboundViewPool : androidx/recyclerview/widget/RecyclerView$RecycledViewPool {
+	public fun <init> ()V
+	public fun clear ()V
+	public fun getRecycledView (I)Landroidx/recyclerview/widget/RecyclerView$ViewHolder;
+	public fun getRecycledViewCount (I)I
+	public fun putRecycledView (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
+	public fun setMaxRecycledViews (II)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/ViewAlignment {
+	public static final field Companion Lcom/rubensousa/dpadrecyclerview/ViewAlignment$Companion;
+	public static final field DEFAULT_OFFSET I
+	public static final field DEFAULT_OFFSET_RATIO F
+	public abstract fun getAlignToBaseline ()Z
+	public abstract fun getIncludePadding ()Z
+	public abstract fun getOffset ()I
+	public abstract fun getOffsetRatio ()F
+	public abstract fun isOffsetRatioEnabled ()Z
+}
+
+public final class com/rubensousa/dpadrecyclerview/ViewAlignment$Companion {
+	public static final field DEFAULT_OFFSET I
+	public static final field DEFAULT_OFFSET_RATIO F
+}
+
+public abstract class com/rubensousa/dpadrecyclerview/ViewHolderTask {
+	public fun <init> ()V
+	public fun <init> (Z)V
+	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public abstract fun execute (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
+	public final fun getExecuteWhenAligned ()Z
+}
+
+public final class com/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParams : androidx/recyclerview/widget/RecyclerView$LayoutParams {
+	public static final field Companion Lcom/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParams$Companion;
+	public static final field INVALID_SPAN_ID I
+	public fun <init> (II)V
+	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
+	public fun <init> (Landroid/view/ViewGroup$LayoutParams;)V
+	public fun <init> (Landroid/view/ViewGroup$MarginLayoutParams;)V
+	public fun <init> (Landroidx/recyclerview/widget/RecyclerView$LayoutParams;)V
+	public fun <init> (Lcom/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParams;)V
+	public final fun getAlignmentAnchor ()I
+	public final fun getSpanGroupIndex ()I
+	public final fun getSpanIndex ()I
+	public final fun getSpanSize ()I
+}
+
+public final class com/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParams$Companion {
+}
+
+public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutManager : androidx/recyclerview/widget/RecyclerView$LayoutManager {
+	public fun <init> (Landroidx/recyclerview/widget/RecyclerView$LayoutManager$Properties;)V
+	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
+	public final fun addOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
+	public fun canScrollHorizontally ()Z
+	public fun canScrollVertically ()Z
+	public fun checkLayoutParams (Landroidx/recyclerview/widget/RecyclerView$LayoutParams;)Z
+	public final fun clearOnLayoutCompletedListeners ()V
+	public final fun clearOnViewHolderSelectedListeners ()V
+	public fun collectAdjacentPrefetchPositions (IILandroidx/recyclerview/widget/RecyclerView$State;Landroidx/recyclerview/widget/RecyclerView$LayoutManager$LayoutPrefetchRegistry;)V
+	public fun collectInitialPrefetchPositions (ILandroidx/recyclerview/widget/RecyclerView$LayoutManager$LayoutPrefetchRegistry;)V
+	public final fun findFirstCompletelyVisibleItemPosition ()I
+	public final fun findFirstVisibleItemPosition ()I
+	public final fun findLastCompletelyVisibleItemPosition ()I
+	public final fun findLastVisibleItemPosition ()I
+	public fun generateDefaultLayoutParams ()Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
+	public fun generateLayoutParams (Landroid/content/Context;Landroid/util/AttributeSet;)Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
+	public fun generateLayoutParams (Landroid/view/ViewGroup$LayoutParams;)Landroidx/recyclerview/widget/RecyclerView$LayoutParams;
+	public final fun getChildAlignment ()Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
+	public fun getColumnCountForAccessibility (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)I
+	public final fun getCurrentSubPositions ()I
+	public final fun getFocusableDirection ()Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+	public final fun getMaxPendingAlignments ()I
+	public final fun getMaxPendingMoves ()I
+	public final fun getParentAlignment ()Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
+	public fun getRowCountForAccessibility (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)I
+	public final fun getSelectedPosition ()I
+	public final fun getSelectedSubPosition ()I
+	public final fun getSmoothScrollSpeedFactor ()F
+	public final fun getSpanCount ()I
+	public fun isAutoMeasureEnabled ()Z
+	public final fun isFocusSearchDisabled ()Z
+	public final fun isLayoutEnabled ()Z
+	public fun onAdapterChanged (Landroidx/recyclerview/widget/RecyclerView$Adapter;Landroidx/recyclerview/widget/RecyclerView$Adapter;)V
+	public fun onAddFocusables (Landroidx/recyclerview/widget/RecyclerView;Ljava/util/ArrayList;II)Z
+	public fun onAttachedToWindow (Landroidx/recyclerview/widget/RecyclerView;)V
+	public fun onDetachedFromWindow (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$Recycler;)V
+	public final fun onFocusChanged (Z)V
+	public fun onInitializeAccessibilityNodeInfo (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)V
+	public fun onInitializeAccessibilityNodeInfoForItem (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;Landroid/view/View;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)V
+	public fun onInterceptFocusSearch (Landroid/view/View;I)Landroid/view/View;
+	public fun onItemsAdded (Landroidx/recyclerview/widget/RecyclerView;II)V
+	public fun onItemsChanged (Landroidx/recyclerview/widget/RecyclerView;)V
+	public fun onItemsMoved (Landroidx/recyclerview/widget/RecyclerView;III)V
+	public fun onItemsRemoved (Landroidx/recyclerview/widget/RecyclerView;II)V
+	public fun onLayoutChildren (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)V
+	public fun onLayoutCompleted (Landroidx/recyclerview/widget/RecyclerView$State;)V
+	public fun onRequestChildFocus (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;Landroid/view/View;Landroid/view/View;)Z
+	public final fun onRequestFocusInDescendants (ILandroid/graphics/Rect;)Z
+	public fun onRestoreInstanceState (Landroid/os/Parcelable;)V
+	public final fun onRtlPropertiesChanged ()V
+	public fun onSaveInstanceState ()Landroid/os/Parcelable;
+	public fun performAccessibilityAction (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;ILandroid/os/Bundle;)Z
+	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
+	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
+	public fun requestChildRectangleOnScreen (Landroidx/recyclerview/widget/RecyclerView;Landroid/view/View;Landroid/graphics/Rect;Z)Z
+	public fun scrollHorizontallyBy (ILandroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)I
+	public fun scrollToPosition (I)V
+	public fun scrollVerticallyBy (ILandroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)I
+	public final fun selectPosition (IIZ)V
+	public final fun selectSubPosition (IZ)V
+	public final fun setAlignments (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
+	public final fun setChildAlignment (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
+	public final fun setChildrenDrawingOrderEnabled (Z)V
+	public final fun setExtraLayoutSpaceStrategy (Lcom/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy;)V
+	public final fun setFocusOutAllowed (ZZ)V
+	public final fun setFocusOutSideAllowed (ZZ)V
+	public final fun setFocusSearchDisabled (Z)V
+	public final fun setFocusSearchEnabledDuringAnimations (Z)V
+	public final fun setFocusableDirection (Lcom/rubensousa/dpadrecyclerview/FocusableDirection;)V
+	public final fun setGravity (I)V
+	public final fun setLayoutEnabled (Z)V
+	public final fun setMaxPendingAlignments (I)V
+	public final fun setMaxPendingMoves (I)V
+	public final fun setOnChildLaidOutListener (Lcom/rubensousa/dpadrecyclerview/OnChildLaidOutListener;)V
+	public final fun setOrientation (I)V
+	public final fun setParentAlignment (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Z)V
+	public final fun setRecycleChildrenOnDetach (Z)V
+	public final fun setRecyclerView (Landroidx/recyclerview/widget/RecyclerView;)V
+	public final fun setReverseLayout (Z)V
+	public final fun setScrollEnabled (Z)V
+	public final fun setSmoothFocusChangesEnabled (Z)V
+	public final fun setSmoothScrollSpeedFactor (F)V
+	public final fun setSpanCount (I)V
+	public final fun setSpanSizeLookup (Lcom/rubensousa/dpadrecyclerview/DpadSpanSizeLookup;)V
+	public fun smoothScrollToPosition (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;I)V
+	public fun startSmoothScroll (Landroidx/recyclerview/widget/RecyclerView$SmoothScroller;)V
+	public fun supportsPredictiveItemAnimations ()Z
+}
+
+public final class com/rubensousa/dpadrecyclerview/layoutmanager/layout/ViewBounds {
+	public fun <init> ()V
+	public fun <init> (IIII)V
+	public synthetic fun <init> (IIIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun asRect ()Landroid/graphics/Rect;
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun copy (IIII)Lcom/rubensousa/dpadrecyclerview/layoutmanager/layout/ViewBounds;
+	public static synthetic fun copy$default (Lcom/rubensousa/dpadrecyclerview/layoutmanager/layout/ViewBounds;IIIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/layoutmanager/layout/ViewBounds;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getBottom ()I
+	public final fun getHeight ()I
+	public final fun getLeft ()I
+	public final fun getRight ()I
+	public final fun getTop ()I
+	public final fun getWidth ()I
+	public fun hashCode ()I
+	public final fun offsetHorizontal (I)V
+	public final fun offsetVertical (I)V
+	public final fun setBottom (I)V
+	public final fun setEmpty ()V
+	public final fun setLeft (I)V
+	public final fun setRight (I)V
+	public final fun setTop (I)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/rubensousa/dpadrecyclerview/layoutmanager/layout/ViewBoundsKt {
+	public static final fun offsetHorizontallyBy (Ljava/util/List;I)Ljava/util/List;
+	public static final fun offsetVerticallyBy (Ljava/util/List;I)Ljava/util/List;
+}
+
+public final class com/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration : com/rubensousa/dpadrecyclerview/spacing/DpadSpacingDecoration {
+	public static final field Companion Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion;
+	public synthetic fun <init> (IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
+	public fun getItemOffsets (Landroid/graphics/Rect;Landroid/view/View;ILcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion {
+	public final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
+	public static synthetic fun create$default (Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion;IIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
+}
+
+public final class com/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration : com/rubensousa/dpadrecyclerview/spacing/DpadSpacingDecoration {
+	public static final field Companion Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion;
+	public synthetic fun <init> (IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public static final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
+	public fun getItemOffsets (Landroid/graphics/Rect;Landroid/view/View;ILcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion {
+	public final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
+	public static synthetic fun create$default (Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion;IIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
+}
+
+public abstract class com/rubensousa/dpadrecyclerview/spacing/DpadSpacingDecoration : androidx/recyclerview/widget/RecyclerView$ItemDecoration {
+	public fun <init> ()V
+	public abstract fun getItemOffsets (Landroid/graphics/Rect;Landroid/view/View;ILcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;)V
+	public final fun getItemOffsets (Landroid/graphics/Rect;Landroid/view/View;Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;)V
+	public final fun setSpacingLookup (Lcom/rubensousa/dpadrecyclerview/spacing/DpadSpacingLookup;)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/spacing/DpadSpacingLookup {
+	public abstract fun shouldApplySpacing (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;I)Z
+}
+

@@ -16,7 +16,6 @@
 
 package com.rubensousa.dpadrecyclerview
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Rect
@@ -32,7 +31,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 
 /**
- * A [RecyclerView] that scrolls to items on DPAD key events instead of swipe/touch gestures.
+ * A [RecyclerView] that scrolls to items on DPAD key events.
  *
  * Items are aligned based on the following configurations:
  * * [ParentAlignment] aligns items in relation to this RecyclerView's dimensions
@@ -50,9 +49,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
     defStyleAttr: Int = R.attr.dpadRecyclerViewStyle
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
-    companion object {
-        const val TAG = "DpadRecyclerView"
-
+    internal companion object {
+        internal const val TAG = "DpadRecyclerView"
         internal val DEBUG = BuildConfig.DEBUG
     }
 
@@ -62,6 +60,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var pivotLayoutManager: PivotLayoutManager? = null
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
+    private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
     private var keyInterceptListener: OnKeyInterceptListener? = null
     private var unhandledKeyListener: OnUnhandledKeyListener? = null
@@ -221,17 +220,17 @@ open class DpadRecyclerView @JvmOverloads constructor(
         super.setHasFixedSize(hasFixedSize)
     }
 
-    final override fun onInterceptTouchEvent(e: MotionEvent?): Boolean {
-        return false
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    final override fun onTouchEvent(e: MotionEvent?): Boolean {
-        return false
-    }
-
     final override fun hasOverlappingRendering(): Boolean {
         return isOverlappingRenderingEnabled
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        touchInterceptListener?.let { listener ->
+            if (listener.onInterceptTouchEvent(event)) {
+                return true
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 
     final override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -968,6 +967,15 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Sets a listener for intercepting touch events
+     *
+     * @param listener the touch intercept listener
+     */
+    fun setOnTouchInterceptListener(listener: OnTouchInterceptListener?) {
+        touchInterceptListener = listener
+    }
+
+    /**
      * @return the listener set by [setOnMotionInterceptListener]
      */
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
@@ -1064,6 +1072,16 @@ open class DpadRecyclerView @JvmOverloads constructor(
          * @return true if the motion event should be consumed.
          */
         fun onInterceptMotionEvent(event: MotionEvent): Boolean
+    }
+
+    /**
+     * Listener for intercepting touch dispatch events
+     */
+    interface OnTouchInterceptListener {
+        /**
+         * @return true if event should be consumed
+         */
+        fun onInterceptTouchEvent(event: MotionEvent): Boolean
     }
 
 }

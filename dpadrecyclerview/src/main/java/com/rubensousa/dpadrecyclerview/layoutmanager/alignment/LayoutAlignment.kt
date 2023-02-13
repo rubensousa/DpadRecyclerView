@@ -63,8 +63,6 @@ internal class LayoutAlignment(
         return parentAlignmentCalculator.calculateKeyline(parentAlignment)
     }
 
-    fun getParentEdgePreference(): ParentAlignment.Edge = parentAlignment.edge
-
     fun getViewAtSubPosition(view: View, subPosition: Int): View? {
         val viewHolder = layoutInfo.getChildViewHolder(view)
         val childAlignments = (viewHolder as? DpadViewHolder)?.getSubPositionAlignments() ?: return null

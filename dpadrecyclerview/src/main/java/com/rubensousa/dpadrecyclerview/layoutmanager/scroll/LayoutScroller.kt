@@ -139,7 +139,6 @@ internal class LayoutScroller(
             return
         }
         recyclerView?.let { nonNullRecyclerView ->
-            layoutInfo.setIsScrollingToTarget(true)
             layoutManager.startSmoothScroll(
                 PivotSelectionSmoothScroller(
                     nonNullRecyclerView,
@@ -150,6 +149,7 @@ internal class LayoutScroller(
                     selectionPivotListener
                 )
             )
+            layoutInfo.setIsScrollingToTarget(true)
         }
     }
 
