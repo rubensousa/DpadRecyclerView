@@ -473,7 +473,7 @@ internal abstract class StructureEngineer(
      *
      * This method takes care of both scenarios by scrolling and laying out more views if needed.
      *
-     * @return true if layout was aligned to an edge
+     * @return true if layout should stay aligned to an edge
      */
     private fun alignToEdge(
         alignment: ParentAlignment,
@@ -506,15 +506,15 @@ internal abstract class StructureEngineer(
                 if (preferKeylineOverEdge) {
                     return false
                 }
-                scrollBy(startEdge - remainingScroll, recycler, state, false)
-                return true
+                 scrollBy(startEdge, recycler, state, false)
+                 return false
             } else if (layoutRequest.reverseLayout && endEdge <= layoutInfo.getEndAfterPadding()) {
                 if (preferKeylineOverEdge) {
                     return false
                 }
                 val distanceToEnd = layoutInfo.getEndAfterPadding() - endEdge
-                scrollBy(-distanceToEnd - remainingScroll, recycler, state, false)
-                return true
+                scrollBy(-distanceToEnd, recycler, state, false)
+                return false
             }
         }
 
