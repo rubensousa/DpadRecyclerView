@@ -121,7 +121,10 @@ internal class LayoutInfo(
     }
 
     fun getSpanGroupIndex(position: Int): Int {
-        return configuration.spanSizeLookup.getCachedSpanGroupIndex(position, configuration.spanCount)
+        return configuration.spanSizeLookup.getCachedSpanGroupIndex(
+            position,
+            configuration.spanCount
+        )
     }
 
     fun getAdapterPositionOfChildAt(index: Int): Int {
