@@ -27,7 +27,7 @@ class MutableGridAdapter(private val onItemClickListener: ItemViewHolder.ItemCli
     MutableListAdapter<Int, ItemViewHolder>(DIFF_CALLBACK) {
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Int>() {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Int>() {
             override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
                 return oldItem == newItem
             }

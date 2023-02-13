@@ -36,6 +36,10 @@
 
         </action>
 
+        <action
+            android:id="@+id/open_compose_grid"
+            app:destination="@id/compose_grid_fragment" />
+
     </fragment>
 
     <fragment
@@ -73,5 +77,9 @@
     <fragment
         android:id="@+id/detail_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.detail.DetailFragment" />
+
+    <fragment
+        android:id="@+id/compose_grid_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.ComposeGridFragment" />
 
 </navigation>

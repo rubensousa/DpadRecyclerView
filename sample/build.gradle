@@ -32,18 +32,27 @@ android {
     }
     buildFeatures {
         viewBinding true
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.4.2"
     }
 
 }
 
 dependencies {
     implementation project (":dpadrecyclerview")
+    implementation "androidx.appcompat:appcompat:$versions.appcompat"
     implementation "androidx.leanback:leanback-grid:1.0.0-alpha01"
     implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
     implementation "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
     implementation "androidx.navigation:navigation-ui-ktx:$versions.navigation"
+    implementation "androidx.compose.material3:material3:$composeVersions.material3"
+    implementation "androidx.compose.ui:ui-tooling-preview:$composeVersions.ui"
+    debugImplementation "androidx.compose.ui:ui-tooling:$composeVersions.ui"
     implementation 'com.rubensousa:decorator:2.1.0'
     implementation 'com.jakewharton.timber:timber:5.0.1'
 }

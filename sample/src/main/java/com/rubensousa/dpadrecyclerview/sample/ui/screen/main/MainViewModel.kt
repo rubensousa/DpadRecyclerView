@@ -61,7 +61,11 @@ class MainViewModel : ViewModel() {
             ScreenDestination(
                 direction = MainFragmentDirections.openHorizontalLeanback(),
                 title = "Horizontal Leanback comparison"
-            )
+            ),
+            ScreenDestination(
+                direction = MainFragmentDirections.openComposeGrid(),
+                title = "Compose grid"
+            ),
         )
     }
 

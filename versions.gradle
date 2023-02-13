@@ -8,6 +8,11 @@ versions.constraintLayout = '2.1.4'
 versions.lifecycle = '2.5.1'
 versions.navigation = '2.5.3'
 versions.fragment = '1.6.0-alpha04'
+versions.appcompat = '1.6.1'
+
+def composeVersions = [:]
+composeVersions.ui = '1.3.3'
+composeVersions.material3 = '1.0.1'
 
 def testVersions = [:]
 testVersions.junit = '4.13.2'
@@ -24,5 +29,6 @@ testVersions.uiautomator = '2.2.0'
 testVersions.espresso = '3.5.1'
 testVersions.mockk = '1.13.2'
 
+ext.composeVersions = composeVersions
 ext.testVersions = testVersions
 ext.versions = versions
