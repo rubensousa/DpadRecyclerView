@@ -22,5 +22,12 @@ jobs:
       - run: 'echo "No build required"'
   ui_test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x86 ]
+        target: [ android-tv ]
+        api-level: [ 27 ]
+        profile: [ tv_1080p ]
     steps:
       - run: 'echo "No build required"'

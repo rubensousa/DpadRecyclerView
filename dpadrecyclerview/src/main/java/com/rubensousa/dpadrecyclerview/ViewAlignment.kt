@@ -56,9 +56,9 @@ interface ViewAlignment {
 
     /**
      * True if padding should be included for the alignment.
-     * Includes start/top padding if [offsetRatio] is 0.0.
-     * Includes end/bottom padding if [offsetRatio] is 1.0.
-     * If [offsetRatio] is not 0.0 or 1.0, padding isn't included
+     * Includes start/top padding if [offsetRatio] is 0f.
+     * Includes end/bottom padding if [offsetRatio] is 1f.
+     * If [offsetRatio] is not 0f or 1f, padding isn't included
      */
     val includePadding: Boolean
 

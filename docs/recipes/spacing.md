@@ -1,4 +1,4 @@
-# Spacing
+# Spacing Recipes
 
 Unlike `BaseGridView`, `DpadRecyclerView` does not have a `setItemSpacing` method.
 However, you can achieve the same effect with one of the implementations of `ItemDecoration` provided by this library:

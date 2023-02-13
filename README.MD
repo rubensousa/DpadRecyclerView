@@ -22,6 +22,28 @@ androidTestImplementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 
 Check the official website for more information and recipes: https://rubensousa.github.io/DpadRecyclerView
 
+## New Features compared to Leanback's `BaseGridView`
+
+### Layout
+
+- Supports grids with different span sizes
+- Supports reverse layout
+- XML attributes for easier configuration
+
+### Scrolling and focus
+
+- Supports changing the alignment configuration smoothly
+- Supports limiting the number of pending alignments
+- Supports non smooth scroll changes
+- Supports continuous and circular grid focus
+
+## Features missing from Leanback's `BaseGridView`
+
+- Scrolling in secondary direction
+- Disabling recycling of children
+- Saving and restoring children states: clients can save and restore children on the appropriate RecyclerView.Adapter callbacks
+- Touch event scrolling: on purpose, since `DpadRecyclerView` is only meant to react to focus changes
+- `setChildrenVisibility`: clients can do this by iterating over the children
 
 ## Sample app
 
