@@ -41,6 +41,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun clearOnViewHolderSelectedListeners ()V
 	protected final fun dispatchGenericFocusedEvent (Landroid/view/MotionEvent;)Z
 	public final fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
+	public fun dispatchTouchEvent (Landroid/view/MotionEvent;)Z
 	public final fun findFirstCompletelyVisibleItemPosition ()I
 	public final fun findFirstVisibleItemPosition ()I
 	public final fun findLastCompletelyVisibleItemPosition ()I
@@ -97,6 +98,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setOnChildLaidOutListener (Lcom/rubensousa/dpadrecyclerview/OnChildLaidOutListener;)V
 	public final fun setOnKeyInterceptListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnKeyInterceptListener;)V
 	public final fun setOnMotionInterceptListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnMotionInterceptListener;)V
+	public final fun setOnTouchInterceptListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnTouchInterceptListener;)V
 	public final fun setOnUnhandledKeyListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnUnhandledKeyListener;)V
 	public final fun setOrientation (I)V
 	public final fun setParentAlignment (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Z)V
@@ -134,6 +136,10 @@ public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView
 
 public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnMotionInterceptListener {
 	public abstract fun onInterceptMotionEvent (Landroid/view/MotionEvent;)Z
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnTouchInterceptListener {
+	public abstract fun onInterceptTouchEvent (Landroid/view/MotionEvent;)Z
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnUnhandledKeyListener {
