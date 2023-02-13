@@ -102,7 +102,9 @@ internal class FocusDispatcher(
         while (index < layout.itemCount) {
             val view = layout.findViewByPosition(index) ?: break
             if (layoutInfo.isViewFocusable(view)) {
-                view.requestFocus()
+                if (!view.hasFocus()) {
+                    view.requestFocus()
+                }
                 break
             }
             index++
