@@ -263,18 +263,18 @@ internal class LayoutAlignment(
     private fun getEndEdge(index: Int): Int? {
         val view = layoutManager.findViewByPosition(index) ?: return null
         return if (!reverseLayout) {
-            layoutInfo.orientationHelper.getDecoratedEnd(view)
+            layoutInfo.getDecoratedEnd(view)
         } else {
-            layoutInfo.orientationHelper.getDecoratedStart(view)
+            layoutInfo.getDecoratedStart(view)
         }
     }
 
     private fun getStartEdge(index: Int): Int? {
         val view = layoutManager.findViewByPosition(index) ?: return null
         return if (!reverseLayout) {
-            layoutInfo.orientationHelper.getDecoratedStart(view)
+            layoutInfo.getDecoratedStart(view)
         } else {
-            layoutInfo.orientationHelper.getDecoratedEnd(view)
+            layoutInfo.getDecoratedEnd(view)
         }
     }
 
