@@ -152,9 +152,10 @@ internal class LinearLayoutEngineer(
         } else {
             view.measuredWidth
         }
-        val viewCenter = layoutAlignment.getParentKeyline()
-        val headOffset = viewCenter - size / 2 - getStartDecorationSize(view, layoutRequest)
-        val tailOffset = viewCenter + size / 2 + getEndDecorationSize(view, layoutRequest)
+        val viewStart = layoutAlignment.getChildStart(view)
+        val viewEnd = viewStart + size
+        val headOffset = viewStart - getStartDecorationSize(view, layoutRequest)
+        val tailOffset = viewEnd + getEndDecorationSize(view, layoutRequest)
 
         if (layoutRequest.isVertical) {
             bounds.top = headOffset

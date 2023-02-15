@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.test.tests
 import android.view.View
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
@@ -37,7 +36,6 @@ import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testfixtures.rules.RepeatRule
 import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
-import org.junit.After
 import org.junit.Rule
 
 abstract class DpadRecyclerViewTest {
@@ -152,11 +150,6 @@ abstract class DpadRecyclerViewTest {
         fragmentScenario.onFragment { fragment ->
             fragment.mutateAdapter(action)
         }
-    }
-
-    @After
-    open fun destroy() {
-        fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
     }
 
     protected fun getChildrenBounds(fromStart: Boolean = true): List<ViewBounds> {

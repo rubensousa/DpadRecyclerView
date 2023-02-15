@@ -21,7 +21,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -40,7 +39,6 @@ import com.rubensousa.dpadrecyclerview.test.helpers.selectSubPosition
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
-import org.junit.After
 import org.junit.Test
 
 class SubSelectionTest : DpadRecyclerViewTest() {
@@ -67,11 +65,6 @@ class SubSelectionTest : DpadRecyclerViewTest() {
     }
 
     private lateinit var fragmentScenario: FragmentScenario<TestSubPositionFragment>
-
-    @After
-    override fun destroy() {
-        fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
-    }
 
     @Test
     fun testSubPositionsAreFocused() {
