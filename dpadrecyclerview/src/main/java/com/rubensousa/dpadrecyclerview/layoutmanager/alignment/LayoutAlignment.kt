@@ -59,6 +59,13 @@ internal class LayoutAlignment(
 
     fun getChildAlignment() = childAlignment.getAlignment()
 
+    fun getChildStart(view: View): Int {
+        updateChildAlignments(view)
+        val layoutParams = view.layoutParams as DpadLayoutParams
+        val anchor = layoutParams.alignmentAnchor
+        return getParentKeyline() - anchor
+    }
+
     fun getParentKeyline(): Int {
         return parentAlignmentCalculator.calculateKeyline(parentAlignment)
     }
