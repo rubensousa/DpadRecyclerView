@@ -79,7 +79,6 @@ class ScreenDestinationAdapter : RecyclerView.Adapter<ScreenDestinationAdapter.V
             itemView.animate()
                 .scaleX(1.0f)
                 .scaleY(1.0f)
-                .translationZ(0.0f)
                 .setInterpolator(shrinkInterpolator)
                 .setDuration(200L)
         }
@@ -88,7 +87,6 @@ class ScreenDestinationAdapter : RecyclerView.Adapter<ScreenDestinationAdapter.V
             itemView.animate()
                 .scaleX(1.1f)
                 .scaleY(1.1f)
-                .translationZ(8.0f)
                 .setInterpolator(growInterpolator)
                 .setDuration(200L)
         }

@@ -11,7 +11,7 @@
         android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/list_margin_start"
+        android:layout_marginStart="@dimen/feature_edge_spacing"
         android:layout_marginTop="16dp"
         android:textColor="@color/white"
         android:textSize="14sp"
@@ -27,8 +27,7 @@
         app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
         app:dpadRecyclerViewFocusOutBack="false"
         app:dpadRecyclerViewFocusOutFront="false"
-        app:dpadRecyclerViewParentAlignmentEdge="min"
-        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
+        app:dpadRecyclerViewParentAlignmentOffset="@dimen/feature_edge_spacing"
         app:dpadRecyclerViewParentAlignmentOffsetRatio="0" />
 
 </LinearLayout>
