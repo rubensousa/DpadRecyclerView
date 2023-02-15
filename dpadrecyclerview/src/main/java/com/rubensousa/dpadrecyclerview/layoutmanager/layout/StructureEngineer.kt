@@ -506,8 +506,8 @@ internal abstract class StructureEngineer(
                 if (preferKeylineOverEdge) {
                     return false
                 }
-                scrollBy(startEdge, recycler, state, false)
-                return false
+                 scrollBy(startEdge, recycler, state, false)
+                 return false
             } else if (layoutRequest.reverseLayout && endEdge <= layoutInfo.getEndAfterPadding()) {
                 if (preferKeylineOverEdge) {
                     return false
