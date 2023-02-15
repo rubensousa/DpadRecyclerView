@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.test.tests.alignment
 
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -339,4 +340,57 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
         assertThat(viewBounds.top).isEqualTo(recyclerViewBounds.top)
     }
 
+    @Test
+    fun testLastItemAlignsToKeylineWhenThereIsASmallNumberOfItems() {
+        launchFragment(
+            layoutConfiguration = getDefaultLayoutConfiguration().copy(
+                parentAlignment = ParentAlignment(
+                    edge = Edge.MIN,
+                    offset = 100,
+                    offsetRatio = 0f
+                ),
+                childAlignment = ChildAlignment(
+                    offset = 0,
+                    offsetRatio = 0f
+                )
+            ),
+            adapterConfiguration = getDefaultAdapterConfiguration().copy(numberOfItems = 5)
+        )
+
+        KeyEvents.pressRight(times = 4)
+        waitForIdleScrollState()
+        val childBounds = getItemViewBounds(position = 4)
+        onRecyclerView("Request layout") { recyclerView ->
+            recyclerView.requestLayout()
+        }
+        Espresso.onIdle()
+        assertThat(getItemViewBounds(position = 4)).isEqualTo(childBounds)
+    }
+
+    @Test
+    fun testFirstItemAlignsToEdgeWhenThereIsASmallNumberOfItems() {
+        launchFragment(
+            layoutConfiguration = getDefaultLayoutConfiguration().copy(
+                parentAlignment = ParentAlignment(
+                    edge = Edge.MIN,
+                    offset = 0,
+                    offsetRatio = 0.5f,
+                    preferKeylineOverEdge = false
+                ),
+                childAlignment = ChildAlignment(
+                    offset = 0,
+                    offsetRatio = 0.5f
+                )
+            ),
+            adapterConfiguration = getDefaultAdapterConfiguration().copy(numberOfItems = 3)
+        )
+
+        val childBounds = getItemViewBounds(position = 0)
+        KeyEvents.pressRight()
+        waitForIdleScrollState()
+        onRecyclerView("Request layout") { recyclerView ->
+            recyclerView.requestLayout()
+        }
+        assertThat(getItemViewBounds(position = 0)).isEqualTo(childBounds)
+    }
 }

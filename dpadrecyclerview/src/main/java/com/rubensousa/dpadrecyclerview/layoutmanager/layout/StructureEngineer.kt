@@ -506,8 +506,8 @@ internal abstract class StructureEngineer(
                 if (preferKeylineOverEdge) {
                     return false
                 }
-                 scrollBy(startEdge, recycler, state, false)
-                 return false
+                scrollBy(startEdge, recycler, state, false)
+                return false
             } else if (layoutRequest.reverseLayout && endEdge <= layoutInfo.getEndAfterPadding()) {
                 if (preferKeylineOverEdge) {
                     return false
@@ -532,6 +532,9 @@ internal abstract class StructureEngineer(
                 val distanceToEnd = layoutInfo.getEndAfterPadding() - endEdge
                 var scrollOffset = startEdge
                 if (distanceToEnd > 0) {
+                    if (edge == ParentAlignment.Edge.MIN) {
+                        return false
+                    }
                     layoutRequest.prepend(layoutInfo.getLayoutPositionOf(startView)) {
                         setCheckpoint(startEdge)
                         setFillSpace(distanceToEnd)
@@ -540,14 +543,6 @@ internal abstract class StructureEngineer(
                     scrollOffset -= min(newStartSpace, distanceToEnd)
                     // Limit the scroll to the distance we actually need
                     scrollOffset = max(scrollOffset, -distanceToEnd)
-
-                    /**
-                     * If we have more items than we actually need
-                     * and we don't want to align to the max edge, then don't need to scroll at all
-                     */
-                    if (newStartSpace > distanceToEnd && edge == ParentAlignment.Edge.MIN) {
-                        scrollOffset = 0
-                    }
                 }
                 scrollBy(scrollOffset - remainingScroll, recycler, state, false)
                 return true
@@ -555,6 +550,9 @@ internal abstract class StructureEngineer(
                 val distanceToStart = startEdge - layoutInfo.getStartAfterPadding()
                 var scrollOffset = endEdge - layoutInfo.getEndAfterPadding()
                 if (distanceToStart > 0) {
+                    if (edge == ParentAlignment.Edge.MIN) {
+                        return false
+                    }
                     layoutRequest.append(layoutInfo.getLayoutPositionOf(endView)) {
                         setCheckpoint(endEdge)
                         setFillSpace(distanceToStart)
@@ -562,9 +560,6 @@ internal abstract class StructureEngineer(
                     val newEndSpace = fill(layoutRequest, recyclerViewProvider, recycler, state)
                     scrollOffset += min(newEndSpace, distanceToStart)
                     scrollOffset = min(scrollOffset, distanceToStart)
-                    if (newEndSpace > distanceToStart && edge == ParentAlignment.Edge.MIN) {
-                        scrollOffset = 0
-                    }
                 }
                 scrollBy(scrollOffset - remainingScroll, recycler, state, false)
                 return true
