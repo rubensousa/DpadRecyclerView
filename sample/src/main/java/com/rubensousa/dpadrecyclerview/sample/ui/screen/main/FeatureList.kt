@@ -16,7 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
 
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ItemModel
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ItemModel
 
 data class FeatureList(
     val title: String, val destinations: List<ScreenDestination>,

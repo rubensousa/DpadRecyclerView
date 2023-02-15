@@ -19,23 +19,22 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.grid
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.DpadComposeViewHolder
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ComposePlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.GridItemComposable
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListTypes
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.MutableListAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 import timber.log.Timber
 
@@ -48,7 +47,10 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(binding.recyclerView)
-        val placeholderAdapter = PlaceholderAdapter(items = spanCount)
+        val placeholderAdapter = ComposePlaceholderAdapter(
+            items = spanCount,
+            isGrid = true
+        )
         val itemAdapter = ComposeGridAdapter()
         val concatAdapter = ConcatAdapter(
             ConcatAdapter.Config.Builder()
@@ -102,9 +104,8 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
             parent: ViewGroup,
             viewType: Int
         ): DpadComposeViewHolder<Int> {
-            return DpadComposeViewHolder(
-                composeView = ComposeView(parent.context),
-                composable = { item, isFocused, isSelected ->
+            return DpadComposeViewHolder(parent,
+                composable = { item, isFocused, _ ->
                     GridItemComposable(item, isFocused)
                 },
                 onClick = { item ->
@@ -114,7 +115,7 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
         }
 
         override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
-            holder.bind(getItem(position))
+            holder.setItemState(getItem(position))
         }
 
         override fun getItemViewType(position: Int): Int {

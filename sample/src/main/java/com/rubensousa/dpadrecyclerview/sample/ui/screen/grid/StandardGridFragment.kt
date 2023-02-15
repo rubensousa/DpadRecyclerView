@@ -34,9 +34,9 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenStandardGridBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 import timber.log.Timber
 

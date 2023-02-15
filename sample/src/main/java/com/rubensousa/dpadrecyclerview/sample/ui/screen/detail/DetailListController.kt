@@ -27,15 +27,14 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListHeaderAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 
 class DetailListController {
 
     private val loadingAdapter = PlaceholderAdapter(
         items = 5,
-        layoutId = R.layout.adapter_grid_placeholder,
-        focusPlaceholders = false
+        layoutId = R.layout.adapter_grid_placeholder
     )
     private val itemAdapter = ItemGridAdapter(object : ItemViewHolder.ItemClickListener {
         override fun onViewHolderClicked() {

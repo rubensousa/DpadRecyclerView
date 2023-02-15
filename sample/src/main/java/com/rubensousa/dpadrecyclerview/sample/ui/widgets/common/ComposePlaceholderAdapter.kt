@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,38 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
+package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
 
-import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 
-class PlaceholderAdapter(
+class ComposePlaceholderAdapter(
     private val items: Int = 1,
-    private val layoutId: Int = R.layout.adapter_list_placeholder,
-    private val focusPlaceholders: Boolean = false
-) : RecyclerView.Adapter<PlaceholderAdapter.VH>() {
+    private val isGrid: Boolean = false
+) : RecyclerView.Adapter<DpadComposeViewHolder<Boolean>>() {
 
     private var show = false
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val view = LayoutInflater.from(parent.context).inflate(
-            layoutId, parent, false
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): DpadComposeViewHolder<Boolean> {
+        return DpadComposeViewHolder(parent,
+            composable = { _, _, _ ->
+                if (isGrid) {
+                    GridPlaceholderComposable()
+                } else {
+                    PlaceholderComposable()
+                }
+            },
+            isFocusable = false
         )
-        view.isFocusable = focusPlaceholders
-        view.isFocusableInTouchMode = focusPlaceholders
-        return VH(view)
     }
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
-
+    override fun onBindViewHolder(holder: DpadComposeViewHolder<Boolean>, position: Int) {
+        holder.setItemState(true)
     }
 
     fun show(enabled: Boolean) {
@@ -68,7 +73,5 @@ class PlaceholderAdapter(
     override fun getItemViewType(position: Int): Int {
         return ListTypes.LOADING
     }
-
-    class VH(view: View) : RecyclerView.ViewHolder(view)
 
 }

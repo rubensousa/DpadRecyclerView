@@ -27,7 +27,7 @@ import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.MainAdapterListFeatureBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ItemModel
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ItemModel
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class FeatureListAdapter(

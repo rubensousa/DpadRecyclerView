@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
+package com.rubensousa.dpadrecyclerview.sample.ui.model
 
-data class ListModel(
-    val title: String,
-    val items: List<Int>,
-    val centerAligned: Boolean,
-    val isLeanback: Boolean
-)
+object ListTypes {
+    const val LOADING = 0
+    const val HEADER = 1
+    const val ITEM = 2
+    const val LIST_CENTER = 3
+    const val LIST_START = 4
+    const val LIST_START_LEANBACK = 5
+}

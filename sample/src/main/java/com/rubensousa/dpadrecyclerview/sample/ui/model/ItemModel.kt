@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
+package com.rubensousa.dpadrecyclerview.sample.ui.model
 
 import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
