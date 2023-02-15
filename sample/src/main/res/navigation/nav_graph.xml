@@ -40,6 +40,10 @@
             android:id="@+id/open_compose_grid"
             app:destination="@id/compose_grid_fragment" />
 
+        <action
+            android:id="@+id/open_detail"
+            app:destination="@+id/detail_fragment" />
+
     </fragment>
 
     <fragment

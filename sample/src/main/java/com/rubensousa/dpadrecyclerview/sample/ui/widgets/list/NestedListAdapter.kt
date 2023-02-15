@@ -85,16 +85,16 @@ class NestedListAdapter(
         if (holder is LeanbackViewHolder) {
             stateHolder.register(holder.horizontalGridView, item.title, holder.adapter)
         } else if (holder is DpadListViewHolder) {
-            stateHolder.register(holder.dpadRecyclerView, item.title, holder.adapter)
+            stateHolder.restore(holder.dpadRecyclerView, item.title, holder.adapter)
         }
     }
 
     override fun onViewRecycled(holder: AbstractListViewHolder) {
         val item = holder.item ?: return
         if (holder is LeanbackViewHolder) {
-            stateHolder.unregister(holder.horizontalGridView, item.title)
+            stateHolder.save(holder.horizontalGridView, item.title)
         } else if (holder is DpadListViewHolder) {
-            stateHolder.unregister(holder.dpadRecyclerView, item.title)
+            stateHolder.save(holder.dpadRecyclerView, item.title)
         }
         holder.onRecycled()
     }

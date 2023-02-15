@@ -25,46 +25,95 @@ import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
 
-    private val destinations = MutableLiveData<List<ScreenDestination>>()
+    private val features = MutableLiveData<List<FeatureList>>()
 
-    fun getDestinations(): LiveData<List<ScreenDestination>> = destinations
+    fun getFeatures(): LiveData<List<FeatureList>> = features
 
     fun load() {
         viewModelScope.launch(Dispatchers.Default) {
-            destinations.postValue(buildDestinations())
+            features.postValue(buildFeatureLists())
         }
     }
 
-    private fun buildDestinations(): List<ScreenDestination> {
+    private fun buildFeatureLists(): List<FeatureList> {
         return listOf(
-            ScreenDestination(
-                direction = MainFragmentDirections.openList(),
-                title = "Nested List -> Detail"
+            buildNestedFeatureList(),
+            buildGridFeatureList(),
+            buildComposeFeatureList(),
+            buildScrollingFeatureList(),
+            buildReverseLayoutFeatureList()
+        )
+    }
+
+    private fun buildNestedFeatureList(): FeatureList {
+        return FeatureList(
+            title = "Nested Lists",
+            destinations = listOf(
+                ScreenDestination(
+                    direction = MainFragmentDirections.openList(),
+                    title = "Standard"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openList().apply { slowScroll = true },
+                    title = "With Header"
+                )
             ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openStandardGrid(),
-                title = "Standard grid"
+        )
+    }
+
+    private fun buildGridFeatureList(): FeatureList {
+        return FeatureList(
+            title = "Grids",
+            destinations = listOf(
+                ScreenDestination(
+                    direction = MainFragmentDirections.openStandardGrid(),
+                    title = "Equal span sizes"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openStandardGrid(),
+                    title = "Different span sizes"
+                )
             ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openList().apply { slowScroll = true },
-                title = "Nested List Slow Scroll"
+        )
+    }
+
+    private fun buildReverseLayoutFeatureList(): FeatureList {
+        return FeatureList(
+            title = "Reverse layout",
+            destinations = listOf(
+                ScreenDestination(
+                    direction = MainFragmentDirections.openList().apply { reverseLayout = true },
+                    title = "Nested lists"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openStandardGrid()
+                        .apply { reverseLayout = true },
+                    title = "Grid"
+                ),
             ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openList().apply { reverseLayout = true },
-                title = "Nested Reversed list"
+        )
+    }
+
+    private fun buildScrollingFeatureList(): FeatureList {
+        return FeatureList(
+            title = "Scrolling behavior",
+            destinations = listOf(
+                ScreenDestination(
+                    direction = MainFragmentDirections.openList().apply { slowScroll = true },
+                    title = "Slow and linear"
+                )
             ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openStandardGrid()
-                    .apply { reverseLayout = true },
-                title = "Reversed grid"
-            ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openHorizontalLeanback(),
-                title = "Horizontal Leanback comparison"
-            ),
-            ScreenDestination(
-                direction = MainFragmentDirections.openComposeGrid(),
-                title = "Compose grid"
+        )
+    }
+
+    private fun buildComposeFeatureList(): FeatureList {
+        return FeatureList(
+            title = "Compose",
+            destinations = listOf(
+                ScreenDestination(
+                    direction = MainFragmentDirections.openComposeGrid(),
+                    title = "Grid"
+                )
             ),
         )
     }
