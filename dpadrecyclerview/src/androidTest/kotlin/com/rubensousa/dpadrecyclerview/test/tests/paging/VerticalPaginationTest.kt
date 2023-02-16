@@ -18,7 +18,6 @@ package com.rubensousa.dpadrecyclerview.test.tests.paging
 
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
@@ -26,13 +25,17 @@ import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestPaginationFragment
-import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
+import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForAdapterUpdate
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents.pressDown
 import com.rubensousa.dpadrecyclerview.testing.R
-import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
-import org.junit.After
-import org.junit.Rule
 import org.junit.Test
 
 class VerticalPaginationTest : DpadRecyclerViewTest() {
@@ -58,11 +61,6 @@ class VerticalPaginationTest : DpadRecyclerViewTest() {
     }
 
     private lateinit var fragmentScenario: FragmentScenario<TestPaginationFragment>
-
-    @After
-    override fun destroy() {
-        fragmentScenario.moveToState(Lifecycle.State.DESTROYED)
-    }
 
     @Test
     fun testLastSelectedViewStaysAlignedWhenAdapterInsertsNewViewsDuringScroll() {
