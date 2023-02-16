@@ -288,14 +288,12 @@ internal class FocusDispatcher(
         val focused: View? = recyclerView.findFocus()
         val focusedChildIndex = layoutInfo.findIndexOf(focused)
         val focusedAdapterPosition = layoutInfo.getAdapterPositionOfChildAt(focusedChildIndex)
+        if (focusedAdapterPosition == RecyclerView.NO_POSITION) {
+            return
+        }
         // Even if focusedPosition != NO_POSITION, findViewByPosition could return null if the view
         // is ignored or getLayoutPosition does not match the adapter position of focused view.
-        val focusedChild: View? = if (focusedAdapterPosition != RecyclerView.NO_POSITION) {
-            layout.findViewByPosition(focusedAdapterPosition)
-        } else {
-            null
-        }
-        // Add focusables of focused item.
+        val focusedChild: View? = layout.findViewByPosition(focusedAdapterPosition)
         focusedChild?.addFocusables(views, direction, focusableMode)
 
         val focusDirection = FocusDirection.from(

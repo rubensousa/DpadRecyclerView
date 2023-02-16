@@ -218,4 +218,18 @@ class SpanFocusFinderTest {
         }
     }
 
+    @Test
+    fun `previous adapter position is invalid for even grid at an edge`() {
+        val targetPosition = 200
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = targetPosition,
+                spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                forward = false,
+                edgePosition = 200,
+                reverseLayout = false
+            )
+        ).isEqualTo(RecyclerView.NO_POSITION)
+    }
+
 }
