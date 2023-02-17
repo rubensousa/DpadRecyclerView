@@ -106,7 +106,7 @@ jobs:
             ./scripts/install_test_apks.sh
             ./scripts/run_instrumented_tests.sh dpadrecyclerview
             ./scripts/run_instrumented_tests.sh dpadrecyclerview-testing
-
+            ./scripts/run_instrumented_tests.sh dpadrecyclerview-compose
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
