@@ -22,7 +22,6 @@ import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
@@ -286,16 +285,15 @@ internal class FocusDispatcher(
         }
 
         val focused: View? = recyclerView.findFocus()
-        val focusedChildIndex = layoutInfo.findIndexOf(focused)
-        val focusedAdapterPosition = layoutInfo.getAdapterPositionOfChildAt(focusedChildIndex)
+        var focusedAdapterPosition = RecyclerView.NO_POSITION
+        if (focused != null) {
+            focusedAdapterPosition = layoutInfo.getChildViewHolder(focused)
+                ?.absoluteAdapterPosition ?: RecyclerView.NO_POSITION
+        }
+
         // Even if focusedPosition != NO_POSITION, findViewByPosition could return null if the view
         // is ignored or getLayoutPosition does not match the adapter position of focused view.
-        val focusedChild: View? = if (focusedAdapterPosition != RecyclerView.NO_POSITION) {
-            layout.findViewByPosition(focusedAdapterPosition)
-        } else {
-            null
-        }
-        // Add focusables of focused item.
+        val focusedChild: View? = layout.findViewByPosition(focusedAdapterPosition)
         focusedChild?.addFocusables(views, direction, focusableMode)
 
         val focusDirection = FocusDirection.from(
@@ -323,6 +321,7 @@ internal class FocusDispatcher(
             return
         }
 
+        val focusedChildIndex = layoutInfo.findIndexOf(focused)
         addFocusableChildrenRequest.update(
             focusedChild = focusedChild,
             focusedChildIndex = focusedChildIndex,
@@ -353,25 +352,17 @@ internal class FocusDispatcher(
                 index += increment
                 continue
             }
-            // if there wasn't any focused item, add the very first focusable
-            // items and stop.
+            // Exit early if we don't have any focused view yet
             if (request.focused == null) {
                 child.addFocusables(views, direction, focusableMode)
-                index += increment
-                continue
+                break
             }
             val position = layoutInfo.getAdapterPositionOf(child)
             val spanIndex = layoutInfo.getStartSpanIndex(position)
             if (request.focusDirection == FocusDirection.NEXT_ITEM) {
-                // Add first focusable item on the same row
-                if (position > request.focusedAdapterPosition) {
-                    child.addFocusables(views, direction, focusableMode)
-                }
+                child.addFocusables(views, direction, focusableMode)
             } else if (request.focusDirection == FocusDirection.PREVIOUS_ITEM) {
-                // Add first focusable item on the same row
-                if (position < request.focusedAdapterPosition) {
-                    child.addFocusables(views, direction, focusableMode)
-                }
+                child.addFocusables(views, direction, focusableMode)
             } else if (request.focusDirection == FocusDirection.NEXT_COLUMN) {
                 // Add all focusable items after this item whose row index is bigger
                 if (spanIndex == request.focusedSpanIndex) {
@@ -403,7 +394,6 @@ internal class FocusDispatcher(
         focusableMode: Int
     ): Boolean {
         if (configuration.spanCount == 1
-            || configuration.spanSizeLookup === DpadSpanSizeLookup.DEFAULT
             || (movement != FocusDirection.PREVIOUS_ITEM && movement != FocusDirection.NEXT_ITEM)
         ) {
             return false

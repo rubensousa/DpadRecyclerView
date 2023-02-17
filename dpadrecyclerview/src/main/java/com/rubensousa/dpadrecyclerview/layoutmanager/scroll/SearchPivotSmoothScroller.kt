@@ -238,18 +238,18 @@ internal class SearchPivotSmoothScroller(
             if (targetPosition == RecyclerView.NO_POSITION) {
                 break
             }
-            spanFocusFinder.save(targetPosition, spanSizeLookup)
             val view = layoutInfo.findViewByPosition(targetPosition)
             if (view == null || !layoutInfo.isViewFocusable(view)) {
                 continue
             }
+            spanFocusFinder.save(targetPosition, spanSizeLookup)
             targetView = view
             movements.consume()
             if (!consumeAll) {
                 break
             }
         }
-        // Reset the focus back to the original position
+        // Reset the focus back to the original position if new pivot was not found
         if (targetView == null) {
             spanFocusFinder.save(pivotPosition, spanSizeLookup)
         }
