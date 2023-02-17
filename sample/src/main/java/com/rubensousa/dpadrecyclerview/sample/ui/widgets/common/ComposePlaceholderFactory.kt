@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.model
+package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
 
-data class ListModel(
-    val title: String,
-    val items: MutableList<Int>,
-    val centerAligned: Boolean,
-    val isLeanback: Boolean
-) : ItemModel {
-    override val diffId: String = title
+import androidx.compose.runtime.Composable
+
+interface ComposePlaceholderFactory {
+    @Composable
+    fun create(): @Composable () -> Unit
 }

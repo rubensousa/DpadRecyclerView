@@ -17,13 +17,14 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
 
 import android.view.ViewGroup
+import androidx.compose.runtime.Composable
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 
 class ComposePlaceholderAdapter(
     private val items: Int = 1,
-    private val isGrid: Boolean = false
+    private val composable: @Composable () -> Unit
 ) : RecyclerView.Adapter<DpadComposeViewHolder<Boolean>>() {
 
     private var show = false
@@ -34,11 +35,7 @@ class ComposePlaceholderAdapter(
     ): DpadComposeViewHolder<Boolean> {
         return DpadComposeViewHolder(parent,
             composable = { _, _, _ ->
-                if (isGrid) {
-                    GridPlaceholderComposable()
-                } else {
-                    PlaceholderComposable()
-                }
+                composable()
             },
             isFocusable = false
         )

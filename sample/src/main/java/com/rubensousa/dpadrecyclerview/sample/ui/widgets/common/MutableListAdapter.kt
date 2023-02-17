@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import androidx.recyclerview.widget.DiffUtil
@@ -34,6 +35,13 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
 
     private var items : MutableList<T> = Collections.emptyList()
     private var currentVersion = 0
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun replaceList(items: MutableList<T>) {
+        this.items = items
+        currentVersion++
+        notifyDataSetChanged()
+    }
 
     fun submitList(newList: MutableList<T>, commitCallback: Runnable? = null) {
         val version = ++currentVersion

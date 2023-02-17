@@ -111,6 +111,10 @@ class MainViewModel : ViewModel() {
             title = "Compose",
             destinations = listOf(
                 ScreenDestination(
+                    direction = MainFragmentDirections.openComposeList(),
+                    title = "Nested lists"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openComposeGrid(),
                     title = "Grid"
                 )

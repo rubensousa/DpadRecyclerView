@@ -18,16 +18,15 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AccelerateInterpolator
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.MainAdapterListFeatureBinding
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ItemModel
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ListAnimator
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class FeatureListAdapter(
@@ -68,8 +67,7 @@ class FeatureListAdapter(
         var item: FeatureList? = null
             private set
 
-        private val growInterpolator = AccelerateDecelerateInterpolator()
-        private val shrinkInterpolator = AccelerateInterpolator()
+        private val animator = ListAnimator(recyclerView, binding.textView)
 
         init {
             recyclerView.setHasFixedSize(false)
@@ -86,8 +84,6 @@ class FeatureListAdapter(
             recyclerView.setRecycledViewPool(recycledViewPool)
             recyclerView.setRecycleChildrenOnDetach(true)
             recyclerView.adapter = adapter
-            recyclerView.alpha = 0.4f
-            binding.textView.alpha = 0.4f
         }
 
         fun bind(item: FeatureList) {
@@ -97,37 +93,19 @@ class FeatureListAdapter(
         }
 
         fun onRecycled() {
+            animator.cancel()
             binding.textView.animate().cancel()
             binding.recyclerView.animate().cancel()
             item = null
         }
 
         override fun onViewHolderSelected() {
-            binding.textView.pivotX = 0f
-            binding.textView.pivotY = binding.textView.height.toFloat()
-            recyclerView.animate().alpha(1.0f)
-                .setInterpolator(growInterpolator)
-                .setDuration(200L)
-            binding.textView.animate()
-                .scaleX(1.5f)
-                .scaleY(1.5f)
-                .alpha(1.0f)
-                .setInterpolator(growInterpolator)
-                .setDuration(200L)
+            animator.startSelectionAnimation()
         }
 
         override fun onViewHolderDeselected() {
-            binding.textView.animate()
-                .alpha(0.4f)
-                .scaleX(1f)
-                .scaleY(1f)
-                .setInterpolator(shrinkInterpolator)
-                .setDuration(200L)
-            recyclerView.animate().alpha(0.4f)
-                .setInterpolator(shrinkInterpolator)
-                .setDuration(200L)
+            animator.startDeselectionAnimation()
         }
     }
-
 
 }

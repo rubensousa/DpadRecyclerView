@@ -41,6 +41,10 @@
             app:destination="@id/compose_grid_fragment" />
 
         <action
+            android:id="@+id/open_compose_list"
+            app:destination="@id/compose_list_fragment" />
+
+        <action
             android:id="@+id/open_detail"
             app:destination="@+id/detail_fragment" />
 
@@ -84,6 +88,9 @@
 
     <fragment
         android:id="@+id/compose_grid_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.ComposeGridFragment" />
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.compose.ComposeGridFragment" />
 
+    <fragment
+        android:id="@+id/compose_list_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.compose.ComposeListFragment" />
 </navigation>

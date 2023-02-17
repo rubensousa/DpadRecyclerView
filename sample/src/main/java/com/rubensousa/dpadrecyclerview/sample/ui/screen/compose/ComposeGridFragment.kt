@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.screen.grid
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.compose
 
 import android.os.Bundle
 import android.view.View
@@ -29,9 +29,11 @@ import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridViewModel
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ComposePlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.GridPlaceholderComposable
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.GridItemComposable
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
@@ -49,7 +51,7 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
         setupRecyclerView(binding.recyclerView)
         val placeholderAdapter = ComposePlaceholderAdapter(
             items = spanCount,
-            isGrid = true
+            composable = { GridPlaceholderComposable() }
         )
         val itemAdapter = ComposeGridAdapter()
         val concatAdapter = ConcatAdapter(

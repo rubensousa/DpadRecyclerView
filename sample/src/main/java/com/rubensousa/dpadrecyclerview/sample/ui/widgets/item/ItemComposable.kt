@@ -17,7 +17,10 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.item
 
 
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -48,7 +51,14 @@ fun ItemComposable(
     } else {
         Color.White
     }
-    val scale = animateFloatAsState(if (isFocused) 1.1f else 1f)
+    val scale = animateFloatAsState(
+        targetValue = if (isFocused) 1.1f else 1.0f,
+        animationSpec = tween(
+            durationMillis = if (isFocused) 500 else 200,
+            easing = if (isFocused) FastOutSlowInEasing else FastOutLinearInEasing,
+        )
+    )
+
     Box(
         modifier = modifier
             .scale(scale.value)
