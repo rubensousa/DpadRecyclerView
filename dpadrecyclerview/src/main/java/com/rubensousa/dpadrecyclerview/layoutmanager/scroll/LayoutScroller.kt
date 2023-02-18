@@ -199,11 +199,11 @@ internal class LayoutScroller(
             targetPosition = 0
             targetSubPosition = 0
         }
-        if (targetSubPosition != 0) {
-            scrollToPosition(targetPosition, targetSubPosition, smooth)
-        } else {
-            scrollToView(layoutManager.findViewByPosition(targetPosition), smooth, requestFocus)
-        }
+        val view = layoutManager.findViewByPosition(targetPosition) ?: return
+        scrollToView(
+            view, layoutAlignment.getViewAtSubPosition(view, targetSubPosition),
+            smooth, requestFocus
+        )
     }
 
     fun scrollToPosition(position: Int, subPosition: Int = 0) {
@@ -347,8 +347,7 @@ internal class LayoutScroller(
             return
         }
         if (layoutInfo.isLayoutInProgress) {
-            // Ignore scroll actions during layout
-            // since these are already handled internally by LayoutArchitect
+            // Ignore scroll actions during layout since these are already handled
             return
         }
         var scrollX = 0
