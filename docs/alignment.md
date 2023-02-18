@@ -52,7 +52,7 @@ The `ChildAlignment` class will take care of calculating the anchor position for
 
 Consider the following example for a **horizontal** `DpadRecyclerView`:
 
-![Start alignment](../img/start_alignment.png)
+![Start alignment](img/start_alignment.png)
 
 The blue circle shows the keyline position defined by `ParentAlignment` and the green circles shows the anchor position of each child
 defined by `ChildAlignment`.

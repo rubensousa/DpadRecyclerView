@@ -16,16 +16,16 @@ Motivation for this library is available in my [blog](https://rubensousa.com/202
 
 ### Layout
 
-- Supports grids with different span sizes
-- Supports reverse layout
+- Grids with different span sizes
+- Reverse layout
 - XML attributes for easier configuration
 
 ### Scrolling and focus
 
-- Supports changing the alignment configuration smoothly
-- Supports limiting the number of pending alignments
-- Supports non smooth scroll changes
-- Supports continuous and circular grid focus
+- Changing the alignment configuration smoothly
+- Limiting the number of pending alignments
+- Non smooth scroll changes
+- Continuous and circular grid focus
 
 ## Features missing from Leanback's `BaseGridView`
 

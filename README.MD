@@ -12,11 +12,11 @@ Add the following dependency to your app's `build.gradle`:
 
 ```groovy
 implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview:$latestVersion"
-```
 
-You can also import the Espresso test helpers for your instrumented tests:
+// Optional: If you want to use Compose together with DpadRecyclerView
+implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-compose:$latestVersion"
 
-```groovy
+// Optional: Espresso test helpers for your instrumented tests:
 androidTestImplementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:$latestVersion"
 ```
 
@@ -42,7 +42,6 @@ Check the official website for more information and recipes: https://rubensousa.
 - Scrolling in secondary direction
 - Disabling recycling of children
 - Saving and restoring children states: clients can save and restore children on the appropriate RecyclerView.Adapter callbacks
-- Touch event scrolling: on purpose, since `DpadRecyclerView` is only meant to react to focus changes
 - `setChildrenVisibility`: clients can do this by iterating over the children
 
 ## Sample app
