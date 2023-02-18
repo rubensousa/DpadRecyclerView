@@ -41,6 +41,7 @@ class MainViewModel : ViewModel() {
             buildGridFeatureList(),
             buildComposeFeatureList(),
             buildScrollingFeatureList(),
+            buildFocusFeatureList(),
             buildReverseLayoutFeatureList()
         )
     }
@@ -101,6 +102,18 @@ class MainViewModel : ViewModel() {
                 ScreenDestination(
                     direction = MainFragmentDirections.openList().apply { slowScroll = true },
                     title = "Slow and linear"
+                )
+            ),
+        )
+    }
+
+    private fun buildFocusFeatureList(): FeatureList {
+        return FeatureList(
+            title = "Focus",
+            destinations = listOf(
+                ScreenDestination(
+                    direction = MainFragmentDirections.openHorizontalLeanback(),
+                    title = "Searching for unknown pivot"
                 )
             ),
         )

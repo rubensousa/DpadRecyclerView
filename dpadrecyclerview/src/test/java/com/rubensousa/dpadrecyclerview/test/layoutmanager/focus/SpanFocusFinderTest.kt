@@ -77,7 +77,7 @@ class SpanFocusFinderTest {
                     focusedPosition = spanIndex + spanCount,
                     spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
                     forward = false,
-                    edgePosition = 100,
+                    edgePosition = 0,
                     reverseLayout = false
                 )
             ).isEqualTo(spanIndex)
@@ -227,6 +227,34 @@ class SpanFocusFinderTest {
                 spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
                 forward = false,
                 edgePosition = 200,
+                reverseLayout = false
+            )
+        ).isEqualTo(RecyclerView.NO_POSITION)
+    }
+
+    @Test
+    fun `previous adapter position is invalid for item near the edge`() {
+        val targetPosition = 2
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = targetPosition,
+                spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                forward = false,
+                edgePosition = 0,
+                reverseLayout = false
+            )
+        ).isEqualTo(RecyclerView.NO_POSITION)
+    }
+
+    @Test
+    fun `next adapter position is invalid for item near the edge`() {
+        val targetPosition = 198
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = targetPosition,
+                spanSizeLookup = DpadSpanSizeLookup.DEFAULT,
+                forward = true,
+                edgePosition = 199,
                 reverseLayout = false
             )
         ).isEqualTo(RecyclerView.NO_POSITION)
