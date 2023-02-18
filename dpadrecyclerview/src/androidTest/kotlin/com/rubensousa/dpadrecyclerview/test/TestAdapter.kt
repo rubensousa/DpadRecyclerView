@@ -26,12 +26,16 @@ import com.rubensousa.dpadrecyclerview.testing.R
 
 class TestAdapter(
     private val adapterConfiguration: TestAdapterConfiguration,
+    private val onViewHolderSelected: (position: Int) -> Unit,
+    private val onViewHolderDeselected: (position: Int) -> Unit
 ) : AbstractTestAdapter<TestAdapter.ItemViewHolder>(adapterConfiguration) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(
             LayoutInflater.from(parent.context)
-                .inflate(adapterConfiguration.itemLayoutId, parent, false)
+                .inflate(adapterConfiguration.itemLayoutId, parent, false),
+            onViewHolderSelected,
+            onViewHolderDeselected
         )
     }
 
@@ -42,12 +46,24 @@ class TestAdapter(
         holder.itemView.isFocusableInTouchMode = isFocusable
     }
 
-    class ItemViewHolder(view: View) : TestViewHolder(view), DpadViewHolder {
+    class ItemViewHolder(
+        view: View,
+        private val onViewHolderSelected: (position: Int) -> Unit,
+        private val onViewHolderDeselected: (position: Int) -> Unit
+    ) : TestViewHolder(view), DpadViewHolder {
 
         private val textView = view.findViewById<TextView>(R.id.textView)
 
         fun bind(index: Int) {
             textView.text = index.toString()
+        }
+
+        override fun onViewHolderSelected() {
+            onViewHolderSelected(bindingAdapterPosition)
+        }
+
+        override fun onViewHolderDeselected() {
+            onViewHolderDeselected(bindingAdapterPosition)
         }
 
     }

@@ -120,6 +120,22 @@ abstract class DpadRecyclerViewTest {
         return events
     }
 
+    fun getViewHolderSelections(): List<Int> {
+        var events = listOf<Int>()
+        fragmentScenario.onFragment { fragment ->
+            events = fragment.getViewHolderSelections()
+        }
+        return events
+    }
+
+    fun getViewHolderDeselections(): List<Int> {
+        var events = listOf<Int>()
+        fragmentScenario.onFragment { fragment ->
+            events = fragment.getViewHolderDeselections()
+        }
+        return events
+    }
+
     fun getSelectionAndAlignedEvents(): List<DpadSelectionEvent> {
         var events = listOf<DpadSelectionEvent>()
         fragmentScenario.onFragment { fragment ->
