@@ -309,6 +309,11 @@ internal class PivotSelector(
         this.recyclerView = recyclerView
     }
 
+    fun removeCurrentViewHolderSelection() {
+        selectedViewHolder?.onViewHolderDeselected()
+        selectedViewHolder = null
+    }
+
     /**
      * RecyclerView prevents us from requesting layout in many cases
      * (during layout, during scroll, etc.)
