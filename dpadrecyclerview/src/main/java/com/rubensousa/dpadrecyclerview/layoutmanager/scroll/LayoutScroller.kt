@@ -200,14 +200,10 @@ internal class LayoutScroller(
             targetSubPosition = 0
         }
         val view = layoutManager.findViewByPosition(targetPosition) ?: return
-        if (targetSubPosition != 0) {
-            scrollToView(
-                view, layoutAlignment.getViewAtSubPosition(view, targetSubPosition),
-                smooth, requestFocus
-            )
-        } else {
-            scrollToView(view, smooth, requestFocus)
-        }
+        scrollToView(
+            view, layoutAlignment.getViewAtSubPosition(view, targetSubPosition),
+            smooth, requestFocus
+        )
     }
 
     fun scrollToPosition(position: Int, subPosition: Int = 0) {
