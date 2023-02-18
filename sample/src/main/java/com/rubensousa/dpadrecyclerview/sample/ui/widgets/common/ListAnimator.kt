@@ -17,7 +17,6 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
 
 import android.widget.TextView
-import androidx.compose.animation.core.EaseIn
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -43,7 +42,6 @@ class ListAnimator(
     fun startSelectionAnimation() {
         title.pivotX = 0f
         title.pivotY = title.height.toFloat()
-        EaseIn
         title.animate()
             .scaleX(1.5f)
             .scaleY(1.5f)
