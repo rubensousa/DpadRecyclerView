@@ -72,6 +72,7 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
 
         // For scaling animation
         binding.recyclerView.clipChildren = false
+        binding.recyclerView.setSmoothScrollMaxPendingMoves(0)
         binding.recyclerView.requestFocus()
         binding.recyclerView.adapter = concatAdapter
     }

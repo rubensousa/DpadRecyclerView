@@ -96,6 +96,7 @@ class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
                 )
             )
             setChildAlignment(alignment = ChildAlignment(offsetRatio = 0.0f))
+            setSmoothScrollMaxPendingMoves(0)
             adapter = concatAdapter
             requestFocus()
         }
