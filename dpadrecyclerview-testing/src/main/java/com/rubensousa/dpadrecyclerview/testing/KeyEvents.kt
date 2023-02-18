@@ -38,6 +38,11 @@ object KeyEvents {
     }
 
     @JvmStatic
+    fun click(times: Int = 1, delay: Long = DEFAULT_KEY_PRESS_DELAY) {
+        pressKey(KeyEvent.KEYCODE_DPAD_CENTER, times, delay)
+    }
+
+    @JvmStatic
     fun pressDown(times: Int = 1, delay: Long = DEFAULT_KEY_PRESS_DELAY) {
         pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times, delay)
     }

@@ -21,6 +21,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemNestedAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder

@@ -29,15 +29,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.decorator.ColumnProvider
 import com.rubensousa.decorator.GridMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenStandardGridBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 import timber.log.Timber
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="horizontal_item_spacing">16dp</dimen>
+
     <dimen name="grid_item_spacing">24dp</dimen>
 
     <dimen name="vertical_item_spacing">32dp</dimen>
@@ -13,5 +14,8 @@
     <dimen name="list_item_width">135dp</dimen>
     <dimen name="list_item_height">180dp</dimen>
     <dimen name="selection_overlay_stroke_width">4dp</dimen>
+
+    <dimen name="feature_item_spacing">16dp</dimen>
+    <dimen name="feature_edge_spacing">64dp</dimen>
 
 </resources>
