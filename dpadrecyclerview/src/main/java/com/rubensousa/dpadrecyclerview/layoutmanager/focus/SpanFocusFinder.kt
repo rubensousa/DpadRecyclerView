@@ -115,18 +115,18 @@ internal class SpanFocusFinder {
         edgePosition: Int,
         positionDirection: Int
     ): Int {
-        val nextPosition = focusedPosition + spanCount * positionDirection
-        if (nextPosition <= edgePosition && edgePosition > focusedPosition) {
-            return nextPosition
-        }
-        if (nextPosition >= edgePosition && edgePosition < focusedPosition) {
-            return nextPosition
-        }
         val focusedSpanGroup = spanSizeLookup.getSpanGroupIndex(focusedPosition, spanCount)
         val edgeSpanGroup = spanSizeLookup.getSpanGroupIndex(edgePosition, spanCount)
         // There's no way to go from here
         if (focusedSpanGroup == edgeSpanGroup) {
             return RecyclerView.NO_POSITION
+        }
+        val nextPosition = focusedPosition + spanCount * positionDirection
+        if (nextPosition >= edgePosition && positionDirection < 0) {
+            return nextPosition
+        }
+        if (nextPosition <= edgePosition && positionDirection > 0) {
+            return nextPosition
         }
         return edgePosition
     }

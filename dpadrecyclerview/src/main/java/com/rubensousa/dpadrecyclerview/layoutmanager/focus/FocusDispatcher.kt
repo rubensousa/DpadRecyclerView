@@ -110,6 +110,13 @@ internal class FocusDispatcher(
         }
     }
 
+    fun focusSelectedView() {
+        val view = layoutInfo.findViewByAdapterPosition(pivotSelector.position) ?: return
+        if (layoutInfo.isViewFocusable(view) && !view.hasFocus()) {
+            view.requestFocus()
+        }
+    }
+
     fun onInterceptFocusSearch(recyclerView: RecyclerView?, focused: View, direction: Int): View? {
         val currentRecyclerView = recyclerView ?: return focused
 
@@ -321,7 +328,11 @@ internal class FocusDispatcher(
             return
         }
 
-        val focusedChildIndex = layoutInfo.findIndexOf(focused)
+        if (focusedChild == null) {
+            return
+        }
+
+        val focusedChildIndex = layoutInfo.findIndexOf(focusedChild)
         addFocusableChildrenRequest.update(
             focusedChild = focusedChild,
             focusedChildIndex = focusedChildIndex,
@@ -395,6 +406,7 @@ internal class FocusDispatcher(
     ): Boolean {
         if (configuration.spanCount == 1
             || (movement != FocusDirection.PREVIOUS_ITEM && movement != FocusDirection.NEXT_ITEM)
+            || focusedPosition == RecyclerView.NO_POSITION
         ) {
             return false
         }
