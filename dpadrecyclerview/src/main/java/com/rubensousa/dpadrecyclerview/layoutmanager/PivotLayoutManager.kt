@@ -126,10 +126,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
-        if (hadFocusBeforeLayout) {
-            focusDispatcher.onFocusChanged(true)
-        }
         pivotLayout.onLayoutCompleted(state)
+        if (hadFocusBeforeLayout) {
+            focusDispatcher.focusSelectedView()
+        }
         pivotSelector.onLayoutCompleted()
         hadFocusBeforeLayout = false
     }

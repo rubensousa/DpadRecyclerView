@@ -25,7 +25,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.decorator.LinearMarginDecoration
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
@@ -33,9 +32,9 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListModel
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.NestedListAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.PlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import timber.log.Timber
 

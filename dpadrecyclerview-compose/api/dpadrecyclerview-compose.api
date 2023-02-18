@@ -1,0 +1,10 @@
+public class com/rubensousa/dpadrecyclerview/compose/DpadComposeViewHolder : androidx/recyclerview/widget/RecyclerView$ViewHolder, com/rubensousa/dpadrecyclerview/DpadViewHolder {
+	public static final field $stable I
+	public fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function5;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Z)V
+	public synthetic fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function5;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun getSubPositionAlignments ()Ljava/util/List;
+	public fun onViewHolderDeselected ()V
+	public fun onViewHolderSelected ()V
+	public final fun setItemState (Ljava/lang/Object;)V
+}
+

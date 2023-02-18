@@ -2,6 +2,16 @@
 
 ## Version 1.0.0
 
+### 1.0.0-alpha05
+
+2023-02-??
+
+#### Bug fixes
+
+#### Testing
+
+- New `KeyEvents.click` to easily dispatch DPAD_CENTER events
+
 ### 1.0.0-alpha04
 
 2023-02-13

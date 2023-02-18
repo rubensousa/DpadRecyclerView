@@ -20,14 +20,14 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemGridBinding
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListTypes
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.MutableListAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 
 class MutableGridAdapter(private val onItemClickListener: ItemViewHolder.ItemClickListener) :
     MutableListAdapter<Int, ItemViewHolder>(DIFF_CALLBACK) {
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Int>() {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Int>() {
             override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
                 return oldItem == newItem
             }

@@ -13,7 +13,7 @@ class GridViewModel : ViewModel() {
     private val list = ArrayList<Int>()
     private val listLiveData = MutableLiveData<MutableList<Int>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
-    private val pageSize = 50
+    private val pageSize = 200
 
     val loadingState: LiveData<Boolean> = loadingStateLiveData
     val listState: LiveData<MutableList<Int>> = listLiveData
@@ -35,7 +35,7 @@ class GridViewModel : ViewModel() {
         loadingStateLiveData.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
             list.addAll(createPage())
-            delay(2000L)
+            delay(2500L)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
     }

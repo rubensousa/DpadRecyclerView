@@ -93,6 +93,18 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    fun testFocusDoesNotChangeIfMaxPendingMovesIsDisabled() {
+        val increment = 20
+        launchFragment(getDefaultAdapterConfiguration().copy(focusEvery = increment))
+        onRecyclerView("Disable max pending moves") { recyclerView ->
+            recyclerView.setSmoothScrollMaxPendingMoves(0)
+        }
+        assertFocusAndSelection(position = 0)
+        pressDown()
+        assertFocusAndSelection(position = 0)
+    }
+
+    @Test
     fun testScrollingUntilPivotIsFound() {
         val increment = 5
         val steps = 10
@@ -139,7 +151,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.move(from = 0, to = 1)
         }
-        waitForCondition("Waiting for animation start") {recyclerView ->
+        waitForCondition("Waiting for animation start") { recyclerView ->
             recyclerView.isAnimating
         }
         pressDown()
@@ -159,7 +171,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         mutateAdapter { adapter ->
             adapter.addAt(1000, index = 3)
         }
-        waitForCondition("Waiting for animation start") {recyclerView ->
+        waitForCondition("Waiting for animation start") { recyclerView ->
             recyclerView.isAnimating
         }
         pressDown()

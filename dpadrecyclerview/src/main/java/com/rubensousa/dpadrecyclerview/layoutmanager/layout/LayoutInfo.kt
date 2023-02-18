@@ -195,16 +195,13 @@ internal class LayoutInfo(
 
     fun findIndexOf(view: View?): Int {
         if (view != null && view !== recyclerView) {
-            val currentView = layout.findContainingItemView(view)
-            if (currentView != null) {
-                var index = 0
-                val count = layout.childCount
-                while (index < count) {
-                    if (layout.getChildAt(index) === currentView) {
-                        return index
-                    }
-                    index++
+            var index = 0
+            val count = layout.childCount
+            while (index < count) {
+                if (layout.getChildAt(index) === view) {
+                    return index
                 }
+                index++
             }
         }
         return RecyclerView.NO_POSITION

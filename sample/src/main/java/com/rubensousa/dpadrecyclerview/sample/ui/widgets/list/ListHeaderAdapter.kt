@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListHeaderBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 
 class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBACK) {
 

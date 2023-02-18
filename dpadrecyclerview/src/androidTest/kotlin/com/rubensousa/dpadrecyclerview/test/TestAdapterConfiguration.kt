@@ -24,12 +24,14 @@ data class TestAdapterConfiguration(
     val itemLayoutId: Int = R.layout.dpadrecyclerview_test_item_grid,
     val numberOfItems: Int = 200,
     val focusEvery: Int = 1,
+    val height: Int = 0
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readInt(),
-        parcel.readInt()
+        parcel.readInt(),
+        parcel.readInt(),
     )
 
     override fun describeContents(): Int {
@@ -40,6 +42,7 @@ data class TestAdapterConfiguration(
         parcel.writeInt(itemLayoutId)
         parcel.writeInt(numberOfItems)
         parcel.writeInt(focusEvery)
+        parcel.writeInt(height)
     }
 
     companion object CREATOR : Parcelable.Creator<TestAdapterConfiguration> {

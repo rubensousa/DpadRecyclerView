@@ -36,7 +36,13 @@ class TestAdapter(
                 .inflate(adapterConfiguration.itemLayoutId, parent, false),
             onViewHolderSelected,
             onViewHolderDeselected
-        )
+        ).also { viewHolder ->
+            if (adapterConfiguration.height != 0) {
+                val layoutParams = viewHolder.itemView.layoutParams
+                layoutParams.height = adapterConfiguration.height
+                viewHolder.itemView.layoutParams = layoutParams
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {

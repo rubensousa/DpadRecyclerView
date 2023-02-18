@@ -1,0 +1,83 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+apply from: "$rootProject.projectDir/gradle/publish.gradle"
+apply from: "$rootProject.projectDir/gradle/coverage.gradle"
+
+android {
+    namespace 'com.rubensousa.dpadrecyclerview.compose'
+    compileSdk versions.compileSdkVersion
+
+    defaultConfig {
+        minSdk versions.minSdkVersion
+        targetSdk versions.targetSdkVersion
+        consumerProguardFiles "consumer-rules.pro"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments useTestStorageService: 'true'
+        testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        buildConfig false
+        compose true
+    }
+
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "$composeVersions.compiler"
+    }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+
+}
+
+dependencies {
+    implementation project(':dpadrecyclerview')
+    implementation "androidx.appcompat:appcompat:$versions.appcompat"
+    implementation "androidx.recyclerview:recyclerview:$versions.recyclerview"
+    implementation "androidx.customview:customview-poolingcontainer:$versions.poolingContainer"
+    implementation "androidx.compose.runtime:runtime:$composeVersions.runtime"
+    implementation "androidx.compose.ui:ui:$composeVersions.ui"
+
+    // Test dependencies
+    debugImplementation("androidx.compose.ui:ui-test-manifest:$composeVersions.ui")
+    debugImplementation "androidx.compose.ui:ui-tooling:$composeVersions.ui"
+    debugImplementation "androidx.compose.ui:ui-tooling-preview:$composeVersions.ui"
+    debugImplementation "androidx.compose.material3:material3:$composeVersions.material3"
+    debugImplementation 'androidx.customview:customview:1.1.0'
+
+    androidTestImplementation project (':dpadrecyclerview-testing')
+    androidTestImplementation project (':dpadrecyclerview-test-fixtures')
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersions.ui")
+    androidTestUtil "androidx.test.services:test-services:$testVersions.services"
+    androidTestUtil "androidx.test:orchestrator:$testVersions.orchestrator"
+}

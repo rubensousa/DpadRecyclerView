@@ -21,6 +21,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnChildLaidOutListener
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
@@ -220,6 +221,17 @@ internal class PivotLayout(
 
         override fun onChildLaidOut(view: View) {
             scroller.onChildLaidOut(view)
+            val layoutParams = view.layoutParams as DpadLayoutParams
+            // If this is the new pivot, request focus now that it was found
+            // in case it didn't get focus yet
+            if (!scroller.isSearchingPivot()
+                && !view.hasFocus()
+                && layoutParams.absoluteAdapterPosition == pivotSelector.position
+            ) {
+                scroller.scrollToSelectedPosition(
+                    smooth = configuration.isSmoothFocusChangesEnabled
+                )
+            }
             layoutListener?.let { listener ->
                 val recyclerView = layoutInfo.getRecyclerView() ?: return@let
                 val viewHolder = layoutInfo.getChildViewHolder(view) ?: return
@@ -230,6 +242,7 @@ internal class PivotLayout(
         override fun onBlockLaidOut() {
             scroller.onBlockLaidOut()
         }
+
     }
 
 }
