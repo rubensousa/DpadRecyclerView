@@ -65,10 +65,12 @@ class TestAdapter(
         }
 
         override fun onViewHolderSelected() {
+            super<TestViewHolder>.onViewHolderSelected()
             onViewHolderSelected(bindingAdapterPosition)
         }
 
         override fun onViewHolderDeselected() {
+            super<TestViewHolder>.onViewHolderDeselected()
             onViewHolderDeselected(bindingAdapterPosition)
         }
 
