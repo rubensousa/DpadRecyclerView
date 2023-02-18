@@ -68,5 +68,8 @@ class NestedComposeListViewHolder(
         adapter.replaceList(item.items)
     }
 
+    fun cancelAnimations() {
+        animator.cancel()
+    }
 
 }

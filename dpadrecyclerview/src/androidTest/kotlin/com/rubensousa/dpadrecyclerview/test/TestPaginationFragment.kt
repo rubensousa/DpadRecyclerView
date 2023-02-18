@@ -58,7 +58,11 @@ class TestPaginationFragment : TestGridFragment() {
         recyclerView: DpadRecyclerView,
         adapterConfig: TestAdapterConfiguration
     ): RecyclerView.Adapter<*> {
-        val testAdapter = TestAdapter(adapterConfig)
+        val testAdapter = TestAdapter(
+            adapterConfig,
+            onViewHolderSelected = ::addViewHolderSelected,
+            onViewHolderDeselected = ::addViewHolderDeselected
+        )
         val loadingAdapter = PlaceholderAdapter()
         viewModel.initialLoad(adapterConfig.numberOfItems)
         viewModel.listState.observe(viewLifecycleOwner) { list ->

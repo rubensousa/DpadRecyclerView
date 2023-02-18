@@ -149,7 +149,6 @@ class SelectionTest : DpadRecyclerViewTest() {
 
     }
 
-    // TODO Migrate to PivotLayoutManager once grid is supported
     @Test
     fun testViewHoldersAlreadyAlignedStillDispatchAlignedEvent() {
         launchFragment(getDefaultLayoutConfiguration().copy(spans = 5))
@@ -191,6 +190,19 @@ class SelectionTest : DpadRecyclerViewTest() {
 
         assertThat(getTasksExecuted()).isEqualTo(listOf(DpadSelectionEvent(position = targetPosition)))
         assertFocusPosition(position = targetPosition)
+    }
+
+    @Test
+    fun testViewHolderReceivesDeselectionWhenItIsRecycled() {
+        launchFragment()
+
+        val viewHolderSelections = getViewHolderSelections()
+        assertThat(viewHolderSelections).isEqualTo(listOf(0))
+
+        executeOnFragment { fragment -> fragment.clearAdapter() }
+
+        val viewHolderDeselections = getViewHolderDeselections()
+        assertThat(viewHolderDeselections).isEqualTo(listOf(0))
     }
 
 }

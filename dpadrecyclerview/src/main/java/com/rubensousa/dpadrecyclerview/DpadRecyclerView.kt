@@ -25,6 +25,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -99,8 +100,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
         setWillNotDraw(true)
         setChildDrawingOrderCallback(focusableChildDrawingCallback)
         overScrollMode = OVER_SCROLL_NEVER
-
         typedArray.recycle()
+        removeSelectionForRecycledViewHolders()
     }
 
     private fun createLayoutManager(
@@ -220,6 +221,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
         super.setHasFixedSize(hasFixedSize)
     }
 
+    final override fun addRecyclerListener(listener: RecyclerListener) {
+        super.addRecyclerListener(listener)
+    }
+
     final override fun hasOverlappingRendering(): Boolean {
         return isOverlappingRenderingEnabled
     }
@@ -335,6 +340,21 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 behavior.configSmoothScrollByDuration(dx, dy)
             )
         } ?: smoothScrollBy(dx, dy, interpolator, UNDEFINED_DURATION)
+    }
+
+    override fun startNestedScroll(axes: Int, type: Int): Boolean {
+        val result = super.startNestedScroll(axes, type)
+        if (type == ViewCompat.TYPE_TOUCH) {
+            pivotLayoutManager?.setScrollingFromTouchEvent(true)
+        }
+        return result
+    }
+
+    override fun onScrollStateChanged(state: Int) {
+        super.onScrollStateChanged(state)
+        if (state == SCROLL_STATE_IDLE) {
+            pivotLayoutManager?.setScrollingFromTouchEvent(false)
+        }
     }
 
     /**
@@ -979,6 +999,18 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @return the listener set by [setOnMotionInterceptListener]
      */
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
+
+    private fun removeSelectionForRecycledViewHolders() {
+        addRecyclerListener { holder ->
+            val position = holder.absoluteAdapterPosition
+            if (holder is DpadViewHolder
+                && position != NO_POSITION
+                && position == getSelectedPosition()
+            ) {
+               pivotLayoutManager?.removeCurrentViewHolderSelection()
+            }
+        }
+    }
 
     private fun requireLayout(): PivotLayoutManager {
         return requireNotNull(pivotLayoutManager) {

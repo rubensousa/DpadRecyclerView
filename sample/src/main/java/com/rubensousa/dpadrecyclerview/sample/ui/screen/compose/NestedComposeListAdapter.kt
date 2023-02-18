@@ -53,6 +53,7 @@ class NestedComposeListAdapter(
 
     override fun onViewRecycled(holder: NestedComposeListViewHolder) {
         val item = holder.item ?: return
+        holder.cancelAnimations()
         stateHolder.save(holder.getRecyclerView(), item.title)
     }
 

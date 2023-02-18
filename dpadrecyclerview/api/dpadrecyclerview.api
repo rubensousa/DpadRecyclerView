@@ -37,6 +37,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public synthetic fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun addOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
+	public final fun addRecyclerListener (Landroidx/recyclerview/widget/RecyclerView$RecyclerListener;)V
 	public final fun clearOnLayoutCompletedListeners ()V
 	public final fun clearOnViewHolderSelectedListeners ()V
 	protected final fun dispatchGenericFocusedEvent (Landroid/view/MotionEvent;)Z
@@ -72,6 +73,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	protected final fun onFocusChanged (ZILandroid/graphics/Rect;)V
 	protected final fun onRequestFocusInDescendants (ILandroid/graphics/Rect;)Z
 	public final fun onRtlPropertiesChanged (I)V
+	public fun onScrollStateChanged (I)V
 	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public final fun removeView (Landroid/view/View;)V
@@ -124,6 +126,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setWillNotDraw (Z)V
 	public final fun smoothScrollBy (II)V
 	public final fun smoothScrollBy (IILandroid/view/animation/Interpolator;)V
+	public fun startNestedScroll (II)Z
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnKeyInterceptListener {

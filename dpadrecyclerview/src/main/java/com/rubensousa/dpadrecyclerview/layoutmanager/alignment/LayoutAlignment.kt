@@ -23,6 +23,7 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import kotlin.math.sign
 
 internal class LayoutAlignment(
     private val layoutManager: LayoutManager,
@@ -37,6 +38,7 @@ internal class LayoutAlignment(
     private val parentAlignmentCalculator = ParentAlignmentCalculator()
     private val childAlignment = ChildScrollAlignment()
     private val viewHolderAlignment = SubPositionScrollAlignment()
+
     // Also saved here so that they're kept for the same layout pass
     private var isVertical: Boolean = true
     private var reverseLayout: Boolean = false
@@ -72,7 +74,8 @@ internal class LayoutAlignment(
 
     fun getViewAtSubPosition(view: View, subPosition: Int): View? {
         val viewHolder = layoutInfo.getChildViewHolder(view)
-        val childAlignments = (viewHolder as? DpadViewHolder)?.getSubPositionAlignments() ?: return null
+        val childAlignments =
+            (viewHolder as? DpadViewHolder)?.getSubPositionAlignments() ?: return null
         if (subPosition >= childAlignments.size) {
             return null
         }
@@ -115,11 +118,15 @@ internal class LayoutAlignment(
         return if (scrollOffset > 0) {
             if (parentAlignmentCalculator.isScrollLimitInvalid(endScrollLimit)) {
                 scrollOffset
+            } else if (scrollOffset.sign != endScrollLimit.sign) {
+                0
             } else if (scrollOffset > endScrollLimit) {
                 endScrollLimit
             } else {
                 scrollOffset
             }
+        } else if (scrollOffset.sign != startScrollLimit.sign) {
+            0
         } else if (parentAlignmentCalculator.isScrollLimitInvalid(startScrollLimit)) {
             scrollOffset
         } else if (scrollOffset < startScrollLimit) {

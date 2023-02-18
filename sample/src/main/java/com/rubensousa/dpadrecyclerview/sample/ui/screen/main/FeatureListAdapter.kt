@@ -94,8 +94,6 @@ class FeatureListAdapter(
 
         fun onRecycled() {
             animator.cancel()
-            binding.textView.animate().cancel()
-            binding.recyclerView.animate().cancel()
             item = null
         }
 

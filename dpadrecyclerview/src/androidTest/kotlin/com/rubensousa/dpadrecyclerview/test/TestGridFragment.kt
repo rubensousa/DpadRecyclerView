@@ -56,9 +56,11 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     }
 
     private val selectionEvents = ArrayList<DpadSelectionEvent>()
+    private val viewHolderSelections = ArrayList<Int>()
+    private val viewHolderDeselections = ArrayList<Int>()
     private val tasks = ArrayList<DpadSelectionEvent>()
     private val alignedEvents = ArrayList<DpadSelectionEvent>()
-    private val layoutEvents  = ArrayList<RecyclerView.ViewHolder>()
+    private val layoutEvents = ArrayList<RecyclerView.ViewHolder>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,7 +73,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         }
         recyclerView.addOnViewHolderSelectedListener(this)
         recyclerView.setOnChildLaidOutListener(this)
-        
+
         recyclerView.apply {
             setReverseLayout(layoutConfig.reverseLayout)
             setRecycleChildrenOnDetach(layoutConfig.recycleChildrenOnDetach)
@@ -85,7 +87,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
             adapter = createAdapter(recyclerView, adapterConfig)
             requestFocus()
         }
-      
+
     }
 
     fun mutateAdapter(action: (adapter: AbstractTestAdapter<*>) -> Unit) {
@@ -104,7 +106,10 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         recyclerView: DpadRecyclerView,
         adapterConfig: TestAdapterConfiguration
     ): RecyclerView.Adapter<*> {
-        return TestAdapter(adapterConfig)
+        return TestAdapter(adapterConfig,
+            onViewHolderSelected = ::addViewHolderSelected,
+            onViewHolderDeselected = ::addViewHolderDeselected
+        )
     }
 
     override fun onViewHolderSelected(
@@ -152,12 +157,24 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
 
     fun getSelectionEvents(): List<DpadSelectionEvent> = selectionEvents
 
+    fun getViewHolderSelections(): List<Int> = viewHolderSelections
+
+    fun getViewHolderDeselections(): List<Int> = viewHolderDeselections
+
     fun getSelectedAndAlignedEvents(): List<DpadSelectionEvent> = alignedEvents
 
     fun getLayoutEvents(): List<RecyclerView.ViewHolder> = layoutEvents
 
     override fun onChildLaidOut(parent: RecyclerView, child: RecyclerView.ViewHolder) {
         layoutEvents.add(child)
+    }
+
+    protected fun addViewHolderSelected(position: Int) {
+        viewHolderSelections.add(position)
+    }
+
+    protected fun addViewHolderDeselected(position: Int) {
+        viewHolderDeselections.add(position)
     }
 
     private fun getDpadRecyclerView(): DpadRecyclerView? = view?.findViewById(R.id.recyclerView)

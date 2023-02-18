@@ -69,6 +69,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     )
     private var hadFocusBeforeLayout = false
     private var recyclerView: RecyclerView? = null
+    private var isScrollingFromTouchEvent = false
 
     override fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
         return layoutParams is DpadLayoutParams
@@ -214,7 +215,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     fun onFocusChanged(gainFocus: Boolean) {
-        focusDispatcher.onFocusChanged(gainFocus)
+        // Do nothing if the user is scrolling via touch events
+        if (!isScrollingFromTouchEvent) {
+            focusDispatcher.onFocusChanged(gainFocus)
+        }
     }
 
     override fun onInterceptFocusSearch(focused: View, direction: Int): View? {
@@ -468,6 +472,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun getChildAlignment(): ChildAlignment = layoutAlignment.getChildAlignment()
 
     internal fun getConfig() = configuration
+
+    internal fun setScrollingFromTouchEvent(isTouching: Boolean) {
+        isScrollingFromTouchEvent = isTouching
+    }
+
+    internal fun removeCurrentViewHolderSelection() {
+        pivotSelector.removeCurrentViewHolderSelection(clearSelection = isScrollingFromTouchEvent)
+    }
 
     // Event methods
 

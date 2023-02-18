@@ -19,8 +19,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Recycler
-import androidx.recyclerview.widget.RecyclerView.State
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnChildLaidOutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
@@ -63,7 +61,7 @@ internal class PivotLayout(
         }
     }
 
-    fun onLayoutChildren(recycler: Recycler, state: State) {
+    fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")
         }
@@ -89,8 +87,8 @@ internal class PivotLayout(
 
     private fun preLayoutChildren(
         pivotPosition: Int,
-        recycler: Recycler,
-        state: State
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
     ) {
         val childCount = layoutManager.childCount
         if (childCount == 0) {
@@ -109,7 +107,7 @@ internal class PivotLayout(
         }
     }
 
-    private fun layoutChildren(recycler: Recycler, state: State) {
+    private fun layoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "LayoutStart: ${state.asString()}")
             structureEngineer.logChildren()
@@ -145,7 +143,7 @@ internal class PivotLayout(
         itemChanges.moveItemCount = itemCount
     }
 
-    fun onLayoutCompleted(state: State) {
+    fun onLayoutCompleted(state: RecyclerView.State) {
         itemChanges.reset()
         layoutInfo.onLayoutCompleted()
         layoutCompleteListeners.forEach { listener ->
@@ -172,7 +170,7 @@ internal class PivotLayout(
     fun scrollHorizontallyBy(
         dx: Int,
         recycler: RecyclerView.Recycler,
-        state: State
+        state: RecyclerView.State
     ): Int {
         if (configuration.isVertical()) {
             return 0
@@ -183,7 +181,7 @@ internal class PivotLayout(
     fun scrollVerticallyBy(
         dy: Int,
         recycler: RecyclerView.Recycler,
-        state: State
+        state: RecyclerView.State
     ): Int {
         if (configuration.isHorizontal()) {
             return 0
@@ -194,7 +192,7 @@ internal class PivotLayout(
     private fun scrollBy(
         offset: Int,
         recycler: RecyclerView.Recycler,
-        state: State
+        state: RecyclerView.State
     ): Int {
         // Do nothing if we don't have children
         if (state.itemCount == 0 || offset == 0 || !configuration.isLayoutEnabled) {
@@ -204,7 +202,7 @@ internal class PivotLayout(
         return structureEngineer.scrollBy(scrollOffset, recycler, state, recycleChildren = true)
     }
 
-    private fun State.asString(): String {
+    private fun RecyclerView.State.asString(): String {
         val remainingScroll = if (layoutInfo.isVertical()) {
             this.remainingScrollVertical
         } else {

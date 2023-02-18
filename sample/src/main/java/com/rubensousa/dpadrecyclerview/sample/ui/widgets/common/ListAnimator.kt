@@ -57,13 +57,13 @@ class ListAnimator(
 
     fun startDeselectionAnimation() {
         title.animate()
-            .alpha(0.4f)
+            .alpha(inactiveAlpha)
             .scaleX(1f)
             .scaleY(1f)
             .setInterpolator(deselectInterpolator)
             .setDuration(deselectDuration)
 
-        recyclerView.animate().alpha(0.4f)
+        recyclerView.animate().alpha(inactiveAlpha)
             .setInterpolator(deselectInterpolator)
             .setDuration(deselectDuration)
     }
@@ -71,6 +71,10 @@ class ListAnimator(
     fun cancel() {
         recyclerView.animate().cancel()
         title.animate().cancel()
+        recyclerView.alpha = inactiveAlpha
+        title.alpha = inactiveAlpha
+        title.scaleX = 1.0f
+        title.scaleY = 1.0f
     }
 
 }
