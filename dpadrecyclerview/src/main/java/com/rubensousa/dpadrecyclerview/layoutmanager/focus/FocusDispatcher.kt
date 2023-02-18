@@ -169,7 +169,10 @@ internal class FocusDispatcher(
                 if (isScrolling || !configuration.focusOutBack) {
                     newFocusedView = focused
                 }
-                if (configuration.isScrollEnabled && scroller.addScrollMovement(forward = true)) {
+                if (configuration.isScrollEnabled
+                    && configuration.maxPendingMoves > 0
+                    && scroller.addScrollMovement(forward = true)
+                ) {
                     newFocusedView = focused
                 }
             }
@@ -177,7 +180,10 @@ internal class FocusDispatcher(
                 if (isScrolling || !configuration.focusOutFront) {
                     newFocusedView = focused
                 }
-                if (configuration.isScrollEnabled && scroller.addScrollMovement(forward = false)) {
+                if (configuration.isScrollEnabled
+                    && configuration.maxPendingMoves > 0
+                    && scroller.addScrollMovement(forward = false)
+                ) {
                     newFocusedView = focused
                 }
             }

@@ -211,7 +211,7 @@ internal class LayoutConfiguration(properties: Properties) {
     }
 
     fun setMaxPendingMoves(moves: Int) {
-        require(moves > 0)
+        require(moves >= 0)
         maxPendingMoves = moves
     }
 
