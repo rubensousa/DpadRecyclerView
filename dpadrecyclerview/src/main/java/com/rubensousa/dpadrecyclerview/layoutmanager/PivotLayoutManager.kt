@@ -478,7 +478,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     internal fun removeCurrentViewHolderSelection() {
-        pivotSelector.removeCurrentViewHolderSelection()
+        pivotSelector.removeCurrentViewHolderSelection(clearSelection = isScrollingFromTouchEvent)
     }
 
     // Event methods

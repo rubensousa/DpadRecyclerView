@@ -309,7 +309,11 @@ internal class PivotSelector(
         this.recyclerView = recyclerView
     }
 
-    fun removeCurrentViewHolderSelection() {
+    fun removeCurrentViewHolderSelection(clearSelection: Boolean) {
+        if (clearSelection) {
+            position = 0
+            positionOffset = 0
+        }
         selectedViewHolder?.onViewHolderDeselected()
         selectedViewHolder = null
     }
