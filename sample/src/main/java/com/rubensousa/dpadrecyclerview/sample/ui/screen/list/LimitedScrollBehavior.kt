@@ -23,6 +23,7 @@ class LimitedScrollBehavior {
         duration: Int? = null
     ) {
         recyclerView.setSmoothScrollMaxPendingAlignments(maxPendingAlignments)
+        recyclerView.setSmoothScrollMaxPendingMoves(0)
         recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
             override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
                 return extraLayoutSpaceStart()
