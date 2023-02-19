@@ -40,9 +40,9 @@ class ItemViewHolder(
                 return@setOnFocusChangeListener
             }
             if (hasFocus) {
-                animator.startFocusAnimation()
+                animator.startFocusGainAnimation()
             } else {
-                animator.startUnfocusAnimation()
+                animator.startFocusLossAnimation()
             }
         }
     }

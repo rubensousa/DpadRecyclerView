@@ -34,9 +34,9 @@ class GridItemViewHolder(
         }
         itemView.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
-                animator.startFocusAnimation()
+                animator.startFocusGainAnimation()
             } else {
-                animator.startUnfocusAnimation()
+                animator.startFocusLossAnimation()
             }
         }
     }

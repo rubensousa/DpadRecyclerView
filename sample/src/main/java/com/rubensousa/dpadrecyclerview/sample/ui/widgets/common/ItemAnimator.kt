@@ -16,6 +16,8 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
 
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -23,36 +25,52 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 class ItemAnimator(private val itemView: View) {
 
     companion object {
-        private const val selectDuration = 350L
-        private const val deselectDuration = 200L
-        private val selectInterpolator = FastOutSlowInInterpolator()
-        private val deselectInterpolator = FastOutLinearInInterpolator()
+        private const val focusGainDuration = 350L
+        private const val focusLossDuration = 200L
+        private val focusGainInterpolator = FastOutSlowInInterpolator()
+        private val focusLossInterpolator = FastOutLinearInInterpolator()
+        private val handler: Handler by lazy {
+            Handler(Looper.getMainLooper())
+        }
     }
 
-    fun startFocusAnimation() {
-        itemView.animate().cancel()
+    private val focusGainRunnable = Runnable {
         itemView.animate()
             .scaleX(1.1f)
             .scaleY(1.1f)
-            .setInterpolator(selectInterpolator)
-            .setDuration(selectDuration)
+            .setInterpolator(focusGainInterpolator)
+            .duration = focusGainDuration
     }
-
-    fun startUnfocusAnimation() {
-        itemView.animate().cancel()
+    private val focusLossRunnable = Runnable {
         itemView.scaleX = 1.05f
         itemView.scaleY = 1.05f
         itemView.animate()
             .scaleX(1f)
             .scaleY(1f)
-            .setInterpolator(deselectInterpolator)
-            .setDuration(deselectDuration)
+            .setInterpolator(focusLossInterpolator)
+            .duration = focusLossDuration
+    }
+
+    fun startFocusGainAnimation() {
+        cancelPendingAnimations()
+        handler.post(focusGainRunnable)
+    }
+
+    fun startFocusLossAnimation() {
+        cancelPendingAnimations()
+        handler.post(focusLossRunnable)
     }
 
     fun cancel() {
-        itemView.animate().cancel()
+        cancelPendingAnimations()
         itemView.scaleX = 1f
         itemView.scaleY = 1f
+    }
+
+    private fun cancelPendingAnimations() {
+        handler.removeCallbacks(focusGainRunnable)
+        handler.removeCallbacks(focusLossRunnable)
+        itemView.animate().cancel()
     }
 
 }
