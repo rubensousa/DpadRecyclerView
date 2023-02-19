@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,25 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.widgets.item
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.grid
 
-import android.view.View
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemGridBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ItemAnimator
 
-class ItemViewHolder(
-    root: View,
-    private val textView: TextView,
-    private val animateFocusChanges: Boolean = true
-) : RecyclerView.ViewHolder(root), DpadViewHolder {
+class GridItemViewHolder(
+    private val binding: AdapterItemGridBinding
+) : RecyclerView.ViewHolder(binding.root), DpadViewHolder {
 
     private var clickListener: ItemClickListener? = null
-    private val animator = ItemAnimator(root)
+    private val animator = ItemAnimator(binding.root)
 
     init {
         itemView.setOnClickListener {
             clickListener?.onViewHolderClicked()
         }
-        root.setOnFocusChangeListener { _, hasFocus ->
-            if (!animateFocusChanges) {
-                return@setOnFocusChangeListener
-            }
+        itemView.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 animator.startFocusAnimation()
             } else {
@@ -48,7 +42,7 @@ class ItemViewHolder(
     }
 
     fun bind(item: Int, listener: ItemClickListener?) {
-        textView.text = item.toString()
+        binding.textView.text = item.toString()
         clickListener = listener
     }
 

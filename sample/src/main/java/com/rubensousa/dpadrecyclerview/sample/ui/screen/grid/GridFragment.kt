@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.screen.compose
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.grid
 
 import android.os.Bundle
 import android.view.View
@@ -26,14 +26,12 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
-import com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridViewModel
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ComposePlaceholderAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.GridPlaceholderComposable
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
+import timber.log.Timber
 
-class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
+class GridFragment : Fragment(R.layout.screen_recyclerview) {
 
     private val spanCount = 5
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
@@ -42,14 +40,18 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(binding.recyclerView)
-        val placeholderAdapter = ComposePlaceholderAdapter(
+        val placeholderAdapter = PlaceholderAdapter(
             items = spanCount,
-            composable = { GridPlaceholderComposable() }
+            layoutId = R.layout.adapter_grid_placeholder
         )
-        val itemAdapter = ComposeGridAdapter()
+        val itemAdapter = GridItemAdapter(object : GridItemViewHolder.ItemClickListener {
+            override fun onViewHolderClicked() {
+                Timber.i("Item clicked")
+            }
+        })
         val concatAdapter = ConcatAdapter(
             ConcatAdapter.Config.Builder()
-                .setIsolateViewTypes(false)
+                .setIsolateViewTypes(true)
                 .build()
         )
         concatAdapter.addAdapter(itemAdapter)
@@ -62,16 +64,12 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
         viewModel.listState.observe(viewLifecycleOwner) { list ->
             itemAdapter.submitList(list)
         }
-
-        // For scaling animation
-        binding.recyclerView.setSmoothScrollMaxPendingMoves(0)
         binding.recyclerView.requestFocus()
         binding.recyclerView.adapter = concatAdapter
     }
 
     private fun setupRecyclerView(recyclerView: DpadRecyclerView) {
         recyclerView.apply {
-            RecyclerViewLogger.logChildrenWhenIdle(this)
             setSpanCount(spanCount)
             addItemDecoration(
                 DpadGridSpacingDecoration.create(

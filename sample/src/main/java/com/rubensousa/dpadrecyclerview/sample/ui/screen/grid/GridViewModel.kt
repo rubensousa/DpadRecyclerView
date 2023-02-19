@@ -13,7 +13,7 @@ class GridViewModel : ViewModel() {
     private val list = ArrayList<Int>()
     private val listLiveData = MutableLiveData<MutableList<Int>>()
     private val loadingStateLiveData = MutableLiveData<Boolean>()
-    private val pageSize = 200
+    private val pageSize = 50
 
     val loadingState: LiveData<Boolean> = loadingStateLiveData
     val listState: LiveData<MutableList<Int>> = listLiveData
@@ -31,7 +31,6 @@ class GridViewModel : ViewModel() {
         if (diffToEnd > spanCount) {
             return
         }
-
         loadingStateLiveData.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
             list.addAll(createPage())

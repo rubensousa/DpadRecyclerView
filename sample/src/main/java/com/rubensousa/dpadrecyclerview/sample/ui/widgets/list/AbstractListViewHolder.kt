@@ -29,7 +29,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 abstract class AbstractListViewHolder(
     view: View,
     val recyclerView: RecyclerView,
-    itemLayoutId: Int = R.layout.adapter_nested_item_start,
+    itemLayoutId: Int = R.layout.horizontal_adapter_item,
 ) : RecyclerView.ViewHolder(view), DpadViewHolder {
 
     var item: ListModel? = null

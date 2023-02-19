@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,42 +14,29 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.widgets.item
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.grid
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemGridBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
 
-class ItemGridAdapter(private val onItemClickListener: ItemViewHolder.ItemClickListener) :
-    ListAdapter<Int, ItemViewHolder>(DIFF_CALLBACK) {
+class GridItemAdapter(private val onItemClickListener: GridItemViewHolder.ItemClickListener) :
+    ListAdapter<Int, GridItemViewHolder>(MutableGridAdapter.DIFF_CALLBACK) {
 
-    companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Int>() {
-            override fun areItemsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return oldItem == newItem
-            }
-
-            override fun areContentsTheSame(oldItem: Int, newItem: Int): Boolean {
-                return oldItem == newItem
-            }
-        }
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val binding = AdapterItemGridBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GridItemViewHolder {
+        return GridItemViewHolder(
+            AdapterItemGridBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         )
-        return ItemViewHolder(binding.root, binding.textView)
     }
 
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: GridItemViewHolder, position: Int) {
         return holder.bind(getItem(position), onItemClickListener)
     }
 
-    override fun onViewRecycled(holder: ItemViewHolder) {
+    override fun onViewRecycled(holder: GridItemViewHolder) {
         super.onViewRecycled(holder)
         holder.recycle()
     }

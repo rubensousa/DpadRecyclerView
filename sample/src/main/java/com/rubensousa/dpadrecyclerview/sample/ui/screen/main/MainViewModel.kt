@@ -67,11 +67,11 @@ class MainViewModel : ViewModel() {
             title = "Grids",
             destinations = listOf(
                 ScreenDestination(
-                    direction = MainFragmentDirections.openStandardGrid(),
+                    direction = MainFragmentDirections.openGrid(),
                     title = "Equal span sizes"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openStandardGrid(),
+                    direction = MainFragmentDirections.openGrid().apply { evenSpans = false },
                     title = "Different span sizes"
                 )
             ),

@@ -18,12 +18,11 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AccelerateInterpolator
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.sample.databinding.MainAdapterItemFeatureBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ItemAnimator
 
 class ScreenDestinationAdapter : RecyclerView.Adapter<ScreenDestinationAdapter.ViewHolder>() {
 
@@ -43,6 +42,11 @@ class ScreenDestinationAdapter : RecyclerView.Adapter<ScreenDestinationAdapter.V
         holder.bind(items[position])
     }
 
+    override fun onViewRecycled(holder: ViewHolder) {
+        super.onViewRecycled(holder)
+        holder.recycle()
+    }
+
     fun replaceItems(newItems: List<ScreenDestination>) {
         items = newItems
     }
@@ -52,15 +56,14 @@ class ScreenDestinationAdapter : RecyclerView.Adapter<ScreenDestinationAdapter.V
     ) : RecyclerView.ViewHolder(binding.root), DpadViewHolder {
 
         private var item: ScreenDestination? = null
-        private val growInterpolator = AccelerateDecelerateInterpolator()
-        private val shrinkInterpolator = AccelerateInterpolator()
+        private val animator = ItemAnimator(binding.root)
 
         init {
             itemView.setOnFocusChangeListener { v, hasFocus ->
                 if (hasFocus) {
-                    expand()
+                    animator.startFocusAnimation()
                 } else {
-                    shrink()
+                    animator.startUnfocusAnimation()
                 }
             }
             itemView.setOnClickListener {
@@ -75,22 +78,10 @@ class ScreenDestinationAdapter : RecyclerView.Adapter<ScreenDestinationAdapter.V
             this.item = item
         }
 
-        private fun shrink() {
-            itemView.animate()
-                .scaleX(1.0f)
-                .scaleY(1.0f)
-                .setInterpolator(shrinkInterpolator)
-                .setDuration(200L)
+        fun recycle() {
+            animator.cancel()
         }
 
-        private fun expand() {
-            itemView.animate()
-                .scaleX(1.1f)
-                .scaleY(1.1f)
-                .setInterpolator(growInterpolator)
-                .setDuration(200L)
-        }
     }
-
 
 }

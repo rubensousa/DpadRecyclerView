@@ -53,5 +53,4 @@ class ItemNestedAdapter(
 
     override fun getItemCount(): Int = list.size
 
-
 }

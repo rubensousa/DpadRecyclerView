@@ -52,10 +52,10 @@ class NestedListAdapter(
             itemLayoutId = R.layout.adapter_nested_item_center
         } else if (viewType == ListTypes.LIST_START) {
             layoutId = R.layout.adapter_list_start
-            itemLayoutId = R.layout.adapter_nested_item_start
+            itemLayoutId = R.layout.horizontal_adapter_item
         } else {
             layoutId = R.layout.adapter_list_start_leanback
-            itemLayoutId = R.layout.adapter_nested_item_start
+            itemLayoutId = R.layout.horizontal_adapter_item
         }
         val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
         return if (viewType == ListTypes.LIST_START_LEANBACK) {

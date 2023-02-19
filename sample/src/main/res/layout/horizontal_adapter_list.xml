@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#2E2E2E"
     android:clipChildren="false"
     android:orientation="vertical">
 
@@ -18,14 +17,16 @@
         android:textSize="14sp"
         tools:text="Headline" />
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:clipChildren="false">
 
         <com.rubensousa.dpadrecyclerview.DpadRecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
+            android:layout_height="0dp"
+            android:clipChildren="false"
             android:gravity="center"
             android:orientation="horizontal"
             app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
@@ -33,15 +34,22 @@
             app:dpadRecyclerViewFocusOutFront="false"
             app:dpadRecyclerViewParentAlignmentEdge="none"
             app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-            app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false" />
+            app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false"
+            app:layout_constraintBottom_toBottomOf="@id/selectionOverlayView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/selectionOverlayView" />
 
         <com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.SelectionOverlayView
             android:id="@+id/selectionOverlayView"
             android:layout_width="@dimen/list_item_width"
-            android:layout_height="@dimen/list_item_height"
+            android:layout_height="0dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/list_margin_start" />
+            android:layout_marginStart="@dimen/list_margin_start"
+            android:layout_marginTop="24dp"
+            app:layout_constraintDimensionRatio="@string/list_item_aspect_ratio"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
