@@ -4,11 +4,11 @@ Add the following dependency to your app's `build.gradle`:
 
 ```groovy
 implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview:{{ dpadrecyclerview.version }}"
-```
 
-You can also import the Espresso test helpers for your instrumented tests:
+// Optional: If you want to use Compose together with DpadRecyclerView
+implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-compose:{{ dpadrecyclerview.version }}"
 
-```groovy
+// Optional: Espresso test helpers for your instrumented tests:
 androidTestImplementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-testing:{{ dpadrecyclerview.version }}"
 ```
 
