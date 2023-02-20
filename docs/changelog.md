@@ -4,12 +4,16 @@
 
 ### 1.0.0-alpha05
 
-2023-02-??
+2023-02-21
 
 #### New Features
 
 - New `dpadrecyclerview-compose` module that contains `DpadComposeViewHolder` for Compose interoperability. Check [Compose interoperability](compose.md) for more information.
 - Allow setting 0 max pending moves with `setSmoothScrollMaxPendingMoves(0)` to fully prevent unwanted scroll events.
+
+#### API changes
+
+- `offsetRatio` in `ParentAlignment`, `ChildAlignment` and `SubPositionAlignment`  was renamed to `fraction`.
 
 #### Bug fixes
 
@@ -18,6 +22,7 @@
 - Fixed focus changing to the incorrect span in a grid ([#96](https://github.com/rubensousa/DpadRecyclerView/issues/96))
 - Fixed focus being lost when scrolling a grid and triggering layout passes at the same time ([#102](https://github.com/rubensousa/DpadRecyclerView/issues/102))
 - Fixed `DpadRecyclerView` scrolling automatically to the current selected position when there's a touch event ([#104](https://github.com/rubensousa/DpadRecyclerView/issues/104))
+- Fixed pending alignments in opposite direction not being ignored ([#106](https://github.com/rubensousa/DpadRecyclerView/issues/106))
 
 #### Testing
 
