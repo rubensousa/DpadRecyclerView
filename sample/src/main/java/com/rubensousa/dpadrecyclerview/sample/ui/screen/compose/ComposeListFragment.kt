@@ -87,15 +87,14 @@ class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
         }
 
         binding.recyclerView.apply {
-            // For scaling animation
-            clipChildren = false
             setParentAlignment(
                 alignment = ParentAlignment(
-                    offsetRatio = 0.15f,
+                    fraction = 0.15f,
                     edge = ParentAlignment.Edge.NONE
                 )
             )
-            setChildAlignment(alignment = ChildAlignment(offsetRatio = 0.0f))
+            setChildAlignment(alignment = ChildAlignment(fraction = 0.0f))
+            setSmoothScrollMaxPendingMoves(0)
             adapter = concatAdapter
             requestFocus()
         }

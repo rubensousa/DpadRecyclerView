@@ -24,10 +24,10 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemGridAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListHeaderAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridItemAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridItemViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.ListHeaderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 
 class DetailListController {
@@ -36,8 +36,9 @@ class DetailListController {
         items = 5,
         layoutId = R.layout.adapter_grid_placeholder
     )
-    private val itemAdapter = ItemGridAdapter(object : ItemViewHolder.ItemClickListener {
+    private val itemAdapter = GridItemAdapter(object : GridItemViewHolder.ItemClickListener {
         override fun onViewHolderClicked() {
+
         }
     })
     private var dpadRecyclerView: DpadRecyclerView? = null

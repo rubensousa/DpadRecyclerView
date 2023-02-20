@@ -49,7 +49,7 @@ The window alignment APIs from `BaseGridView` can now be found in the `ParentAli
         ParentAlignment(
             edge = ParentAlignment.Edge.NONE,
             offset = 0,
-            offsetRatio = 1f,
+            fraction = 1f,
             preferKeylineOverEdge = false
         )
     )
@@ -84,7 +84,7 @@ The child alignment APIs from `BaseGridView` can now be found in the `ChildAlign
     recyclerView.setChildAlignment(
         ChildAlignment(
             offset = 0,
-            offsetRatio = 1f,
+            fraction = 1f,
             includePadding = true
         )
     )

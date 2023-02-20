@@ -16,6 +16,8 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
 
+import android.os.Handler
+import android.os.Looper
 import android.widget.TextView
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
@@ -27,11 +29,43 @@ class ListAnimator(
 ) {
 
     companion object {
-        private const val inactiveAlpha = 0.4f
-        private const val selectDuration = 500L
+        private const val inactiveAlpha = 0.25f
+        private const val selectDuration = 350L
         private const val deselectDuration = 200L
         private val selectInterpolator = FastOutSlowInInterpolator()
         private val deselectInterpolator = FastOutLinearInInterpolator()
+        private val handler: Handler by lazy {
+            Handler(Looper.getMainLooper())
+        }
+    }
+
+    private val selectionRunnable = Runnable {
+        title.pivotX = 0f
+        title.pivotY = title.height.toFloat()
+        title.animate()
+            .scaleX(1.5f)
+            .scaleY(1.5f)
+            .alpha(1f)
+            .setInterpolator(selectInterpolator)
+            .duration = selectDuration
+
+        recyclerView.animate()
+            .alpha(1f)
+            .setInterpolator(selectInterpolator)
+            .duration = selectDuration
+    }
+    private val deselectionRunnable = Runnable {
+        title.animate()
+            .alpha(inactiveAlpha)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setInterpolator(deselectInterpolator)
+            .duration = deselectDuration
+
+        recyclerView.animate()
+            .alpha(inactiveAlpha)
+            .setInterpolator(deselectInterpolator)
+            .duration = deselectDuration
     }
 
     init {
@@ -40,41 +74,28 @@ class ListAnimator(
     }
 
     fun startSelectionAnimation() {
-        title.pivotX = 0f
-        title.pivotY = title.height.toFloat()
-        title.animate()
-            .scaleX(1.5f)
-            .scaleY(1.5f)
-            .alpha(1.0f)
-            .setInterpolator(selectInterpolator)
-            .setDuration(selectDuration)
-
-        recyclerView.animate()
-            .alpha(1.0f)
-            .setInterpolator(selectInterpolator)
-            .setDuration(selectDuration)
+        cancelPendingAnimations()
+        handler.post(selectionRunnable)
     }
 
     fun startDeselectionAnimation() {
-        title.animate()
-            .alpha(inactiveAlpha)
-            .scaleX(1f)
-            .scaleY(1f)
-            .setInterpolator(deselectInterpolator)
-            .setDuration(deselectDuration)
-
-        recyclerView.animate().alpha(inactiveAlpha)
-            .setInterpolator(deselectInterpolator)
-            .setDuration(deselectDuration)
+        cancelPendingAnimations()
+        handler.post(deselectionRunnable)
     }
 
     fun cancel() {
-        recyclerView.animate().cancel()
-        title.animate().cancel()
+        cancelPendingAnimations()
         recyclerView.alpha = inactiveAlpha
         title.alpha = inactiveAlpha
         title.scaleX = 1.0f
         title.scaleY = 1.0f
+    }
+
+    private fun cancelPendingAnimations() {
+        handler.removeCallbacks(selectionRunnable)
+        handler.removeCallbacks(deselectionRunnable)
+        title.animate().cancel()
+        recyclerView.animate().cancel()
     }
 
 }

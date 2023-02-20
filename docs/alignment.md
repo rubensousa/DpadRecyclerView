@@ -18,7 +18,7 @@ The red circle is centered both horizontally and vertically and serves as the an
 To create this configuration, you would do the following:
 
 ```kotlin
-ParentAlignment(offsetRatio = 0.5f)
+ParentAlignment(fraction = 0.5f)
 ```
 
 You can also create a top anchor:
@@ -28,10 +28,10 @@ You can also create a top anchor:
 In this case, the configuration would be:
 
 ```kotlin
-ParentAlignment(offset = 16.dp.toPx(), offsetRatio = 0f)
+ParentAlignment(offset = 16.dp.toPx(), fraction = 0f)
 ```
 
-Both `offset` and `offsetRatio` start counting from the minimum edge of the `DpadRecyclerView`. For horizontal orientations, this would be the start and for vertical orientation this would be the top.
+Both `offset` and `fraction` start counting from the minimum edge of the `DpadRecyclerView`. For horizontal orientations, this would be the start and for vertical orientation this would be the top.
 
 ### Aligning to an edge
 
@@ -60,8 +60,8 @@ defined by `ChildAlignment`.
 In this case, the combined configuration would be:
 
 ```kotlin
-ParentAlignment(offset = 24.dp.toPx(), offsetRatio = 0f)
-ChildAlignment(offsetRatio = 0f)
+ParentAlignment(offset = 24.dp.toPx(), fraction = 0f)
+ChildAlignment(fraction = 0f)
 ```
 
 ## Examples

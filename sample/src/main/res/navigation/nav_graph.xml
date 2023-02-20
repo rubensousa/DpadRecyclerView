@@ -20,6 +20,14 @@
                 android:name="reverseLayout"
                 android:defaultValue="false" />
 
+            <argument
+                android:name="showOverlay"
+                android:defaultValue="false" />
+
+            <argument
+                android:name="showHeader"
+                android:defaultValue="false" />
+
         </action>
 
         <action
@@ -62,7 +70,7 @@
 
     <fragment
         android:id="@+id/leanback_horizontal_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.leanback.LeanbackHorizontalFragment" />
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.focus.SearchPivotFragment" />
 
     <fragment
         android:id="@+id/list_fragment"
@@ -76,6 +84,14 @@
             android:name="reverseLayout"
             android:defaultValue="false" />
 
+        <argument
+            android:name="showOverlay"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="showHeader"
+            android:defaultValue="false" />
+
         <action
             android:id="@+id/open_detail"
             app:destination="@+id/detail_fragment" />
@@ -85,6 +101,42 @@
     <fragment
         android:id="@+id/detail_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.detail.DetailFragment" />
+
+    <action
+        android:id="@+id/open_grid"
+        app:destination="@id/grid_fragment">
+
+        <argument
+            android:name="slowScroll"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="reverseLayout"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="evenSpans"
+            android:defaultValue="true" />
+
+    </action>
+
+    <fragment
+        android:id="@+id/grid_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridFragment">
+
+        <argument
+            android:name="slowScroll"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="reverseLayout"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="evenSpans"
+            android:defaultValue="true" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/compose_grid_fragment"

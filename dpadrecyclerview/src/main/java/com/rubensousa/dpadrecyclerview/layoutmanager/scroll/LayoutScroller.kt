@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.FocusDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.focus.SpanFocusFinder
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
@@ -376,12 +377,12 @@ internal class LayoutScroller(
         searchPivotScroller?.onBlockLaidOut()
     }
 
-    fun hasReachedPendingAlignmentLimit(): Boolean {
-        return alignmentQueue.hasReachedLimit()
+    fun hasReachedPendingAlignmentLimit(focusDirection: FocusDirection): Boolean {
+        return alignmentQueue.hasReachedLimit(focusDirection)
     }
 
-    fun addPendingAlignment(newFocusedView: View) {
-        val viewHolder = layoutInfo.getChildViewHolder(newFocusedView) ?: return
+    fun addPendingAlignment(newFocusedView: View): Boolean {
+        val viewHolder = layoutInfo.getChildViewHolder(newFocusedView) ?: return false
         val parentView = viewHolder.itemView
         val subView = if (newFocusedView !== parentView) {
             newFocusedView
@@ -389,7 +390,7 @@ internal class LayoutScroller(
             null
         }
         val scrollOffset = layoutAlignment.calculateScrollOffset(parentView, subView)
-        alignmentQueue.add(parentView, subView, scrollOffset)
+        return alignmentQueue.push(parentView, subView, scrollOffset)
     }
 
     private inner class SearchPivotListener : SearchPivotSmoothScroller.Listener {

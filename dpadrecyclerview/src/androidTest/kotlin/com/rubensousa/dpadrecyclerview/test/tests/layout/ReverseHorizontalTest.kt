@@ -48,11 +48,11 @@ class ReverseHorizontalTest : DpadRecyclerViewTest() {
             orientation = RecyclerView.HORIZONTAL,
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.NONE,
-                offsetRatio = 0.0f
+                fraction = 0.0f
             ),
             reverseLayout = true,
             childAlignment = ChildAlignment(
-                offsetRatio = 0.0f
+                fraction = 0.0f
             )
         )
     }

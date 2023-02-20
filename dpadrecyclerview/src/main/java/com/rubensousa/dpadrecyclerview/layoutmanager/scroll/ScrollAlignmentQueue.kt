@@ -4,13 +4,14 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.FocusDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
-import java.util.*
+import java.util.LinkedList
 import kotlin.math.sign
 
 internal class ScrollAlignmentQueue(
     private val configuration: LayoutConfiguration,
-    private val alignment: LayoutAlignment,
+    private val layoutAlignment: LayoutAlignment,
     private val layoutInfo: LayoutInfo
 ) {
 
@@ -23,11 +24,11 @@ internal class ScrollAlignmentQueue(
         pendingAlignments.clear()
     }
 
-    fun hasReachedLimit(): Boolean {
+    fun hasReachedLimit(focusDirection: FocusDirection): Boolean {
         if (!hasMaxPendingAlignments()) {
             return false
         }
-        consumeAlignedViews()
+        consumeAlignedViews(focusDirection.getScrollSign(layoutInfo.shouldReverseLayout()))
         return pendingAlignments.size == configuration.maxPendingAlignments
     }
 
@@ -39,14 +40,13 @@ internal class ScrollAlignmentQueue(
         return configuration.maxPendingAlignments != Int.MAX_VALUE
     }
 
-    fun add(focusedView: View, childView: View?, scrollOffset: Int) {
-        if (!hasMaxPendingAlignments()) {
-            return
+    fun push(focusedView: View, childView: View?, scrollOffset: Int): Boolean {
+        if (!hasMaxPendingAlignments() || scrollOffset == 0) {
+            return true
         }
-        consumeAlignedViews()
-        if (scrollOffset == 0) {
-            return
-        }
+
+        consumeAlignedViews(scrollOffset)
+
         if (pendingAlignments.size < configuration.maxPendingAlignments) {
             // Don't allow duplicate pending entries
             pendingAlignments.removeAll { entry ->
@@ -54,19 +54,27 @@ internal class ScrollAlignmentQueue(
             }
             pendingAlignments.addLast(
                 PendingAlignment(
-                    focusedView, childView, sign(scrollOffset.toFloat())
+                    focusedView, childView, scrollOffset.sign
                 )
             )
+            return true
         }
+        return false
     }
 
-    private fun consumeAlignedViews() {
+    private fun consumeAlignedViews(targetScrollOffset: Int) {
+        // Check if the last pending alignment is in the opposite direction. If so, remove it
+        val lastAlignment = pendingAlignments.peekLast()
+        if (lastAlignment != null && lastAlignment.sign != targetScrollOffset.sign) {
+            pendingAlignments.removeLast()
+        }
+
         val iterator = pendingAlignments.iterator()
         while (iterator.hasNext()) {
             val entry = iterator.next()
-            val scrollOffset = alignment.calculateScrollOffset(entry.view, entry.childView)
+            val scrollOffset = layoutAlignment.calculateScrollOffset(entry.view, entry.childView)
             if (scrollOffset == 0
-                || isScrollingInOppositeDirection(scrollOffset, entry.sign)
+                || isPendingAlignmentInOppositeDirection(entry, scrollOffset)
                 || isRemoved(entry.view)
             ) {
                 iterator.remove()
@@ -80,10 +88,12 @@ internal class ScrollAlignmentQueue(
         return layoutParams.isItemRemoved
     }
 
-    private fun isScrollingInOppositeDirection(offset: Int, originalSign: Float): Boolean {
-        val offsetSign = sign(offset.toFloat())
-        return offsetSign != originalSign
+    private fun isPendingAlignmentInOppositeDirection(
+        alignment: PendingAlignment,
+        scrollOffset: Int
+    ): Boolean {
+        return scrollOffset.sign != alignment.sign
     }
 
-    data class PendingAlignment(val view: View, val childView: View?, val sign: Float)
+    data class PendingAlignment(val view: View, val childView: View?, val sign: Int)
 }

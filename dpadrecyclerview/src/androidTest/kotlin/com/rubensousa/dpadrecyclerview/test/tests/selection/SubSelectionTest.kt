@@ -50,11 +50,11 @@ class SubSelectionTest : DpadRecyclerViewTest() {
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.NONE,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
     }
@@ -163,7 +163,7 @@ class SubSelectionTest : DpadRecyclerViewTest() {
                 add(
                     SubPositionAlignment(
                         offset = 0,
-                        offsetRatio = 0.5f,
+                        fraction = 0.5f,
                         alignmentViewId = R.id.subPosition0TextView,
                         focusViewId = R.id.subPosition0TextView
                     )
@@ -171,7 +171,7 @@ class SubSelectionTest : DpadRecyclerViewTest() {
                 add(
                     SubPositionAlignment(
                         offset = 0,
-                        offsetRatio = 0.5f,
+                        fraction = 0.5f,
                         alignmentViewId = R.id.subPosition1TextView,
                         focusViewId = R.id.subPosition1TextView
                     )
@@ -179,7 +179,7 @@ class SubSelectionTest : DpadRecyclerViewTest() {
                 add(
                     SubPositionAlignment(
                         offset = 0,
-                        offsetRatio = 0.5f,
+                        fraction = 0.5f,
                         alignmentViewId = R.id.subPosition2TextView,
                         focusViewId = R.id.subPosition2TextView
                     )

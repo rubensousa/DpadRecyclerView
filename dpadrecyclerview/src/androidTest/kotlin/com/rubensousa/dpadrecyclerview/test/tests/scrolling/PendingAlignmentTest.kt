@@ -29,9 +29,9 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
             orientation = RecyclerView.HORIZONTAL,
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.MIN_MAX,
-                offsetRatio = 0.0f
+                fraction = 0.0f
             ),
-            childAlignment = ChildAlignment(offset = 0, offsetRatio = 0.0f)
+            childAlignment = ChildAlignment(offset = 0, fraction = 0.0f)
         )
     }
 
@@ -66,6 +66,18 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
         KeyEvents.pressRight(times = 5)
 
         assertFocusAndSelection(position = 4)
+    }
+
+    @Test
+    fun testPendingAlignmentInOppositeDirectionIsIgnored() {
+        launchFragment()
+
+        setupRecyclerView(maxPendingAlignments = 1)
+
+        KeyEvents.pressRight()
+        KeyEvents.pressLeft()
+
+        assertFocusAndSelection(position = 0)
     }
 
     @Test

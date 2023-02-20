@@ -229,4 +229,6 @@ internal class LayoutConfiguration(properties: Properties) {
         initialPrefetchItemCount = count
     }
 
+    fun hasMaxPendingAlignments(): Boolean = maxPendingAlignments != Int.MAX_VALUE
+
 }

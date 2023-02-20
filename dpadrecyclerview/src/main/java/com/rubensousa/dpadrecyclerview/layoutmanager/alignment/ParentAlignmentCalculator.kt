@@ -141,13 +141,13 @@ internal class ParentAlignmentCalculator {
     fun calculateKeyline(alignment: ParentAlignment): Int {
         var keyLine = 0
         if (!reverseLayout) {
-            if (alignment.isOffsetRatioEnabled) {
-                keyLine = (size * alignment.offsetRatio).toInt()
+            if (alignment.isFractionEnabled) {
+                keyLine = (size * alignment.fraction).toInt()
             }
             keyLine += alignment.offset
         } else {
-            if (alignment.isOffsetRatioEnabled) {
-                keyLine = (size * (1.0f - alignment.offsetRatio)).toInt()
+            if (alignment.isFractionEnabled) {
+                keyLine = (size * (1.0f - alignment.fraction)).toInt()
                 keyLine -= alignment.offset
             } else {
                 keyLine = size - alignment.offset

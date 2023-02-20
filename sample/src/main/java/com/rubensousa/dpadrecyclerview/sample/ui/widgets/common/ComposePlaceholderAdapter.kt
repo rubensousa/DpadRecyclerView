@@ -27,13 +27,24 @@ class ComposePlaceholderAdapter(
     private val composable: @Composable () -> Unit
 ) : RecyclerView.Adapter<DpadComposeViewHolder<Boolean>>() {
 
+    companion object {
+
+        fun grid(spanCount: Int): ComposePlaceholderAdapter {
+            return ComposePlaceholderAdapter(
+                items = spanCount,
+                composable = { GridPlaceholderComposable() }
+            )
+        }
+    }
+
     private var show = false
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): DpadComposeViewHolder<Boolean> {
-        return DpadComposeViewHolder(parent,
+        return DpadComposeViewHolder(
+            parent,
             composable = { _, _, _ ->
                 composable()
             },

@@ -15,6 +15,7 @@
         android:layout_marginStart="@dimen/list_margin_start"
         android:layout_marginTop="16dp"
         android:textColor="@color/white"
+        android:textSize="14sp"
         tools:text="Headline" />
 
     <FrameLayout
@@ -24,7 +25,7 @@
         <com.rubensousa.dpadrecyclerview.DpadRecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="240dp"
             android:gravity="center"
             android:orientation="horizontal"
             app:dpadRecyclerViewChildAlignmentOffsetRatio="0"

@@ -46,16 +46,20 @@ Check the official website for more information and recipes: https://rubensousa.
 
 ## Sample app
 
-Check the sample app for a complete example of integration of this library.
+Check the sample app for a complete example of integration of this library:
+
+![sample](https://github.com/rubensousa/DpadRecyclerView/blob/master/assets/sample_cover.png?raw=true)
 
 Nested lists:
 
-[nested_lists.webm](https://user-images.githubusercontent.com/10662096/200195777-e6020eb8-5a85-4254-82e2-f2f0cc503406.webm)
+![nested_lists](https://github.com/rubensousa/DpadRecyclerView/blob/master/assets/sample_nested_lists.png?raw=true)
 
+[focus_overlay.webm](https://user-images.githubusercontent.com/10662096/219993088-c292de23-0c65-48fb-bde0-ea5ddf9b3bd4.webm)
 
-Grid with different span sizes and sub focus positions:
+Grid with different span sizes:
 
-[grid_span_different.webm](https://user-images.githubusercontent.com/10662096/200195709-203b78ec-873c-4e21-bab4-7cd8dede808e.webm)
+![grid](https://github.com/rubensousa/DpadRecyclerView/blob/master/assets/sample_grid.png?raw=true)
+
 
 ## License
 

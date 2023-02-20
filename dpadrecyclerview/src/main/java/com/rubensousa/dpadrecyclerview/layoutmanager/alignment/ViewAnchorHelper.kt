@@ -64,14 +64,14 @@ internal object ViewAnchorHelper {
 
         if (!reverseLayout) {
 
-            if (alignment.isOffsetRatioEnabled) {
-                anchor = (height * alignment.offsetRatio).toInt()
+            if (alignment.isFractionEnabled) {
+                anchor = (height * alignment.fraction).toInt()
             }
 
             if (alignment.includePadding) {
-                if (alignment.offsetRatio == 0f) {
+                if (alignment.fraction == 0f) {
                     anchor += alignmentView.paddingTop
-                } else if (alignment.offsetRatio == 1f) {
+                } else if (alignment.fraction == 1f) {
                     anchor -= alignmentView.paddingBottom
                 }
             }
@@ -85,14 +85,14 @@ internal object ViewAnchorHelper {
             }
 
         } else {
-            if (alignment.isOffsetRatioEnabled) {
-                anchor = (height * (1.0f - alignment.offsetRatio)).toInt()
+            if (alignment.isFractionEnabled) {
+                anchor = (height * (1.0f - alignment.fraction)).toInt()
             }
 
             if (alignment.includePadding) {
-                if (alignment.offsetRatio == 0f) {
+                if (alignment.fraction == 0f) {
                     anchor -= alignmentView.paddingBottom
-                } else if (alignment.offsetRatio == 1f) {
+                } else if (alignment.fraction == 1f) {
                     anchor += alignmentView.paddingTop
                 }
             }
@@ -135,14 +135,14 @@ internal object ViewAnchorHelper {
          */
         if (!reverseLayout) {
 
-            if (alignment.isOffsetRatioEnabled) {
-                anchor = (alignmentWidth * alignment.offsetRatio).toInt()
+            if (alignment.isFractionEnabled) {
+                anchor = (alignmentWidth * alignment.fraction).toInt()
             }
 
             if (alignment.includePadding) {
-                if (alignment.offsetRatio == 0f) {
+                if (alignment.fraction == 0f) {
                     anchor += alignmentView.paddingLeft
-                } else if (alignment.offsetRatio == 1f) {
+                } else if (alignment.fraction == 1f) {
                     anchor -= alignmentView.paddingRight
                 }
             }
@@ -156,14 +156,14 @@ internal object ViewAnchorHelper {
             }
 
         } else {
-            if (alignment.isOffsetRatioEnabled) {
-                anchor = (alignmentWidth * (1.0f - alignment.offsetRatio)).toInt()
+            if (alignment.isFractionEnabled) {
+                anchor = (alignmentWidth * (1.0f - alignment.fraction)).toInt()
             }
 
             if (alignment.includePadding) {
-                if (alignment.offsetRatio == 0f) {
+                if (alignment.fraction == 0f) {
                     anchor -= alignmentView.paddingRight
-                } else if (alignment.offsetRatio == 1f) {
+                } else if (alignment.fraction == 1f) {
                     anchor += alignmentView.paddingLeft
                 }
             }

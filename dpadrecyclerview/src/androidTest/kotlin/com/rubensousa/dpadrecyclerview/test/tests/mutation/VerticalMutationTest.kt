@@ -45,10 +45,10 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
             orientation = RecyclerView.VERTICAL,
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.NONE,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             ),
             childAlignment = ChildAlignment(
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
     }

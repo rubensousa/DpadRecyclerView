@@ -20,8 +20,9 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.dimensionResource
 import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
+import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemComposable
@@ -35,12 +36,13 @@ class ComposeItemAdapter(private val onItemClick: (Int) -> Unit) :
         parent: ViewGroup,
         viewType: Int
     ): DpadComposeViewHolder<Int> {
-        return DpadComposeViewHolder(parent,
+        return DpadComposeViewHolder(
+            parent,
             composable = { item, isFocused, _ ->
                 ItemComposable(
                     modifier = Modifier
-                        .width(120.dp)
-                        .aspectRatio(9 / 16f),
+                        .width(dimensionResource(id = R.dimen.list_item_width))
+                        .aspectRatio(3 / 4f),
                     item = item,
                     isFocused = isFocused
                 )

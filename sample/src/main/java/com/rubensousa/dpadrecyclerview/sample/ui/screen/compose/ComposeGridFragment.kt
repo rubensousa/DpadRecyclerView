@@ -18,27 +18,20 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.compose
 
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
-import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
-import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridViewModel
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ComposePlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.GridPlaceholderComposable
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.GridItemComposable
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
-import timber.log.Timber
 
 class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
 
@@ -71,7 +64,7 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
         }
 
         // For scaling animation
-        binding.recyclerView.clipChildren = false
+        binding.recyclerView.setSmoothScrollMaxPendingMoves(0)
         binding.recyclerView.requestFocus()
         binding.recyclerView.adapter = concatAdapter
     }
@@ -95,33 +88,6 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
                     viewModel.loadMore(position, spanCount)
                 }
             })
-        }
-    }
-
-    class ComposeGridAdapter : MutableListAdapter<Int, DpadComposeViewHolder<Int>>(
-        MutableGridAdapter.DIFF_CALLBACK
-    ) {
-
-        override fun onCreateViewHolder(
-            parent: ViewGroup,
-            viewType: Int
-        ): DpadComposeViewHolder<Int> {
-            return DpadComposeViewHolder(parent,
-                composable = { item, isFocused, _ ->
-                    GridItemComposable(item, isFocused)
-                },
-                onClick = { item ->
-                    Timber.i("Clicked: $item")
-                }
-            )
-        }
-
-        override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
-            holder.setItemState(getItem(position))
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            return ListTypes.ITEM
         }
     }
 

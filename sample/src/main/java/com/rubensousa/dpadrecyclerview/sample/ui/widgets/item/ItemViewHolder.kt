@@ -17,10 +17,10 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.item
 
 import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ItemAnimator
 
 class ItemViewHolder(
     root: View,
@@ -29,7 +29,7 @@ class ItemViewHolder(
 ) : RecyclerView.ViewHolder(root), DpadViewHolder {
 
     private var clickListener: ItemClickListener? = null
-    private val interpolator = AccelerateDecelerateInterpolator()
+    private val animator = ItemAnimator(root)
 
     init {
         itemView.setOnClickListener {
@@ -40,9 +40,9 @@ class ItemViewHolder(
                 return@setOnFocusChangeListener
             }
             if (hasFocus) {
-                grow()
+                animator.startFocusGainAnimation()
             } else {
-                shrink()
+                animator.startFocusLossAnimation()
             }
         }
     }
@@ -53,21 +53,8 @@ class ItemViewHolder(
     }
 
     fun recycle() {
+        animator.cancel()
         clickListener = null
-    }
-
-    fun grow() {
-        itemView.animate()
-            .scaleX(1.1f)
-            .scaleY(1.1f)
-            .setInterpolator(interpolator)
-            .duration = 500
-    }
-
-    fun shrink() {
-        itemView.animate().cancel()
-        itemView.scaleX = 1.0f
-        itemView.scaleY = 1.0f
     }
 
     interface ItemClickListener {
