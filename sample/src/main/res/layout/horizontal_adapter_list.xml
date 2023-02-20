@@ -26,12 +26,12 @@
         android:clipChildren="false"
         android:gravity="center"
         android:orientation="horizontal"
-        app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
+        app:dpadRecyclerViewChildAlignmentFraction="0"
         app:dpadRecyclerViewFocusOutBack="false"
         app:dpadRecyclerViewFocusOutFront="false"
         app:dpadRecyclerViewParentAlignmentEdge="none"
         app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-        app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false" />
+        app:dpadRecyclerViewParentAlignmentFractionEnabled="false" />
 
 
 </LinearLayout>

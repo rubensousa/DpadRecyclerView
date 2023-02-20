@@ -10,11 +10,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:dpadRecyclerViewChildAlignmentOffsetRatio="0.5"
+        app:dpadRecyclerViewChildAlignmentFraction="0.5"
         app:dpadRecyclerViewFocusOutBack="false"
         app:dpadRecyclerViewFocusOutFront="false"
         app:dpadRecyclerViewParentAlignmentEdge="min"
-        app:dpadRecyclerViewParentAlignmentOffsetRatio="0.5" />
+        app:dpadRecyclerViewParentAlignmentFraction="0.5" />
 
     <LinearLayout
         android:layout_width="wrap_content"

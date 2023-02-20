@@ -4,8 +4,8 @@
 
 ```xml linenums="1"
 <attr name="dpadRecyclerViewChildAlignmentOffset" format="dimension" />
-<attr name="dpadRecyclerViewChildAlignmentOffsetRatio" format="float" />
-<attr name="dpadRecyclerViewChildAlignmentOffsetRatioEnabled" format="boolean" />
+<attr name="dpadRecyclerViewChildAlignmentFraction" format="float" />
+<attr name="dpadRecyclerViewChildAlignmentFractionEnabled" format="boolean" />
 <attr name="dpadRecyclerViewParentAlignmentEdge" format="enum">
     <enum name="none" value="0" />
     <enum name="min" value="1" />
@@ -13,8 +13,8 @@
     <enum name="min_max" value="3" />
 </attr>
 <attr name="dpadRecyclerViewParentAlignmentOffset" format="dimension" />
-<attr name="dpadRecyclerViewParentAlignmentOffsetRatio" format="float" />
-<attr name="dpadRecyclerViewParentAlignmentOffsetRatioEnabled" format="boolean" />
+<attr name="dpadRecyclerViewParentAlignmentFraction" format="float" />
+<attr name="dpadRecyclerViewParentAlignmentFractionEnabled" format="boolean" />
 ```
 
 
@@ -64,15 +64,15 @@ Or create individual styles:
 <style name="HorizontalStartDpadRecyclerView">
     <item name="android:orientation">horizontal</item>
     <item name="dpadRecyclerViewChildAlignmentOffset">@dimen/list_margin_start</item>
-    <item name="dpadRecyclerViewChildAlignmentOffsetRatio">0.0f</item>
+    <item name="dpadRecyclerViewChildAlignmentFraction">0.0f</item>
     <item name="dpadRecyclerViewParentAlignmentEdge">min_max</item>
-    <item name="dpadRecyclerViewParentAlignmentOffsetRatio">0.0f</item>
+    <item name="dpadRecyclerViewParentAlignmentFraction">0.0f</item>
 </style>
 
 <style name="VerticalCenterDpadRecyclerView">
     <item name="android:orientation">vertical</item>
-    <item name="dpadRecyclerViewChildAlignmentOffsetRatio">0.5f</item>
+    <item name="dpadRecyclerViewChildAlignmentFraction">0.5f</item>
     <item name="dpadRecyclerViewParentAlignmentEdge">min_max</item>
-    <item name="dpadRecyclerViewParentAlignmentOffsetRatio">0.5f</item>
+    <item name="dpadRecyclerViewParentAlignmentFraction">0.5f</item>
 </style>
 ```
