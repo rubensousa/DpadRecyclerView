@@ -33,6 +33,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
+import com.rubensousa.dpadrecyclerview.spacing.DpadSpacingLookup
 
 class ListFragment : Fragment(R.layout.screen_recyclerview) {
 
@@ -63,6 +64,9 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
                 .setIsolateViewTypes(true)
                 .build()
         )
+        if (args.showHeader) {
+            concatAdapter.addAdapter(HeaderAdapter())
+        }
         concatAdapter.addAdapter(itemAdapter)
         concatAdapter.addAdapter(placeholderAdapter)
 
@@ -81,12 +85,44 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
 
     private fun setupRecyclerView(recyclerView: DpadRecyclerView) {
         recyclerView.apply {
-            setParentAlignment(ParentAlignment(edge = ParentAlignment.Edge.NONE))
+            if (!args.showHeader) {
+                setParentAlignment(ParentAlignment(edge = ParentAlignment.Edge.NONE))
+            }
             addItemDecoration(
                 DpadLinearSpacingDecoration.create(
-                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
-                )
+                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing),
+                ).also {
+                    it.setSpacingLookup(object : DpadSpacingLookup {
+                        override fun shouldApplySpacing(
+                            viewHolder: RecyclerView.ViewHolder,
+                            itemCount: Int
+                        ): Boolean {
+                            return if (args.showHeader) {
+                                viewHolder.absoluteAdapterPosition > 0
+                            } else {
+                                true
+                            }
+                        }
+                    })
+                }
             )
+            if (args.showHeader) {
+                addItemDecoration(
+                    DpadLinearSpacingDecoration.create(
+                        itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing),
+                        edgeSpacing = 0
+                    ).also {
+                        it.setSpacingLookup(object : DpadSpacingLookup {
+                            override fun shouldApplySpacing(
+                                viewHolder: RecyclerView.ViewHolder,
+                                itemCount: Int
+                            ): Boolean {
+                                return viewHolder.absoluteAdapterPosition == 0
+                            }
+                        })
+                    }
+                )
+            }
             if (selectedPosition != RecyclerView.NO_POSITION) {
                 recyclerView.setSelectedPosition(selectedPosition)
             }

@@ -29,7 +29,7 @@ class ListAnimator(
 ) {
 
     companion object {
-        private const val inactiveAlpha = 0.4f
+        private const val inactiveAlpha = 0.25f
         private const val selectDuration = 350L
         private const val deselectDuration = 200L
         private val selectInterpolator = FastOutSlowInInterpolator()

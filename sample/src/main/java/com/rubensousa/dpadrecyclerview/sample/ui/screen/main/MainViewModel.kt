@@ -60,7 +60,7 @@ class MainViewModel : ViewModel() {
                     title = "With Focus Overlay"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openList().apply { },
+                    direction = MainFragmentDirections.openList().apply { showHeader = true },
                     title = "With Header"
                 ),
                 ScreenDestination(

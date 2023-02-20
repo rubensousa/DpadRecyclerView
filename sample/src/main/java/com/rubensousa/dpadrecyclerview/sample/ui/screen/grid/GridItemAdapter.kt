@@ -44,4 +44,5 @@ class GridItemAdapter(private val onItemClickListener: GridItemViewHolder.ItemCl
     override fun getItemViewType(position: Int): Int {
         return ListTypes.ITEM
     }
+
 }
