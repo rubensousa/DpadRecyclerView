@@ -44,9 +44,9 @@ Example of aligning views in a horizontal `DpadRecyclerView`:
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
+        app:dpadRecyclerViewChildAlignmentFraction="0"
         app:dpadRecyclerViewParentAlignmentOffset="24dp"
-        app:dpadRecyclerViewParentAlignmentOffsetRatio="0" />
+        app:dpadRecyclerViewParentAlignmentFraction="0" />
     ```
 
 === "Kotlin"

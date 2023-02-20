@@ -261,7 +261,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testItemsAreAlignedToBothParentAndChildAlignmentOffsetRatios() {
+    fun testItemsAreAlignedToBothParentAndChildAlignmentFractions() {
         val containerOffset = 100
         val itemOffset = -100
         launchFragment(

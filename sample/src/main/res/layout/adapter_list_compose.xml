@@ -23,9 +23,9 @@
         android:clipChildren="false"
         android:gravity="center"
         android:orientation="horizontal"
-        app:dpadRecyclerViewChildAlignmentOffsetRatio="0.0"
+        app:dpadRecyclerViewChildAlignmentFraction="0.0"
         app:dpadRecyclerViewParentAlignmentEdge="none"
         app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-        app:dpadRecyclerViewParentAlignmentOffsetRatio="0.0" />
+        app:dpadRecyclerViewParentAlignmentFraction="0.0" />
 
 </LinearLayout>
