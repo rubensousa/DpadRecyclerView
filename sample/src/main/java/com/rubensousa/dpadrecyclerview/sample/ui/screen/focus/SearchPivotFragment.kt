@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.screen.leanback
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.focus
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,18 +28,18 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenLeanbackHorizont
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
 
-class LeanbackHorizontalFragment : Fragment(R.layout.screen_leanback_horizontal) {
+class SearchPivotFragment : Fragment(R.layout.screen_leanback_horizontal) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ScreenLeanbackHorizontalBinding.bind(view)
-        binding.horizontalGridView.adapter = Adapter(isLeanback = true)
+        binding.horizontalGridView.adapter = Adapter()
         RecyclerViewLogger.logChildrenWhenIdle(binding.horizontalGridView)
         RecyclerViewLogger.logChildrenWhenIdle(binding.dpadRecyclerView)
-        binding.dpadRecyclerView.adapter = Adapter(isLeanback = false)
+        binding.dpadRecyclerView.adapter = Adapter()
     }
 
-    class Adapter(private val isLeanback: Boolean) : RecyclerView.Adapter<ItemViewHolder>() {
+    class Adapter : RecyclerView.Adapter<ItemViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
             val binding = AdapterItemRowBinding.inflate(

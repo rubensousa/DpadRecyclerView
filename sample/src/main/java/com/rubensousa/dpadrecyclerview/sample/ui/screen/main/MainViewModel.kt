@@ -46,26 +46,26 @@ class MainViewModel : ViewModel() {
 
     private fun buildNestedFeatureList(): FeatureList {
         return FeatureList(
-            title = "Nested Lists",
+            title = "Lists",
             destinations = listOf(
                 ScreenDestination(
                     direction = MainFragmentDirections.openList(),
-                    title = "Default"
+                    title = "Nested"
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openList().apply {
                         showOverlay = true
                         slowScroll = true
                     },
-                    title = "With Focus Overlay"
+                    title = "Nested with Focus Overlay"
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openList().apply { showHeader = true },
-                    title = "With Header"
+                    title = "Nested with Header"
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openList().apply { reverseLayout = true },
-                    title = "Reversed"
+                    title = "Rversed"
                 )
             ),
         )

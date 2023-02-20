@@ -70,7 +70,7 @@
 
     <fragment
         android:id="@+id/leanback_horizontal_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.leanback.LeanbackHorizontalFragment" />
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.focus.SearchPivotFragment" />
 
     <fragment
         android:id="@+id/list_fragment"
