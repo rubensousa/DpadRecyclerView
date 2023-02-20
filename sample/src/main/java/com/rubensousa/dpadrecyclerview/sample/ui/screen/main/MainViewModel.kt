@@ -65,7 +65,7 @@ class MainViewModel : ViewModel() {
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openList().apply { reverseLayout = true },
-                    title = "Rversed"
+                    title = "Reversed"
                 )
             ),
         )
