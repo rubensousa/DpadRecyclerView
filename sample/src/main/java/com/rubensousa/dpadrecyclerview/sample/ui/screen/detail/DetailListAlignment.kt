@@ -26,15 +26,15 @@ class DetailListAlignment {
     private val topParentAlignment = ParentAlignment(
         edge = ParentAlignment.Edge.NONE,
         offset = 0,
-        offsetRatio = 0.05f
+        fraction = 0.05f
     )
-    private val topChildAlignment = ChildAlignment(offset = 0, offsetRatio = 0f)
+    private val topChildAlignment = ChildAlignment(offset = 0, fraction = 0f)
     private val centerParentAlignment = ParentAlignment(
         edge = ParentAlignment.Edge.NONE,
         offset = 0,
-        offsetRatio = 0.5f
+        fraction = 0.5f
     )
-    private val centerChildAlignment = ChildAlignment(offset = 0, offsetRatio = 0.5f)
+    private val centerChildAlignment = ChildAlignment(offset = 0, fraction = 0.5f)
     private var isAlignedToTop = false
 
     fun alignToCenter(recyclerView: DpadRecyclerView) {

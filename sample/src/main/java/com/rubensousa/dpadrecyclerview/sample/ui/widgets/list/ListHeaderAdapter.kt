@@ -71,7 +71,7 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
                 add(
                     SubPositionAlignment(
                         offset = 0,
-                        offsetRatio = 0f,
+                        fraction = 0f,
                         alignmentViewId = R.id.subPosition0TextView,
                         focusViewId = R.id.subPosition0TextView
                     )
@@ -79,7 +79,7 @@ class ListHeaderAdapter : ListAdapter<String, ListHeaderAdapter.VH>(DIFF_CALLBAC
                 add(
                     SubPositionAlignment(
                         offset = 0,
-                        offsetRatio = 0f,
+                        fraction = 0f,
                         alignmentViewId = R.id.subPosition0TextView,
                         focusViewId = R.id.subPosition1TextView
                     )

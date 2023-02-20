@@ -30,29 +30,29 @@ data class ParentAlignment(
      * The specific alignment to a given edge that overrides the keyline alignment. See [Edge]
      * Default: [Edge.MIN_MAX]
      */
-    val edge: Edge = DEFAULT_EDGE,
+    val edge: Edge = Edge.MIN_MAX,
     /**
-     * The distance to the [offsetRatio] of the RecyclerView in pixels.
+     * The distance added to the [fraction] of the RecyclerView in pixels.
      *
-     * E.g offsetRatio = 0.5f, offset = 100, RecyclerView's height = 500
+     * E.g fraction = 0.5f, offset = 100, RecyclerView's height = 500
      *
      * Keyline position = 500 * 0.5f + 100 = 350
      */
-    val offset: Int = DEFAULT_OFFSET,
+    val offset: Int = ViewAlignment.DEFAULT_OFFSET,
     /**
      * The keyline position for the alignment. Default: 0.5f (center)
      *
-     * Set [isOffsetRatioEnabled] to false in case you want to disable this
+     * Set [isFractionEnabled] to false in case you want to disable this
      */
-    val offsetRatio: Float = DEFAULT_OFFSET_RATIO,
+    val fraction: Float = ViewAlignment.DEFAULT_FRACTION,
     /**
-     * true if [offsetRatio] should be used to position the item.
+     * true if [fraction] should be used to position the item.
      *
      * If false, only [offset] will be used for the keyline position
      *
      * Default is true.
      */
-    val isOffsetRatioEnabled: Boolean = true,
+    val isFractionEnabled: Boolean = true,
     /**
      * When [Edge.MAX] or [Edge.MIN] are used,
      * this flag decides if the Views should be aligned to the keyline
@@ -67,10 +67,6 @@ data class ParentAlignment(
 
     companion object CREATOR : Parcelable.Creator<ParentAlignment> {
 
-        val DEFAULT_EDGE = Edge.MIN_MAX
-        const val DEFAULT_OFFSET = 0
-        const val DEFAULT_OFFSET_RATIO = 0.5f
-
         override fun createFromParcel(parcel: Parcel): ParentAlignment {
             return ParentAlignment(parcel)
         }
@@ -81,8 +77,8 @@ data class ParentAlignment(
     }
 
     init {
-        require(offsetRatio in 0f..1f) {
-            "offsetStartRatio must be a value between 0f and 1f"
+        require(fraction in 0f..1f) {
+            "fraction must be a value between 0f and 1f"
         }
     }
 
@@ -97,8 +93,8 @@ data class ParentAlignment(
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(edge.ordinal)
         parcel.writeInt(offset)
-        parcel.writeFloat(offsetRatio)
-        parcel.writeByte(if (isOffsetRatioEnabled) 1 else 0)
+        parcel.writeFloat(fraction)
+        parcel.writeByte(if (isFractionEnabled) 1 else 0)
         parcel.writeByte(if (preferKeylineOverEdge) 1 else 0)
     }
 
