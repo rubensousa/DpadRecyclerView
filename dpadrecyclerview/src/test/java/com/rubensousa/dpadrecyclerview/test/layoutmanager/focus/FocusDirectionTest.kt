@@ -223,4 +223,38 @@ class FocusDirectionTest {
         ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
     }
 
+    @Test
+    fun `scroll sign from focus direction is correctly parsed`() {
+        assertThat(
+            FocusDirection.NEXT_COLUMN.getScrollSign(
+                reverseLayout = false
+            )
+        ).isEqualTo(0)
+        assertThat(
+            FocusDirection.PREVIOUS_COLUMN.getScrollSign(
+                reverseLayout = false
+            )
+        ).isEqualTo(0)
+        assertThat(
+            FocusDirection.NEXT_ITEM.getScrollSign(
+                reverseLayout = false
+            )
+        ).isEqualTo(1)
+        assertThat(
+            FocusDirection.NEXT_ITEM.getScrollSign(
+                reverseLayout = true
+            )
+        ).isEqualTo(-1)
+        assertThat(
+            FocusDirection.PREVIOUS_ITEM.getScrollSign(
+                reverseLayout = false
+            )
+        ).isEqualTo(-1)
+        assertThat(
+            FocusDirection.PREVIOUS_ITEM.getScrollSign(
+                reverseLayout = true
+            )
+        ).isEqualTo(1)
+    }
+
 }
