@@ -24,6 +24,17 @@ internal enum class FocusDirection {
     PREVIOUS_COLUMN,
     NEXT_COLUMN;
 
+    fun getScrollSign(reverseLayout: Boolean): Int {
+        if (this == NEXT_COLUMN || this == PREVIOUS_COLUMN) {
+            return 0
+        }
+        return if (this == NEXT_ITEM != reverseLayout) {
+            1
+        } else {
+            -1
+        }
+    }
+
     companion object {
 
         @JvmStatic
