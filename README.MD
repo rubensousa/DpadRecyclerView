@@ -55,7 +55,7 @@ Nested lists:
 
 ![nested_lists](https://github.com/rubensousa/DpadRecyclerView/blob/master/assets/sample_nested_lists.png?raw=true)
 
-![nested_lists_focus.webm](https://github.com/rubensousa/DpadRecyclerView/blob/master/assets/focus_overlay.webm?raw=true)
+[focus_overlay.webm](https://user-images.githubusercontent.com/10662096/219993088-c292de23-0c65-48fb-bde0-ea5ddf9b3bd4.webm)
 
 Grid with different span sizes:
 
