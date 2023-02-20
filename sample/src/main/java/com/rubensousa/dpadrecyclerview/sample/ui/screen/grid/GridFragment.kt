@@ -24,12 +24,15 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.list.HeaderAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
+import com.rubensousa.dpadrecyclerview.spacing.DpadSpacingLookup
 import timber.log.Timber
 
 class GridFragment : Fragment(R.layout.screen_recyclerview) {
@@ -56,6 +59,9 @@ class GridFragment : Fragment(R.layout.screen_recyclerview) {
                 .setIsolateViewTypes(true)
                 .build()
         )
+        if (!args.evenSpans) {
+            concatAdapter.addAdapter(HeaderAdapter())
+        }
         concatAdapter.addAdapter(itemAdapter)
         concatAdapter.addAdapter(placeholderAdapter)
 
@@ -74,11 +80,6 @@ class GridFragment : Fragment(R.layout.screen_recyclerview) {
         recyclerView.apply {
             setSpanCount(spanCount)
             setReverseLayout(args.reverseLayout)
-            addItemDecoration(
-                DpadGridSpacingDecoration.create(
-                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
-                )
-            )
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
                 override fun onViewHolderSelected(
                     parent: RecyclerView,
@@ -89,6 +90,50 @@ class GridFragment : Fragment(R.layout.screen_recyclerview) {
                     viewModel.loadMore(position, spanCount)
                 }
             })
+
+            addItemDecoration(
+                DpadGridSpacingDecoration.create(
+                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
+                ).also {
+                    if (!args.evenSpans) {
+                        it.setSpacingLookup(object : DpadSpacingLookup {
+                            override fun shouldApplySpacing(
+                                viewHolder: RecyclerView.ViewHolder,
+                                itemCount: Int
+                            ): Boolean {
+                                return viewHolder.absoluteAdapterPosition > 0
+                            }
+                        })
+                    }
+                }
+            )
+
+            if (!args.evenSpans) {
+                addItemDecoration(
+                    DpadGridSpacingDecoration.create(
+                        itemSpacing = 0,
+                        perpendicularItemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
+                    ).also {
+                        it.setSpacingLookup(object : DpadSpacingLookup {
+                            override fun shouldApplySpacing(
+                                viewHolder: RecyclerView.ViewHolder,
+                                itemCount: Int
+                            ): Boolean {
+                                return viewHolder.absoluteAdapterPosition == 0
+                            }
+                        })
+                    }
+                )
+                setSpanSizeLookup(object : DpadSpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return if (position == 0) {
+                            recyclerView.getSpanCount()
+                        } else {
+                            1
+                        }
+                    }
+                })
+            }
         }
     }
 
