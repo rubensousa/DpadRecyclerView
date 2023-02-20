@@ -28,12 +28,12 @@
             android:layout_height="240dp"
             android:gravity="center"
             android:orientation="horizontal"
-            app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
+            app:dpadRecyclerViewChildAlignmentFraction="0"
             app:dpadRecyclerViewFocusOutBack="false"
             app:dpadRecyclerViewFocusOutFront="false"
             app:dpadRecyclerViewParentAlignmentEdge="none"
             app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-            app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false" />
+            app:dpadRecyclerViewParentAlignmentFractionEnabled="false" />
 
         <com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.SelectionOverlayView
             android:id="@+id/selectionOverlayView"
