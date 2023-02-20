@@ -69,6 +69,18 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    fun testPendingAlignmentInOppositeDirectionIsIgnored() {
+        launchFragment()
+
+        setupRecyclerView(maxPendingAlignments = 1)
+
+        KeyEvents.pressRight()
+        KeyEvents.pressLeft()
+
+        assertFocusAndSelection(position = 0)
+    }
+
+    @Test
     fun testFocusMovesIfPendingAlignmentLimitIsNotReached() {
         launchFragment()
 

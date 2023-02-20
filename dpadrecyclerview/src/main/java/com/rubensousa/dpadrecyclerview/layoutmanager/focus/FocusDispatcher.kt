@@ -124,7 +124,16 @@ internal class FocusDispatcher(
             return focused
         }
 
-        if (scroller.hasReachedPendingAlignmentLimit()) {
+        // Get the new focus direction and exit early if none is valid
+        val focusDirection: FocusDirection = FocusDirection.from(
+            direction = direction,
+            isVertical = layoutInfo.isVertical(),
+            reverseLayout = layoutInfo.shouldReverseLayout()
+        ) ?: return focused
+
+        if (configuration.hasMaxPendingAlignments()
+            && scroller.hasReachedPendingAlignmentLimit(focusDirection)
+        ) {
             return focused
         }
 
@@ -135,7 +144,12 @@ internal class FocusDispatcher(
 
         // If we found the view using our interceptor, return it immediately
         if (newFocusedView != null) {
-            scroller.addPendingAlignment(newFocusedView)
+            // Check if we can't
+            if (configuration.hasMaxPendingAlignments()
+                && !scroller.addPendingAlignment(newFocusedView)
+            ) {
+                return focused
+            }
             return newFocusedView
         }
 
@@ -148,13 +162,6 @@ internal class FocusDispatcher(
                 return view
             }
         }
-
-        // Get the new focus direction and exit early if none is valid
-        val focusDirection: FocusDirection = FocusDirection.from(
-            direction = direction,
-            isVertical = layoutInfo.isVertical(),
-            reverseLayout = layoutInfo.shouldReverseLayout()
-        ) ?: return focused
 
 
         // If the parent RecyclerView does not allow focusing children,
