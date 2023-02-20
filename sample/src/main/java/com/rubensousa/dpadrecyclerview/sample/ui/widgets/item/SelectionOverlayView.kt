@@ -31,10 +31,4 @@ class SelectionOverlayView @JvmOverloads constructor(
         background = materialBackground
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val newHeight = measuredHeight + materialBackground.strokeWidth * 2
-        setMeasuredDimension(measuredWidth, newHeight.toInt())
-    }
-
 }

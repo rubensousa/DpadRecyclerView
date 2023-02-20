@@ -26,7 +26,8 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapt
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 
 class HorizontalListAdapter(
-    private val stateHolder: DpadStateHolder
+    private val stateHolder: DpadStateHolder,
+    private val config: HorizontalListConfig
 ) : MutableListAdapter<ListModel, HorizontalListViewHolder>(DIFF_CALLBACK) {
 
     companion object {
@@ -46,7 +47,8 @@ class HorizontalListAdapter(
             HorizontalAdapterListBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent, false
-            )
+            ),
+            config
         )
     }
 

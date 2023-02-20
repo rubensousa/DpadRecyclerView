@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.list
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
@@ -44,7 +46,18 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(binding.recyclerView)
         val placeholderAdapter = PlaceholderAdapter()
-        val itemAdapter = HorizontalListAdapter(stateHolder)
+        val itemAdapter = HorizontalListAdapter(
+            stateHolder, HorizontalListConfig(
+                isScrollSpeedLimited = args.slowScroll,
+                reverseLayout = args.reverseLayout,
+                itemLayoutId = if (args.showOverlay) {
+                    R.layout.horizontal_adapter_item
+                } else {
+                    R.layout.horizontal_adapter_animated_item
+                },
+                animateFocusChanges = !args.showOverlay
+            )
+        )
         val concatAdapter = ConcatAdapter(
             ConcatAdapter.Config.Builder()
                 .setIsolateViewTypes(true)
@@ -60,12 +73,15 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
             placeholderAdapter.show(isLoading)
         }
 
+        binding.selectionOverlayView.isVisible = args.showOverlay
+        binding.selectionOverlayView.isActivated = true
         binding.recyclerView.requestFocus()
         binding.recyclerView.adapter = concatAdapter
     }
 
     private fun setupRecyclerView(recyclerView: DpadRecyclerView) {
         recyclerView.apply {
+            setParentAlignment(ParentAlignment(edge = ParentAlignment.Edge.NONE))
             addItemDecoration(
                 DpadLinearSpacingDecoration.create(
                     itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
@@ -85,6 +101,9 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
                     viewModel.loadMore(position)
                 }
             })
+            if (args.slowScroll) {
+                LimitedScrollBehavior().setup(this)
+            }
         }
     }
 

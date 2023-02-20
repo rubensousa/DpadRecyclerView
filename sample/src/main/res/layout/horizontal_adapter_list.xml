@@ -17,39 +17,20 @@
         android:textSize="14sp"
         tools:text="Headline" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipChildren="false">
+        android:layout_height="220dp"
+        android:clipChildren="false"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
+        app:dpadRecyclerViewFocusOutBack="false"
+        app:dpadRecyclerViewFocusOutFront="false"
+        app:dpadRecyclerViewParentAlignmentEdge="none"
+        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
+        app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false" />
 
-        <com.rubensousa.dpadrecyclerview.DpadRecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:clipChildren="false"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
-            app:dpadRecyclerViewFocusOutBack="false"
-            app:dpadRecyclerViewFocusOutFront="false"
-            app:dpadRecyclerViewParentAlignmentEdge="none"
-            app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-            app:dpadRecyclerViewParentAlignmentOffsetRatioEnabled="false"
-            app:layout_constraintBottom_toBottomOf="@id/selectionOverlayView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/selectionOverlayView" />
-
-        <com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.SelectionOverlayView
-            android:id="@+id/selectionOverlayView"
-            android:layout_width="@dimen/list_item_width"
-            android:layout_height="0dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/list_margin_start"
-            android:layout_marginTop="24dp"
-            app:layout_constraintDimensionRatio="@string/list_item_aspect_ratio"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

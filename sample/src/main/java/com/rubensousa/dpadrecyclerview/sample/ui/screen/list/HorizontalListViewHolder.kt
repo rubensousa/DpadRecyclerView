@@ -16,10 +16,9 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.list
 
-import android.view.Gravity
-import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.HorizontalAdapterListBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
@@ -28,15 +27,20 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemNestedAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class HorizontalListViewHolder(
-    val binding: HorizontalAdapterListBinding
+    val binding: HorizontalAdapterListBinding,
+    config: HorizontalListConfig
 ) : RecyclerView.ViewHolder(binding.root), DpadViewHolder {
 
     var item: ListModel? = null
     val recyclerView = binding.recyclerView
-    val adapter = ItemNestedAdapter(R.layout.horizontal_adapter_item, animateFocusChanges = false)
+    val adapter = ItemNestedAdapter(config)
 
-    private val selectionView = binding.selectionOverlayView
     private val animator = ListAnimator(recyclerView, binding.textView)
+    private val alignments = listOf(
+        SubPositionAlignment(
+            alignmentViewId = recyclerView.id
+        )
+    )
 
     init {
         recyclerView.addItemDecoration(
@@ -46,19 +50,21 @@ class HorizontalListViewHolder(
                 )
             )
         )
-        selectionView.isActivated = false
+        applyConfig(config)
     }
 
     override fun onViewHolderSelected() {
         super.onViewHolderSelected()
-        selectionView.isActivated = true
         animator.startSelectionAnimation()
     }
 
     override fun onViewHolderDeselected() {
         super.onViewHolderDeselected()
-        selectionView.isActivated = false
         animator.startDeselectionAnimation()
+    }
+
+    override fun getSubPositionAlignments(): List<SubPositionAlignment> {
+        return alignments
     }
 
     fun bind(item: ListModel) {
@@ -72,19 +78,19 @@ class HorizontalListViewHolder(
         item = null
     }
 
-    private fun setupReversedLayout() {
-        val layoutParams = selectionView.layoutParams as FrameLayout.LayoutParams
-        layoutParams.marginEnd = layoutParams.marginStart
-        layoutParams.gravity = Gravity.CENTER_VERTICAL.or(Gravity.END)
-        selectionView.layoutParams = layoutParams
-        recyclerView.setReverseLayout(true)
+    private fun applyConfig(config: HorizontalListConfig) {
+        if (config.reverseLayout) {
+            recyclerView.setReverseLayout(true)
+        }
+        if (config.isScrollSpeedLimited) {
+            setupSlowScrollingBehavior()
+        }
     }
 
     private fun setupSlowScrollingBehavior() {
         LimitedScrollBehavior().setup(
             recyclerView = recyclerView,
-            extraLayoutSpaceStart = { recyclerView.width / 2 },
-            extraLayoutSpaceEnd = { 0 }
+            extraLayoutSpaceStart = { recyclerView.width / 2 }
         )
     }
 

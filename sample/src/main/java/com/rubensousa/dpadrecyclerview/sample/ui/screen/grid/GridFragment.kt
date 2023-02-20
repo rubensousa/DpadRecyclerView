@@ -20,6 +20,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -36,6 +37,7 @@ class GridFragment : Fragment(R.layout.screen_recyclerview) {
     private val spanCount = 5
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
     private val viewModel by viewModels<GridViewModel>()
+    private val args by navArgs<GridFragmentArgs>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -71,6 +73,7 @@ class GridFragment : Fragment(R.layout.screen_recyclerview) {
     private fun setupRecyclerView(recyclerView: DpadRecyclerView) {
         recyclerView.apply {
             setSpanCount(spanCount)
+            setReverseLayout(args.reverseLayout)
             addItemDecoration(
                 DpadGridSpacingDecoration.create(
                     itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)

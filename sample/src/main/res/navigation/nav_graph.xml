@@ -20,6 +20,10 @@
                 android:name="reverseLayout"
                 android:defaultValue="false" />
 
+            <argument
+                android:name="showOverlay"
+                android:defaultValue="false" />
+
         </action>
 
         <action
@@ -74,6 +78,10 @@
 
         <argument
             android:name="reverseLayout"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="showOverlay"
             android:defaultValue="false" />
 
         <action
