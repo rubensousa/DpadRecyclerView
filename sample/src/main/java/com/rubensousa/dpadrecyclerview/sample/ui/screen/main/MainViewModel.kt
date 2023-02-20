@@ -40,23 +40,32 @@ class MainViewModel : ViewModel() {
             buildNestedFeatureList(),
             buildGridFeatureList(),
             buildComposeFeatureList(),
-            buildScrollingFeatureList(),
             buildFocusFeatureList(),
-            buildReverseLayoutFeatureList()
         )
     }
 
     private fun buildNestedFeatureList(): FeatureList {
         return FeatureList(
-            title = "Nested Lists",
+            title = "Lists",
             destinations = listOf(
                 ScreenDestination(
                     direction = MainFragmentDirections.openList(),
-                    title = "Standard"
+                    title = "Nested"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openList().apply { slowScroll = true },
-                    title = "With Header"
+                    direction = MainFragmentDirections.openList().apply {
+                        showOverlay = true
+                        slowScroll = true
+                    },
+                    title = "Nested with Focus Overlay"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openList().apply { showHeader = true },
+                    title = "Nested with Header"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openList().apply { reverseLayout = true },
+                    title = "Reversed"
                 )
             ),
         )
@@ -67,41 +76,16 @@ class MainViewModel : ViewModel() {
             title = "Grids",
             destinations = listOf(
                 ScreenDestination(
-                    direction = MainFragmentDirections.openStandardGrid(),
-                    title = "Equal span sizes"
+                    direction = MainFragmentDirections.openGrid(),
+                    title = "Default"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openStandardGrid(),
+                    direction = MainFragmentDirections.openGrid().apply { evenSpans = false },
                     title = "Different span sizes"
-                )
-            ),
-        )
-    }
-
-    private fun buildReverseLayoutFeatureList(): FeatureList {
-        return FeatureList(
-            title = "Reverse layout",
-            destinations = listOf(
-                ScreenDestination(
-                    direction = MainFragmentDirections.openList().apply { reverseLayout = true },
-                    title = "Nested lists"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openStandardGrid()
-                        .apply { reverseLayout = true },
-                    title = "Grid"
-                ),
-            ),
-        )
-    }
-
-    private fun buildScrollingFeatureList(): FeatureList {
-        return FeatureList(
-            title = "Scrolling behavior",
-            destinations = listOf(
-                ScreenDestination(
-                    direction = MainFragmentDirections.openList().apply { slowScroll = true },
-                    title = "Slow and linear"
+                    direction = MainFragmentDirections.openGrid().apply { reverseLayout = true },
+                    title = "Reversed"
                 )
             ),
         )

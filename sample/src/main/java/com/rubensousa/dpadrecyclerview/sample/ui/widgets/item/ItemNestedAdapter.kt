@@ -21,10 +21,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.sample.R
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.list.HorizontalListConfig
 
 class ItemNestedAdapter(
-    private val layoutId: Int,
-    private val animateFocusChanges: Boolean
+    private val config: HorizontalListConfig,
 ) : RecyclerView.Adapter<ItemViewHolder>() {
 
     private var list: List<Int> = emptyList()
@@ -38,8 +38,8 @@ class ItemNestedAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
-        return ItemViewHolder(view, view.findViewById(R.id.textView), animateFocusChanges)
+        val view = LayoutInflater.from(parent.context).inflate(config.itemLayoutId, parent, false)
+        return ItemViewHolder(view, view.findViewById(R.id.textView), config.animateFocusChanges)
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
@@ -52,6 +52,5 @@ class ItemNestedAdapter(
     }
 
     override fun getItemCount(): Int = list.size
-
 
 }

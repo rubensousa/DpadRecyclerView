@@ -16,6 +16,9 @@ class SelectionOverlayView @JvmOverloads constructor(
     private val materialBackground = MaterialShapeDrawable()
 
     init {
+        materialBackground.setCornerSize(
+            resources.getDimensionPixelOffset(R.dimen.corner_size).toFloat()
+        )
         materialBackground.strokeColor = AppCompatResources.getColorStateList(
             context,
             R.color.selection_overlay
@@ -26,12 +29,6 @@ class SelectionOverlayView @JvmOverloads constructor(
         ).toFloat()
         materialBackground.elevation = 2f
         background = materialBackground
-    }
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-        val newHeight = measuredHeight + materialBackground.strokeWidth * 2
-        setMeasuredDimension(measuredWidth, newHeight.toInt())
     }
 
 }

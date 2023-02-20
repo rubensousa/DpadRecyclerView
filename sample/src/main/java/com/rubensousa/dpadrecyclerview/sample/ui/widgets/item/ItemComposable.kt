@@ -54,7 +54,7 @@ fun ItemComposable(
     val scale = animateFloatAsState(
         targetValue = if (isFocused) 1.1f else 1.0f,
         animationSpec = tween(
-            durationMillis = if (isFocused) 500 else 200,
+            durationMillis = if (isFocused) 350 else 200,
             easing = if (isFocused) FastOutSlowInEasing else FastOutLinearInEasing,
         )
     )

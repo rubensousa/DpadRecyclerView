@@ -13,9 +13,13 @@
 
     <dimen name="list_item_width">135dp</dimen>
     <dimen name="list_item_height">180dp</dimen>
+    <string name="list_item_aspect_ratio">3:4</string>
+
     <dimen name="selection_overlay_stroke_width">4dp</dimen>
 
     <dimen name="feature_item_spacing">16dp</dimen>
     <dimen name="feature_edge_spacing">64dp</dimen>
+
+    <dimen name="corner_size">8dp</dimen>
 
 </resources>

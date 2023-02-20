@@ -13,7 +13,28 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<com.rubensousa.dpadrecyclerview.DpadRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recyclerView"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:clipChildren="false">
+
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false" />
+
+    <com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.SelectionOverlayView
+        android:id="@+id/selectionOverlayView"
+        android:layout_width="@dimen/list_item_width"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/list_margin_start"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="@string/list_item_aspect_ratio"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
