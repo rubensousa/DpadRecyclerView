@@ -49,10 +49,10 @@ class HorizontalRowTest : DpadRecyclerViewTest() {
             orientation = RecyclerView.HORIZONTAL,
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.NONE,
-                offsetRatio = 0.0f
+                fraction = 0.0f
             ),
             childAlignment = ChildAlignment(
-                offsetRatio = 0.0f
+                fraction = 0.0f
             )
         )
     }

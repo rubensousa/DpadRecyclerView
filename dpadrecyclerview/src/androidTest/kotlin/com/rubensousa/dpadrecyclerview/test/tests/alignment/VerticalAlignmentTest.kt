@@ -51,11 +51,11 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
     }
@@ -137,7 +137,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             ParentAlignment(
                 edge = Edge.MIN,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
 
@@ -148,7 +148,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             ParentAlignment(
                 edge = Edge.MAX,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
 
@@ -159,7 +159,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             ParentAlignment(
                 edge = Edge.NONE,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
 
@@ -180,7 +180,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             ParentAlignment(
                 edge = Edge.NONE,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
 
@@ -191,7 +191,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             ParentAlignment(
                 edge = Edge.MIN,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
 
@@ -202,7 +202,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             ParentAlignment(
                 edge = Edge.MAX,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
 
@@ -217,11 +217,11 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = offset,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetRatio = 0f
+                fraction = 0f
             )
         )
         KeyEvents.pressDown(times = 5)
@@ -242,11 +242,11 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = containerOffset,
-                offsetRatio = 0f
+                fraction = 0f
             ),
             childAlignment = ChildAlignment(
                 offset = itemOffset,
-                offsetRatio = 0f
+                fraction = 0f
             )
         )
         KeyEvents.pressDown(times = 5)
@@ -268,11 +268,11 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             parentAlignment = ParentAlignment(
                 edge = Edge.MIN_MAX,
                 offset = containerOffset,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = itemOffset,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
         KeyEvents.pressDown(times = 5)
@@ -291,7 +291,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
         val parentAlignment = ParentAlignment(
             edge = Edge.NONE,
             offset = 0,
-            offsetRatio = 0.5f
+            fraction = 0.5f
         )
         val layoutConfig = TestLayoutConfiguration(
             spans = 1,
@@ -300,7 +300,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             parentAlignment = parentAlignment,
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
         val adapterConfig = TestAdapterConfiguration(
@@ -349,7 +349,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
         val parentAlignment = ParentAlignment(
             edge = Edge.MIN,
             offset = 0,
-            offsetRatio = 0.5f,
+            fraction = 0.5f,
             preferKeylineOverEdge = true
         )
         launchFragment(
@@ -365,7 +365,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
         val parentAlignment = ParentAlignment(
             edge = Edge.MAX,
             offset = 0,
-            offsetRatio = 0.5f,
+            fraction = 0.5f,
             preferKeylineOverEdge = false
         )
         launchFragment(
@@ -381,7 +381,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
         val parentAlignment = ParentAlignment(
             edge = Edge.MAX,
             offset = 0,
-            offsetRatio = 0.5f
+            fraction = 0.5f
         )
         launchFragment(
             getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),

@@ -146,18 +146,18 @@ open class DpadRecyclerView @JvmOverloads constructor(
         val parentAlignment = ParentAlignment(
             edge = ParentAlignment.Edge.values()[typedArray.getInt(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,
-                ParentAlignment.DEFAULT_EDGE.ordinal
+                ParentAlignment.Edge.MIN_MAX.ordinal
             )],
             offset = typedArray.getDimensionPixelSize(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffset,
                 ViewAlignment.DEFAULT_OFFSET
             ),
-            offsetRatio = typedArray.getFloat(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffsetRatio,
-                ViewAlignment.DEFAULT_OFFSET_RATIO
+            fraction = typedArray.getFloat(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentFraction,
+                ViewAlignment.DEFAULT_FRACTION
             ),
-            isOffsetRatioEnabled = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffsetRatioEnabled,
+            isFractionEnabled = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentFractionEnabled,
                 true
             )
         )
@@ -166,12 +166,12 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffset,
                 ViewAlignment.DEFAULT_OFFSET
             ),
-            offsetRatio = typedArray.getFloat(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffsetRatio,
-                ViewAlignment.DEFAULT_OFFSET_RATIO
+            fraction = typedArray.getFloat(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentFraction,
+                ViewAlignment.DEFAULT_FRACTION
             ),
-            isOffsetRatioEnabled = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentOffsetRatioEnabled,
+            isFractionEnabled = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewChildAlignmentFractionEnabled,
                 true
             )
         )

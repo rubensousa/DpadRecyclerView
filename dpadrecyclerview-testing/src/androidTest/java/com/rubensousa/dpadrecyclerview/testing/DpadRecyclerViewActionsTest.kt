@@ -321,7 +321,7 @@ class DpadRecyclerViewActionsTest : RecyclerViewTest() {
 
         val newChildAlignment = ChildAlignment(
             offset = 40,
-            offsetRatio = 0.0f
+            fraction = 0.0f
         )
 
         performActions(DpadRecyclerViewActions.updateChildAlignment(newChildAlignment))
@@ -341,7 +341,7 @@ class DpadRecyclerViewActionsTest : RecyclerViewTest() {
 
         val newParentAlignment = ParentAlignment(
             offset = 0,
-            offsetRatio = 0.0f
+            fraction = 0.0f
         )
 
         performActions(DpadRecyclerViewActions.updateParentAlignment(newParentAlignment))

@@ -10,8 +10,8 @@
         <attr name="dpadRecyclerViewFocusOutSideFront" format="boolean" />
         <attr name="dpadRecyclerViewFocusOutSideBack" format="boolean" />
         <attr name="dpadRecyclerViewChildAlignmentOffset" format="dimension" />
-        <attr name="dpadRecyclerViewChildAlignmentOffsetRatio" format="float" />
-        <attr name="dpadRecyclerViewChildAlignmentOffsetRatioEnabled" format="boolean" />
+        <attr name="dpadRecyclerViewChildAlignmentFraction" format="float" />
+        <attr name="dpadRecyclerViewChildAlignmentFractionEnabled" format="boolean" />
         <attr name="dpadRecyclerViewParentAlignmentEdge" format="enum">
             <enum name="none" value="0" />
             <enum name="min" value="1" />
@@ -19,15 +19,13 @@
             <enum name="min_max" value="3" />
         </attr>
         <attr name="dpadRecyclerViewParentAlignmentOffset" format="dimension" />
-        <attr name="dpadRecyclerViewParentAlignmentOffsetRatio" format="float" />
-        <attr name="dpadRecyclerViewParentAlignmentOffsetRatioEnabled" format="boolean" />
+        <attr name="dpadRecyclerViewParentAlignmentFraction" format="float" />
+        <attr name="dpadRecyclerViewParentAlignmentFractionEnabled" format="boolean" />
         <attr name="dpadRecyclerViewFocusableDirection" format="enum">
             <enum name="standard" value="0" />
             <enum name="circular" value="1" />
             <enum name="continuous" value="2" />
         </attr>
-        <attr name="dpadRecyclerViewPivotLayoutManager" format="boolean" />
-
         <attr name="android:gravity" />
         <attr name="android:focusable" />
         <attr name="android:focusableInTouchMode" />
