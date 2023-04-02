@@ -1,6 +1,6 @@
 # Compose interoperability
 
-The `dpadrecyclerview-module` contains a `DpadComposeViewHolder`
+The `dpadrecyclerview-compose` module contains a `DpadComposeViewHolder`
 that you can extend to easily render composables in your `RecyclerView`.
 
 Example: `ItemComposable` that should render a text and different colors based on the focus state
