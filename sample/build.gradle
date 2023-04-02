@@ -54,6 +54,7 @@ dependencies {
     implementation "androidx.compose.material3:material3:$composeVersions.material3"
     implementation "androidx.compose.ui:ui-tooling-preview:$composeVersions.ui"
     implementation "androidx.customview:customview-poolingcontainer:$versions.poolingContainer"
+    implementation "androidx.paging:paging-runtime-ktx:$versions.paging"
     debugImplementation "androidx.compose.ui:ui-tooling:$composeVersions.ui"
     implementation "androidx.interpolator:interpolator:1.0.0"
     implementation 'com.rubensousa:decorator:2.1.0'

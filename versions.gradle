@@ -10,6 +10,7 @@ versions.navigation = '2.5.3'
 versions.fragment = '1.6.0-alpha04'
 versions.appcompat = '1.6.1'
 versions.poolingContainer = '1.0.0'
+versions.paging = '3.1.1'
 
 def composeVersions = [:]
 composeVersions.runtime = '1.3.3'
