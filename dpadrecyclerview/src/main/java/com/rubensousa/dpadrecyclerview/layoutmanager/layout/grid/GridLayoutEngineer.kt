@@ -76,6 +76,7 @@ internal class GridLayoutEngineer(
     private val gridState = GridState(layoutManager)
     private val pivotRow = GridRow(layoutRow)
     private var pivotLayoutPosition = RecyclerView.NO_POSITION
+    private var pivotView: View? = null
 
     override fun onLayoutStarted(state: State) {
         super.onLayoutStarted(state)
@@ -142,7 +143,9 @@ internal class GridLayoutEngineer(
             }
         }
         fill(layoutRequest, viewProvider, recycler, state)
-        return requireNotNull(layoutManager.findViewByPosition(pivotPosition))
+        val newPivotView = requireNotNull(pivotView)
+        pivotView = null
+        return newPivotView
     }
 
     override fun layoutDisappearingViews(
@@ -517,7 +520,10 @@ internal class GridLayoutEngineer(
             if (remainingSpans < 0) {
                 break
             }
-            val view = viewProvider.next(layoutRequest, state) ?: break
+            val view = viewProvider.next(layoutRequest, state)
+            if (position == pivotLayoutPosition) {
+                pivotView = view
+            }
             rowViews[viewCount] = view
             viewCount++
         }
