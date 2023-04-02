@@ -45,6 +45,10 @@
         </action>
 
         <action
+            android:id="@+id/open_paging_grid"
+            app:destination="@id/grid_paging_fragment" />
+
+        <action
             android:id="@+id/open_compose_grid"
             app:destination="@id/compose_grid_fragment" />
 
@@ -137,6 +141,10 @@
             android:defaultValue="true" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/grid_paging_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridPagingFragment"/>
 
     <fragment
         android:id="@+id/compose_grid_fragment"

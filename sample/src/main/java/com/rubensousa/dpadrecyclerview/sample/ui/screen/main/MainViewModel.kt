@@ -86,6 +86,10 @@ class MainViewModel : ViewModel() {
                 ScreenDestination(
                     direction = MainFragmentDirections.openGrid().apply { reverseLayout = true },
                     title = "Reversed"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openPagingGrid(),
+                    title = "Paging library"
                 )
             ),
         )
