@@ -24,8 +24,8 @@ import android.os.Parcelable
  */
 data class ChildAlignment(
     override val offset: Int = ViewAlignment.DEFAULT_OFFSET,
-    override val offsetRatio: Float = ViewAlignment.DEFAULT_OFFSET_RATIO,
-    override val isOffsetRatioEnabled: Boolean = true,
+    override val fraction: Float = ViewAlignment.DEFAULT_FRACTION,
+    override val isFractionEnabled: Boolean = true,
     override val includePadding: Boolean = false,
     override val alignToBaseline: Boolean = false
 ) : ViewAlignment, Parcelable {
@@ -42,8 +42,8 @@ data class ChildAlignment(
     }
 
     init {
-        require(offsetRatio in 0f..1f) {
-            "offsetRatio must be a value between 0f and 1f"
+        require(fraction in 0f..1f) {
+            "fraction must be a value between 0f and 1f"
         }
     }
 
@@ -57,8 +57,8 @@ data class ChildAlignment(
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(offset)
-        parcel.writeFloat(offsetRatio)
-        parcel.writeByte(if (isOffsetRatioEnabled) 1 else 0)
+        parcel.writeFloat(fraction)
+        parcel.writeByte(if (isFractionEnabled) 1 else 0)
         parcel.writeByte(if (includePadding) 1 else 0)
         parcel.writeByte(if (alignToBaseline) 1 else 0)
     }

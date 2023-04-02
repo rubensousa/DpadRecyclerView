@@ -25,8 +25,8 @@
         android:layout_height="220dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:dpadRecyclerViewChildAlignmentOffsetRatio="0.5"
+        app:dpadRecyclerViewChildAlignmentFraction="0.5"
         app:dpadRecyclerViewParentAlignmentEdge="none"
-        app:dpadRecyclerViewParentAlignmentOffsetRatio="0.5" />
+        app:dpadRecyclerViewParentAlignmentFraction="0.5" />
 
 </LinearLayout>

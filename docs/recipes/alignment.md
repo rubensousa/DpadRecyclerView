@@ -14,18 +14,18 @@ Example of centering views in a vertical `DpadRecyclerView`:
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:dpadRecyclerViewChildAlignmentOffsetRatio="0.5"
-        app:dpadRecyclerViewParentAlignmentOffsetRatio="0.5" />
+        app:dpadRecyclerViewChildAlignmentFraction="0.5"
+        app:dpadRecyclerViewParentAlignmentFraction="0.5" />
     ```
 
 === "Kotlin"
 
     ```kotlin linenums="1"
     recyclerView.setParentAlignment(
-        ParentAlignment(offsetRatio = 0.5f)
+        ParentAlignment(fraction = 0.5f)
     )
     recyclerView.setChildAlignment(
-        ChildAlignment(offsetRatio = 0.5f)
+        ChildAlignment(fraction = 0.5f)
     )
     ```
 
@@ -44,9 +44,9 @@ Example of aligning views in a horizontal `DpadRecyclerView`:
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        app:dpadRecyclerViewChildAlignmentOffsetRatio="0"
+        app:dpadRecyclerViewChildAlignmentFraction="0"
         app:dpadRecyclerViewParentAlignmentOffset="24dp"
-        app:dpadRecyclerViewParentAlignmentOffsetRatio="0" />
+        app:dpadRecyclerViewParentAlignmentFraction="0" />
     ```
 
 === "Kotlin"
@@ -54,12 +54,12 @@ Example of aligning views in a horizontal `DpadRecyclerView`:
     ```kotlin linenums="1"
     recyclerView.setParentAlignment(
         ParentAlignment(
-            offsetRatio = 0f, 
+            fraction = 0f, 
             offset = 24.dp.toPx()
         )
     )
     recyclerView.setChildAlignment(
-        ChildAlignment(offsetRatio = 0f)
+        ChildAlignment(fraction = 0f)
     )
     ```
 
@@ -79,7 +79,7 @@ you need to set an edge preference of `ParentAlignment.Edge.NONE`
     ```kotlin linenums="1"
     recyclerView.setParentAlignment(
         ParentAlignment(
-            offsetRatio = 0f, 
+            fraction = 0f, 
             offset = 24.dp.toPx()
             edge = ParentAlignment.Edge.NONE
         )
@@ -94,14 +94,14 @@ In case you want to include padding for the alignment position, set the `include
 
 ```kotlin
 recyclerView.setChildAlignment(
-    ChildAlignment(offsetRatio = 0f, includePadding = true)
+    ChildAlignment(fraction = 0f, includePadding = true)
 )
 ```
 
 Padding will only be considered in the same orientation of the `DpadRecyclerView` and when the ratio is either `0f` or `1f`:
 
-* start/top padding for horizontal/vertical when `offsetRatio` is 0f
-* end/bottom padding for horizontal/vertical when `offsetRatio` is 1f
+* start/top padding for horizontal/vertical when `fraction` is 0f
+* end/bottom padding for horizontal/vertical when `fraction` is 1f
 
 ## Sub position alignment
 
@@ -129,21 +129,21 @@ class ExampleViewHolder(
         alignments.apply {
             add(
                 SubPositionAlignment(
-                    offsetRatio = 0f,
+                    fraction = 0f,
                     alignmentViewId = R.id.firstView,
                     focusViewId = R.id.firstView
                 )
             )
             add(
                 SubPositionAlignment(
-                    offsetRatio = 0.5f,
+                    fraction = 0.5f,
                     alignmentViewId = R.id.firstView,
                     focusViewId = R.id.secondView
                 )
             )
             add(
                 SubPositionAlignment(
-                    offsetRatio = 0f,
+                    fraction = 0f,
                     alignmentViewId = R.id.secondView,
                     focusViewId = R.id.thirdView
                 )

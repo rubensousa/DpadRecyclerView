@@ -27,15 +27,15 @@ interface ViewAlignment {
         const val DEFAULT_OFFSET = 0
 
         /**
-         * See [offsetRatio]
+         * See [fraction]
          */
-        const val DEFAULT_OFFSET_RATIO = 0.5f
+        const val DEFAULT_FRACTION = 0.5f
     }
 
     /**
-     * The distance to the [offsetRatio] of the view in pixels.
+     * The distance to the [fraction] of the view in pixels.
      *
-     * E.g offsetRatio = 0.5f, offset = 100, View's height = 500
+     * E.g fraction = 0.5f, offset = 100, View's height = 500
      *
      * Keyline position = 500 * 0.5f + 100 = 350
      */
@@ -44,21 +44,21 @@ interface ViewAlignment {
     /**
      * The keyline position for the alignment. Default: 0.5f (center)
      *
-     * Set [isOffsetRatioEnabled] to false in case you want to disable this
+     * Set [isFractionEnabled] to false in case you want to disable this
      */
-    val offsetRatio: Float
+    val fraction: Float
 
     /**
-     * When enabled, [offsetRatio] will be used for the alignment.
+     * When enabled, [fraction] will be used for the alignment.
      * Otherwise, only [offset] will be used.
      */
-    val isOffsetRatioEnabled: Boolean
+    val isFractionEnabled: Boolean
 
     /**
      * True if padding should be included for the alignment.
-     * Includes start/top padding if [offsetRatio] is 0f.
-     * Includes end/bottom padding if [offsetRatio] is 1f.
-     * If [offsetRatio] is not 0f or 1f, padding isn't included
+     * Includes start/top padding if [fraction] is 0f.
+     * Includes end/bottom padding if [fraction] is 1f.
+     * If [fraction] is not 0f or 1f, padding isn't included
      */
     val includePadding: Boolean
 

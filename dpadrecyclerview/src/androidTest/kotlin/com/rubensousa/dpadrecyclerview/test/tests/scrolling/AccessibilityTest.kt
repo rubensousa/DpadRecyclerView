@@ -45,11 +45,11 @@ class AccessibilityTest : DpadRecyclerViewTest() {
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.NONE,
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             ),
             childAlignment = ChildAlignment(
                 offset = 0,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
     }

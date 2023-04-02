@@ -26,9 +26,9 @@ class ParentAlignmentTest {
     fun `align to parent center by default`() {
         val parentAlignment = ParentAlignment()
         assertThat(parentAlignment.edge).isEqualTo(ParentAlignment.Edge.MIN_MAX)
-        assertThat(parentAlignment.offsetRatio).isEqualTo(0.5f)
+        assertThat(parentAlignment.fraction).isEqualTo(0.5f)
         assertThat(parentAlignment.offset).isEqualTo(0)
-        assertThat(parentAlignment.isOffsetRatioEnabled).isTrue()
+        assertThat(parentAlignment.isFractionEnabled).isTrue()
     }
 
 }

@@ -57,7 +57,7 @@ class ParentAlignmentCalculatorTest {
     private val centerParentAlignment = ParentAlignment(
         edge = ParentAlignment.Edge.MIN_MAX,
         offset = 0,
-        offsetRatio = 0.5f
+        fraction = 0.5f
     )
 
     @Test
@@ -101,14 +101,14 @@ class ParentAlignmentCalculatorTest {
         var minAlignment = ParentAlignment(
             edge = ParentAlignment.Edge.MIN,
             offset = 10,
-            offsetRatio = 0.5f
+            fraction = 0.5f
         )
 
         assertThat(alignmentCalculator.calculateKeyline(minAlignment)).isEqualTo(
-            (height * minAlignment.offsetRatio + minAlignment.offset).toInt()
+            (height * minAlignment.fraction + minAlignment.offset).toInt()
         )
 
-        minAlignment = minAlignment.copy(offset = 10, offsetRatio = 0.0f)
+        minAlignment = minAlignment.copy(offset = 10, fraction = 0.0f)
 
         assertThat(alignmentCalculator.calculateKeyline(minAlignment)).isEqualTo(minAlignment.offset)
     }
@@ -120,16 +120,16 @@ class ParentAlignmentCalculatorTest {
         var minAlignment = ParentAlignment(
             edge = ParentAlignment.Edge.MIN,
             offset = 10,
-            offsetRatio = 0.0f
+            fraction = 0.0f
         )
 
         assertThat(alignmentCalculator.calculateKeyline(minAlignment)).isEqualTo(height - minAlignment.offset)
 
-        minAlignment = minAlignment.copy(offsetRatio = 0.5f)
+        minAlignment = minAlignment.copy(fraction = 0.5f)
 
         assertThat(alignmentCalculator.calculateKeyline(minAlignment))
             .isEqualTo(
-                (height * minAlignment.offsetRatio - minAlignment.offset).toInt()
+                (height * minAlignment.fraction - minAlignment.offset).toInt()
             )
     }
 
@@ -216,7 +216,7 @@ class ParentAlignmentCalculatorTest {
         val alignment = ParentAlignment(
             edge = ParentAlignment.Edge.MIN,
             offset = 0,
-            offsetRatio = 0.5f,
+            fraction = 0.5f,
             preferKeylineOverEdge = false
         )
         alignmentCalculator.updateStartLimit(
@@ -246,7 +246,7 @@ class ParentAlignmentCalculatorTest {
         val alignment = ParentAlignment(
             edge = ParentAlignment.Edge.MAX,
             offset = 0,
-            offsetRatio = 0.5f,
+            fraction = 0.5f,
             preferKeylineOverEdge = false
         )
         alignmentCalculator.updateStartLimit(
@@ -274,7 +274,7 @@ class ParentAlignmentCalculatorTest {
         val alignment = ParentAlignment(
             edge = ParentAlignment.Edge.MIN,
             offset = 0,
-            offsetRatio = 0.5f,
+            fraction = 0.5f,
             preferKeylineOverEdge = true
         )
         alignmentCalculator.updateStartLimit(
@@ -304,7 +304,7 @@ class ParentAlignmentCalculatorTest {
         val alignment = ParentAlignment(
             edge = ParentAlignment.Edge.MAX,
             offset = 0,
-            offsetRatio = 0.5f,
+            fraction = 0.5f,
             preferKeylineOverEdge = true
         )
         alignmentCalculator.updateEndLimit(

@@ -45,10 +45,10 @@ class LayoutPositionTest : DpadRecyclerViewTest() {
             orientation = RecyclerView.VERTICAL,
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.MIN_MAX,
-                offsetRatio = 0.5f
+                fraction = 0.5f
             ),
             childAlignment = ChildAlignment(
-                offsetRatio = 0.5f
+                fraction = 0.5f
             )
         )
     }

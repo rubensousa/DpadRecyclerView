@@ -25,7 +25,6 @@ import com.rubensousa.dpadrecyclerview.test.helpers.*
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.ColumnLayout
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
-import com.rubensousa.dpadrecyclerview.testfixtures.RowLayout
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import org.junit.Before
 import org.junit.Test
@@ -47,11 +46,11 @@ class ReverseVerticalTest : DpadRecyclerViewTest() {
             orientation = RecyclerView.VERTICAL,
             parentAlignment = ParentAlignment(
                 edge = ParentAlignment.Edge.NONE,
-                offsetRatio = 0.0f
+                fraction = 0.0f
             ),
             reverseLayout = true,
             childAlignment = ChildAlignment(
-                offsetRatio = 0.0f
+                fraction = 0.0f
             )
         )
     }

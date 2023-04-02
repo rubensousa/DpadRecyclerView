@@ -122,7 +122,7 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
                 add(
                     SubPositionAlignment(
                         offset = 0,
-                        offsetRatio = 0.5f,
+                        fraction = 0.5f,
                         alignmentViewId = R.id.subPosition0TextView,
                         focusViewId = R.id.subPosition0TextView
                     )
@@ -130,7 +130,7 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
                 add(
                     SubPositionAlignment(
                         offset = 0,
-                        offsetRatio = 0.5f,
+                        fraction = 0.5f,
                         alignmentViewId = R.id.subPosition1TextView,
                         focusViewId = R.id.subPosition1TextView
                     )
@@ -138,7 +138,7 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
                 add(
                     SubPositionAlignment(
                         offset = 0,
-                        offsetRatio = 0.5f,
+                        fraction = 0.5f,
                         alignmentViewId = R.id.subPosition2TextView,
                         focusViewId = R.id.subPosition2TextView
                     )
