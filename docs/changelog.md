@@ -2,6 +2,14 @@
 
 ## Version 1.0.0
 
+### 1.0.0-beta01
+
+2023-04-02
+
+#### Bug fixes
+
+- Fixed crash in grid layout when pivot is updated during pagination. ([#114](https://github.com/rubensousa/DpadRecyclerView/issues/114))
+
 ### 1.0.0-alpha05
 
 2023-02-21
