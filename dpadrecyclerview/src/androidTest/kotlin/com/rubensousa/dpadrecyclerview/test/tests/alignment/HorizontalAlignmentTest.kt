@@ -177,6 +177,28 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    fun testLastItemsAreAlignedToTheMaxEdge() {
+        launchFragment()
+        updateParentAlignment(
+            ParentAlignment(
+                edge = Edge.MAX,
+                offset = 0,
+                fraction = 0.5f
+            )
+        )
+        val lastPosition = selectLastPosition()
+        val recyclerViewBounds = getRecyclerViewBounds()
+
+        assertThat(getItemViewBounds(position = lastPosition).right)
+            .isEqualTo(recyclerViewBounds.right)
+
+        KeyEvents.pressLeft()
+
+        assertThat(getItemViewBounds(position = lastPosition).right)
+            .isEqualTo(recyclerViewBounds.right)
+    }
+
+    @Test
     fun testLastItemAlignmentForEdgeAlignments() {
         launchFragment()
         val lastPosition = selectLastPosition()
