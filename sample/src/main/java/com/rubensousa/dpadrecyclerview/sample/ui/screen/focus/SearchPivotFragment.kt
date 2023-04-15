@@ -20,29 +20,39 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.unit.dp
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.sample.R
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemRowBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.HorizontalAdapterAnimatedItemBinding
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenLeanbackHorizontalBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
+import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class SearchPivotFragment : Fragment(R.layout.screen_leanback_horizontal) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ScreenLeanbackHorizontalBinding.bind(view)
+        binding.horizontalGridView.clipToPadding = false
+        binding.horizontalGridView.updatePadding(left = dpToPx(24.dp))
+        binding.horizontalGridView.setItemSpacing(dpToPx(24.dp))
         binding.horizontalGridView.adapter = Adapter()
         RecyclerViewLogger.logChildrenWhenIdle(binding.horizontalGridView)
         RecyclerViewLogger.logChildrenWhenIdle(binding.dpadRecyclerView)
+        binding.dpadRecyclerView.addItemDecoration(
+            DpadLinearSpacingDecoration.create(dpToPx(24.dp))
+        )
         binding.dpadRecyclerView.adapter = Adapter()
     }
 
     class Adapter : RecyclerView.Adapter<ItemViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-            val binding = AdapterItemRowBinding.inflate(
+            val binding = HorizontalAdapterAnimatedItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
             return ItemViewHolder(

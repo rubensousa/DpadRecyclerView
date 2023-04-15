@@ -18,6 +18,8 @@ package com.rubensousa.dpadrecyclerview
 
 import android.content.Context
 import android.content.res.TypedArray
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.Gravity
@@ -25,6 +27,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
+import androidx.annotation.Px
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -57,6 +60,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
     private val focusableChildDrawingCallback = FocusableChildDrawingCallback()
+    private val fadingEdge = FadingEdge()
 
     private var pivotLayoutManager: PivotLayoutManager? = null
     private var isOverlappingRenderingEnabled = true
@@ -357,6 +361,72 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
     }
 
+    override fun draw(canvas: Canvas) {
+        val applyMinEdgeFading = fadingEdge.isMinFadingEdgeRequired(this)
+        val applyMaxEdgeFading = fadingEdge.isMaxFadingEdgeRequired(this)
+        if (!applyMinEdgeFading) {
+            fadingEdge.clearMinBitmap()
+        }
+        if (!applyMaxEdgeFading) {
+            fadingEdge.clearMaxBitmap()
+        }
+        if (!applyMaxEdgeFading && !applyMinEdgeFading) {
+            super.draw(canvas)
+            return
+        }
+        val minFadeLength = if (applyMinEdgeFading) {
+            fadingEdge.minShaderLength
+        } else {
+            0
+        }
+        val maxFadeLength = if (applyMaxEdgeFading) {
+            fadingEdge.maxShaderLength
+        } else {
+            0
+        }
+        val minEdge = fadingEdge.getMinEdge(this)
+        val maxEdge = fadingEdge.getMaxEdge(this)
+
+        val save = canvas.save()
+        fadingEdge.clip(minEdge, minFadeLength, maxEdge, maxFadeLength, canvas, this)
+        super.draw(canvas)
+        canvas.restoreToCount(save)
+
+        val tmpCanvas = Canvas()
+        if (minFadeLength > 0) {
+            val tmpBitmap = fadingEdge.getMinBitmap(this)
+            tmpBitmap.eraseColor(Color.TRANSPARENT)
+            tmpCanvas.setBitmap(tmpBitmap)
+            val tmpSave = tmpCanvas.save()
+            if (getOrientation() == HORIZONTAL) {
+                tmpCanvas.clipRect(0, 0, minFadeLength, height)
+                tmpCanvas.translate(-minEdge.toFloat(), 0f)
+            } else {
+                tmpCanvas.clipRect(0, 0, width, minFadeLength)
+                tmpCanvas.translate(0f, -minEdge.toFloat())
+            }
+            super.draw(tmpCanvas)
+            tmpCanvas.restoreToCount(tmpSave)
+            fadingEdge.drawMin(minEdge, tmpCanvas, tmpBitmap, canvas, this)
+        }
+        if (maxFadeLength > 0) {
+            val tmpBitmap = fadingEdge.getMaxBitmap(this)
+            tmpBitmap.eraseColor(Color.TRANSPARENT)
+            tmpCanvas.setBitmap(tmpBitmap)
+            val tmpSave = tmpCanvas.save()
+            if (getOrientation() == HORIZONTAL) {
+                tmpCanvas.clipRect(0, 0, maxFadeLength, height)
+                tmpCanvas.translate((-(maxEdge.toFloat() - maxFadeLength)), 0f)
+            } else {
+                tmpCanvas.clipRect(0, 0, width, maxFadeLength)
+                tmpCanvas.translate(0f, -(maxEdge.toFloat() - maxFadeLength))
+            }
+            super.draw(tmpCanvas)
+            tmpCanvas.restoreToCount(tmpSave)
+            fadingEdge.drawMax(maxEdge, tmpCanvas, tmpBitmap, canvas, this)
+        }
+    }
+
     /**
      * Sets the strategy for calculating extra layout space.
      *
@@ -401,6 +471,83 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * See: [setLayoutEnabled]
      */
     fun isLayoutEnabled(): Boolean = requireLayout().isLayoutEnabled()
+
+    /**
+     * Enables fading out the min edge to transparent.
+     * This is very expensive so you should consider disabling it during scrolling events.
+     * @param enable true if edge fading should be enabled for the left or top of the layout
+     */
+    fun enableMinEdgeFading(enable: Boolean) {
+        fadingEdge.enableMinEdgeFading(enable, this)
+    }
+
+    /**
+     * @return true if edge fading is enabled for the left or top of the layout
+     */
+    fun isMinEdgeFadingEnabled(): Boolean = fadingEdge.isFadingMinEdge
+
+    /**
+     * Sets the length of the fading effect applied to the min edge in pixels
+     */
+    fun setMinEdgeFadingLength(@Px length: Int) {
+        fadingEdge.setMinEdgeFadingLength(length, this)
+    }
+
+    /**
+     * See: [setMinEdgeFadingLength]
+     */
+    fun getMinEdgeFadingLength(): Int = fadingEdge.minShaderLength
+
+    /**
+     * Sets the start position of the fading effect applied to the min edge in pixels.
+     * Default is 0, which means that the fading effect starts from the min edge (left or top)
+     */
+    fun setMinEdgeFadingOffset(@Px offset: Int) {
+        fadingEdge.setMinEdgeFadingOffset(offset, this)
+    }
+
+    /**
+     * See: [setMinEdgeFadingOffset]
+     */
+    fun getMinEdgeFadingOffset(): Int = fadingEdge.minShaderOffset
+
+    /**
+     * Enables fading out the max edge to transparent.
+     * This is very expensive so you should consider disabling it during scrolling events.
+     * @param enable true if edge fading should be enabled for the right or bottom of the layout
+     */
+    fun enableMaxEdgeFading(enable: Boolean) {
+        fadingEdge.enableMaxEdgeFading(enable, this)
+    }
+
+    /**
+     * @return true if edge fading is enabled for the right or bottom of the layout
+     */
+    fun isMaxEdgeFadingEnabled(): Boolean = fadingEdge.isFadingMaxEdge
+
+    /**
+     * Sets the length of the fading effect applied to the max edge in pixels
+     */
+    fun setMaxEdgeFadingLength(@Px length: Int) {
+        fadingEdge.setMaxEdgeFadingLength(length, this)
+    }
+
+    /**
+     * See: [setMaxEdgeFadingLength]
+     */
+    fun getMaxEdgeFadingLength(): Int = fadingEdge.maxShaderLength
+
+    /**
+     * Sets the length of the fading effect applied to the min edge in pixels
+     */
+    fun setMaxEdgeFadingOffset(@Px offset: Int) {
+        fadingEdge.setMaxEdgeFadingOffset(offset, this)
+    }
+
+    /**
+     * See: [setMaxEdgeFadingOffset]
+     */
+    fun getMaxEdgeFadingOffset(): Int = fadingEdge.maxShaderOffset
 
     /**
      * Enables or disables the default rule of drawing the selected view after all other views.
@@ -1007,7 +1154,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 && position != NO_POSITION
                 && position == getSelectedPosition()
             ) {
-               pivotLayoutManager?.removeCurrentViewHolderSelection()
+                pivotLayoutManager?.removeCurrentViewHolderSelection()
             }
         }
     }

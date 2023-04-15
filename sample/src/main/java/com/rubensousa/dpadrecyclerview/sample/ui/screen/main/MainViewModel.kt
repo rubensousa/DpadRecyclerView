@@ -66,6 +66,10 @@ class MainViewModel : ViewModel() {
                 ScreenDestination(
                     direction = MainFragmentDirections.openList().apply { reverseLayout = true },
                     title = "Reversed"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openFadingEdge(),
+                    title = "Fading Edges"
                 )
             ),
         )

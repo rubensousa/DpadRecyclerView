@@ -58,7 +58,11 @@
 
         <action
             android:id="@+id/open_detail"
-            app:destination="@+id/detail_fragment" />
+            app:destination="@id/detail_fragment" />
+
+        <action
+            android:id="@+id/open_fading_edge"
+            app:destination="@id/fading_edge_fragment" />
 
     </fragment>
 
@@ -153,4 +157,8 @@
     <fragment
         android:id="@+id/compose_list_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.compose.ComposeListFragment" />
+
+    <fragment
+        android:id="@+id/fading_edge_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.fading.FadingEdgeFragment" />
 </navigation>
