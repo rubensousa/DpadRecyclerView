@@ -166,7 +166,7 @@ internal class ParentAlignmentCalculator {
         }
         if (alignment.preferKeylineOverEdge
             && isStartEdge(alignment.edge)
-            && startEdge >= getLayoutStartEdge()) {
+            && (startEdge >= getLayoutStartEdge() && !isEndUnknown)) {
             return false
         }
         return viewAnchor + getLayoutStartEdge() <= startEdge + keyline
@@ -182,7 +182,7 @@ internal class ParentAlignmentCalculator {
         }
         if (alignment.preferKeylineOverEdge
             && isEndEdge(alignment.edge)
-            && endEdge <= getLayoutEndEdge()) {
+            && (endEdge <= getLayoutEndEdge() && !isStartUnknown)) {
             return false
         }
         return viewAnchor + getLayoutEndEdge() >= endEdge + keyline
