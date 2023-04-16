@@ -53,6 +53,10 @@ class MainViewModel : ViewModel() {
                     title = "Nested"
                 ),
                 ScreenDestination(
+                    direction = MainFragmentDirections.openFadingEdge(),
+                    title = "Fading Edges"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openList().apply {
                         showOverlay = true
                         slowScroll = true
@@ -67,10 +71,6 @@ class MainViewModel : ViewModel() {
                     direction = MainFragmentDirections.openList().apply { reverseLayout = true },
                     title = "Reversed"
                 ),
-                ScreenDestination(
-                    direction = MainFragmentDirections.openFadingEdge(),
-                    title = "Fading Edges"
-                )
             ),
         )
     }

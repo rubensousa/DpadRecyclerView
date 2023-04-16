@@ -16,7 +16,6 @@
 
 package com.rubensousa.dpadrecyclerview
 
-import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
@@ -26,7 +25,6 @@ import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
 import android.graphics.Shader
 import android.view.View
-import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
 
 internal class FadingEdge {
@@ -49,21 +47,45 @@ internal class FadingEdge {
     var maxShaderOffset = 0
         private set
 
-    private var minBitmap: Bitmap? = null
     private var minShader: LinearGradient? = null
-    private var maxBitmap: Bitmap? = null
     private var maxShader: LinearGradient? = null
     private val rect = Rect()
-    private val paint = Paint().also { it.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN) }
+    private val paint = Paint()
 
-    fun isEdgeFadingEnabled() = isFadingMinEdge || isFadingMaxEdge
+    init {
+        paint.apply {
+            isAntiAlias = true
+            isDither = true
+            xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+        }
+    }
+
+    fun onSizeChanged(
+        width: Int,
+        height: Int,
+        oldWidth: Int,
+        oldHeight: Int,
+        recyclerView: DpadRecyclerView
+    ) {
+        if (maxShaderLength == 0) return
+        var changed = false
+        if (recyclerView.getOrientation() == RecyclerView.HORIZONTAL) {
+            if (width != oldWidth) {
+                maxShader = createMaxHorizontalShader(width, recyclerView.paddingRight)
+                changed = true
+            }
+        } else if (height != oldHeight) {
+            maxShader = createMaxVerticalShader(height, recyclerView.paddingBottom)
+            changed = true
+        }
+        if (changed) {
+            recyclerView.invalidate()
+        }
+    }
 
     fun enableMinEdgeFading(enable: Boolean, recyclerView: DpadRecyclerView) {
         if (isFadingMinEdge == enable) return
         isFadingMinEdge = enable
-        if (!isFadingMinEdge) {
-            minBitmap = null
-        }
         recyclerView.invalidate()
         updateLayerType(recyclerView)
     }
@@ -99,9 +121,6 @@ internal class FadingEdge {
     fun enableMaxEdgeFading(enable: Boolean, recyclerView: DpadRecyclerView) {
         if (isFadingMaxEdge == enable) return
         isFadingMaxEdge = enable
-        if (!isFadingMaxEdge) {
-            maxBitmap = null
-        }
         recyclerView.invalidate()
         updateLayerType(recyclerView)
     }
@@ -111,15 +130,9 @@ internal class FadingEdge {
         maxShaderLength = length
         maxShader = if (maxShaderLength != 0) {
             if (recyclerView.getOrientation() == RecyclerView.HORIZONTAL) {
-                LinearGradient(
-                    0f, 0f, maxShaderLength.toFloat(), 0f,
-                    Color.BLACK, Color.TRANSPARENT, Shader.TileMode.CLAMP
-                )
+                createMaxHorizontalShader(recyclerView.width, recyclerView.paddingRight)
             } else {
-                LinearGradient(
-                    0f, 0f, 0f, maxShaderLength.toFloat(),
-                    Color.BLACK, Color.TRANSPARENT, Shader.TileMode.CLAMP
-                )
+                createMaxVerticalShader(recyclerView.height, recyclerView.paddingBottom)
             }
         } else {
             null
@@ -138,12 +151,21 @@ internal class FadingEdge {
         if (!isFadingMinEdge) {
             return false
         }
-        recyclerView.forEach { child ->
-            if (child.left < recyclerView.paddingLeft + minShaderOffset) {
-                return true
-            }
+        val childCount = recyclerView.childCount
+        if (childCount == 0) return false
+        val child = recyclerView.getChildAt(0)
+        val isHorizontal = recyclerView.getOrientation() == RecyclerView.HORIZONTAL
+        val first = isFirstItemView(child, recyclerView)
+        val childStart: Int
+        val start: Int
+        if (isHorizontal) {
+            childStart = child.left
+            start = recyclerView.paddingLeft
+        } else {
+            childStart = child.top
+            start = recyclerView.paddingTop
         }
-        return false
+        return (childStart < start + minShaderOffset && !first) || (childStart < start && first)
     }
 
     fun isMaxFadingEdgeRequired(recyclerView: DpadRecyclerView): Boolean {
@@ -151,21 +173,20 @@ internal class FadingEdge {
             return false
         }
         val childCount = recyclerView.childCount
-        for (i in childCount - 1 downTo 0) {
-            val child = recyclerView.getChildAt(i)
-            if (child.right > recyclerView.width - recyclerView.paddingRight - maxShaderOffset) {
-                return true
-            }
+        if (childCount == 0) return false
+        val isHorizontal = recyclerView.getOrientation() == RecyclerView.HORIZONTAL
+        val child = recyclerView.getChildAt(childCount - 1)
+        val last = isLastItemView(child, recyclerView)
+        val childEnd: Int
+        val end: Int
+        if (isHorizontal) {
+            childEnd = child.right
+            end = recyclerView.width - recyclerView.paddingRight
+        } else {
+            childEnd = child.bottom
+            end = recyclerView.height - recyclerView.paddingBottom
         }
-        return false
-    }
-
-    fun clearMinBitmap() {
-        minBitmap = null
-    }
-
-    fun clearMaxBitmap() {
-        maxBitmap = null
+        return (childEnd > end - maxShaderOffset && !last) || (childEnd > end && last)
     }
 
     fun getMinEdge(recyclerView: DpadRecyclerView): Int {
@@ -194,167 +215,78 @@ internal class FadingEdge {
 
     fun clip(
         minEdge: Int,
-        minFadeSize: Int,
         maxEdge: Int,
-        maxFadeSize: Int,
+        applyMinFading: Boolean,
+        applyMaxFading: Boolean,
         canvas: Canvas,
         recyclerView: DpadRecyclerView
     ) {
         if (recyclerView.getOrientation() == RecyclerView.HORIZONTAL) {
-            canvas.clipRect(minEdge + minFadeSize, 0, maxEdge - maxFadeSize, recyclerView.height)
+            val start = if (applyMinFading) minEdge else 0
+            val end = if (applyMaxFading) maxEdge else recyclerView.width
+            canvas.clipRect(start, 0, end, recyclerView.height)
         } else {
-            canvas.clipRect(0, minEdge + minFadeSize, recyclerView.width, maxEdge - maxFadeSize)
+            val top = if (applyMinFading) minEdge else 0
+            val bottom = if (applyMaxFading) maxEdge else recyclerView.height
+            canvas.clipRect(0, top, recyclerView.width, bottom)
         }
     }
 
-    fun drawMin(
-        edge: Int,
-        tmpCanvas: Canvas,
-        tmpBitmap: Bitmap,
-        viewCanvas: Canvas,
-        recyclerView: DpadRecyclerView
-    ) {
+    fun drawMin(canvas: Canvas, recyclerView: DpadRecyclerView) {
         paint.shader = minShader
         if (recyclerView.getOrientation() == RecyclerView.HORIZONTAL) {
             rect.top = 0
             rect.bottom = recyclerView.height
-            rect.left = 0
-            rect.right = minShaderLength
-            tmpCanvas.drawRect(
-                rect.left.toFloat(),
-                rect.top.toFloat(),
-                rect.right.toFloat(),
-                rect.bottom.toFloat(),
-                paint
-            )
-            viewCanvas.translate(edge.toFloat(), 0f)
-            viewCanvas.drawBitmap(tmpBitmap, rect, rect, null)
-            viewCanvas.translate(-edge.toFloat(), 0f)
+            rect.left = minShaderOffset
+            rect.right = minShaderOffset + minShaderLength
         } else {
             rect.left = 0
             rect.right = recyclerView.width
-            rect.top = 0
-            rect.bottom = minShaderLength
-            tmpCanvas.drawRect(
-                rect.left.toFloat(),
-                rect.top.toFloat(),
-                rect.right.toFloat(),
-                rect.bottom.toFloat(),
-                paint
-            )
-            viewCanvas.translate(0f, edge.toFloat())
-            viewCanvas.drawBitmap(tmpBitmap, rect, rect, null)
-            viewCanvas.translate(0f, -edge.toFloat())
+            rect.top = minShaderOffset
+            rect.bottom = minShaderOffset + minShaderLength
         }
+        canvas.drawRect(rect, paint)
     }
 
-    fun drawMax(
-        edge: Int,
-        tmpCanvas: Canvas,
-        tmpBitmap: Bitmap,
-        viewCanvas: Canvas,
-        recyclerView: DpadRecyclerView
-    ) {
+    fun drawMax(canvas: Canvas, recyclerView: DpadRecyclerView) {
         paint.shader = maxShader
         if (recyclerView.getOrientation() == RecyclerView.HORIZONTAL) {
             rect.top = 0
             rect.bottom = recyclerView.height
-            rect.left = 0
-            rect.right = maxShaderLength
-            tmpCanvas.drawRect(
-                rect.left.toFloat(),
-                rect.top.toFloat(),
-                rect.right.toFloat(),
-                rect.bottom.toFloat(),
-                paint
-            )
-            viewCanvas.translate(edge.toFloat() - maxShaderLength, 0f)
-            viewCanvas.drawBitmap(tmpBitmap, rect, rect, null)
-            viewCanvas.translate(-(edge.toFloat() - maxShaderLength), 0f)
+            rect.right = recyclerView.width - recyclerView.paddingRight - maxShaderOffset
+            rect.left = rect.right - maxShaderLength
         } else {
             rect.left = 0
             rect.right = recyclerView.width
-            rect.top = recyclerView.height - maxShaderLength
-            rect.bottom = maxShaderLength
-            tmpCanvas.drawRect(
-                rect.left.toFloat(),
-                rect.top.toFloat(),
-                rect.right.toFloat(),
-                rect.bottom.toFloat(),
-                paint
-            )
-            viewCanvas.translate(0f, edge.toFloat())
-            viewCanvas.drawBitmap(tmpBitmap, rect, rect, null)
-            viewCanvas.translate(0f, -(edge.toFloat() - maxShaderLength))
+            rect.bottom = recyclerView.height - recyclerView.paddingBottom - maxShaderOffset
+            rect.top = rect.bottom - maxShaderLength
         }
+        canvas.drawRect(rect, paint)
     }
 
-    fun getMinBitmap(recyclerView: DpadRecyclerView): Bitmap {
-        return if (recyclerView.getOrientation() == RecyclerView.HORIZONTAL) {
-            getHorizontalMinBitmap(recyclerView)
-        } else {
-            getVerticalMinBitmap(recyclerView)
-        }
+    private fun isFirstItemView(view: View, recyclerView: DpadRecyclerView): Boolean {
+        return recyclerView.getChildLayoutPosition(view) == 0
     }
 
-    private fun getHorizontalMinBitmap(recyclerView: DpadRecyclerView): Bitmap {
-        var currentBitmap = minBitmap
-        if (currentBitmap == null
-            || currentBitmap.width != minShaderLength
-            || currentBitmap.height != recyclerView.height
-        ) {
-            currentBitmap = Bitmap.createBitmap(
-                minShaderLength, recyclerView.height, Bitmap.Config.ARGB_8888
-            )
-        }
-        return requireNotNull(currentBitmap)
+    private fun isLastItemView(view: View, recyclerView: DpadRecyclerView): Boolean {
+        val itemCount = recyclerView.adapter?.itemCount ?: 0
+        return recyclerView.getChildLayoutPosition(view) == itemCount - 1
     }
 
-    private fun getVerticalMinBitmap(recyclerView: DpadRecyclerView): Bitmap {
-        var currentBitmap = minBitmap
-        if (currentBitmap == null
-            || currentBitmap.height != minShaderLength
-            || currentBitmap.width != recyclerView.width
-        ) {
-            currentBitmap = Bitmap.createBitmap(
-                recyclerView.width, minShaderLength, Bitmap.Config.ARGB_8888
-            )
-        }
-        return requireNotNull(currentBitmap)
+    private fun createMaxHorizontalShader(width: Int, paddingEnd: Int): LinearGradient {
+        val end = width.toFloat() - paddingEnd.toFloat() - maxShaderOffset
+        return LinearGradient(
+            end - maxShaderLength, 0f, end, 0f,
+            Color.BLACK, Color.TRANSPARENT, Shader.TileMode.CLAMP
+        )
     }
 
-    fun getMaxBitmap(recyclerView: DpadRecyclerView): Bitmap {
-        return if (recyclerView.getOrientation() == RecyclerView.HORIZONTAL) {
-            getHorizontalMaxBitmap(recyclerView)
-        } else {
-            getVerticalMaxBitmap(recyclerView)
-        }
-    }
-
-    private fun getHorizontalMaxBitmap(recyclerView: DpadRecyclerView): Bitmap {
-        var currentBitmap = maxBitmap
-        if (currentBitmap == null
-            || currentBitmap.width != maxShaderLength
-            || currentBitmap.height != recyclerView.height
-        ) {
-            currentBitmap = Bitmap.createBitmap(
-                maxShaderLength, recyclerView.height, Bitmap.Config.ARGB_8888
-            )
-        }
-        return requireNotNull(currentBitmap)
-    }
-
-    private fun getVerticalMaxBitmap(recyclerView: DpadRecyclerView): Bitmap {
-        var currentBitmap = maxBitmap
-        if (currentBitmap == null
-            || currentBitmap.height != maxShaderLength
-            || currentBitmap.width != recyclerView.width
-        ) {
-            currentBitmap = Bitmap.createBitmap(
-                recyclerView.width, maxShaderLength, Bitmap.Config.ARGB_8888
-            )
-        }
-        return requireNotNull(currentBitmap)
+    private fun createMaxVerticalShader(height: Int, paddingBottom: Int): LinearGradient {
+        val bottom = height.toFloat() - paddingBottom.toFloat() - maxShaderOffset
+        return LinearGradient(
+            0f, bottom - maxShaderLength, 0f, bottom,
+            Color.BLACK, Color.TRANSPARENT, Shader.TileMode.CLAMP
+        )
     }
 
     private fun updateLayerType(recyclerView: DpadRecyclerView) {

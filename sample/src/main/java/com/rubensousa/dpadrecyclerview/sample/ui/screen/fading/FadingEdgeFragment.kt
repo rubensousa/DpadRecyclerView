@@ -27,37 +27,42 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.sample.R
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterItemRowBinding
 import com.rubensousa.dpadrecyclerview.sample.databinding.FadingAdapterListBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.HorizontalAdapterAnimatedItemBinding
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenFadingEdgesBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
+import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class FadingEdgeFragment : Fragment(R.layout.screen_fading_edges) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ScreenFadingEdgesBinding.bind(view)
+        binding.dpadRecyclerView.apply {
+            enableMinEdgeFading(true)
+            setMinEdgeFadingLength(dpToPx(128.dp))
+            enableMaxEdgeFading(true)
+            setMaxEdgeFadingLength(dpToPx(128.dp))
+        }
         val adapter = Adapter()
         adapter.submitList(
             listOf(
                 Configuration(
                     title = "Fade start",
-                    minEdgeLength = 128.dp,
+                    minEdgeLength = 60.dp,
                 ),
                 Configuration(
-                    title = "Fade both sides with start offset",
-                    minEdgeLength = 128.dp,
-                    minEdgeOffset = 64.dp,
-                    maxEdgeLength = 128.dp,
-                    maxEdgeOffset = 0.dp
+                    title = "Fade both sides with end offset",
+                    minEdgeLength = 60.dp,
+                    maxEdgeLength = 60.dp,
+                    maxEdgeOffset = 16.dp
                 ),
                 Configuration(
-                    title = "Fade both sides with start and end offset",
-                    minEdgeLength = 128.dp,
-                    minEdgeOffset = 32.dp,
-                    maxEdgeLength = 128.dp,
-                    maxEdgeOffset = 32.dp
+                    title = "Fade both sides with large end fading",
+                    minEdgeLength = 60.dp,
+                    maxEdgeLength = 120.dp,
+                    maxEdgeOffset = 24.dp
                 ),
             )
         )
@@ -114,6 +119,7 @@ class FadingEdgeFragment : Fragment(R.layout.screen_fading_edges) {
         fun bind(configuration: Configuration) {
             binding.textView.text = configuration.title
             binding.recyclerView.apply {
+                addItemDecoration(DpadLinearSpacingDecoration.create(itemSpacing = dpToPx(16.dp)))
                 enableMinEdgeFading(configuration.minEdgeLength > 0.dp)
                 setMinEdgeFadingLength(dpToPx(configuration.minEdgeLength))
                 setMinEdgeFadingOffset(dpToPx(configuration.minEdgeOffset))
@@ -129,7 +135,7 @@ class FadingEdgeFragment : Fragment(R.layout.screen_fading_edges) {
     class RowAdapter : RecyclerView.Adapter<ItemViewHolder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
-            val binding = AdapterItemRowBinding.inflate(
+            val binding = HorizontalAdapterAnimatedItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
             return ItemViewHolder(

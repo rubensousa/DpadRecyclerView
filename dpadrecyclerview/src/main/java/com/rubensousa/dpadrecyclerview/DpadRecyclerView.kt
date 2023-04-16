@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.Gravity
@@ -361,70 +360,33 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        fadingEdge.onSizeChanged(w, h, oldw, oldh, this)
+    }
+
     override fun draw(canvas: Canvas) {
         val applyMinEdgeFading = fadingEdge.isMinFadingEdgeRequired(this)
         val applyMaxEdgeFading = fadingEdge.isMaxFadingEdgeRequired(this)
-        if (!applyMinEdgeFading) {
-            fadingEdge.clearMinBitmap()
-        }
-        if (!applyMaxEdgeFading) {
-            fadingEdge.clearMaxBitmap()
-        }
         if (!applyMaxEdgeFading && !applyMinEdgeFading) {
             super.draw(canvas)
             return
         }
-        val minFadeLength = if (applyMinEdgeFading) {
-            fadingEdge.minShaderLength
-        } else {
-            0
-        }
-        val maxFadeLength = if (applyMaxEdgeFading) {
-            fadingEdge.maxShaderLength
-        } else {
-            0
-        }
+        val minFadeLength = if (applyMinEdgeFading) fadingEdge.minShaderLength else 0
+        val maxFadeLength = if (applyMaxEdgeFading) fadingEdge.maxShaderLength else 0
         val minEdge = fadingEdge.getMinEdge(this)
         val maxEdge = fadingEdge.getMaxEdge(this)
 
         val save = canvas.save()
-        fadingEdge.clip(minEdge, minFadeLength, maxEdge, maxFadeLength, canvas, this)
+        fadingEdge.clip(minEdge, maxEdge, applyMinEdgeFading, applyMaxEdgeFading, canvas, this)
         super.draw(canvas)
-        canvas.restoreToCount(save)
-
-        val tmpCanvas = Canvas()
         if (minFadeLength > 0) {
-            val tmpBitmap = fadingEdge.getMinBitmap(this)
-            tmpBitmap.eraseColor(Color.TRANSPARENT)
-            tmpCanvas.setBitmap(tmpBitmap)
-            val tmpSave = tmpCanvas.save()
-            if (getOrientation() == HORIZONTAL) {
-                tmpCanvas.clipRect(0, 0, minFadeLength, height)
-                tmpCanvas.translate(-minEdge.toFloat(), 0f)
-            } else {
-                tmpCanvas.clipRect(0, 0, width, minFadeLength)
-                tmpCanvas.translate(0f, -minEdge.toFloat())
-            }
-            super.draw(tmpCanvas)
-            tmpCanvas.restoreToCount(tmpSave)
-            fadingEdge.drawMin(minEdge, tmpCanvas, tmpBitmap, canvas, this)
+            fadingEdge.drawMin(canvas, this)
         }
         if (maxFadeLength > 0) {
-            val tmpBitmap = fadingEdge.getMaxBitmap(this)
-            tmpBitmap.eraseColor(Color.TRANSPARENT)
-            tmpCanvas.setBitmap(tmpBitmap)
-            val tmpSave = tmpCanvas.save()
-            if (getOrientation() == HORIZONTAL) {
-                tmpCanvas.clipRect(0, 0, maxFadeLength, height)
-                tmpCanvas.translate((-(maxEdge.toFloat() - maxFadeLength)), 0f)
-            } else {
-                tmpCanvas.clipRect(0, 0, width, maxFadeLength)
-                tmpCanvas.translate(0f, -(maxEdge.toFloat() - maxFadeLength))
-            }
-            super.draw(tmpCanvas)
-            tmpCanvas.restoreToCount(tmpSave)
-            fadingEdge.drawMax(maxEdge, tmpCanvas, tmpBitmap, canvas, this)
+            fadingEdge.drawMax(canvas, this)
         }
+        canvas.restoreToCount(save)
     }
 
     /**
@@ -474,7 +436,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     /**
      * Enables fading out the min edge to transparent.
-     * This is very expensive so you should consider disabling it during scrolling events.
      * @param enable true if edge fading should be enabled for the left or top of the layout
      */
     fun enableMinEdgeFading(enable: Boolean) {
@@ -513,7 +474,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     /**
      * Enables fading out the max edge to transparent.
-     * This is very expensive so you should consider disabling it during scrolling events.
      * @param enable true if edge fading should be enabled for the right or bottom of the layout
      */
     fun enableMaxEdgeFading(enable: Boolean) {
