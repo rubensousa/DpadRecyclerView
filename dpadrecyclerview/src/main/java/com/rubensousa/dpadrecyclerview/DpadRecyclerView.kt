@@ -100,6 +100,13 @@ open class DpadRecyclerView @JvmOverloads constructor(
         // Call setItemAnimator to set it up
         this.itemAnimator = itemAnimator
 
+        val fadingEdgeLength = typedArray.getDimensionPixelOffset(
+            R.styleable.DpadRecyclerView_android_fadingEdgeLength, 0
+        )
+        if (fadingEdgeLength > 0) {
+            setFadingEdgeLength(fadingEdgeLength)
+        }
+
         setWillNotDraw(true)
         setChildDrawingOrderCallback(focusableChildDrawingCallback)
         overScrollMode = OVER_SCROLL_NEVER
@@ -365,11 +372,21 @@ open class DpadRecyclerView @JvmOverloads constructor(
         fadingEdge.onSizeChanged(w, h, oldw, oldh, this)
     }
 
-    override fun draw(canvas: Canvas) {
+    final override fun setFadingEdgeLength(length: Int) {
+        super.setFadingEdgeLength(length)
+        layoutManager?.let {
+            enableMinEdgeFading(true)
+            enableMaxEdgeFading(true)
+            setMaxEdgeFadingLength(length)
+            setMinEdgeFadingLength(length)
+        }
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
         val applyMinEdgeFading = fadingEdge.isMinFadingEdgeRequired(this)
         val applyMaxEdgeFading = fadingEdge.isMaxFadingEdgeRequired(this)
         if (!applyMaxEdgeFading && !applyMinEdgeFading) {
-            super.draw(canvas)
+            super.dispatchDraw(canvas)
             return
         }
         val minFadeLength = if (applyMinEdgeFading) fadingEdge.minShaderLength else 0
@@ -379,7 +396,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
         val save = canvas.save()
         fadingEdge.clip(minEdge, maxEdge, applyMinEdgeFading, applyMaxEdgeFading, canvas, this)
-        super.draw(canvas)
+        super.dispatchDraw(canvas)
         if (minFadeLength > 0) {
             fadingEdge.drawMin(canvas, this)
         }

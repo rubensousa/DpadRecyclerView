@@ -4,5 +4,6 @@
     android:id="@+id/dpadRecyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fadingEdgeLength="120dp"
     android:orientation="vertical"
     app:dpadRecyclerViewParentAlignmentEdge="none" />

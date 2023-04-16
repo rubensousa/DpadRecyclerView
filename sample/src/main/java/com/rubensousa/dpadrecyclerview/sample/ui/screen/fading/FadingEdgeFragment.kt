@@ -39,12 +39,6 @@ class FadingEdgeFragment : Fragment(R.layout.screen_fading_edges) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ScreenFadingEdgesBinding.bind(view)
-        binding.dpadRecyclerView.apply {
-            enableMinEdgeFading(true)
-            setMinEdgeFadingLength(dpToPx(128.dp))
-            enableMaxEdgeFading(true)
-            setMaxEdgeFadingLength(dpToPx(128.dp))
-        }
         val adapter = Adapter()
         adapter.submitList(
             listOf(
