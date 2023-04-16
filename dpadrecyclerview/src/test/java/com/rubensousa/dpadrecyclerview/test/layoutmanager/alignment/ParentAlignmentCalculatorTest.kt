@@ -307,6 +307,11 @@ class ParentAlignmentCalculatorTest {
             fraction = 0.5f,
             preferKeylineOverEdge = true
         )
+        alignmentCalculator.updateStartLimit(
+            edge = 0,
+            viewAnchor = verticalCenterKeyline,
+            alignment = alignment
+        )
         alignmentCalculator.updateEndLimit(
             edge = verticalCenterKeyline + verticalViewHeight / 2,
             viewAnchor = verticalCenterKeyline,
