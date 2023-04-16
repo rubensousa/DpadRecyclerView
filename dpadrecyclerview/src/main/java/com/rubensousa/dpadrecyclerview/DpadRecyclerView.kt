@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview
 
 import android.content.Context
 import android.content.res.TypedArray
+import android.graphics.Canvas
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.Gravity
@@ -25,6 +26,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Interpolator
+import androidx.annotation.Px
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -57,6 +59,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
     private val focusableChildDrawingCallback = FocusableChildDrawingCallback()
+    private val fadingEdge = FadingEdge()
 
     private var pivotLayoutManager: PivotLayoutManager? = null
     private var isOverlappingRenderingEnabled = true
@@ -96,6 +99,13 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
         // Call setItemAnimator to set it up
         this.itemAnimator = itemAnimator
+
+        val fadingEdgeLength = typedArray.getDimensionPixelOffset(
+            R.styleable.DpadRecyclerView_android_fadingEdgeLength, 0
+        )
+        if (fadingEdgeLength > 0) {
+            setFadingEdgeLength(fadingEdgeLength)
+        }
 
         setWillNotDraw(true)
         setChildDrawingOrderCallback(focusableChildDrawingCallback)
@@ -357,6 +367,45 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        fadingEdge.onSizeChanged(w, h, oldw, oldh, this)
+    }
+
+    final override fun setFadingEdgeLength(length: Int) {
+        super.setFadingEdgeLength(length)
+        layoutManager?.let {
+            enableMinEdgeFading(true)
+            enableMaxEdgeFading(true)
+            setMaxEdgeFadingLength(length)
+            setMinEdgeFadingLength(length)
+        }
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        val applyMinEdgeFading = fadingEdge.isMinFadingEdgeRequired(this)
+        val applyMaxEdgeFading = fadingEdge.isMaxFadingEdgeRequired(this)
+        if (!applyMaxEdgeFading && !applyMinEdgeFading) {
+            super.dispatchDraw(canvas)
+            return
+        }
+        val minFadeLength = if (applyMinEdgeFading) fadingEdge.minShaderLength else 0
+        val maxFadeLength = if (applyMaxEdgeFading) fadingEdge.maxShaderLength else 0
+        val minEdge = fadingEdge.getMinEdge(this)
+        val maxEdge = fadingEdge.getMaxEdge(this)
+
+        val save = canvas.save()
+        fadingEdge.clip(minEdge, maxEdge, applyMinEdgeFading, applyMaxEdgeFading, canvas, this)
+        super.dispatchDraw(canvas)
+        if (minFadeLength > 0) {
+            fadingEdge.drawMin(canvas, this)
+        }
+        if (maxFadeLength > 0) {
+            fadingEdge.drawMax(canvas, this)
+        }
+        canvas.restoreToCount(save)
+    }
+
     /**
      * Sets the strategy for calculating extra layout space.
      *
@@ -401,6 +450,81 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * See: [setLayoutEnabled]
      */
     fun isLayoutEnabled(): Boolean = requireLayout().isLayoutEnabled()
+
+    /**
+     * Enables fading out the min edge to transparent.
+     * @param enable true if edge fading should be enabled for the left or top of the layout
+     */
+    fun enableMinEdgeFading(enable: Boolean) {
+        fadingEdge.enableMinEdgeFading(enable, this)
+    }
+
+    /**
+     * @return true if edge fading is enabled for the left or top of the layout
+     */
+    fun isMinEdgeFadingEnabled(): Boolean = fadingEdge.isFadingMinEdge
+
+    /**
+     * Sets the length of the fading effect applied to the min edge in pixels
+     */
+    fun setMinEdgeFadingLength(@Px length: Int) {
+        fadingEdge.setMinEdgeFadingLength(length, this)
+    }
+
+    /**
+     * See: [setMinEdgeFadingLength]
+     */
+    fun getMinEdgeFadingLength(): Int = fadingEdge.minShaderLength
+
+    /**
+     * Sets the start position of the fading effect applied to the min edge in pixels.
+     * Default is 0, which means that the fading effect starts from the min edge (left or top)
+     */
+    fun setMinEdgeFadingOffset(@Px offset: Int) {
+        fadingEdge.setMinEdgeFadingOffset(offset, this)
+    }
+
+    /**
+     * See: [setMinEdgeFadingOffset]
+     */
+    fun getMinEdgeFadingOffset(): Int = fadingEdge.minShaderOffset
+
+    /**
+     * Enables fading out the max edge to transparent.
+     * @param enable true if edge fading should be enabled for the right or bottom of the layout
+     */
+    fun enableMaxEdgeFading(enable: Boolean) {
+        fadingEdge.enableMaxEdgeFading(enable, this)
+    }
+
+    /**
+     * @return true if edge fading is enabled for the right or bottom of the layout
+     */
+    fun isMaxEdgeFadingEnabled(): Boolean = fadingEdge.isFadingMaxEdge
+
+    /**
+     * Sets the length of the fading effect applied to the max edge in pixels
+     */
+    fun setMaxEdgeFadingLength(@Px length: Int) {
+        fadingEdge.setMaxEdgeFadingLength(length, this)
+    }
+
+    /**
+     * See: [setMaxEdgeFadingLength]
+     */
+    fun getMaxEdgeFadingLength(): Int = fadingEdge.maxShaderLength
+
+    /**
+     * Sets the length of the fading effect applied to the min edge in pixels
+     */
+    fun setMaxEdgeFadingOffset(@Px offset: Int) {
+        fadingEdge.setMaxEdgeFadingOffset(offset, this)
+    }
+
+    /**
+     * See: [setMaxEdgeFadingOffset]
+     */
+    fun getMaxEdgeFadingOffset(): Int = fadingEdge.maxShaderOffset
 
     /**
      * Enables or disables the default rule of drawing the selected view after all other views.
@@ -1007,7 +1131,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 && position != NO_POSITION
                 && position == getSelectedPosition()
             ) {
-               pivotLayoutManager?.removeCurrentViewHolderSelection()
+                pivotLayoutManager?.removeCurrentViewHolderSelection()
             }
         }
     }

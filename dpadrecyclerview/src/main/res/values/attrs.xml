@@ -29,6 +29,7 @@
         <attr name="android:gravity" />
         <attr name="android:focusable" />
         <attr name="android:focusableInTouchMode" />
+        <attr name="android:fadingEdgeLength" />
     </declare-styleable>
 
 

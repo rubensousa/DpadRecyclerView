@@ -40,9 +40,12 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun addRecyclerListener (Landroidx/recyclerview/widget/RecyclerView$RecyclerListener;)V
 	public final fun clearOnLayoutCompletedListeners ()V
 	public final fun clearOnViewHolderSelectedListeners ()V
+	protected fun dispatchDraw (Landroid/graphics/Canvas;)V
 	protected final fun dispatchGenericFocusedEvent (Landroid/view/MotionEvent;)Z
 	public final fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun dispatchTouchEvent (Landroid/view/MotionEvent;)Z
+	public final fun enableMaxEdgeFading (Z)V
+	public final fun enableMinEdgeFading (Z)V
 	public final fun findFirstCompletelyVisibleItemPosition ()I
 	public final fun findFirstVisibleItemPosition ()I
 	public final fun findLastCompletelyVisibleItemPosition ()I
@@ -52,6 +55,10 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun getCurrentSubPositions ()I
 	public final fun getFocusableDirection ()Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
 	public final fun getInitialPrefetchItemCount ()I
+	public final fun getMaxEdgeFadingLength ()I
+	public final fun getMaxEdgeFadingOffset ()I
+	public final fun getMinEdgeFadingLength ()I
+	public final fun getMinEdgeFadingOffset ()I
 	public final fun getOnKeyInterceptListener ()Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnKeyInterceptListener;
 	public final fun getOnMotionInterceptListener ()Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnMotionInterceptListener;
 	public final fun getOnUnhandledKeyListener ()Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnUnhandledKeyListener;
@@ -69,11 +76,14 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun isItemPrefetchEnabled ()Z
 	public final fun isLayoutEnabled ()Z
 	public final fun isLayoutReversed ()Z
+	public final fun isMaxEdgeFadingEnabled ()Z
+	public final fun isMinEdgeFadingEnabled ()Z
 	public final fun isScrollEnabled ()Z
 	protected final fun onFocusChanged (ZILandroid/graphics/Rect;)V
 	protected final fun onRequestFocusInDescendants (ILandroid/graphics/Rect;)Z
 	public final fun onRtlPropertiesChanged (I)V
 	public fun onScrollStateChanged (I)V
+	protected fun onSizeChanged (IIII)V
 	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public final fun removeView (Landroid/view/View;)V
@@ -83,6 +93,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public static synthetic fun setChildAlignment$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;ZILjava/lang/Object;)V
 	public final fun setChildDrawingOrderCallback (Landroidx/recyclerview/widget/RecyclerView$ChildDrawingOrderCallback;)V
 	public final fun setExtraLayoutSpaceStrategy (Lcom/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy;)V
+	public final fun setFadingEdgeLength (I)V
 	public final fun setFocusDrawingOrderEnabled (Z)V
 	public final fun setFocusOutAllowed (ZZ)V
 	public final fun setFocusOutSideAllowed (ZZ)V
@@ -97,6 +108,10 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setItemPrefetchEnabled (Z)V
 	public final fun setLayoutEnabled (Z)V
 	public final fun setLayoutManager (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)V
+	public final fun setMaxEdgeFadingLength (I)V
+	public final fun setMaxEdgeFadingOffset (I)V
+	public final fun setMinEdgeFadingLength (I)V
+	public final fun setMinEdgeFadingOffset (I)V
 	public final fun setOnChildLaidOutListener (Lcom/rubensousa/dpadrecyclerview/OnChildLaidOutListener;)V
 	public final fun setOnKeyInterceptListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnKeyInterceptListener;)V
 	public final fun setOnMotionInterceptListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnMotionInterceptListener;)V
