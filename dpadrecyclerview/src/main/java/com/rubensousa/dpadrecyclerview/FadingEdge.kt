@@ -54,9 +54,8 @@ internal class FadingEdge {
 
     init {
         paint.apply {
-            isAntiAlias = true
-            isDither = true
             xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+            isDither = true
         }
     }
 
