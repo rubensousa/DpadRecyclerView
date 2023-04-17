@@ -80,6 +80,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun isMinEdgeFadingEnabled ()Z
 	public final fun isScrollEnabled ()Z
 	protected final fun onFocusChanged (ZILandroid/graphics/Rect;)V
+	protected final fun onMeasure (II)V
 	protected final fun onRequestFocusInDescendants (ILandroid/graphics/Rect;)Z
 	public final fun onRtlPropertiesChanged (I)V
 	public fun onScrollStateChanged (I)V
