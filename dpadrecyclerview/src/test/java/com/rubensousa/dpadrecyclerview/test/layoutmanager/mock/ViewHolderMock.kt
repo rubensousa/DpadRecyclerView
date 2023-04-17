@@ -21,8 +21,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import io.mockk.every
 import io.mockk.mockk
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 
 class ViewHolderMock(itemView: View) {
 
@@ -31,9 +29,6 @@ class ViewHolderMock(itemView: View) {
     init {
         val itemViewField = mock::class.java.getField("itemView")
         itemViewField.isAccessible = true
-        val modifiersField = Field::class.java.getDeclaredField("modifiers")
-        modifiersField.isAccessible = true
-        modifiersField.setInt(itemViewField, itemViewField.modifiers and Modifier.FINAL.inv())
         itemViewField.set(mock, itemView)
 
         every { mock.layoutPosition }.answers {
