@@ -46,6 +46,10 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
  * and receives DPAD key events.
  * To scroll manually to any given item,
  * check [setSelectedPosition], [setSelectedPositionSmooth] and other related methods.
+ *
+ * When using wrap_content for the main scrolling direction,
+ * [DpadRecyclerView] will still measure itself to match its parent's size,
+ * but will layout all items at once without any recycling.
  */
 open class DpadRecyclerView @JvmOverloads constructor(
     context: Context,
