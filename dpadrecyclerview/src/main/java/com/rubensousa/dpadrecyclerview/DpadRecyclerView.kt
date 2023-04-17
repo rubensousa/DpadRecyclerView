@@ -24,6 +24,7 @@ import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.Interpolator
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -199,6 +200,40 @@ open class DpadRecyclerView @JvmOverloads constructor(
             layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             pivotLayoutManager = layout
         }
+    }
+
+    // Overriding to prevent WRAP_CONTENT behavior by replacing it
+    // with the size defined by the parent. Leanback also doesn't support WRAP_CONTENT
+    final override fun onMeasure(widthSpec: Int, heightSpec: Int) {
+        val layout = layoutManager
+        if (layout == null) {
+            super.onMeasure(widthSpec, heightSpec)
+            return
+        }
+        val layoutParams = layoutParams
+        if (getOrientation() == VERTICAL
+            && layoutParams.height == ViewGroup.LayoutParams.WRAP_CONTENT
+        ) {
+            super.onMeasure(
+                widthSpec, MeasureSpec.makeMeasureSpec(
+                    MeasureSpec.getSize(heightSpec),
+                    MeasureSpec.EXACTLY
+                )
+            )
+            return
+        } else if (getOrientation() == HORIZONTAL
+            && layoutParams.width == ViewGroup.LayoutParams.WRAP_CONTENT
+        ) {
+            super.onMeasure(
+                MeasureSpec.makeMeasureSpec(
+                    MeasureSpec.getSize(widthSpec),
+                    MeasureSpec.EXACTLY
+                ),
+                heightSpec,
+            )
+            return
+        }
+        super.onMeasure(widthSpec, heightSpec)
     }
 
     final override fun setItemAnimator(animator: ItemAnimator?) {
@@ -1007,7 +1042,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 && position != NO_POSITION
                 && position == getSelectedPosition()
             ) {
-               pivotLayoutManager?.removeCurrentViewHolderSelection()
+                pivotLayoutManager?.removeCurrentViewHolderSelection()
             }
         }
     }
