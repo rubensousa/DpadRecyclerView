@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.graphics.Rect
 import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -332,7 +333,11 @@ internal class LayoutInfo(
     }
 
     fun isInfinite(): Boolean {
-        return orientationHelper.mode == View.MeasureSpec.UNSPECIFIED && orientationHelper.end == 0
+        val currentRecyclerView = recyclerView ?: return false
+        val layoutParams = currentRecyclerView.layoutParams
+        return if (isVertical() && layoutParams.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
+            true
+        } else isHorizontal() && layoutParams.width == ViewGroup.LayoutParams.WRAP_CONTENT
     }
 
     fun isViewFocusable(view: View): Boolean {
