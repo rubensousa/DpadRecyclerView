@@ -148,6 +148,27 @@ However, we can use the standard `RecyclerView.ItemDecoration` API for this.
 
 Please check the examples in the recipes at [Spacing](recipes/spacing.md).
 
+## Fading edges
+
+Support for fading edges is enabled with the default XML attribute `fadingEdgeLength`.
+
+```xml linenums="1" hl_lines="5"
+<com.rubensousa.dpadrecyclerview.DpadRecyclerView 
+    android:id="@+id/recyclerView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fadingEdgeLength="120dp"
+    android:orientation="vertical|horizontal" 
+```
+
+Alternatively, you can customise the fading edge with the following methods:
+
+- `setMinEdgeFadingLength`
+- `setMinEdgeFadingOffset`
+- `setMaxEdgeFadingLength`
+- `setMaxEdgeFadingOffset`
+- `setFadingEdgeLength`
+
 ## Presenters
 
 These will still work out of the box with `DpadRecyclerView` since they're just a wrapper over `RecyclerView.Adapter`,

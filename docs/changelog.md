@@ -2,6 +2,23 @@
 
 ## Version 1.0.0
 
+### 1.0.0-beta02
+
+2023-04-18
+
+#### Dependency updates
+
+- Updated RecyclerView to stable version `1.3.0`
+
+#### New Features
+
+- Added support for fading edges. Check [this](migrating_leanback.md#fading-edges) for more information. ([#18](https://github.com/rubensousa/DpadRecyclerView/issues/18)).
+
+#### Bug fixes
+
+- Fixed `DpadRecyclerView` not measuring itself correctly when `wrap_content` is used. ([#123](https://github.com/rubensousa/DpadRecyclerView/issues/123))
+- Fixed max edge alignment not working correctly when scrolling back. ([#124](https://github.com/rubensousa/DpadRecyclerView/issues/124))
+
 ### 1.0.0-beta01
 
 2023-04-02
