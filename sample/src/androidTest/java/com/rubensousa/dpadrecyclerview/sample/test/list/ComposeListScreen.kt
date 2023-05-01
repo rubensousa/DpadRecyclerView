@@ -38,8 +38,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemComposable
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import org.hamcrest.Matcher
 import org.hamcrest.core.AllOf.allOf
 
@@ -52,8 +50,6 @@ class ComposeListScreen(private val composeTestRule: ComposeTestRule) {
         val CARD_LIST_TEXTVIEW = R.id.cardListTextView
         val CARD_LIST_LAYOUT = R.id.cardListLayout
     }
-
-    private val scope = CoroutineScope(Dispatchers.Unconfined)
 
     fun assertIsDisplayed() {
         onView(withId(ROOT)).check(matches(isDisplayed()))
