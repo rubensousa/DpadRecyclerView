@@ -24,6 +24,7 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 
 class DpadGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
     OnViewHolderSelectedListener {
