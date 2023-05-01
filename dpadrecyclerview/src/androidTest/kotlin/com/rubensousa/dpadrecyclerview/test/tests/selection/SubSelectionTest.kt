@@ -24,6 +24,8 @@ import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.matcher.ViewMatchers
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
@@ -33,6 +35,7 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestViewHolder
+import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderSelectionCountAssertion
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectSubPosition
@@ -98,6 +101,23 @@ class SubSelectionTest : DpadRecyclerViewTest() {
         selectPosition(position = 5, subPosition = 1, smooth = true)
 
         assertFocusAndSelection(position = 5, subPosition = 1)
+    }
+
+    @Test
+    fun testViewHolderDoesNotReceiveMultipleSelectionCallbacks() {
+        launchSubPositionFragment()
+
+        selectSubPosition(1, smooth = true)
+        selectSubPosition(2, smooth = true)
+
+        Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
+            .check(
+                ViewHolderSelectionCountAssertion(
+                    selectionCount = 1,
+                    deselectionCount = 0,
+                    position = 0
+                )
+            )
     }
 
     private fun launchSubPositionFragment() {
