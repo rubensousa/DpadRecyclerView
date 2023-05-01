@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.testing
+package com.rubensousa.dpadrecyclerview.testfixtures
 
 data class DpadSelectionEvent(val position: Int, val subPosition: Int = 0)

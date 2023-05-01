@@ -26,7 +26,7 @@ import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
 import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
-import com.rubensousa.dpadrecyclerview.testing.DpadSelectionEvent
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 
 open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
