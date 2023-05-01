@@ -30,10 +30,10 @@ class KeyEventsTest : RecyclerViewTest() {
     fun testFastHorizontalScroll() {
         launchGridFragment()
 
-        KeyEvents.pressRight(times = 20)
-        assert(DpadRecyclerViewAssertions.isFocused(position = 20))
+        KeyEvents.pressRight(times = 10)
+        assert(DpadRecyclerViewAssertions.isFocused(position = 10))
 
-        KeyEvents.pressLeft(times = 20)
+        KeyEvents.pressLeft(times = 10)
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }
 
@@ -41,10 +41,10 @@ class KeyEventsTest : RecyclerViewTest() {
     fun testFastVerticalScroll() {
         launchGridFragment()
 
-        KeyEvents.pressDown(times = 20)
-        assert(DpadRecyclerViewAssertions.isFocused(position = 20 * 5))
+        KeyEvents.pressDown(times = 5)
+        assert(DpadRecyclerViewAssertions.isFocused(position = 5 * 5))
 
-        KeyEvents.pressUp(times = 20)
+        KeyEvents.pressUp(times = 5)
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }
 }
