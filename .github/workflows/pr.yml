@@ -107,6 +107,7 @@ jobs:
             ./scripts/run_instrumented_tests.sh dpadrecyclerview
             ./scripts/run_instrumented_tests.sh dpadrecyclerview-testing
             ./scripts/run_instrumented_tests.sh dpadrecyclerview-compose
+            ./scripts/run_instrumented_tests.sh sample
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
