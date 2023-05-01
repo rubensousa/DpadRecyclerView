@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/featureListLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipChildren="false"
     android:orientation="vertical">
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/textView"
+        android:id="@+id/featureGroupTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/feature_edge_spacing"
@@ -18,7 +19,7 @@
         tools:text="Headline" />
 
     <com.rubensousa.dpadrecyclerview.DpadRecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/featureRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginTop="16dp"

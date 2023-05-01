@@ -61,13 +61,13 @@ class FeatureListAdapter(
         private val binding: MainAdapterListFeatureBinding
     ) : RecyclerView.ViewHolder(binding.root), DpadViewHolder {
 
-        val recyclerView = binding.recyclerView
+        val recyclerView = binding.featureRecyclerView
         val adapter = ScreenDestinationAdapter()
 
         var item: FeatureList? = null
             private set
 
-        private val animator = ListAnimator(recyclerView, binding.textView)
+        private val animator = ListAnimator(recyclerView, binding.featureGroupTextView)
 
         init {
             recyclerView.setHasFixedSize(false)
@@ -89,7 +89,7 @@ class FeatureListAdapter(
         fun bind(item: FeatureList) {
             this.item = item
             adapter.replaceItems(item.destinations)
-            binding.textView.text = item.title
+            binding.featureGroupTextView.text = item.title
         }
 
         fun onRecycled() {
