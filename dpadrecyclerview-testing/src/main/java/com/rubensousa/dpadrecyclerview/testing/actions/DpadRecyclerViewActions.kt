@@ -488,6 +488,9 @@ object DpadRecyclerViewActions {
             uiController.loopMainThreadForAtLeast(keyPressDelay.toLong())
         }
         currentPosition = recyclerView.getSelectedPosition()
+        if (currentPosition == targetPosition) {
+            return
+        }
         gridChangeFocusInSpanGroup(
             recyclerView,
             oppositeOrientation,
