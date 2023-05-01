@@ -713,6 +713,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * See [setSpanSizeLookup]
+     */
+    fun getSpanSizeLookup(): DpadSpanSizeLookup = requireLayout().getSpanSizeLookup()
+
+    /**
      * Updates the number of spans of the [PivotLayoutManager] used by this RecyclerView.
      * @param spans number of columns in vertical orientation,
      * or number of rows in horizontal orientation. Must be greater than 0

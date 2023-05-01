@@ -47,7 +47,7 @@ object DpadRecyclerViewAssertions {
     private class SelectionAssertion(
         private val position: Int,
         private val subPosition: Int = 0
-    ) : DpadRvAssertion() {
+    ) : DpadRecyclerViewAssertion() {
 
         override fun check(view: DpadRecyclerView) {
             assertThat(view.getSelectedPosition()).isEqualTo(position)
@@ -58,7 +58,7 @@ object DpadRecyclerViewAssertions {
     private class FocusAssertion(
         private val focusedPosition: Int,
         private val focusedSubPosition: Int = 0
-    ) : DpadRvAssertion() {
+    ) : DpadRecyclerViewAssertion() {
 
         override fun check(view: DpadRecyclerView) {
             val focusedView = view.findFocus()
@@ -73,7 +73,10 @@ object DpadRecyclerViewAssertions {
                     )
                 }
 
-                val viewHolder = view.findContainingViewHolder(focusedView)!!
+                val viewHolder = view.findContainingViewHolder(focusedView)
+                    ?: throw AssertionFailedError("ViewHolder not found for position " +
+                            "$focusedPosition and sub position $focusedSubPosition")
+
                 assertThat(viewHolder.absoluteAdapterPosition).isEqualTo(focusedPosition)
 
                 val alignments = getAlignments(viewHolder)

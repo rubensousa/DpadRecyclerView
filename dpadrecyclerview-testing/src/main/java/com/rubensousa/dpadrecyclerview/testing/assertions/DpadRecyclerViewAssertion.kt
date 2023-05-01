@@ -22,7 +22,7 @@ import androidx.test.espresso.ViewAssertion
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
-abstract class DpadRvAssertion : ViewAssertion {
+internal abstract class DpadRecyclerViewAssertion : ViewAssertion {
 
     override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
         if (noViewFoundException != null) {

@@ -385,6 +385,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         }
     }
 
+    fun getSpanSizeLookup(): DpadSpanSizeLookup = configuration.spanSizeLookup
+
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
         configuration.setExtraLayoutSpaceStrategy(strategy)
         requestLayout()

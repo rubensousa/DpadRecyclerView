@@ -17,24 +17,61 @@
 package com.rubensousa.dpadrecyclerview.testing.actions
 
 import android.graphics.Rect
+import android.util.SparseArray
+import android.view.KeyEvent
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.test.espresso.PerformException
 import androidx.test.espresso.UiController
 import androidx.test.espresso.ViewAction
-import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.action.EspressoKey
+import androidx.test.espresso.action.KeyEventAction
+import androidx.test.espresso.contrib.RecyclerViewActions
+import androidx.test.espresso.contrib.RecyclerViewActions.PositionableRecyclerViewAction
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.util.HumanReadables
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
+import org.hamcrest.Description
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
+import org.hamcrest.Matchers.allOf
+import org.hamcrest.TypeSafeMatcher
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 /**
  * Useful [ViewAction]s for [DpadRecyclerView]. For other [ViewAction], check [DpadViewActions]
  */
 object DpadRecyclerViewActions {
+
+    private const val DEFAULT_KEY_PRESS_DELAY = 300
+
+    /**
+     * Similar to [RecyclerViewActions.scrollToHolder], but instead of invoking `scrollToPosition`,
+     * it injects KeyEvents to simulate real DPAD events from the user
+     */
+    @JvmStatic
+    fun <T : ViewHolder> scrollToHolder(
+        viewHolderMatcher: Matcher<T>,
+        keyPressDelay: Int = DEFAULT_KEY_PRESS_DELAY
+    ): PositionableRecyclerViewAction {
+        return ScrollToViewAction(viewHolderMatcher, keyPressDelay)
+    }
+
+    /**
+     * Similar to [RecyclerViewActions.scrollToHolder], but instead of invoking `scrollToPosition`,
+     * it injects KeyEvents to simulate real DPAD events from the user
+     */
+    @JvmStatic
+    fun <T : ViewHolder> scrollTo(
+        itemViewMatcher: Matcher<View>,
+        keyPressDelay: Int = DEFAULT_KEY_PRESS_DELAY
+    ): PositionableRecyclerViewAction {
+        return scrollToHolder(ViewHolderMatcher<T>(itemViewMatcher), keyPressDelay)
+    }
 
     @JvmStatic
     fun selectLastPosition(
@@ -129,6 +166,52 @@ object DpadRecyclerViewActions {
         }
     }
 
+    private fun <V : ViewHolder, T : V> itemsMatching(
+        recyclerView: DpadRecyclerView,
+        viewHolderMatcher: Matcher<V>,
+        max: Int,
+    ): List<MatchedItem> {
+        @Suppress("UNCHECKED_CAST")
+        val adapter: RecyclerView.Adapter<T> = requireNotNull(recyclerView.adapter)
+                as RecyclerView.Adapter<T>
+        val viewHolderCache: SparseArray<V> = SparseArray<V>()
+        val matchedItems = ArrayList<MatchedItem>()
+        for (position in 0 until adapter.itemCount) {
+            val itemType = adapter.getItemViewType(position)
+            var cachedViewHolder: V? = viewHolderCache[itemType]
+            if (cachedViewHolder == null) {
+                cachedViewHolder = adapter.createViewHolder(recyclerView, itemType)
+                viewHolderCache.put(itemType, cachedViewHolder)
+            }
+            @Suppress("UNCHECKED_CAST")
+            adapter.bindViewHolder(cachedViewHolder as T, position)
+            if (viewHolderMatcher.matches(cachedViewHolder)) {
+                matchedItems.add(
+                    MatchedItem(
+                        position,
+                        HumanReadables.getViewHierarchyErrorMessage(
+                            cachedViewHolder.itemView,
+                            null,
+                            "\n\n*** Matched ViewHolder item at position: $position ***",
+                            null
+                        )
+                    )
+                )
+                adapter.onViewRecycled(cachedViewHolder)
+                if (matchedItems.size == max) {
+                    break
+                }
+            } else {
+                adapter.onViewRecycled(cachedViewHolder)
+            }
+        }
+        return matchedItems
+    }
+
+    private data class MatchedItem(val position: Int, val description: String) {
+        override fun toString(): String = description
+    }
+
     private class SelectPositionAction(
         private val position: Int,
         private val subPosition: Int,
@@ -212,9 +295,7 @@ object DpadRecyclerViewActions {
     ) : ViewAction {
 
         override fun getConstraints(): Matcher<View> {
-            return Matchers.allOf(
-                ViewMatchers.isAssignableFrom(RecyclerView::class.java)
-            )
+            return allOf(isAssignableFrom(RecyclerView::class.java))
         }
 
         override fun getDescription(): String {
@@ -232,6 +313,207 @@ object DpadRecyclerViewActions {
             action.perform(uiController, viewHolder.itemView)
         }
 
+    }
+
+    private class ViewHolderMatcher<V : ViewHolder>(
+        val itemViewMatcher: Matcher<View>
+    ) : TypeSafeMatcher<V>() {
+
+        override fun matchesSafely(item: V): Boolean {
+            return itemViewMatcher.matches(item.itemView)
+        }
+
+        override fun describeTo(description: Description) {
+            description.appendText("holder with view: ")
+            itemViewMatcher.describeTo(description)
+        }
+    }
+
+    private class ScrollToViewAction<T : ViewHolder>(
+        private val viewHolderMatcher: Matcher<T>,
+        private val keyPressDelay: Int,
+        private val atPosition: Int = RecyclerView.NO_POSITION
+    ) : PositionableRecyclerViewAction {
+
+        override fun atPosition(position: Int): PositionableRecyclerViewAction {
+            check(position >= 0) { "$position is used as an index - must be >= 0" }
+            return ScrollToViewAction(viewHolderMatcher, atPosition)
+        }
+
+        override fun getConstraints(): Matcher<View> {
+            return allOf(isAssignableFrom(DpadRecyclerView::class.java), isDisplayed())
+        }
+
+        override fun getDescription(): String {
+            return if (atPosition == RecyclerView.NO_POSITION) {
+                "Scroll DpadRecyclerView to: $viewHolderMatcher"
+            } else {
+                "Scroll DpadRecyclerView to the ${atPosition}th matching $viewHolderMatcher"
+            }
+        }
+
+        override fun perform(uiController: UiController, view: View) {
+            val recyclerview = view as DpadRecyclerView
+            try {
+                val maxMatches = if (atPosition == RecyclerView.NO_POSITION) 2 else atPosition + 1
+                val selectIndex = if (atPosition == RecyclerView.NO_POSITION) 0 else atPosition
+                val matchedItems = itemsMatching(recyclerview, viewHolderMatcher, maxMatches)
+                if (selectIndex >= matchedItems.size) {
+                    throw RuntimeException(
+                        String.format(
+                            "Found %d items matching %s, but position %d was requested.",
+                            matchedItems.size, viewHolderMatcher.toString(), atPosition
+                        )
+                    )
+                }
+                if (atPosition == RecyclerView.NO_POSITION && matchedItems.size > 1) {
+                    val ambiguousViewError = StringBuilder()
+                    ambiguousViewError.append(
+                        "Found more than one sub-view matching $viewHolderMatcher"
+                    )
+                    matchedItems.forEach { item ->
+                        ambiguousViewError.append("$item\n")
+                    }
+                    throw RuntimeException(ambiguousViewError.toString())
+                }
+                val matchPosition = matchedItems[selectIndex].position
+                val currentPosition = recyclerview.getSelectedPosition()
+                if (currentPosition == matchPosition) {
+                    uiController.loopMainThreadUntilIdle()
+                    return
+                }
+                if (recyclerview.getSpanCount() == 1) {
+                    linearScrollToPosition(recyclerview, matchPosition, uiController, keyPressDelay)
+                } else {
+                    gridScrollToPosition(recyclerview, matchPosition, uiController, keyPressDelay)
+                }
+                uiController.loopMainThreadUntilIdle()
+            } catch (e: RuntimeException) {
+                throw PerformException.Builder()
+                    .withActionDescription(this.description)
+                    .withViewDescription(HumanReadables.describe(view))
+                    .withCause(e)
+                    .build()
+            }
+        }
+
+    }
+
+    private fun linearScrollToPosition(
+        recyclerView: DpadRecyclerView,
+        targetPosition: Int,
+        uiController: UiController,
+        keyPressDelay: Int
+    ) {
+        val currentPosition = recyclerView.getSelectedPosition()
+        if (currentPosition == targetPosition) {
+            return
+        }
+        val keyEventAction = getKeyEventActionForTarget(
+            recyclerView, recyclerView.getOrientation(), currentPosition, targetPosition
+        )
+        val numberOfEvents = abs(targetPosition - currentPosition)
+        repeat(numberOfEvents) {
+            keyEventAction.perform(uiController, recyclerView)
+            uiController.loopMainThreadForAtLeast(keyPressDelay.toLong())
+        }
+    }
+
+    private fun getKeyEventActionForTarget(
+        recyclerView: DpadRecyclerView,
+        orientation: Int,
+        currentPosition: Int,
+        targetPosition: Int
+    ): KeyEventAction {
+        val keyCode = when (orientation) {
+            RecyclerView.HORIZONTAL -> {
+                if (currentPosition > targetPosition != recyclerView.isLayoutReversed()) {
+                    KeyEvent.KEYCODE_DPAD_LEFT
+                } else {
+                    KeyEvent.KEYCODE_DPAD_RIGHT
+                }
+            }
+
+            else -> {
+                if (currentPosition > targetPosition != recyclerView.isLayoutReversed()) {
+                    KeyEvent.KEYCODE_DPAD_UP
+                } else {
+                    KeyEvent.KEYCODE_DPAD_DOWN
+                }
+            }
+        }
+        return KeyEventAction(
+            EspressoKey.Builder()
+                .withKeyCode(keyCode)
+                .build()
+        )
+    }
+
+    private fun gridScrollToPosition(
+        recyclerView: DpadRecyclerView,
+        targetPosition: Int,
+        uiController: UiController,
+        keyPressDelay: Int
+    ) {
+        val spanSizeLookup = recyclerView.getSpanSizeLookup()
+        var currentPosition = recyclerView.getSelectedPosition()
+        val currentSpanGroup = spanSizeLookup.getSpanGroupIndex(
+            currentPosition, recyclerView.getSpanCount()
+        )
+        val targetSpanGroup = spanSizeLookup.getSpanGroupIndex(
+            targetPosition, recyclerView.getSpanCount()
+        )
+        val oppositeOrientation = if (recyclerView.getOrientation() == RecyclerView.VERTICAL) {
+            RecyclerView.HORIZONTAL
+        } else {
+            RecyclerView.VERTICAL
+        }
+        if (currentSpanGroup == targetSpanGroup) {
+            gridChangeFocusInSpanGroup(
+                recyclerView,
+                oppositeOrientation,
+                currentPosition,
+                targetPosition,
+                uiController,
+                keyPressDelay
+            )
+            return
+        }
+        val keyEventAction = getKeyEventActionForTarget(
+            recyclerView, recyclerView.getOrientation(), currentPosition, targetPosition
+        )
+        val numberOfEvents = abs(targetSpanGroup - currentSpanGroup)
+        repeat(numberOfEvents) {
+            keyEventAction.perform(uiController, recyclerView)
+            uiController.loopMainThreadForAtLeast(keyPressDelay.toLong())
+        }
+        currentPosition = recyclerView.getSelectedPosition()
+        gridChangeFocusInSpanGroup(
+            recyclerView,
+            oppositeOrientation,
+            currentPosition,
+            targetPosition,
+            uiController,
+            keyPressDelay
+        )
+    }
+
+    private fun gridChangeFocusInSpanGroup(
+        recyclerView: DpadRecyclerView,
+        oppositeOrientation: Int,
+        currentPosition: Int,
+        targetPosition: Int,
+        uiController: UiController,
+        keyPressDelay: Int
+    ) {
+        val keyEventAction = getKeyEventActionForTarget(
+            recyclerView, oppositeOrientation, currentPosition, targetPosition
+        )
+        val numberOfEvents = abs(targetPosition - currentPosition)
+        repeat(numberOfEvents) {
+            keyEventAction.perform(uiController, recyclerView)
+            uiController.loopMainThreadForAtLeast(keyPressDelay.toLong())
+        }
     }
 
 }
