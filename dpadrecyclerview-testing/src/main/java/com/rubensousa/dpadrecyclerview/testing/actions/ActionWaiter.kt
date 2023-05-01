@@ -20,7 +20,7 @@ import androidx.test.espresso.IdlingResource
 import androidx.test.espresso.UiController
 import java.util.concurrent.TimeUnit
 
-class ActionWaiter(private val timeout: Long, private val timeoutUnit: TimeUnit) {
+internal class ActionWaiter(private val timeout: Long, private val timeoutUnit: TimeUnit) {
 
     fun getTimeoutMillis(): Long {
         return TimeUnit.MILLISECONDS.convert(timeout, timeoutUnit)

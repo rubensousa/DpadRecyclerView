@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.testing
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadViewActions
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
+import com.rubensousa.dpadrecyclerview.testing.assertions.DpadViewAssertions
 import org.junit.Test
 
 class DpadRecyclerViewAssertionsTest : RecyclerViewTest() {
@@ -29,11 +30,12 @@ class DpadRecyclerViewAssertionsTest : RecyclerViewTest() {
 
         // First item is focused by default
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
+        assert(DpadViewAssertions.hasFocus())
 
         performActions(DpadViewActions.clearFocus())
 
-        // Check that no position is focused
-        assert(DpadRecyclerViewAssertions.isNotFocused())
+        assert(DpadViewAssertions.isNotFocused())
+        assert(DpadViewAssertions.doesNotHaveFocus())
     }
 
     @Test
