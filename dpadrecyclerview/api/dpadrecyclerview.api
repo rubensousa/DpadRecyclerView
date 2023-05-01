@@ -70,6 +70,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun getSmoothScrollMaxPendingMoves ()I
 	public final fun getSmoothScrollSpeedFactor ()F
 	public final fun getSpanCount ()I
+	public final fun getSpanSizeLookup ()Lcom/rubensousa/dpadrecyclerview/DpadSpanSizeLookup;
 	public final fun hasOverlappingRendering ()Z
 	public final fun isFocusDrawingOrderEnabled ()Z
 	public final fun isFocusSearchDisabled ()Z
@@ -385,6 +386,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public final fun getSelectedSubPosition ()I
 	public final fun getSmoothScrollSpeedFactor ()F
 	public final fun getSpanCount ()I
+	public final fun getSpanSizeLookup ()Lcom/rubensousa/dpadrecyclerview/DpadSpanSizeLookup;
 	public fun isAutoMeasureEnabled ()Z
 	public final fun isFocusSearchDisabled ()Z
 	public final fun isLayoutEnabled ()Z
