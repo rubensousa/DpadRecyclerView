@@ -17,6 +17,13 @@
 package com.rubensousa.dpadrecyclerview.sample.test
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import com.rubensousa.dpadrecyclerview.sample.test.feature.FeatureGroup
+import com.rubensousa.dpadrecyclerview.sample.test.feature.FeatureItem
+import com.rubensousa.dpadrecyclerview.sample.test.feature.MainScreen
+import com.rubensousa.dpadrecyclerview.sample.test.list.CardItem
+import com.rubensousa.dpadrecyclerview.sample.test.list.CardList
+import com.rubensousa.dpadrecyclerview.sample.test.list.ComposeListScreen
+import com.rubensousa.dpadrecyclerview.sample.test.list.ListScreen
 import com.rubensousa.dpadrecyclerview.sample.ui.MainActivity
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import org.junit.Rule
@@ -29,6 +36,7 @@ class SampleTests {
 
     private val mainScreen = MainScreen()
     private val listScreen = ListScreen()
+    private val composeListScreen = ComposeListScreen(composeTestRule)
 
     @Test
     fun testNavigationToFeatureItem() {
@@ -47,11 +55,9 @@ class SampleTests {
 
     @Test
     fun testSelectionStateIsNotLostAcrossDestinationChanges() {
-        val featureItem = MainScreen.FeatureItem(
-            text = "Reversed",
-            listTitle = "Grids"
-        )
-        mainScreen.scrollTo(featureItem)
+        val featureGroup = FeatureGroup(title = "Grids")
+        val featureItem = FeatureItem(text = "Reversed")
+        mainScreen.scrollTo(featureGroup, featureItem)
 
         KeyEvents.click()
 
@@ -59,7 +65,26 @@ class SampleTests {
 
         KeyEvents.back()
 
-        mainScreen.assertIsFocused(featureItem)
+        mainScreen.assertIsFocused(featureGroup, featureItem)
+    }
+
+    @Test
+    fun testComposeScrollingAction() {
+        val featureGroup = FeatureGroup(title = "Compose")
+        val featureItem = FeatureItem(text = "Nested lists")
+        mainScreen.scrollTo(featureGroup, featureItem)
+
+        KeyEvents.click()
+
+        composeListScreen.assertIsDisplayed()
+
+        val list = CardList("DpadRecyclerView 5")
+        val firstItem = CardItem("5")
+        composeListScreen.scrollTo(list, firstItem)
+
+        composeListScreen.scrollTo(list, CardItem("4"))
+
+        composeListScreen.assertIsNotFocused(list, firstItem)
     }
 
 }

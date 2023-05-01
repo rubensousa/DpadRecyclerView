@@ -34,12 +34,13 @@ class NestedComposeListViewHolder(
     var item: ListModel? = null
         private set
 
+    private val recyclerView = binding.cardRecyclerView
     private val adapter = ComposeItemAdapter(onItemClick = {})
-    private val animator = ListAnimator(binding.recyclerView, binding.textView)
+    private val animator = ListAnimator(recyclerView, binding.cardListTextView)
 
     init {
-        binding.recyclerView.setRecycledViewPool(viewPool)
-        binding.recyclerView.addItemDecoration(
+        recyclerView.setRecycledViewPool(viewPool)
+        recyclerView.addItemDecoration(
             DpadLinearSpacingDecoration.create(
                 itemSpacing = itemView.resources.getDimensionPixelOffset(
                     R.dimen.horizontal_item_spacing
@@ -47,7 +48,7 @@ class NestedComposeListViewHolder(
                 edgeSpacing = 0
             )
         )
-        binding.recyclerView.adapter = adapter
+        recyclerView.adapter = adapter
     }
 
     override fun onViewHolderSelected() {
@@ -58,13 +59,13 @@ class NestedComposeListViewHolder(
         animator.startDeselectionAnimation()
     }
 
-    fun getRecyclerView(): DpadRecyclerView = binding.recyclerView
+    fun getRecyclerView(): DpadRecyclerView = recyclerView
 
     fun getAdapter(): RecyclerView.Adapter<*> = adapter
 
     fun bind(item: ListModel) {
         this.item = item
-        binding.textView.text = item.title
+        binding.cardListTextView.text = item.title
         adapter.replaceList(item.items)
     }
 

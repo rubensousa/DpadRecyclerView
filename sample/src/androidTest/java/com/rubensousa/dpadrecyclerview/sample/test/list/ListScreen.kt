@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.test
+package com.rubensousa.dpadrecyclerview.sample.test.list
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions
@@ -31,7 +31,7 @@ class ListScreen {
     }
 
     fun assertIsDisplayed() {
-       onView(withId(ROOT)).check(matches(isDisplayed()))
+        onView(withId(ROOT)).check(matches(isDisplayed()))
     }
 
     fun assertIsNotDisplayed() {

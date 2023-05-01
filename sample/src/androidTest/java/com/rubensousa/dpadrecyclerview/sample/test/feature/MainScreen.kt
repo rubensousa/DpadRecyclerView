@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.test
+package com.rubensousa.dpadrecyclerview.sample.test.feature
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
@@ -51,25 +51,25 @@ class MainScreen {
         onView(withId(ROOT)).check(doesNotExist())
     }
 
-    fun scrollTo(item: FeatureItem) {
+    fun scrollTo(group: FeatureGroup, item: FeatureItem) {
         onView(withId(RECYCLERVIEW)).perform(
             DpadRecyclerViewActions.scrollTo<RecyclerView.ViewHolder>(
-                hasDescendant(withText(item.listTitle))
+                hasDescendant(withText(group.title))
             )
         )
-        onView(getFeatureRecyclerViewMatcher(item.listTitle)).perform(
+        onView(getFeatureRecyclerViewMatcher(group.title)).perform(
             DpadRecyclerViewActions.scrollTo<RecyclerView.ViewHolder>(
                 hasDescendant(withText(item.text))
             )
         )
-        assertIsFocused(item)
+        assertIsFocused(group, item)
     }
 
-    fun assertIsFocused(item: FeatureItem) {
+    fun assertIsFocused(group: FeatureGroup, item: FeatureItem) {
         onView(
             allOf(
                 withId(FEATURE_CARD),
-                isDescendantOfA(hasDescendant(withText(item.listTitle))),
+                isDescendantOfA(getFeatureRecyclerViewMatcher(group.title)),
                 hasDescendant(withText(item.text)),
                 hasFocus()
             )
@@ -92,7 +92,5 @@ class MainScreen {
             )
         )
     }
-
-    data class FeatureItem(val text: String, val listTitle: String)
 
 }
