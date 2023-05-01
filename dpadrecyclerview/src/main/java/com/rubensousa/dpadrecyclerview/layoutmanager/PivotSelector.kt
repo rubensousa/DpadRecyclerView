@@ -217,13 +217,14 @@ internal class PivotSelector(
             null
         }
 
-        selectedViewHolder?.onViewHolderDeselected()
-
-        if (viewHolder is DpadViewHolder) {
-            selectedViewHolder = viewHolder
-            viewHolder.onViewHolderSelected()
-        } else {
-            selectedViewHolder = null
+        if (viewHolder !== selectedViewHolder) {
+            selectedViewHolder?.onViewHolderDeselected()
+            if (viewHolder is DpadViewHolder) {
+                selectedViewHolder = viewHolder
+                viewHolder.onViewHolderSelected()
+            } else {
+                selectedViewHolder = null
+            }
         }
 
         if (!hasSelectionListeners()) {

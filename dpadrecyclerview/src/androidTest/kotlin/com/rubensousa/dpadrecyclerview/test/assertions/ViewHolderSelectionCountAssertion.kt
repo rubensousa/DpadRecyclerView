@@ -23,17 +23,18 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.test.TestViewHolder
 
-class ViewHolderSelectedAssertion(
-    private val position: Int,
-    private val expected: Boolean = true
+class ViewHolderSelectionCountAssertion(
+    private val selectionCount: Int,
+    private val deselectionCount: Int,
+    private val position: Int
 ) : ViewAssertion {
 
     override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
         if (view !is DpadRecyclerView) {
             return
         }
-        val viewHolder = view.findViewHolderForAdapterPosition(position)
-        val isSelected = (viewHolder as TestViewHolder).isSelected
-        assertThat(isSelected).isEqualTo(expected)
+        val viewHolder = view.findViewHolderForAdapterPosition(position) as TestViewHolder
+        assertThat(viewHolder.selectionCount).isEqualTo(selectionCount)
+        assertThat(viewHolder.deselectionCount).isEqualTo(deselectionCount)
     }
 }

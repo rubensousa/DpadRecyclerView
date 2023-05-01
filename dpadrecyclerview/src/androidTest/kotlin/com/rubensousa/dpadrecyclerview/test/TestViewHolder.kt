@@ -22,18 +22,25 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 
 abstract class TestViewHolder(view: View) : RecyclerView.ViewHolder(view), DpadViewHolder {
 
-    private var isSelected = false
+    var isSelected = false
+        private set
+
+    var selectionCount = 0
+        private set
+
+    var deselectionCount = 0
+        private set
 
     override fun onViewHolderSelected() {
         super.onViewHolderSelected()
         isSelected = true
+        selectionCount++
     }
 
     override fun onViewHolderDeselected() {
         super.onViewHolderDeselected()
         isSelected = false
+        deselectionCount++
     }
-
-    fun isViewHolderSelected(): Boolean = isSelected
 
 }
