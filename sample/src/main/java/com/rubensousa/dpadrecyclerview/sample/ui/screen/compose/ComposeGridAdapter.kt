@@ -17,36 +17,53 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.compose
 
 import android.view.ViewGroup
-import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
+import androidx.compose.runtime.Composable
+import com.rubensousa.dpadrecyclerview.compose.DpadAbstractComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ItemAnimator
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.GridItemComposable
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
-import timber.log.Timber
 
-class ComposeGridAdapter : MutableListAdapter<Int, DpadComposeViewHolder<Int>>(
+class ComposeGridAdapter : MutableListAdapter<Int, ComposeGridAdapter.ComposeGridItemViewHolder>(
     MutableGridAdapter.DIFF_CALLBACK
 ) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DpadComposeViewHolder<Int> {
-        return DpadComposeViewHolder(parent,
-            composable = { item, isFocused, _ ->
-                GridItemComposable(item, isFocused)
-            },
-            onClick = { item ->
-                Timber.i("Clicked: $item")
-            }
-        )
+    ): ComposeGridItemViewHolder {
+        return ComposeGridItemViewHolder(parent, onItemClick = {})
     }
 
-    override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
+    override fun onBindViewHolder(holder: ComposeGridItemViewHolder, position: Int) {
         holder.setItemState(getItem(position))
     }
 
     override fun getItemViewType(position: Int): Int {
         return ListTypes.ITEM
     }
+
+    class ComposeGridItemViewHolder(
+        parent: ViewGroup,
+        onItemClick: (Int) -> Unit
+    ) : DpadAbstractComposeViewHolder<Int>(parent, onItemClick) {
+
+        private val itemAnimator = ItemAnimator(itemView)
+
+        @Composable
+        override fun Content(item: Int, isFocused: Boolean, isSelected: Boolean) {
+            GridItemComposable(item, isFocused)
+        }
+
+        override fun onFocusChanged(hasFocus: Boolean) {
+            if (hasFocus) {
+                itemAnimator.startFocusGainAnimation()
+            } else {
+                itemAnimator.startFocusLossAnimation()
+            }
+        }
+
+    }
+
 }

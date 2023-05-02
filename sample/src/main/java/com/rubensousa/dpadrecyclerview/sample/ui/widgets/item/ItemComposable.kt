@@ -17,10 +17,6 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.item
 
 
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,24 +52,14 @@ fun ItemComposable(
     } else {
         Color.White
     }
-    val scale = animateFloatAsState(
-        targetValue = if (isFocused) 1.1f else 1.0f,
-        animationSpec = tween(
-            durationMillis = if (isFocused) 350 else 200,
-            easing = if (isFocused) FastOutSlowInEasing else FastOutLinearInEasing,
-        )
-    )
-
     Box(
         modifier = modifier
-            .scale(scale.value)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor),
         contentAlignment = Alignment.Center,
     ) {
         Text(
             modifier = Modifier
-                .scale(scale.value)
                 .testTag(
                     if (isFocused) {
                         ItemComposable.TEST_TAG_TEXT_FOCUSED
