@@ -2,6 +2,37 @@
 
 ## Version 1.0.0
 
+### 1.0.0-beta03
+
+2023-05-03
+
+#### Dependency updates
+
+- Updated compose-ui to version `1.4.2`
+
+#### New Features 
+
+- Added `getSpanSizeLookup()` to `DpadRecyclerView`
+- Added `onViewHolderSelectedAndAligned` to `DpadViewHolder`
+
+#### Compose
+
+- Added `DpadAbstractComposeViewHolder` to allow subclasses to get access to focus changes. Check [Compose interoperability](compose.md) for more information.
+
+
+#### Testing
+
+See the documentation [here](testing.md)
+
+- Added `KeyEvents.back()` to easily press back key events
+- Added `DpadRecyclerViewActions.scrollTo` and `DpadRecyclerViewActions.scrollToHolder` to scroll to specific ViewHolders using KeyEvents.
+- Added `DpadViewAssertions` for asserting focus states:
+    - `DpadViewAssertions.hasFocus()`
+    - `DpadViewAssertions.doesNotHaveFocus()`
+    - `DpadViewAssertions.isFocused()`
+    - `DpadViewAssertions.isNotFocused()`
+
+
 ### 1.0.0-beta02
 
 2023-04-18
