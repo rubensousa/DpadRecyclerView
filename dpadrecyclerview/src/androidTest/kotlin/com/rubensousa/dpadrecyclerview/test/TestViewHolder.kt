@@ -31,10 +31,18 @@ abstract class TestViewHolder(view: View) : RecyclerView.ViewHolder(view), DpadV
     var deselectionCount = 0
         private set
 
+    var alignmentCount = 0
+        private set
+
     override fun onViewHolderSelected() {
         super.onViewHolderSelected()
         isSelected = true
         selectionCount++
+    }
+
+    override fun onViewHolderSelectedAndAligned() {
+        super.onViewHolderSelectedAndAligned()
+        alignmentCount++
     }
 
     override fun onViewHolderDeselected() {

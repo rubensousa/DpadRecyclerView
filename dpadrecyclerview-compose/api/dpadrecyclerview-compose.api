@@ -5,6 +5,7 @@ public class com/rubensousa/dpadrecyclerview/compose/DpadComposeViewHolder : and
 	public fun getSubPositionAlignments ()Ljava/util/List;
 	public fun onViewHolderDeselected ()V
 	public fun onViewHolderSelected ()V
+	public fun onViewHolderSelectedAndAligned ()V
 	public final fun setItemState (Ljava/lang/Object;)V
 }
 

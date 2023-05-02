@@ -264,10 +264,6 @@ internal class PivotSelector(
     fun dispatchViewHolderSelectedAndAligned() {
         val recyclerView = this.recyclerView ?: return
 
-        if (!hasSelectionListeners()) {
-            return
-        }
-
         val view = if (position == RecyclerView.NO_POSITION) {
             null
         } else {
@@ -277,6 +273,14 @@ internal class PivotSelector(
             recyclerView.getChildViewHolder(view)
         } else {
             null
+        }
+
+        if (viewHolder is DpadViewHolder) {
+            viewHolder.onViewHolderSelectedAndAligned()
+        }
+
+        if (!hasSelectionListeners()) {
+            return
         }
 
         if (viewHolder != null) {

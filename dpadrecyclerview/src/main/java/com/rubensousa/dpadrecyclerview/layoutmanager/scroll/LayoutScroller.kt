@@ -445,7 +445,6 @@ internal class LayoutScroller(
                 isSelectionInProgress = false
             }
             pivotSelector.dispatchViewHolderSelected()
-            pivotSelector.dispatchViewHolderSelectedAndAligned()
         }
 
         /**
