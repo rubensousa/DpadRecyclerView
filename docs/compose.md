@@ -3,7 +3,7 @@
 The `dpadrecyclerview-compose` module contains the following:
 
 - `DpadAbstractComposeViewHolder`: ViewHolder that exposes a `Content` function to render a Composable
-- `DpadComposeViewHolder`: simple implementation of `DpadAbstractComposeViewHolder` that just forwards a lambda to the `Content` function
+- `DpadComposeViewHolder`: simple implementation of `DpadAbstractComposeViewHolder` that forwards a lambda to the `Content` function and handles clicks
 
 You can use these to easily render composables in your `RecyclerView`.
 
