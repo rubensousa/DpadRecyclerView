@@ -17,23 +17,28 @@
 package com.rubensousa.dpadrecyclerview.test.tests.selection
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderAlignmentCountAssertion
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertIsFocused
 import com.rubensousa.dpadrecyclerview.test.helpers.assertIsNotFocused
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertViewHolderSelected
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
@@ -210,6 +215,46 @@ class SelectionTest : DpadRecyclerViewTest() {
 
         val viewHolderDeselections = getViewHolderDeselections()
         assertThat(viewHolderDeselections).isEqualTo(listOf(0))
+    }
+
+    @Test
+    fun testViewHolderReceivesAlignmentCallback() {
+        launchFragment()
+
+        Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
+            .check(
+                ViewHolderAlignmentCountAssertion(
+                    count = 1,
+                    position = 0
+                )
+            )
+
+        KeyEvents.pressDown()
+        KeyEvents.pressUp()
+
+        Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
+            .check(
+                ViewHolderAlignmentCountAssertion(
+                    count = 2,
+                    position = 0
+                )
+            )
+    }
+
+    @Test
+    fun testViewHolderReceivesAlignmentCallbackAfterSmoothScrolling() {
+        launchFragment()
+
+        selectPosition(20, smooth = true)
+        waitForIdleScrollState()
+
+        Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
+            .check(
+                ViewHolderAlignmentCountAssertion(
+                    count = 1,
+                    position = 20
+                )
+            )
     }
 
 }

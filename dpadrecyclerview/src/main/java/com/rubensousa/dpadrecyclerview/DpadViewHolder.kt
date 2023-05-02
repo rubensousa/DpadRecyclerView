@@ -41,6 +41,12 @@ interface DpadViewHolder {
     fun onViewHolderSelected() {}
 
     /**
+     * Will be called after [onViewHolderSelected] once the RecyclerView stops scrolling
+     * and the ViewHolder is aligned in its final position
+     */
+    fun onViewHolderSelectedAndAligned() {}
+
+    /**
      * Will be called whenever this ViewHolder is no longer the current one selected.
      *
      * This is NOT the same as losing focus.

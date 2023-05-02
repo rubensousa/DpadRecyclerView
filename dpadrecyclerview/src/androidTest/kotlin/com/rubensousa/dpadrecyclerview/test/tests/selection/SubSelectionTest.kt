@@ -35,6 +35,7 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestViewHolder
+import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderAlignmentCountAssertion
 import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderSelectionCountAssertion
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
@@ -115,6 +116,21 @@ class SubSelectionTest : DpadRecyclerViewTest() {
                 ViewHolderSelectionCountAssertion(
                     selectionCount = 1,
                     deselectionCount = 0,
+                    position = 0
+                )
+            )
+    }
+
+    @Test
+    fun testViewHolderReceivesAlignmentChangeForEachSubPosition() {
+        launchSubPositionFragment()
+
+        selectSubPosition(1, smooth = true)
+        selectSubPosition(2, smooth = true)
+        Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
+            .check(
+                ViewHolderAlignmentCountAssertion(
+                    count = 3,
                     position = 0
                 )
             )

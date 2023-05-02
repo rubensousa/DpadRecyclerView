@@ -189,12 +189,14 @@ public abstract interface class com/rubensousa/dpadrecyclerview/DpadViewHolder {
 	public abstract fun getSubPositionAlignments ()Ljava/util/List;
 	public abstract fun onViewHolderDeselected ()V
 	public abstract fun onViewHolderSelected ()V
+	public abstract fun onViewHolderSelectedAndAligned ()V
 }
 
 public final class com/rubensousa/dpadrecyclerview/DpadViewHolder$DefaultImpls {
 	public static fun getSubPositionAlignments (Lcom/rubensousa/dpadrecyclerview/DpadViewHolder;)Ljava/util/List;
 	public static fun onViewHolderDeselected (Lcom/rubensousa/dpadrecyclerview/DpadViewHolder;)V
 	public static fun onViewHolderSelected (Lcom/rubensousa/dpadrecyclerview/DpadViewHolder;)V
+	public static fun onViewHolderSelectedAndAligned (Lcom/rubensousa/dpadrecyclerview/DpadViewHolder;)V
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy {
