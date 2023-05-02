@@ -1,5 +1,7 @@
 public final class com/rubensousa/dpadrecyclerview/testing/KeyEvents {
 	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/KeyEvents;
+	public static final fun back (IJ)V
+	public static synthetic fun back$default (IJILjava/lang/Object;)V
 	public static final fun click (IJ)V
 	public static synthetic fun click$default (IJILjava/lang/Object;)V
 	public static final fun pressDown (IJ)V
@@ -14,18 +16,16 @@ public final class com/rubensousa/dpadrecyclerview/testing/KeyEvents {
 	public static synthetic fun pressUp$default (IJILjava/lang/Object;)V
 }
 
-public final class com/rubensousa/dpadrecyclerview/testing/actions/ActionWaiter {
-	public fun <init> (JLjava/util/concurrent/TimeUnit;)V
-	public final fun getTimeoutMillis ()J
-	public final fun waitFor (Landroidx/test/espresso/IdlingResource;Landroidx/test/espresso/UiController;)Z
-}
-
 public final class com/rubensousa/dpadrecyclerview/testing/actions/DpadRecyclerViewActions {
 	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/actions/DpadRecyclerViewActions;
 	public static final fun execute (Ljava/lang/String;Lkotlin/jvm/functions/Function1;)Landroidx/test/espresso/ViewAction;
 	public static final fun executeForViewHolderItemViewAt (ILandroidx/test/espresso/ViewAction;)Landroidx/test/espresso/ViewAction;
 	public static final fun getItemViewBounds (ILandroid/graphics/Rect;)Landroidx/test/espresso/ViewAction;
 	public static final fun getRelativeItemViewBounds (ILandroid/graphics/Rect;)Landroidx/test/espresso/ViewAction;
+	public static final fun scrollTo (Lorg/hamcrest/Matcher;I)Landroidx/test/espresso/contrib/RecyclerViewActions$PositionableRecyclerViewAction;
+	public static synthetic fun scrollTo$default (Lorg/hamcrest/Matcher;IILjava/lang/Object;)Landroidx/test/espresso/contrib/RecyclerViewActions$PositionableRecyclerViewAction;
+	public static final fun scrollToHolder (Lorg/hamcrest/Matcher;I)Landroidx/test/espresso/contrib/RecyclerViewActions$PositionableRecyclerViewAction;
+	public static synthetic fun scrollToHolder$default (Lorg/hamcrest/Matcher;IILjava/lang/Object;)Landroidx/test/espresso/contrib/RecyclerViewActions$PositionableRecyclerViewAction;
 	public static final fun selectLastPosition (ZLkotlin/jvm/functions/Function1;)Landroidx/test/espresso/ViewAction;
 	public static synthetic fun selectLastPosition$default (ZLkotlin/jvm/functions/Function1;ILjava/lang/Object;)Landroidx/test/espresso/ViewAction;
 	public static final fun selectPosition (IIZ)Landroidx/test/espresso/ViewAction;
@@ -60,15 +60,16 @@ public final class com/rubensousa/dpadrecyclerview/testing/assertions/DpadRecycl
 	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/assertions/DpadRecyclerViewAssertions;
 	public static final fun isFocused (II)Landroidx/test/espresso/ViewAssertion;
 	public static synthetic fun isFocused$default (IIILjava/lang/Object;)Landroidx/test/espresso/ViewAssertion;
-	public static final fun isNotFocused ()Landroidx/test/espresso/ViewAssertion;
 	public static final fun isSelected (II)Landroidx/test/espresso/ViewAssertion;
 	public static synthetic fun isSelected$default (IIILjava/lang/Object;)Landroidx/test/espresso/ViewAssertion;
 }
 
-public abstract class com/rubensousa/dpadrecyclerview/testing/assertions/DpadRvAssertion : androidx/test/espresso/ViewAssertion {
-	public fun <init> ()V
-	public fun check (Landroid/view/View;Landroidx/test/espresso/NoMatchingViewException;)V
-	public abstract fun check (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;)V
+public final class com/rubensousa/dpadrecyclerview/testing/assertions/DpadViewAssertions {
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/assertions/DpadViewAssertions;
+	public static final fun doesNotHaveFocus ()Landroidx/test/espresso/ViewAssertion;
+	public static final fun hasFocus ()Landroidx/test/espresso/ViewAssertion;
+	public static final fun isFocused ()Landroidx/test/espresso/ViewAssertion;
+	public static final fun isNotFocused ()Landroidx/test/espresso/ViewAssertion;
 }
 
 public final class com/rubensousa/dpadrecyclerview/testing/matchers/DpadRecyclerViewMatchers {

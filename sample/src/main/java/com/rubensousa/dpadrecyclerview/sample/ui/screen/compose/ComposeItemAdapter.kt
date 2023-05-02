@@ -52,7 +52,9 @@ class ComposeItemAdapter(private val onItemClick: (Int) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
-        holder.setItemState(getItem(position))
+        val item = getItem(position)
+        holder.setItemState(item)
+        holder.itemView.contentDescription = item.toString()
     }
 
     override fun getItemViewType(position: Int): Int {

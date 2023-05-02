@@ -43,6 +43,11 @@ object KeyEvents {
     }
 
     @JvmStatic
+    fun back(times: Int = 1, delay: Long = DEFAULT_KEY_PRESS_DELAY) {
+        pressKey(KeyEvent.KEYCODE_BACK, times, delay)
+    }
+
+    @JvmStatic
     fun pressDown(times: Int = 1, delay: Long = DEFAULT_KEY_PRESS_DELAY) {
         pressKey(KeyEvent.KEYCODE_DPAD_DOWN, times, delay)
     }

@@ -21,17 +21,12 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 
-class DpadGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
+class DpadVerticalFragment : Fragment(R.layout.dpadrecyclerview_test_container),
     OnViewHolderSelectedListener {
-
-    companion object {
-        const val SPAN_COUNT = 5
-    }
 
     private val selectionEvents = ArrayList<DpadSelectionEvent>()
     private val adapter = DpadTestAdapter()
@@ -45,8 +40,6 @@ class DpadGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
                 edge = ParentAlignment.Edge.NONE
             )
         )
-        recyclerView.setFocusableDirection(FocusableDirection.CONTINUOUS)
-        recyclerView.setSpanCount(SPAN_COUNT)
         recyclerView.addOnViewHolderSelectedListener(this)
         recyclerView.adapter = adapter
     }
@@ -59,32 +52,6 @@ class DpadGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
     ) {
         super.onViewHolderSelected(parent, child, position, subPosition)
         selectionEvents.add(DpadSelectionEvent(position, subPosition))
-    }
-
-    fun getAdapterSize() = adapter.itemCount
-
-    fun insertItem() {
-        postAction { adapter.addItem() }
-    }
-
-    fun removeItem() {
-        postAction { adapter.removeItem() }
-    }
-
-    fun clearItems() {
-        postAction { adapter.clearItems() }
-    }
-
-    fun changeLastItem() {
-        postAction { adapter.changeLastItem() }
-    }
-
-    fun moveLastItem() {
-        postAction { adapter.moveLastItem() }
-    }
-
-    private fun postAction(action: () -> Unit) {
-        view?.postDelayed(action, 1000L)
     }
 
 }

@@ -16,6 +16,8 @@
 
 package com.rubensousa.dpadrecyclerview.testing
 
+import androidx.test.espresso.Espresso
+import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
@@ -29,10 +31,12 @@ class KeyEventsTest : RecyclerViewTest() {
     @Test
     fun testFastHorizontalScroll() {
         launchGridFragment()
+        Espresso.onIdle()
 
         KeyEvents.pressRight(times = 10)
         assert(DpadRecyclerViewAssertions.isFocused(position = 10))
 
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
         KeyEvents.pressLeft(times = 10)
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }
@@ -40,10 +44,12 @@ class KeyEventsTest : RecyclerViewTest() {
     @Test
     fun testFastVerticalScroll() {
         launchGridFragment()
+        Espresso.onIdle()
 
         KeyEvents.pressDown(times = 5)
         assert(DpadRecyclerViewAssertions.isFocused(position = 5 * 5))
 
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
         KeyEvents.pressUp(times = 5)
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }

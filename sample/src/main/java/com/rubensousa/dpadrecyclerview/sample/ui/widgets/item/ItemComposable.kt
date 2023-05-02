@@ -33,9 +33,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+object ItemComposable {
+    const val TEST_TAG_TEXT_FOCUSED = "focused_text"
+    const val TEST_TAG_TEXT_NOT_FOCUSED = "unfocused_text"
+}
 
 @Composable
 fun ItemComposable(
@@ -67,7 +73,15 @@ fun ItemComposable(
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            modifier = Modifier.scale(scale.value),
+            modifier = Modifier
+                .scale(scale.value)
+                .testTag(
+                    if (isFocused) {
+                        ItemComposable.TEST_TAG_TEXT_FOCUSED
+                    } else {
+                        ItemComposable.TEST_TAG_TEXT_NOT_FOCUSED
+                    }
+                ),
             text = item.toString(),
             color = textColor,
             fontSize = 35.sp

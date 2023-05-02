@@ -2,13 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardListLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clipChildren="false"
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/cardListTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/list_margin_start"
@@ -16,7 +17,7 @@
         tools:text="Headline" />
 
     <com.rubensousa.dpadrecyclerview.DpadRecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/cardRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="220dp"
         android:layout_marginTop="16dp"

@@ -68,5 +68,4 @@ dependencies {
     androidTestImplementation project (':dpadrecyclerview-testing')
     androidTestImplementation project (':dpadrecyclerview-test-fixtures')
     androidTestUtil "androidx.test.services:test-services:$testVersions.services"
-    androidTestUtil "androidx.test:orchestrator:$testVersions.orchestrator"
 }

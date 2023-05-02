@@ -36,6 +36,7 @@ import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadViewActions
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
+import com.rubensousa.dpadrecyclerview.testing.assertions.DpadViewAssertions
 import com.rubensousa.dpadrecyclerview.testing.matchers.DpadRecyclerViewMatchers
 import org.hamcrest.Matchers.allOf
 
@@ -87,6 +88,20 @@ fun assertItemAtPosition(position: Int, item: Int) {
             DpadRecyclerViewMatchers.withDescendantOfItemViewAt(position)
         )
     ).check(ViewAssertions.matches(isDisplayed()))
+}
+
+fun assertIsNotFocused() {
+    waitForIdleScrollState()
+    waitForAnimation()
+    Espresso.onView(withId(R.id.recyclerView))
+        .check(DpadViewAssertions.isNotFocused())
+}
+
+fun assertIsFocused() {
+    waitForIdleScrollState()
+    waitForAnimation()
+    Espresso.onView(withId(R.id.recyclerView))
+        .check(DpadViewAssertions.isFocused())
 }
 
 fun assertFocusAndSelection(position: Int, subPosition: Int = 0, id: Int = R.id.recyclerView) {

@@ -14,6 +14,7 @@
   ~ limitations under the License.
   -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainScreenRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
@@ -29,9 +30,9 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="24dp"
-        android:layout_gravity="bottom|end">
+        android:layout_marginBottom="24dp">
 
         <ImageView
             android:id="@+id/logo"
@@ -40,12 +41,12 @@
             android:src="@drawable/ic_launcher_foreground" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
             style="@style/TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/app_name"
-            android:src="@drawable/ic_launcher_foreground" />
+            android:src="@drawable/ic_launcher_foreground"
+            android:text="@string/app_name" />
 
     </LinearLayout>
 
