@@ -17,73 +17,53 @@ package com.rubensousa.dpadrecyclerview.compose
 
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.ComposeView
-import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadViewHolder
 
 /**
- * A ViewHolder that will render a [Composable].
+ * A basic implementation of [DpadAbstractComposeViewHolder]
+ * that forwards [Content] to [composable] and handles clicks.
  *
- * Focus is kept inside the internal [ComposeView] to ensure that it behaves correctly
- * and to workaround the following issues:
+ * This allows inline definition of ViewHolders in `onCreateViewHolder`:
  *
- * 1. Focus is not sent correctly from Views to Composables:
- * [b/268248352](https://issuetracker.google.com/issues/268248352)
- * This is solved by just holding the focus in [ComposeView]
+ * ```kotlin
+ * override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DpadComposeViewHolder<Int> {
+ *     return DpadComposeViewHolder(parent) { item, isFocused, isSelected ->
+ *          ItemComposable(item, isFocused, isSelected)
+ *     }
+ * }
+ * ```
+ * To update the current item, override `onBindViewHolder` and call [setItemState]:
  *
- * 2. Clicking on a focused Composable does not trigger the standard audio feedback:
- * [b/268268856](https://issuetracker.google.com/issues/268268856)
- * This is solved by just handling the click on [ComposeView] directly
+ * ```kotlin
+ * override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
+ *      holder.setItemState(getItem(position))
+ * }
+ * ```
  */
 open class DpadComposeViewHolder<T>(
     parent: ViewGroup,
-    composable: DpadComposable<T>,
     onClick: ((item: T) -> Unit)? = null,
     onLongClick: ((item: T) -> Boolean)? = null,
-    isFocusable: Boolean = true
-) : RecyclerView.ViewHolder(ComposeView(parent.context)), DpadViewHolder {
-
-    private val itemState = mutableStateOf<T?>(null)
-    private val focusState = mutableStateOf(false)
-    private val selectionState = mutableStateOf(false)
+    isFocusable: Boolean = true,
+    private val composable: DpadComposable<T>,
+) : DpadAbstractComposeViewHolder<T>(parent, isFocusable) {
 
     init {
-        val composeView = itemView as ComposeView
-        composeView.isFocusable = isFocusable
-        composeView.isFocusableInTouchMode = isFocusable
-        composeView.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
-        composeView.setOnFocusChangeListener { _, hasFocus ->
-            focusState.value = hasFocus
-        }
         if (onClick != null) {
-            composeView.setOnClickListener {
-                itemState.value?.let(onClick)
+            itemView.setOnClickListener {
+                getItem()?.let(onClick)
             }
         }
         if (onLongClick != null) {
-            composeView.setOnLongClickListener {
-                val value = itemState.value ?: return@setOnLongClickListener false
+            itemView.setOnLongClickListener {
+                val value = getItem() ?: return@setOnLongClickListener false
                 onLongClick(value)
             }
         }
-        composeView.setContent {
-            itemState.value?.let { item ->
-                composable(item, focusState.value, selectionState.value)
-            }
-        }
     }
 
-    override fun onViewHolderSelected() {
-        selectionState.value = true
-    }
-
-    override fun onViewHolderDeselected() {
-        selectionState.value = false
-    }
-
-    fun setItemState(item: T?) {
-        itemState.value = item
+    @Composable
+    override fun Content(item: T, isFocused: Boolean, isSelected: Boolean) {
+        composable(item, isFocused, isSelected)
     }
 
 }

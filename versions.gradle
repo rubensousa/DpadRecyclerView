@@ -13,10 +13,10 @@ versions.poolingContainer = '1.0.0'
 versions.paging = '3.1.1'
 
 def composeVersions = [:]
-composeVersions.runtime = '1.4.1'
-composeVersions.ui = '1.4.1'
+composeVersions.runtime = '1.4.2'
+composeVersions.ui = '1.4.2'
 composeVersions.material3 = '1.0.1'
-composeVersions.compiler = '1.4.5'
+composeVersions.compiler = '1.4.6'
 
 def testVersions = [:]
 testVersions.junit = '4.13.2'
