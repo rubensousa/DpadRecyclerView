@@ -1,8 +1,9 @@
 public abstract class com/rubensousa/dpadrecyclerview/compose/DpadAbstractComposeViewHolder : androidx/recyclerview/widget/RecyclerView$ViewHolder, com/rubensousa/dpadrecyclerview/DpadViewHolder {
 	public static final field $stable I
-	public fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Z)V
-	public synthetic fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/view/ViewGroup;Z)V
+	public synthetic fun <init> (Landroid/view/ViewGroup;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public abstract fun Content (Ljava/lang/Object;ZZLandroidx/compose/runtime/Composer;I)V
+	public final fun getItem ()Ljava/lang/Object;
 	public fun getSubPositionAlignments ()Ljava/util/List;
 	public fun onFocusChanged (Z)V
 	public fun onViewHolderDeselected ()V

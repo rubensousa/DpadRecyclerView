@@ -41,8 +41,6 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
  */
 abstract class DpadAbstractComposeViewHolder<T>(
     parent: ViewGroup,
-    onClick: ((item: T) -> Unit)? = null,
-    onLongClick: ((item: T) -> Boolean)? = null,
     isFocusable: Boolean = true
 ) : RecyclerView.ViewHolder(ComposeView(parent.context)), DpadViewHolder {
 
@@ -58,17 +56,6 @@ abstract class DpadAbstractComposeViewHolder<T>(
         composeView.setOnFocusChangeListener { _, hasFocus ->
             focusState.value = hasFocus
             onFocusChanged(hasFocus)
-        }
-        if (onClick != null) {
-            composeView.setOnClickListener {
-                itemState.value?.let(onClick)
-            }
-        }
-        if (onLongClick != null) {
-            composeView.setOnLongClickListener {
-                val value = itemState.value ?: return@setOnLongClickListener false
-                onLongClick(value)
-            }
         }
         composeView.setContent {
             itemState.value?.let { item ->
@@ -95,5 +82,7 @@ abstract class DpadAbstractComposeViewHolder<T>(
     fun setItemState(item: T?) {
         itemState.value = item
     }
+
+    fun getItem(): T? = itemState.value
 
 }

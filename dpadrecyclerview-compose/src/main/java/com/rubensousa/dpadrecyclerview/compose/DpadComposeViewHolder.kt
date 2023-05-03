@@ -20,7 +20,7 @@ import androidx.compose.runtime.Composable
 
 /**
  * A basic implementation of [DpadAbstractComposeViewHolder]
- * that just forwards [Content] to [composable].
+ * that forwards [Content] to [composable] and handles clicks.
  *
  * This allows inline definition of ViewHolders in `onCreateViewHolder`:
  *
@@ -45,7 +45,21 @@ open class DpadComposeViewHolder<T>(
     onLongClick: ((item: T) -> Boolean)? = null,
     isFocusable: Boolean = true,
     private val composable: DpadComposable<T>,
-) : DpadAbstractComposeViewHolder<T>(parent, onClick, onLongClick, isFocusable) {
+) : DpadAbstractComposeViewHolder<T>(parent, isFocusable) {
+
+    init {
+        if (onClick != null) {
+            itemView.setOnClickListener {
+                getItem()?.let(onClick)
+            }
+        }
+        if (onLongClick != null) {
+            itemView.setOnLongClickListener {
+                val value = getItem() ?: return@setOnLongClickListener false
+                onLongClick(value)
+            }
+        }
+    }
 
     @Composable
     override fun Content(item: T, isFocused: Boolean, isSelected: Boolean) {
