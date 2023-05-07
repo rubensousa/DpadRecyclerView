@@ -13,7 +13,6 @@ android {
     defaultConfig {
         minSdk versions.minSdkVersion
         targetSdk versions.targetSdkVersion
-        consumerProguardFiles "consumer-rules.pro"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
         testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
@@ -24,8 +23,6 @@ android {
             testCoverageEnabled true
         }
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
