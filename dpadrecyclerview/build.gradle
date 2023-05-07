@@ -54,7 +54,7 @@ android {
 }
 
 dependencies {
-    implementation "androidx.recyclerview:recyclerview:$versions.recyclerview"
+    api "androidx.recyclerview:recyclerview:$versions.recyclerview"
     implementation "androidx.collection:collection-ktx:$versions.collection"
     testImplementation "junit:junit:$testVersions.junit"
     testImplementation "com.google.truth:truth:$testVersions.truth"
