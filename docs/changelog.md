@@ -2,6 +2,10 @@
 
 ## Version 1.0.0
 
+### 1.0.0-rc01
+
+- Removed consumer proguard rules
+
 ### 1.0.0-beta03
 
 2023-05-03
