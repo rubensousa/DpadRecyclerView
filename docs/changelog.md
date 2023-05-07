@@ -4,7 +4,12 @@
 
 ### 1.0.0-rc01
 
+2023-05-07
+
+#### Dependency updates
+
 - Removed consumer proguard rules
+- Exposed recyclerview dependency to clients
 
 ### 1.0.0-beta03
 
