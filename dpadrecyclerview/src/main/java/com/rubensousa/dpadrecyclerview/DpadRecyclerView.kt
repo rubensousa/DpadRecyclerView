@@ -99,9 +99,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
         // Focus a ViewHolder's view first by default if one exists
         descendantFocusability = FOCUS_AFTER_DESCENDANTS
 
-        // Typically all RecyclerViews have a fixed size, so this is a safe default
-        setHasFixedSize(true)
-
         // Call setItemAnimator to set it up
         this.itemAnimator = itemAnimator
 
