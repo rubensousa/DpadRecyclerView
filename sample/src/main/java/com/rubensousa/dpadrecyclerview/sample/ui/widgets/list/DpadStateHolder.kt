@@ -16,17 +16,28 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.list
 
-import androidx.leanback.widget.HorizontalGridView
-import androidx.leanback.widget.OnChildViewHolderSelectedListener
+import android.os.Parcelable
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
+import com.rubensousa.dpadrecyclerview.sample.R
 
 class DpadStateHolder {
 
-    private val positions = LinkedHashMap<String, Int>()
-    private val listeners = LinkedHashMap<String, OnViewHolderSelectedListener>()
-    private val leanbackListeners = LinkedHashMap<String, OnChildViewHolderSelectedListener>()
+    private val states = LinkedHashMap<String, Parcelable?>()
+    private val selectionListener = object: OnViewHolderSelectedListener {
+        override fun onViewHolderSelectedAndAligned(
+            parent: RecyclerView,
+            child: RecyclerView.ViewHolder?,
+            position: Int,
+            subPosition: Int
+        ) {
+            super.onViewHolderSelectedAndAligned(parent, child, position, subPosition)
+            getKey(parent)?.let { scrollStateKey ->
+                states[scrollStateKey] = parent.layoutManager?.onSaveInstanceState()
+            }
+        }
+    }
 
     fun restore(
         recyclerView: DpadRecyclerView,
@@ -34,58 +45,25 @@ class DpadStateHolder {
         adapter: RecyclerView.Adapter<*>
     ) {
         recyclerView.adapter = adapter
-        val restoredPosition = positions[key] ?: 0
-        recyclerView.setSelectedPosition(restoredPosition)
-        val listener = object : OnViewHolderSelectedListener {
-            override fun onViewHolderSelected(
-                parent: RecyclerView,
-                child: RecyclerView.ViewHolder?,
-                position: Int,
-                subPosition: Int
-            ) {
-                super.onViewHolderSelected(parent, child, position, subPosition)
-                positions[key] = position
-            }
+        states[key]?.let { savedState ->
+            recyclerView.layoutManager?.onRestoreInstanceState(savedState)
         }
-        recyclerView.addOnViewHolderSelectedListener(listener)
-        listeners[key] = listener
+        setKey(recyclerView, key)
+        recyclerView.addOnViewHolderSelectedListener(selectionListener)
     }
 
-    fun save(recyclerView: DpadRecyclerView, key: String) {
-        listeners.remove(key)?.let { listener ->
-            recyclerView.removeOnViewHolderSelectedListener(listener)
-            recyclerView.setSelectedPosition(position = 0)
-        }
+    fun save(recyclerView: DpadRecyclerView) {
+        recyclerView.removeOnViewHolderSelectedListener(selectionListener)
+        recyclerView.setSelectedPosition(0)
         recyclerView.adapter = null
     }
 
-    fun register(recyclerView: HorizontalGridView, key: String, adapter: RecyclerView.Adapter<*>) {
-        recyclerView.adapter = adapter
-        val restoredPosition = positions[key] ?: 0
-        recyclerView.selectedPosition = restoredPosition
-        val listener = object : OnChildViewHolderSelectedListener() {
-            override fun onChildViewHolderSelected(
-                parent: RecyclerView,
-                child: RecyclerView.ViewHolder?,
-                position: Int,
-                subposition: Int
-            ) {
-                positions[key] = position
-            }
-        }
-        recyclerView.addOnChildViewHolderSelectedListener(listener)
-        leanbackListeners[key] = listener
+    private fun setKey(recyclerView: RecyclerView, key: String?) {
+        recyclerView.setTag(R.id.dpadrecyclerview_state_key, key)
     }
 
-    fun save(recyclerView: HorizontalGridView, key: String) {
-        leanbackListeners.remove(key)?.let { listener ->
-            recyclerView.removeOnChildViewHolderSelectedListener(listener)
-            recyclerView.selectedPosition = 0
-        }
-        recyclerView.adapter = null
+    private fun getKey(recyclerView: RecyclerView) : String? {
+        return recyclerView.getTag(R.id.dpadrecyclerview_state_key) as? String?
     }
-
-
-
 
 }
