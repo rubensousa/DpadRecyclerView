@@ -43,6 +43,11 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
     private val viewModel by viewModels<ListViewModel>()
     private val args by navArgs<ListFragmentArgs>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.load(enableLooping = args.enableLooping)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(binding.recyclerView)

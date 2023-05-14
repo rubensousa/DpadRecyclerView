@@ -17,8 +17,10 @@ class ListViewModel : ViewModel() {
     private val pageSize = 10
     val loadingState: LiveData<Boolean> = loadingStateLiveData
     val listState: LiveData<MutableList<ListModel>> = listLiveData
+    private var enableLooping = false
 
-    init {
+    fun load(enableLooping: Boolean = false) {
+        this.enableLooping = enableLooping
         list.addAll(createPage())
         listLiveData.postValue(ArrayList(list))
     }
@@ -41,23 +43,29 @@ class ListViewModel : ViewModel() {
 
     }
 
-    private fun createPage(leanback: Boolean = false): List<ListModel> {
-        val titlePrefix = if (leanback) {
-            "HorizontalGridView"
-        } else {
-            "DpadRecyclerView"
-        }
+    private fun createPage(): List<ListModel> {
+        val titlePrefix = "DpadRecyclerView"
         return List(pageSize) { index ->
-            generateList("$titlePrefix ${list.size + index}", leanback)
+            generateList("$titlePrefix ${list.size + index}")
         }
     }
 
-    private fun generateList(title: String, leanback: Boolean): ListModel {
+    private fun generateList(title: String): ListModel {
         val items = ArrayList<Int>()
-        repeat(50) {
+        val itemCount = if (enableLooping) {
+            8
+        } else {
+            50
+        }
+        repeat(itemCount) {
             items.add(it)
         }
-        return ListModel(title, items, centerAligned = false, isLeanback = leanback)
+        return ListModel(
+            title, items,
+            centerAligned = false,
+            isLeanback = true,
+            enableLooping = enableLooping
+        )
     }
 
 

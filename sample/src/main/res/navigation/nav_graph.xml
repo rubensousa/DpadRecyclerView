@@ -17,6 +17,10 @@
                 android:defaultValue="false" />
 
             <argument
+                android:name="enableLooping"
+                android:defaultValue="false" />
+
+            <argument
                 android:name="reverseLayout"
                 android:defaultValue="false" />
 
@@ -98,6 +102,10 @@
 
         <argument
             android:name="showHeader"
+            android:defaultValue="false" />
+
+        <argument
+            android:name="enableLooping"
             android:defaultValue="false" />
 
         <action

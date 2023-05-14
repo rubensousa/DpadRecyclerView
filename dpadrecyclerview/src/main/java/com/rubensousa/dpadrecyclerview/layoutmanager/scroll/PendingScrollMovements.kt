@@ -40,7 +40,7 @@ internal class PendingScrollMovements(
     }
 
     fun shouldScrollToView(viewPosition: Int, pivotPosition: Int): Boolean {
-        if (viewPosition == pivotPosition) {
+        if (viewPosition == pivotPosition || layoutInfo.isLoopingAllowed) {
             return true
         }
         return if (!layoutInfo.shouldReverseLayout()) {
@@ -53,6 +53,9 @@ internal class PendingScrollMovements(
     }
 
     private fun isLayoutCompleteInScrollingDirection(): Boolean {
+        if (layoutInfo.isLoopingAllowed) {
+            return false
+        }
         return if (!layoutInfo.shouldReverseLayout()) {
             (layoutInfo.hasCreatedFirstItem() && pendingMoves < 0
                     || layoutInfo.hasCreatedLastItem() && pendingMoves > 0)

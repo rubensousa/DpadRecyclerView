@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import kotlin.math.max
 
 /**
@@ -77,12 +78,27 @@ internal class LayoutRequest {
     var isLayingOutScrap: Boolean = false
         private set
 
+    var loopDirection: DpadLoopDirection = DpadLoopDirection.NONE
+        private set
+
+    var itemCount = 0
+        private set
+
+    var isLoopingAllowed = false
+        private set
+
+    var isLoopingStart = false
+        private set
+
     fun init(
+        itemCount: Int,
         gravity: Int,
         isVertical: Boolean,
         reverseLayout: Boolean,
-        infinite: Boolean
+        infinite: Boolean,
+        loopDirection: DpadLoopDirection
     ) {
+        this.itemCount = itemCount
         this.reverseLayout = reverseLayout
         this.gravity = gravity
         this.isVertical = isVertical
@@ -93,7 +109,15 @@ internal class LayoutRequest {
         } else {
             ItemDirection.TAIL
         }
+        if (!infinite) {
+            this.loopDirection = loopDirection
+        } else {
+            // Do not allow looping for infinite layouts
+            this.loopDirection = DpadLoopDirection.NONE
+        }
         currentItemDirection = defaultItemDirection
+        isLoopingAllowed = false
+        isLoopingStart = false
     }
 
     fun setCurrentPosition(position: Int) {
@@ -116,8 +140,30 @@ internal class LayoutRequest {
         checkpoint += offset
     }
 
+    fun setIsLoopingAllowed(isLooping: Boolean) {
+        isLoopingAllowed = isLooping
+    }
+
+    fun setIsLoopingStart(isLooping: Boolean) {
+        isLoopingStart = isLooping
+    }
+
     fun moveToNextPosition() {
         currentPosition += currentItemDirection.value
+        if (loopDirection == DpadLoopDirection.NONE || !isLoopingAllowed) return
+
+        if (currentPosition == itemCount) {
+            currentPosition = 0
+            isLoopingStart = true
+        } else if (currentPosition == -1 && loopDirection == DpadLoopDirection.MIN_MAX) {
+            currentPosition = itemCount - 1
+        } else if (currentPosition == -1 && loopDirection == DpadLoopDirection.MAX) {
+            if (isLoopingStart) {
+                currentPosition = itemCount - 1
+            }
+            // Only allow looping the start once
+            isLoopingStart = false
+        }
     }
 
     fun isPrepending() = direction == LayoutDirection.START
@@ -145,7 +191,8 @@ internal class LayoutRequest {
         clear()
         direction = LayoutDirection.END
         currentItemDirection = defaultItemDirection
-        currentPosition = referencePosition + currentItemDirection.value
+        currentPosition = referencePosition
+        moveToNextPosition()
         block(this)
     }
 
@@ -153,7 +200,8 @@ internal class LayoutRequest {
         clear()
         direction = LayoutDirection.START
         currentItemDirection = defaultItemDirection.opposite()
-        currentPosition = referencePosition + currentItemDirection.value
+        currentPosition = referencePosition
+        moveToNextPosition()
         block(this)
     }
 

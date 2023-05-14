@@ -448,6 +448,9 @@ open class DpadRecyclerView @JvmOverloads constructor(
     /**
      * Sets the strategy for calculating extra layout space.
      *
+     * Note that this is not supported if [DpadLoopDirection] is used
+     * since that would potentially lead to duplicate items in the layout.
+     *
      * Check [ExtraLayoutSpaceStrategy] for more information.
      */
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
@@ -489,6 +492,21 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * See: [setLayoutEnabled]
      */
     fun isLayoutEnabled(): Boolean = requireLayout().isLayoutEnabled()
+
+    /**
+     * Updates the loop direction used by this [DpadRecyclerView].
+     * By default, the layout does not loop around the items
+     *
+     * @param loopDirection the [DpadLoopDirection] to use for looping items
+     */
+    fun setLoopDirection(loopDirection: DpadLoopDirection) {
+        requireLayout().setLoopStrategy(loopDirection)
+    }
+
+    /**
+     * See [setLoopDirection]
+     */
+    fun getLoopDirection(): DpadLoopDirection = requireLayout().getLoopDirection()
 
     /**
      * Enables fading out the min edge to transparent.

@@ -26,6 +26,7 @@ import android.view.ViewGroup
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
@@ -309,11 +310,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     ): Boolean = accessibilityHelper.performAccessibilityAction(recyclerView, state, action)
 
     override fun onSaveInstanceState(): Parcelable {
-        return pivotSelector.onSaveInstanceState()
+        return pivotLayout.onSaveInstanceState()
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
-        pivotSelector.onRestoreInstanceState(state)
+        pivotLayout.onRestoreInstanceState(state)
     }
 
     // Configuration methods
@@ -343,6 +344,15 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     fun isLayoutEnabled(): Boolean = configuration.isLayoutEnabled
+
+    fun setLoopStrategy(loopStrategy: DpadLoopDirection) {
+        if (configuration.loopDirection != loopStrategy) {
+            configuration.setLoopDirection(loopStrategy)
+            requestLayout()
+        }
+    }
+
+    fun getLoopDirection(): DpadLoopDirection = configuration.loopDirection
 
     fun setGravity(gravity: Int) {
         if (configuration.gravity != gravity) {
@@ -456,19 +466,19 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
         layoutAlignment.setParentAlignment(parent)
         layoutAlignment.setChildAlignment(child)
-        scrollToSelectedPositionOrRequestLayout(smooth, requestFocus = false)
+        scrollToSelectedPositionOrRequestLayout(smooth)
     }
 
     fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean) {
         layoutAlignment.setParentAlignment(alignment)
-        scrollToSelectedPositionOrRequestLayout(smooth, requestFocus = false)
+        scrollToSelectedPositionOrRequestLayout(smooth)
     }
 
     fun getParentAlignment(): ParentAlignment = layoutAlignment.getParentAlignment()
 
     fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean) {
         layoutAlignment.setChildAlignment(alignment)
-        scrollToSelectedPositionOrRequestLayout(smooth, requestFocus = false)
+        scrollToSelectedPositionOrRequestLayout(smooth)
     }
 
     fun getChildAlignment(): ChildAlignment = layoutAlignment.getChildAlignment()
@@ -551,9 +561,9 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         pivotLayout.clearOnLayoutCompletedListeners()
     }
 
-    private fun scrollToSelectedPositionOrRequestLayout(smooth: Boolean, requestFocus: Boolean) {
+    private fun scrollToSelectedPositionOrRequestLayout(smooth: Boolean) {
         if (smooth) {
-            scroller.scrollToSelectedPosition(smooth = true, requestFocus = requestFocus)
+            scroller.scrollToSelectedPosition(smooth = true, requestFocus = false)
         } else {
             requestLayout()
         }

@@ -53,6 +53,12 @@ class MainViewModel : ViewModel() {
                     title = "Nested"
                 ),
                 ScreenDestination(
+                    direction = MainFragmentDirections.openList().apply {
+                        enableLooping = true
+                    },
+                    title = "Infinite lists"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openFadingEdge(),
                     title = "Fading Edges"
                 ),

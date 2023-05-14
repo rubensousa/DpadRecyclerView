@@ -32,6 +32,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ScrapViewProvider
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ViewProvider
+import kotlin.math.abs
 import kotlin.math.max
 
 /**
@@ -91,6 +92,87 @@ internal class LinearLayoutEngineer(
         }
         viewBounds.setEmpty()
         onChildLayoutListener.onChildLaidOut(pivotView)
+    }
+
+    override fun layoutLoop(
+        pivotView: View,
+        layoutRequest: LayoutRequest,
+        viewProvider: ViewProvider,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ): Boolean {
+        val lastView = layoutInfo.getChildClosestToEnd() ?: return false
+        val lastViewPosition = layoutInfo.getLayoutPositionOf(lastView)
+        if (lastViewPosition == RecyclerView.NO_POSITION) {
+            return false
+        }
+
+        val firstView = layoutInfo.getChildClosestToStart() ?: return false
+        val firstViewPosition = layoutInfo.getLayoutPositionOf(firstView)
+        if (firstViewPosition == RecyclerView.NO_POSITION) {
+            return false
+        }
+
+        var distanceToStartEdge = max(0, layoutInfo.getDecoratedStart(pivotView))
+        if (pivotView !== firstView && layoutInfo.getDecoratedStart(firstView) < 0) {
+            distanceToStartEdge += abs(layoutInfo.getDecoratedStart(firstView))
+        }
+        var distanceToEndEdge =
+            max(0, layoutInfo.getEndAfterPadding() - layoutInfo.getDecoratedEnd(pivotView))
+        if (pivotView !== lastView
+            && layoutInfo.getDecoratedEnd(lastView) > layoutInfo.getEndAfterPadding()
+        ) {
+            distanceToEndEdge += layoutInfo.getDecoratedEnd(lastView) - layoutInfo.getEndAfterPadding()
+        }
+        val requiredEndSpace = distanceToEndEdge
+        val requiredEndEdge = layoutInfo.getDecoratedEnd(pivotView) + requiredEndSpace
+        val requiredStartSpace = distanceToStartEdge
+        val requiredStartEdge = layoutInfo.getDecoratedStart(pivotView) - requiredStartSpace
+
+        layoutRequest.append(lastViewPosition) {
+            setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+            setFillSpace(requiredStartSpace)
+        }
+        val extraEndSpace = fill(layoutRequest, viewProvider, recycler, state)
+        val newStartEdge = layoutInfo.getDecoratedStart(firstView) - extraEndSpace
+
+        layoutRequest.prepend(firstViewPosition) {
+            setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+            setFillSpace(requiredEndSpace)
+        }
+        val extraStartSpace = fill(layoutRequest, viewProvider, recycler, state)
+        val newEndEdge = layoutInfo.getDecoratedEnd(lastView) + extraStartSpace
+
+        layoutRequest.setRecyclingEnabled(true)
+        viewRecycler.recycleFromStart(recycler, layoutRequest)
+        viewRecycler.recycleFromEnd(recycler, layoutRequest)
+        layoutRequest.setRecyclingEnabled(false)
+
+        // If we couldn't fill the required space, don't allow looping
+        if (newStartEdge > requiredStartEdge || newEndEdge < requiredEndEdge) {
+            layoutRequest.setCurrentPosition(lastViewPosition)
+            layoutRequest.moveToNextPosition()
+            return false
+        }
+
+        // Allow looping to fill the required space
+        layoutRequest.setIsLoopingAllowed(true)
+
+        // Fill the end of the layout with the first items
+        layoutRequest.append(lastViewPosition) {
+            setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+            setFillSpace(requiredEndSpace)
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+
+        // Fill the start of the layout with the last items
+        layoutRequest.prepend(firstViewPosition) {
+            setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+            setFillSpace(requiredStartSpace)
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+
+        return true
     }
 
     override fun layoutDisappearingViews(

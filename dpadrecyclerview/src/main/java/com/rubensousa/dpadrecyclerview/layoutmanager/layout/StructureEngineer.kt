@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
@@ -41,8 +42,8 @@ internal abstract class StructureEngineer(
 
     // Holds the bounds of the view to be laid out
     protected val viewBounds = ViewBounds()
+    protected val viewRecycler = ViewRecycler(layoutManager, layoutInfo)
     private val extraLayoutSpaceCalculator = ExtraLayoutSpaceCalculator(layoutInfo)
-    private val viewRecycler = ViewRecycler(layoutManager, layoutInfo)
     private val preLayoutRequest = PreLayoutRequest()
     private val layoutRequest = LayoutRequest()
     private val layoutResult = LayoutResult()
@@ -54,15 +55,18 @@ internal abstract class StructureEngineer(
      */
     open fun onLayoutStarted(state: RecyclerView.State) {
         layoutRequest.init(
+            itemCount = state.itemCount,
             gravity = layoutInfo.getConfiguration().gravity,
             isVertical = layoutInfo.isVertical(),
             reverseLayout = layoutInfo.shouldReverseLayout(),
-            infinite = layoutInfo.isInfinite()
+            infinite = layoutInfo.isInfinite(),
+            loopDirection = layoutInfo.getConfiguration().loopDirection,
         )
         layoutAlignment.setLayoutProperties(
             isVertical = layoutRequest.isVertical,
             reverseLayout = layoutRequest.reverseLayout
         )
+        layoutRequest.setIsLoopingStart(layoutInfo.isLoopingStart)
     }
 
     open fun onLayoutFinished() {
@@ -207,8 +211,15 @@ internal abstract class StructureEngineer(
         // Now relayout detached views to ensure animations work as expected
         layoutScrap(recycler, state)
 
-        // Layout extra space if user requested it
-        layoutExtraSpace(layoutRequest, recyclerViewProvider, recycler, state)
+        if (layoutRequest.loopDirection != DpadLoopDirection.NONE) {
+            layoutRequest.setIsLoopingAllowed(
+                layoutLoop(pivotView, layoutRequest, recyclerViewProvider, recycler, state)
+            )
+        } else {
+            layoutRequest.setIsLoopingAllowed(false)
+            // Layout extra space if user requested it
+            layoutExtraSpace(layoutRequest, recyclerViewProvider, recycler, state)
+        }
 
         // We might have views we no longer need after aligning the pivot,
         // so recycle them if we're not running animations
@@ -242,7 +253,19 @@ internal abstract class StructureEngineer(
         fill(layoutRequest, viewProvider, recycler, state)
     }
 
+    // No-op, only implemented by children that support it
+    open fun layoutLoop(
+        pivotView: View,
+        layoutRequest: LayoutRequest,
+        viewProvider: ViewProvider,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ): Boolean {
+        return false
+    }
+
     private fun finishLayout() {
+        layoutInfo.updateLoopingState(layoutRequest.isLoopingStart, layoutRequest.isLoopingAllowed)
         recyclerViewProvider.clearRecycler()
         layoutAlignment.updateScrollLimits()
         preLayoutRequest.clear()
