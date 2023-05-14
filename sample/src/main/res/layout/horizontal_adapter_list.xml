@@ -29,9 +29,9 @@
         app:dpadRecyclerViewChildAlignmentFraction="0"
         app:dpadRecyclerViewFocusOutBack="false"
         app:dpadRecyclerViewFocusOutFront="false"
-        app:dpadRecyclerViewParentAlignmentEdge="none"
-        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-        app:dpadRecyclerViewParentAlignmentFractionEnabled="false" />
+        app:dpadRecyclerViewParentAlignmentEdge="max"
+        app:dpadRecyclerViewParentAlignmentFraction="0"
+        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start" />
 
 
 </LinearLayout>

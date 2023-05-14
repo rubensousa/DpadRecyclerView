@@ -154,14 +154,16 @@ internal class LayoutRequest {
 
         if (currentPosition == itemCount) {
             currentPosition = 0
-            isLoopingStart = true
-        } else if (currentPosition == -1 && loopDirection == DpadLoopDirection.MIN_MAX) {
+            return
+        }
+        if (currentPosition != -1) {
+            return
+        }
+        if (loopDirection == DpadLoopDirection.MIN_MAX) {
             currentPosition = itemCount - 1
-        } else if (currentPosition == -1 && loopDirection == DpadLoopDirection.MAX) {
-            if (isLoopingStart) {
-                currentPosition = itemCount - 1
-            }
-            // Only allow looping the start once
+        } else if(isLoopingStart) {
+            currentPosition = itemCount - 1
+            // Only allow looping the start once with this loop direction
             isLoopingStart = false
         }
     }

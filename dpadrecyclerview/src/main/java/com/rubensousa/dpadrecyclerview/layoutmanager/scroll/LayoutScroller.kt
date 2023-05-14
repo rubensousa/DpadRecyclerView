@@ -20,7 +20,6 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
@@ -253,18 +252,23 @@ internal class LayoutScroller(
                     }
                 }
                 !forward && layoutInfo.hasCreatedFirstItem() -> {
-                    if (!layoutInfo.isLoopingStart
-                        || configuration.loopDirection == DpadLoopDirection.MAX
-                    ) {
+                    if (!layoutInfo.isLoopingStart) {
                         return false
                     }
                 }
             }
         } else {
-            if (forward && layoutInfo.hasCreatedFirstItem()
-                || (!forward && layoutInfo.hasCreatedLastItem())
-            ) {
-                return false
+            when {
+                forward && layoutInfo.hasCreatedFirstItem() -> {
+                    if (!layoutInfo.isLoopingAllowed) {
+                        return false
+                    }
+                }
+                !forward && layoutInfo.hasCreatedLastItem() -> {
+                    if (!layoutInfo.isLoopingStart) {
+                        return false
+                    }
+                }
             }
         }
         val currentRecyclerView = recyclerView ?: return false

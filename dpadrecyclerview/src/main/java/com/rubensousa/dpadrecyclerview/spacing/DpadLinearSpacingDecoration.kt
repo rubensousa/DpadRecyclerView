@@ -69,13 +69,9 @@ class DpadLinearSpacingDecoration private constructor(
         val reverseLayout = parent.isLayoutReversed()
 
         val isAtStartEdge = if (!reverseLayout) {
-            if (parent.getLoopDirection() == DpadLoopDirection.MAX) {
-                layoutPosition == 0 && parent.findFirstVisibleItemPosition() == 0
-            } else {
-                layoutPosition == 0 && parent.getLoopDirection() == DpadLoopDirection.NONE
-            }
+            layoutPosition == 0 && parent.getLoopDirection() == DpadLoopDirection.NONE
         } else {
-            layoutPosition == itemCount - 1 && parent.getLoopDirection() != DpadLoopDirection.MIN_MAX
+            layoutPosition == itemCount - 1 && parent.getLoopDirection() == DpadLoopDirection.NONE
         }
 
         val isAtEndEdge = if (!reverseLayout) {

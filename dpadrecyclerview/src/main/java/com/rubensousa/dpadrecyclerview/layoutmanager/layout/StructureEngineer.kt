@@ -205,21 +205,25 @@ internal abstract class StructureEngineer(
             pivotPosition, layoutRequest, recyclerViewProvider, recycler, state
         )
 
+        if (layoutRequest.loopDirection != DpadLoopDirection.NONE) {
+            layoutRequest.setIsLoopingAllowed(
+                layoutLoop(pivotView, layoutRequest, recyclerViewProvider, recycler, state)
+            )
+            updateLoopingState()
+        }
+
         // Now that all views are laid out, make sure the pivot is still in the correct position
         alignPivot(pivotView, recycler, state)
 
         // Now relayout detached views to ensure animations work as expected
         layoutScrap(recycler, state)
 
-        if (layoutRequest.loopDirection != DpadLoopDirection.NONE) {
-            layoutRequest.setIsLoopingAllowed(
-                layoutLoop(pivotView, layoutRequest, recyclerViewProvider, recycler, state)
-            )
-        } else {
-            layoutRequest.setIsLoopingAllowed(false)
+        if (layoutRequest.loopDirection == DpadLoopDirection.NONE) {
+            updateLoopingState()
             // Layout extra space if user requested it
             layoutExtraSpace(layoutRequest, recyclerViewProvider, recycler, state)
         }
+
 
         // We might have views we no longer need after aligning the pivot,
         // so recycle them if we're not running animations
@@ -350,6 +354,7 @@ internal abstract class StructureEngineer(
         }
 
         layoutRequest.setRecyclingEnabled(false)
+        updateLoopingState()
 
         return offset
     }
@@ -423,6 +428,35 @@ internal abstract class StructureEngineer(
         viewRecycler.recycleByLayoutRequest(recycler, layoutRequest)
 
         return layoutRequest.fillSpace - remainingSpace
+    }
+
+    private fun updateLoopingState() {
+        if (!layoutRequest.isLoopingAllowed || layoutManager.childCount == 0) {
+            layoutRequest.setIsLoopingStart(false)
+            layoutInfo.updateLoopingState(isLoopingStart = false, isLoopingAllowed = false)
+            return
+        }
+        if (layoutRequest.loopDirection == DpadLoopDirection.MIN_MAX) {
+            layoutRequest.setIsLoopingStart(true)
+            layoutInfo.updateLoopingState(isLoopingStart = true, isLoopingAllowed = true)
+            return
+        }
+
+        // Check if the first item exists at a position different than expected
+        val expectedPosition = if (!layoutRequest.reverseLayout) {
+            0
+        } else {
+            layoutManager.childCount - 1
+        }
+        val firstItemView = layoutInfo.findViewByPosition(0)
+        if (firstItemView == null) {
+            layoutRequest.setIsLoopingStart(false)
+        } else {
+            layoutRequest.setIsLoopingStart(
+                layoutManager.getChildAt(expectedPosition) !== firstItemView
+            )
+        }
+        layoutInfo.updateLoopingState(layoutRequest.isLoopingStart, layoutRequest.isLoopingAllowed)
     }
 
     private fun removeInvisibleViews(recycler: RecyclerView.Recycler) {

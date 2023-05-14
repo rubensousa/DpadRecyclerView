@@ -32,7 +32,6 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.layout.StructureEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ScrapViewProvider
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ViewProvider
-import kotlin.math.abs
 import kotlin.math.max
 
 /**
@@ -113,35 +112,26 @@ internal class LinearLayoutEngineer(
             return false
         }
 
-        var distanceToStartEdge = max(0, layoutInfo.getDecoratedStart(pivotView))
-        if (pivotView !== firstView && layoutInfo.getDecoratedStart(firstView) < 0) {
-            distanceToStartEdge += abs(layoutInfo.getDecoratedStart(firstView))
-        }
-        var distanceToEndEdge =
+        val distanceToStartEdge = max(0, layoutInfo.getDecoratedStart(pivotView))
+        val distanceToEndEdge =
             max(0, layoutInfo.getEndAfterPadding() - layoutInfo.getDecoratedEnd(pivotView))
-        if (pivotView !== lastView
-            && layoutInfo.getDecoratedEnd(lastView) > layoutInfo.getEndAfterPadding()
-        ) {
-            distanceToEndEdge += layoutInfo.getDecoratedEnd(lastView) - layoutInfo.getEndAfterPadding()
-        }
-        val requiredEndSpace = distanceToEndEdge
-        val requiredEndEdge = layoutInfo.getDecoratedEnd(pivotView) + requiredEndSpace
-        val requiredStartSpace = distanceToStartEdge
-        val requiredStartEdge = layoutInfo.getDecoratedStart(pivotView) - requiredStartSpace
+        val requiredEndSpace = distanceToEndEdge + layoutInfo.getDecoratedSize(pivotView)
+        val requiredStartSpace = distanceToStartEdge + layoutInfo.getDecoratedSize(pivotView)
+        val requiredTotalSpace = layoutInfo.getTotalSpace() + layoutInfo.getDecoratedSize(pivotView)
 
         layoutRequest.append(lastViewPosition) {
             setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
             setFillSpace(requiredStartSpace)
         }
-        val extraEndSpace = fill(layoutRequest, viewProvider, recycler, state)
-        val newStartEdge = layoutInfo.getDecoratedStart(firstView) - extraEndSpace
+        fill(layoutRequest, viewProvider, recycler, state)
+        val newEndEdge = layoutRequest.checkpoint
 
         layoutRequest.prepend(firstViewPosition) {
             setCheckpoint(layoutInfo.getDecoratedStart(firstView))
             setFillSpace(requiredEndSpace)
         }
-        val extraStartSpace = fill(layoutRequest, viewProvider, recycler, state)
-        val newEndEdge = layoutInfo.getDecoratedEnd(lastView) + extraStartSpace
+        fill(layoutRequest, viewProvider, recycler, state)
+        val newStartEdge = layoutRequest.checkpoint
 
         layoutRequest.setRecyclingEnabled(true)
         viewRecycler.recycleFromStart(recycler, layoutRequest)
@@ -149,7 +139,7 @@ internal class LinearLayoutEngineer(
         layoutRequest.setRecyclingEnabled(false)
 
         // If we couldn't fill the required space, don't allow looping
-        if (newStartEdge > requiredStartEdge || newEndEdge < requiredEndEdge) {
+        if (newEndEdge - newStartEdge < requiredTotalSpace) {
             layoutRequest.setCurrentPosition(lastViewPosition)
             layoutRequest.moveToNextPosition()
             return false
