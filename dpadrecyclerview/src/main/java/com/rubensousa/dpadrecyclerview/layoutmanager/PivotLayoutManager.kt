@@ -317,7 +317,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     // Configuration methods
-    fun setRecyclerView(recyclerView: RecyclerView?) {
+    fun updateRecyclerView(recyclerView: RecyclerView?) {
         if (recyclerView == null) {
             focusDispatcher.clearParentRecyclerView()
         }
