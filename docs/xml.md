@@ -15,6 +15,7 @@
 <attr name="dpadRecyclerViewParentAlignmentOffset" format="dimension" />
 <attr name="dpadRecyclerViewParentAlignmentFraction" format="float" />
 <attr name="dpadRecyclerViewParentAlignmentFractionEnabled" format="boolean" />
+<attr name="dpadRecyclerViewParentAlignmentPreferKeylineOverEdge" format="boolean" />
 ```
 
 
