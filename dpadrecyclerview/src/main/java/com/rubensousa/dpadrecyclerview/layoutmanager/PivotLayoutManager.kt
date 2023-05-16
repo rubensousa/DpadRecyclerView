@@ -214,7 +214,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         }
     }
 
-    fun onFocusChanged(gainFocus: Boolean) {
+    internal fun onFocusChanged(gainFocus: Boolean) {
         // Do nothing if the user is scrolling via touch events
         if (!isScrollingFromTouchEvent) {
             focusDispatcher.onFocusChanged(gainFocus)
@@ -316,8 +316,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         pivotSelector.onRestoreInstanceState(state)
     }
 
-    // Configuration methods
-    fun setRecyclerView(recyclerView: RecyclerView?) {
+    internal fun onRtlPropertiesChanged() {
+        requestLayout()
+    }
+
+    internal fun updateRecyclerView(recyclerView: RecyclerView?) {
         if (recyclerView == null) {
             focusDispatcher.clearParentRecyclerView()
         }
@@ -325,6 +328,16 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         layoutInfo.setRecyclerView(recyclerView)
         scroller.setRecyclerView(recyclerView)
         pivotSelector.setRecyclerView(recyclerView)
+    }
+
+    internal fun getConfig() = configuration
+
+    internal fun setScrollingFromTouchEvent(isTouching: Boolean) {
+        isScrollingFromTouchEvent = isTouching
+    }
+
+    internal fun removeCurrentViewHolderSelection() {
+        pivotSelector.removeCurrentViewHolderSelection(clearSelection = isScrollingFromTouchEvent)
     }
 
     fun setChildrenDrawingOrderEnabled(enabled: Boolean) {
@@ -473,18 +486,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     fun getChildAlignment(): ChildAlignment = layoutAlignment.getChildAlignment()
 
-    internal fun getConfig() = configuration
-
-    internal fun setScrollingFromTouchEvent(isTouching: Boolean) {
-        isScrollingFromTouchEvent = isTouching
-    }
-
-    internal fun removeCurrentViewHolderSelection() {
-        pivotSelector.removeCurrentViewHolderSelection(clearSelection = isScrollingFromTouchEvent)
-    }
-
-    // Event methods
-
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
         pivotSelector.addOnViewHolderSelectedListener(listener)
     }
@@ -495,10 +496,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     fun clearOnViewHolderSelectedListeners() {
         pivotSelector.clearOnViewHolderSelectedListeners()
-    }
-
-    fun onRtlPropertiesChanged() {
-        requestLayout()
     }
 
     fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {

@@ -194,7 +194,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     final override fun setLayoutManager(layout: LayoutManager?) {
         super.setLayoutManager(layout)
         pivotLayoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
-        pivotLayoutManager?.setRecyclerView(null)
+        pivotLayoutManager?.updateRecyclerView(null)
         if (pivotLayoutManager !== layout) {
             pivotLayoutManager?.clearOnLayoutCompletedListeners()
             pivotLayoutManager?.clearOnViewHolderSelectedListeners()
@@ -207,7 +207,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
             )
         }
         if (layout is PivotLayoutManager) {
-            layout.setRecyclerView(this)
+            layout.updateRecyclerView(this)
             layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             pivotLayoutManager = layout
         }
