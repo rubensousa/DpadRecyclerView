@@ -68,17 +68,11 @@ class DpadLinearSpacingDecoration private constructor(
         val itemCount = state.itemCount
         val reverseLayout = parent.isLayoutReversed()
 
-        val isAtStartEdge = if (!reverseLayout) {
-            layoutPosition == 0 && parent.getLoopDirection() == DpadLoopDirection.NONE
-        } else {
-            layoutPosition == itemCount - 1 && parent.getLoopDirection() == DpadLoopDirection.NONE
-        }
+        val isAtStartEdge = layoutPosition == 0
+                && parent.getLoopDirection() == DpadLoopDirection.NONE
 
-        val isAtEndEdge = if (!reverseLayout) {
-            layoutPosition == itemCount - 1 && parent.getLoopDirection() == DpadLoopDirection.NONE
-        } else {
-            layoutPosition == 0 && parent.getLoopDirection() == DpadLoopDirection.NONE
-        }
+        val isAtEndEdge = layoutPosition == itemCount - 1
+                && parent.getLoopDirection() == DpadLoopDirection.NONE
 
         if (parent.getOrientation() == RecyclerView.VERTICAL) {
             applyVertically(outRect, isAtStartEdge, isAtEndEdge, reverseLayout)
