@@ -1,16 +1,11 @@
 # DpadRecyclerView
 
-A RecyclerView built for Android TV as a replacement for Leanback's BaseGridView.
+A RecyclerView built for Android TV as a replacement for [Leanback's](https://developer.android.com/jetpack/androidx/releases/leanback) BaseGridView.
 
 Proceed to [Getting started](getting_started.md) to start adding `DpadRecyclerView`
 to your application.
 
 Motivation for this library is available in my [blog](https://rubensousa.com/2022/11/08/dpadrecyclerview/) in case you're interested.
-
-## Requirements
-
-- minSDK: 21
-- Java 8
 
 ## New Features compared to Leanback's `BaseGridView`
 
@@ -27,12 +22,12 @@ Motivation for this library is available in my [blog](https://rubensousa.com/202
 - Non smooth scroll changes
 - Continuous and circular grid focus
 
-## Features missing from Leanback's `BaseGridView`
 
-- Scrolling in secondary direction
-- Disabling recycling of children
-- Saving and restoring children states: clients can save and restore children on the appropriate RecyclerView.Adapter callbacks
-- `setChildrenVisibility`: clients can do this by iterating over the children
+### Upcoming features
+
+- [Looping adapter contents](https://github.com/rubensousa/DpadRecyclerView/issues/20)
+- [State saving/restoring helper](https://github.com/rubensousa/DpadRecyclerView/issues/45)
+- [Drag and drop helper](https://github.com/rubensousa/DpadRecyclerView/issues/12)
 
 
 ## License
