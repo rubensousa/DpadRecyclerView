@@ -6,6 +6,10 @@ See the project website for more information: https://rubensousa.github.io/DpadR
 
 Motivation for this library: https://rubensousa.com/2022/11/08/dpadrecyclerview/
 
+Check the sample app for a complete example of integration of this library:
+
+![sample](https://github.com/rubensousa/DpadRecyclerView/blob/master/assets/sample_cover.png?raw=true)
+
 ## Getting started
 
 Add the following dependency to your app's `build.gradle`:
@@ -37,18 +41,7 @@ Check the official website for more information and recipes: https://rubensousa.
 - Supports non smooth scroll changes
 - Supports continuous and circular grid focus
 
-## Features missing from Leanback's `BaseGridView`
-
-- Scrolling in secondary direction
-- Disabling recycling of children
-- Saving and restoring children states: clients can save and restore children on the appropriate RecyclerView.Adapter callbacks
-- `setChildrenVisibility`: clients can do this by iterating over the children
-
 ## Sample app
-
-Check the sample app for a complete example of integration of this library:
-
-![sample](https://github.com/rubensousa/DpadRecyclerView/blob/master/assets/sample_cover.png?raw=true)
 
 Nested lists:
 
