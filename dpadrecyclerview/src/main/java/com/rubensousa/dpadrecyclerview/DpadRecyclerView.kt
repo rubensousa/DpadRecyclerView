@@ -155,11 +155,12 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 typedArray.getInt(R.styleable.DpadRecyclerView_android_gravity, Gravity.NO_GRAVITY)
             )
         }
+        val edge = ParentAlignment.Edge.values()[typedArray.getInt(
+            R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,
+            ParentAlignment.Edge.MIN_MAX.ordinal
+        )]
         val parentAlignment = ParentAlignment(
-            edge = ParentAlignment.Edge.values()[typedArray.getInt(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,
-                ParentAlignment.Edge.MIN_MAX.ordinal
-            )],
+            edge = edge,
             offset = typedArray.getDimensionPixelSize(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffset,
                 ViewAlignment.DEFAULT_OFFSET
@@ -171,7 +172,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
             isFractionEnabled = typedArray.getBoolean(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentFractionEnabled,
                 true
-            )
+            ),
+            preferKeylineOverEdge = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentPreferKeylineOverEdge,
+                edge == ParentAlignment.Edge.MAX
+            ),
         )
         val childAlignment = ChildAlignment(
             offset = typedArray.getDimensionPixelSize(

@@ -21,6 +21,7 @@
         <attr name="dpadRecyclerViewParentAlignmentOffset" format="dimension" />
         <attr name="dpadRecyclerViewParentAlignmentFraction" format="float" />
         <attr name="dpadRecyclerViewParentAlignmentFractionEnabled" format="boolean" />
+        <attr name="dpadRecyclerViewParentAlignmentPreferKeylineOverEdge" format="dimension" />
         <attr name="dpadRecyclerViewFocusableDirection" format="enum">
             <enum name="standard" value="0" />
             <enum name="circular" value="1" />
