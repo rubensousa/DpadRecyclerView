@@ -309,6 +309,7 @@ internal abstract class StructureEngineer(
         if (state.didStructureChange()
             || !itemChanges.isValid()
             || preLayoutRequest.extraLayoutSpace > 0
+            || layoutRequest.loopDirection != DpadLoopDirection.NONE
         ) {
             return true
         }

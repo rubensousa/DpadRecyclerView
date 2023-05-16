@@ -44,6 +44,9 @@ class HorizontalListViewHolder(
     )
 
     init {
+        binding.textView.setOnClickListener {
+            adapter.addItem()
+        }
         recyclerView.addItemDecoration(
             DpadLinearSpacingDecoration.create(
                 itemSpacing = itemView.resources.getDimensionPixelOffset(
@@ -72,7 +75,7 @@ class HorizontalListViewHolder(
         this.item = item
         binding.textView.text = item.title
         if (item.enableLooping) {
-            recyclerView.setLoopDirection(DpadLoopDirection.MAX)
+            recyclerView.setLoopDirection(DpadLoopDirection.MIN_MAX)
         } else {
             recyclerView.setLoopDirection(DpadLoopDirection.NONE)
         }

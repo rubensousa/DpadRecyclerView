@@ -119,12 +119,15 @@ internal class LinearLayoutEngineer(
         val requiredStartSpace = distanceToStartEdge + layoutInfo.getDecoratedSize(pivotView)
         val requiredTotalSpace = layoutInfo.getTotalSpace() + layoutInfo.getDecoratedSize(pivotView)
 
+        layoutRequest.setRecyclingEnabled(true)
+
         layoutRequest.append(lastViewPosition) {
             setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
             setFillSpace(requiredStartSpace)
         }
         fill(layoutRequest, viewProvider, recycler, state)
         val newEndEdge = layoutRequest.checkpoint
+        viewRecycler.recycleFromEnd(recycler, layoutRequest)
 
         layoutRequest.prepend(firstViewPosition) {
             setCheckpoint(layoutInfo.getDecoratedStart(firstView))
@@ -132,12 +135,9 @@ internal class LinearLayoutEngineer(
         }
         fill(layoutRequest, viewProvider, recycler, state)
         val newStartEdge = layoutRequest.checkpoint
-
-        layoutRequest.setRecyclingEnabled(true)
         viewRecycler.recycleFromStart(recycler, layoutRequest)
-        viewRecycler.recycleFromEnd(recycler, layoutRequest)
-        layoutRequest.setRecyclingEnabled(false)
 
+        layoutRequest.setRecyclingEnabled(false)
         // If we couldn't fill the required space, don't allow looping
         if (newEndEdge - newStartEdge < requiredTotalSpace) {
             layoutRequest.setCurrentPosition(lastViewPosition)
@@ -151,14 +151,18 @@ internal class LinearLayoutEngineer(
         // Fill the end of the layout with the first items
         layoutRequest.append(lastViewPosition) {
             setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
-            setFillSpace(requiredEndSpace)
+            setFillSpace(
+                max(0, layoutInfo.getEndAfterPadding() - layoutInfo.getDecoratedEnd(lastView))
+            )
         }
         fill(layoutRequest, viewProvider, recycler, state)
 
         // Fill the start of the layout with the last items
         layoutRequest.prepend(firstViewPosition) {
             setCheckpoint(layoutInfo.getDecoratedStart(firstView))
-            setFillSpace(requiredStartSpace)
+            setFillSpace(
+                max(0, layoutInfo.getDecoratedStart(firstView) - layoutInfo.getStartAfterPadding())
+            )
         }
         fill(layoutRequest, viewProvider, recycler, state)
 
@@ -321,11 +325,13 @@ internal class LinearLayoutEngineer(
                 bounds.left = layoutManager.width / 2 - width / 2
                 bounds.right = bounds.left + width
             }
+
             Gravity.RIGHT -> {
                 val width = layoutInfo.getPerpendicularDecoratedSize(view)
                 bounds.right = layoutManager.width - layoutManager.paddingRight
                 bounds.left = bounds.right - width
             }
+
             else -> { // Fallback to left gravity since this is the default expected behavior
                 bounds.left = layoutManager.paddingLeft
                 bounds.right = bounds.left + layoutInfo.getPerpendicularDecoratedSize(view)
@@ -341,11 +347,13 @@ internal class LinearLayoutEngineer(
                 bounds.top = layoutManager.height / 2 - height / 2
                 bounds.bottom = bounds.top + height
             }
+
             Gravity.BOTTOM -> {
                 val height = layoutInfo.getPerpendicularDecoratedSize(view)
                 bounds.bottom = layoutManager.height - layoutManager.paddingBottom
                 bounds.top = bounds.bottom - height
             }
+
             else -> {  // Fallback to top gravity since this is the default expected behavior
                 bounds.top = layoutManager.paddingTop
                 bounds.bottom = bounds.top + layoutInfo.getPerpendicularDecoratedSize(view)

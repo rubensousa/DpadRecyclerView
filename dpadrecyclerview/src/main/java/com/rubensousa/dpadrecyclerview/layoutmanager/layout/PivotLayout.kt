@@ -266,7 +266,7 @@ internal class PivotLayout(
             parcel.writeInt(selectedPosition)
             parcel.writeByte(if (isLoopingStart) 1 else 0)
             parcel.writeByte(if (isLoopingAllowed) 1 else 0)
-            parcel.writeInt(DpadLoopDirection.values().indexOf(loopDirection))
+            parcel.writeInt(loopDirection.ordinal)
         }
 
         override fun describeContents(): Int {
