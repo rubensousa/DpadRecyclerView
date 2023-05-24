@@ -148,6 +148,12 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 FocusableDirection.STANDARD.ordinal
             )]
         )
+        layout.setLoopDirection(
+            DpadLoopDirection.values()[typedArray.getInt(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewLoopDirection,
+                DpadLoopDirection.NONE.ordinal
+            )]
+        )
         layout.setSmoothFocusChangesEnabled(
             typedArray.getBoolean(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewSmoothFocusChangesEnabled, true
@@ -500,7 +506,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param loopDirection the [DpadLoopDirection] to use for looping items
      */
     fun setLoopDirection(loopDirection: DpadLoopDirection) {
-        requireLayout().setLoopStrategy(loopDirection)
+        requireLayout().setLoopDirection(loopDirection)
     }
 
     /**

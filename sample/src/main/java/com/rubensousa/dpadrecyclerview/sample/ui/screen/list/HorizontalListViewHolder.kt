@@ -39,7 +39,8 @@ class HorizontalListViewHolder(
     private val animator = ListAnimator(recyclerView, binding.textView)
     private val alignments = listOf(
         SubPositionAlignment(
-            alignmentViewId = recyclerView.id
+            alignmentViewId = recyclerView.id,
+            focusViewId = recyclerView.id
         )
     )
 

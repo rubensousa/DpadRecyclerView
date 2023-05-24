@@ -345,9 +345,9 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     fun isLayoutEnabled(): Boolean = configuration.isLayoutEnabled
 
-    fun setLoopStrategy(loopStrategy: DpadLoopDirection) {
-        if (configuration.loopDirection != loopStrategy) {
-            configuration.setLoopDirection(loopStrategy)
+    fun setLoopDirection(loopDirection: DpadLoopDirection) {
+        if (configuration.loopDirection != loopDirection) {
+            configuration.setLoopDirection(loopDirection)
             requestLayout()
         }
     }

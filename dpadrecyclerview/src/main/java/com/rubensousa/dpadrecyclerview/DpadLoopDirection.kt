@@ -15,13 +15,13 @@ enum class DpadLoopDirection {
     NONE,
 
     /**
-     * Mirrors both the min and max edge, so that infinite scroll happens in both directions
+     * Only allow infinite scrolling from the max edge.
+     * When returning to the min edge, stop looping
      */
-    MIN_MAX,
+    MAX,
 
     /**
-     * Only allow infinite scrolling from the max edge.
-     * When returning to the min position, stop looping
+     * Mirrors both the min and max edge, so that infinite scroll is supported in both directions
      */
-    MAX;
+    MIN_MAX;
 }

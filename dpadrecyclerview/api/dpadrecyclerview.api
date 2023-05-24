@@ -30,6 +30,14 @@ public final class com/rubensousa/dpadrecyclerview/ChildAlignment$CREATOR : andr
 	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
+public final class com/rubensousa/dpadrecyclerview/DpadLoopDirection : java/lang/Enum {
+	public static final field MAX Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
+	public static final field MIN_MAX Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
+	public static final field NONE Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
+	public static fun valueOf (Ljava/lang/String;)Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
+	public static fun values ()[Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
+}
+
 public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recyclerview/widget/RecyclerView {
 	public fun <init> (Landroid/content/Context;)V
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
@@ -55,6 +63,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun getCurrentSubPositions ()I
 	public final fun getFocusableDirection ()Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
 	public final fun getInitialPrefetchItemCount ()I
+	public final fun getLoopDirection ()Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
 	public final fun getMaxEdgeFadingLength ()I
 	public final fun getMaxEdgeFadingOffset ()I
 	public final fun getMinEdgeFadingLength ()I
@@ -110,6 +119,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setItemPrefetchEnabled (Z)V
 	public final fun setLayoutEnabled (Z)V
 	public final fun setLayoutManager (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)V
+	public final fun setLoopDirection (Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;)V
 	public final fun setMaxEdgeFadingLength (I)V
 	public final fun setMaxEdgeFadingOffset (I)V
 	public final fun setMinEdgeFadingLength (I)V
@@ -380,6 +390,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public fun getColumnCountForAccessibility (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)I
 	public final fun getCurrentSubPositions ()I
 	public final fun getFocusableDirection ()Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+	public final fun getLoopDirection ()Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
 	public final fun getMaxPendingAlignments ()I
 	public final fun getMaxPendingMoves ()I
 	public final fun getParentAlignment ()Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
@@ -431,6 +442,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public final fun setFocusableDirection (Lcom/rubensousa/dpadrecyclerview/FocusableDirection;)V
 	public final fun setGravity (I)V
 	public final fun setLayoutEnabled (Z)V
+	public final fun setLoopDirection (Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;)V
 	public final fun setMaxPendingAlignments (I)V
 	public final fun setMaxPendingMoves (I)V
 	public final fun setOnChildLaidOutListener (Lcom/rubensousa/dpadrecyclerview/OnChildLaidOutListener;)V
