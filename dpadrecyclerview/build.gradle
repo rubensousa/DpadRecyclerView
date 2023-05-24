@@ -11,11 +11,12 @@ android {
     compileSdk versions.compileSdkVersion
 
     defaultConfig {
-        minSdk versions.minSdkVersion
+        minSdk 19
         targetSdk versions.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
         testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
+        multiDexEnabled true
     }
 
     buildTypes {

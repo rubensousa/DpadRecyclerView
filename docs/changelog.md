@@ -2,6 +2,19 @@
 
 ## Version 1.0.0
 
+### 1.0.0
+
+2023-05-16
+
+#### New Features
+
+- Added support for API 19 ([#146](https://github.com/rubensousa/DpadRecyclerView/issues/146))
+- Added missing XML attribute for parent alignment `app:dpadRecyclerViewParentAlignmentPreferKeylineOverEdge` ([#145](https://github.com/rubensousa/DpadRecyclerView/issues/145))
+
+#### Bug fixes
+
+- Fixed crash when R8 is applied ([#122](https://github.com/rubensousa/DpadRecyclerView/issues/122))
+
 ### 1.0.0-rc01
 
 2023-05-07
