@@ -407,7 +407,6 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public fun onAddFocusables (Landroidx/recyclerview/widget/RecyclerView;Ljava/util/ArrayList;II)Z
 	public fun onAttachedToWindow (Landroidx/recyclerview/widget/RecyclerView;)V
 	public fun onDetachedFromWindow (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$Recycler;)V
-	public final fun onFocusChanged (Z)V
 	public fun onInitializeAccessibilityNodeInfo (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)V
 	public fun onInitializeAccessibilityNodeInfoForItem (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;Landroid/view/View;Landroidx/core/view/accessibility/AccessibilityNodeInfoCompat;)V
 	public fun onInterceptFocusSearch (Landroid/view/View;I)Landroid/view/View;
@@ -420,7 +419,6 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public fun onRequestChildFocus (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;Landroid/view/View;Landroid/view/View;)Z
 	public final fun onRequestFocusInDescendants (ILandroid/graphics/Rect;)Z
 	public fun onRestoreInstanceState (Landroid/os/Parcelable;)V
-	public final fun onRtlPropertiesChanged ()V
 	public fun onSaveInstanceState ()Landroid/os/Parcelable;
 	public fun performAccessibilityAction (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;ILandroid/os/Bundle;)Z
 	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
@@ -449,7 +447,6 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public final fun setOrientation (I)V
 	public final fun setParentAlignment (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Z)V
 	public final fun setRecycleChildrenOnDetach (Z)V
-	public final fun setRecyclerView (Landroidx/recyclerview/widget/RecyclerView;)V
 	public final fun setReverseLayout (Z)V
 	public final fun setScrollEnabled (Z)V
 	public final fun setSmoothFocusChangesEnabled (Z)V

@@ -99,9 +99,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
         // Focus a ViewHolder's view first by default if one exists
         descendantFocusability = FOCUS_AFTER_DESCENDANTS
 
-        // Typically all RecyclerViews have a fixed size, so this is a safe default
-        setHasFixedSize(true)
-
         // Call setItemAnimator to set it up
         this.itemAnimator = itemAnimator
 
@@ -164,11 +161,12 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 typedArray.getInt(R.styleable.DpadRecyclerView_android_gravity, Gravity.NO_GRAVITY)
             )
         }
+        val edge = ParentAlignment.Edge.values()[typedArray.getInt(
+            R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,
+            ParentAlignment.Edge.MIN_MAX.ordinal
+        )]
         val parentAlignment = ParentAlignment(
-            edge = ParentAlignment.Edge.values()[typedArray.getInt(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,
-                ParentAlignment.Edge.MIN_MAX.ordinal
-            )],
+            edge = edge,
             offset = typedArray.getDimensionPixelSize(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentOffset,
                 ViewAlignment.DEFAULT_OFFSET
@@ -180,7 +178,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
             isFractionEnabled = typedArray.getBoolean(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentFractionEnabled,
                 true
-            )
+            ),
+            preferKeylineOverEdge = typedArray.getBoolean(
+                R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentPreferKeylineOverEdge,
+                edge == ParentAlignment.Edge.MAX
+            ),
         )
         val childAlignment = ChildAlignment(
             offset = typedArray.getDimensionPixelSize(
@@ -203,7 +205,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     final override fun setLayoutManager(layout: LayoutManager?) {
         super.setLayoutManager(layout)
         pivotLayoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
-        pivotLayoutManager?.setRecyclerView(null)
+        pivotLayoutManager?.updateRecyclerView(null)
         if (pivotLayoutManager !== layout) {
             pivotLayoutManager?.clearOnLayoutCompletedListeners()
             pivotLayoutManager?.clearOnViewHolderSelectedListeners()
@@ -216,7 +218,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
             )
         }
         if (layout is PivotLayoutManager) {
-            layout.setRecyclerView(this)
+            layout.updateRecyclerView(this)
             layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             pivotLayoutManager = layout
         }
