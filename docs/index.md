@@ -12,6 +12,7 @@ Motivation for this library is available in my [blog](https://rubensousa.com/202
 ### Layout
 
 - Grids with different span sizes
+- Infinite loop
 - Reverse layout
 - XML attributes for easier configuration
 

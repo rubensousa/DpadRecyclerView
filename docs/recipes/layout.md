@@ -92,6 +92,22 @@ recyclerView.setSpanSizeLookup(object : DpadSpanSizeLookup() {
 })
 ```
 
+## Looping adapter contents
+
+You can enable infinite scrolling by using `setLoopDirection` to loop the adapter contents:
+
+```kotlin linenums="1"
+// This will loop when scrolling towards both the start and end edges
+recyclerView.setLoopDirection(DpadLoopDirection.MIN_MAX)
+
+// This will loop only when scrolling towards the end
+recyclerView.setLoopDirection(DpadLoopDirection.MAX)
+```
+
+!!! note
+    Looping is only supported when there's enough items to fill the viewport
+
+
 ## Extra layout space
 
 `DpadRecyclerView` won't layout any extra space by default, however, 

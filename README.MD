@@ -31,6 +31,7 @@ Check the official website for more information and recipes: https://rubensousa.
 ### Layout
 
 - Supports grids with different span sizes
+- Supports infinite/endless scrolling
 - Supports reverse layout
 - XML attributes for easier configuration
 
