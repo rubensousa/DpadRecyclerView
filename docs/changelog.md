@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 1.1.0
+
+### 1.1.0-alpha01
+
+2023-06-08
+
+#### New Features
+
+- Added support for endless scrolling with looping adapter contents: ([#20](https://github.com/rubensousa/DpadRecyclerView/issues/20)).
+  Check [this](recipes/layout.md#looping-adapter-contents) for more information.
+
+
 ## Version 1.0.0
 
 ### 1.0.0
