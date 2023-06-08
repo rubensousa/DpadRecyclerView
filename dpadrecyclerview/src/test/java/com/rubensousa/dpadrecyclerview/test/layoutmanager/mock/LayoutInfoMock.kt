@@ -33,11 +33,19 @@ internal class LayoutInfoMock(
     var isInfinite = false
     var reverseLayout = false
     var isScrolling = false
+    var isLoopingAllowed = false
+    var isLoopingStart = false
     var isScrollingToTarget = false
     var hasCreatedFirstItem = false
     var hasCreatedLastItem = false
 
     init {
+        every { mock.isLoopingStart }.answers { isLoopingStart }
+        every { mock.isLoopingAllowed }.answers { isLoopingAllowed }
+        every { mock.updateLoopingState(any(), any()) }.answers {
+            isLoopingStart = it.invocation.args[0] as Boolean
+            isLoopingAllowed = it.invocation.args[1] as Boolean
+        }
         every { mock.isVertical() }.answers { realInstance.isVertical() }
         every { mock.isHorizontal() }.answers { realInstance.isHorizontal() }
         every { mock.isInfinite() }.answers { isInfinite }

@@ -50,9 +50,7 @@ class FeatureListAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        holder.item?.let { item ->
-            stateHolder.save(holder.recyclerView, item.diffId)
-        }
+        stateHolder.save(holder.recyclerView)
         holder.onRecycled()
     }
 

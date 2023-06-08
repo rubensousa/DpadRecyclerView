@@ -244,18 +244,31 @@ internal class LayoutScroller(
 
     fun addScrollMovement(forward: Boolean, consume: Boolean = false): Boolean {
         // Skip action if there's no need to scroll already
-        val reverseLayout = layoutInfo.shouldReverseLayout()
-        if (!reverseLayout) {
-            if (forward && layoutInfo.hasCreatedLastItem()
-                || (!forward && layoutInfo.hasCreatedFirstItem())
-            ) {
-                return false
+        if (!layoutInfo.shouldReverseLayout()) {
+            when {
+                forward && layoutInfo.hasCreatedLastItem() -> {
+                    if (!layoutInfo.isLoopingAllowed) {
+                        return false
+                    }
+                }
+                !forward && layoutInfo.hasCreatedFirstItem() -> {
+                    if (!layoutInfo.isLoopingStart) {
+                        return false
+                    }
+                }
             }
         } else {
-            if (forward && layoutInfo.hasCreatedFirstItem()
-                || (!forward && layoutInfo.hasCreatedLastItem())
-            ) {
-                return false
+            when {
+                forward && layoutInfo.hasCreatedFirstItem() -> {
+                    if (!layoutInfo.isLoopingAllowed) {
+                        return false
+                    }
+                }
+                !forward && layoutInfo.hasCreatedLastItem() -> {
+                    if (!layoutInfo.isLoopingStart) {
+                        return false
+                    }
+                }
             }
         }
         val currentRecyclerView = recyclerView ?: return false
@@ -280,10 +293,6 @@ internal class LayoutScroller(
             searchPivotScroller?.consumeOneMovement()
         }
         return true
-    }
-
-    private fun scrollToView(view: View?, smooth: Boolean, requestFocus: Boolean) {
-        scrollToView(view, subPositionView = view?.findFocus(), smooth, requestFocus)
     }
 
     fun scrollToView(view: View?, subPositionView: View?, smooth: Boolean, requestFocus: Boolean) {

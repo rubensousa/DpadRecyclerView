@@ -27,6 +27,11 @@
             <enum name="circular" value="1" />
             <enum name="continuous" value="2" />
         </attr>
+        <attr name="dpadRecyclerViewLoopDirection" format="enum">
+            <enum name="none" value="0" />
+            <enum name="max" value="1" />
+            <enum name="min_max" value="2" />
+        </attr>
         <attr name="android:gravity" />
         <attr name="android:focusable" />
         <attr name="android:focusableInTouchMode" />

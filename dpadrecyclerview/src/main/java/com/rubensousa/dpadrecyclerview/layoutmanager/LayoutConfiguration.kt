@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager.Properties
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
@@ -33,6 +34,9 @@ internal class LayoutConfiguration(properties: Properties) {
         private set
 
     var gravity = Gravity.TOP.or(Gravity.START)
+        private set
+
+    var loopDirection: DpadLoopDirection = DpadLoopDirection.NONE
         private set
 
     /**
@@ -198,7 +202,9 @@ internal class LayoutConfiguration(properties: Properties) {
     }
 
     fun setExtraLayoutSpaceStrategy(strategy: ExtraLayoutSpaceStrategy?) {
-        extraLayoutSpaceStrategy = strategy
+        if (loopDirection == DpadLoopDirection.NONE) {
+            extraLayoutSpaceStrategy = strategy
+        }
     }
 
     fun setFocusSearchEnabledDuringAnimations(enabled: Boolean) {
@@ -230,5 +236,13 @@ internal class LayoutConfiguration(properties: Properties) {
     }
 
     fun hasMaxPendingAlignments(): Boolean = maxPendingAlignments != Int.MAX_VALUE
+
+    fun setLoopDirection(strategy: DpadLoopDirection) {
+        loopDirection = strategy
+        // Extra layout space is not supported when looping is enabled
+        if (loopDirection != DpadLoopDirection.NONE) {
+            extraLayoutSpaceStrategy = null
+        }
+    }
 
 }

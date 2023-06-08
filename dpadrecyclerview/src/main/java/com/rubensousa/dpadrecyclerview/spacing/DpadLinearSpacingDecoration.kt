@@ -20,6 +20,7 @@ import android.graphics.Rect
 import android.view.View
 import androidx.annotation.Px
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
 /**
@@ -68,7 +69,10 @@ class DpadLinearSpacingDecoration private constructor(
         val reverseLayout = parent.isLayoutReversed()
 
         val isAtStartEdge = layoutPosition == 0
+                && parent.getLoopDirection() == DpadLoopDirection.NONE
+
         val isAtEndEdge = layoutPosition == itemCount - 1
+                && parent.getLoopDirection() == DpadLoopDirection.NONE
 
         if (parent.getOrientation() == RecyclerView.VERTICAL) {
             applyVertically(outRect, isAtStartEdge, isAtEndEdge, reverseLayout)

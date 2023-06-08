@@ -20,6 +20,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.view.Gravity
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 
@@ -33,7 +34,8 @@ data class TestLayoutConfiguration(
     val useCustomViewPool: Boolean = false,
     val recycleChildrenOnDetach: Boolean = false,
     val focusSearchEnabledDuringAnimations: Boolean = false,
-    val focusableDirection: FocusableDirection = FocusableDirection.STANDARD
+    val focusableDirection: FocusableDirection = FocusableDirection.STANDARD,
+    val loopDirection: DpadLoopDirection = DpadLoopDirection.NONE
 ) : Parcelable {
 
 
@@ -69,6 +71,7 @@ data class TestLayoutConfiguration(
         parcel.writeByte(if (recycleChildrenOnDetach) 1 else 0)
         parcel.writeByte(if (focusSearchEnabledDuringAnimations) 1 else 0)
         parcel.writeInt(focusableDirection.ordinal)
+        parcel.writeInt(loopDirection.ordinal)
     }
 
     override fun describeContents(): Int {

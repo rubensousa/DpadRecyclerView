@@ -59,6 +59,14 @@ internal class LayoutInfo(
     var hasLaidOutViews = false
         private set
 
+    // True if the layout has enough space for a loop
+    var isLoopingAllowed = false
+        private set
+
+    // True if the start of the layout contains a loop
+    var isLoopingStart = false
+        private set
+
     private var recyclerView: RecyclerView? = null
 
     fun getConfiguration() = configuration
@@ -99,6 +107,11 @@ internal class LayoutInfo(
 
     fun setLayoutInProgress() {
         isLayoutInProgress = true
+    }
+
+    fun updateLoopingState(isLoopingStart: Boolean, isLoopingAllowed: Boolean) {
+        this.isLoopingStart = isLoopingStart
+        this.isLoopingAllowed = isLoopingAllowed
     }
 
     fun setRecyclerView(recyclerView: RecyclerView?) {

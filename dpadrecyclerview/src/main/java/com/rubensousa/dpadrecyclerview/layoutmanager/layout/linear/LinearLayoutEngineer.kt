@@ -93,6 +93,82 @@ internal class LinearLayoutEngineer(
         onChildLayoutListener.onChildLaidOut(pivotView)
     }
 
+    override fun layoutLoop(
+        pivotView: View,
+        layoutRequest: LayoutRequest,
+        viewProvider: ViewProvider,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ): Boolean {
+        val lastView = layoutInfo.getChildClosestToEnd() ?: return false
+        val lastViewPosition = layoutInfo.getLayoutPositionOf(lastView)
+        if (lastViewPosition == RecyclerView.NO_POSITION) {
+            return false
+        }
+
+        val firstView = layoutInfo.getChildClosestToStart() ?: return false
+        val firstViewPosition = layoutInfo.getLayoutPositionOf(firstView)
+        if (firstViewPosition == RecyclerView.NO_POSITION) {
+            return false
+        }
+
+        val distanceToStartEdge = max(0, layoutInfo.getDecoratedStart(pivotView))
+        val distanceToEndEdge =
+            max(0, layoutInfo.getEndAfterPadding() - layoutInfo.getDecoratedEnd(pivotView))
+        val requiredEndSpace = distanceToEndEdge + layoutInfo.getDecoratedSize(pivotView)
+        val requiredStartSpace = distanceToStartEdge + layoutInfo.getDecoratedSize(pivotView)
+        val requiredTotalSpace = layoutInfo.getTotalSpace() + layoutInfo.getDecoratedSize(pivotView)
+
+        layoutRequest.setRecyclingEnabled(true)
+
+        layoutRequest.append(lastViewPosition) {
+            setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+            setFillSpace(requiredStartSpace)
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+        val newEndEdge = layoutRequest.checkpoint
+        viewRecycler.recycleFromEnd(recycler, layoutRequest)
+
+        layoutRequest.prepend(firstViewPosition) {
+            setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+            setFillSpace(requiredEndSpace)
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+        val newStartEdge = layoutRequest.checkpoint
+        viewRecycler.recycleFromStart(recycler, layoutRequest)
+
+        layoutRequest.setRecyclingEnabled(false)
+        // If we couldn't fill the required space, don't allow looping
+        if (newEndEdge - newStartEdge < requiredTotalSpace) {
+            layoutRequest.setCurrentPosition(lastViewPosition)
+            layoutRequest.moveToNextPosition()
+            return false
+        }
+
+        // Allow looping to fill the required space
+        layoutRequest.setIsLoopingAllowed(true)
+
+        // Fill the end of the layout with the first items
+        layoutRequest.append(lastViewPosition) {
+            setCheckpoint(layoutInfo.getDecoratedEnd(lastView))
+            setFillSpace(
+                max(0, layoutInfo.getEndAfterPadding() - layoutInfo.getDecoratedEnd(lastView))
+            )
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+
+        // Fill the start of the layout with the last items
+        layoutRequest.prepend(firstViewPosition) {
+            setCheckpoint(layoutInfo.getDecoratedStart(firstView))
+            setFillSpace(
+                max(0, layoutInfo.getDecoratedStart(firstView) - layoutInfo.getStartAfterPadding())
+            )
+        }
+        fill(layoutRequest, viewProvider, recycler, state)
+
+        return true
+    }
+
     override fun layoutDisappearingViews(
         firstView: View,
         lastView: View,
@@ -249,11 +325,13 @@ internal class LinearLayoutEngineer(
                 bounds.left = layoutManager.width / 2 - width / 2
                 bounds.right = bounds.left + width
             }
+
             Gravity.RIGHT -> {
                 val width = layoutInfo.getPerpendicularDecoratedSize(view)
                 bounds.right = layoutManager.width - layoutManager.paddingRight
                 bounds.left = bounds.right - width
             }
+
             else -> { // Fallback to left gravity since this is the default expected behavior
                 bounds.left = layoutManager.paddingLeft
                 bounds.right = bounds.left + layoutInfo.getPerpendicularDecoratedSize(view)
@@ -269,11 +347,13 @@ internal class LinearLayoutEngineer(
                 bounds.top = layoutManager.height / 2 - height / 2
                 bounds.bottom = bounds.top + height
             }
+
             Gravity.BOTTOM -> {
                 val height = layoutInfo.getPerpendicularDecoratedSize(view)
                 bounds.bottom = layoutManager.height - layoutManager.paddingBottom
                 bounds.top = bounds.bottom - height
             }
+
             else -> {  // Fallback to top gravity since this is the default expected behavior
                 bounds.top = layoutManager.paddingTop
                 bounds.bottom = bounds.top + layoutInfo.getPerpendicularDecoratedSize(view)

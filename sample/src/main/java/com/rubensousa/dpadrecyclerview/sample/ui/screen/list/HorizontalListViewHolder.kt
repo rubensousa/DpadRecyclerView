@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.list
 
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
@@ -38,11 +39,15 @@ class HorizontalListViewHolder(
     private val animator = ListAnimator(recyclerView, binding.textView)
     private val alignments = listOf(
         SubPositionAlignment(
-            alignmentViewId = recyclerView.id
+            alignmentViewId = recyclerView.id,
+            focusViewId = recyclerView.id
         )
     )
 
     init {
+        binding.textView.setOnClickListener {
+            adapter.addItem()
+        }
         recyclerView.addItemDecoration(
             DpadLinearSpacingDecoration.create(
                 itemSpacing = itemView.resources.getDimensionPixelOffset(
@@ -70,11 +75,18 @@ class HorizontalListViewHolder(
     fun bind(item: ListModel) {
         this.item = item
         binding.textView.text = item.title
+        if (item.enableLooping) {
+            recyclerView.setLoopDirection(DpadLoopDirection.MIN_MAX)
+        } else {
+            recyclerView.setLoopDirection(DpadLoopDirection.NONE)
+        }
         adapter.replaceList(item.items)
+        recyclerView.adapter = adapter
     }
 
     fun recycle() {
         animator.cancel()
+        recyclerView.adapter = null
         item = null
     }
 

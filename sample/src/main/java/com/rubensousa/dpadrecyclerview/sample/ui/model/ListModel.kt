@@ -20,7 +20,8 @@ data class ListModel(
     val title: String,
     val items: MutableList<Int>,
     val centerAligned: Boolean,
-    val isLeanback: Boolean
+    val isLeanback: Boolean,
+    val enableLooping: Boolean = false
 ) : ItemModel {
     override val diffId: String = title
 }

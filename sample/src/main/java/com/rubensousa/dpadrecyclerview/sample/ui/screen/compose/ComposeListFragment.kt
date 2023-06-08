@@ -51,6 +51,11 @@ class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
     private val stateHolder = DpadStateHolder()
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.load()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(binding.recyclerView)

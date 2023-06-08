@@ -242,11 +242,33 @@ internal class LayoutAlignment(
             startViewAnchor = Int.MIN_VALUE
         }
         if (!reverseLayout) {
-            parentAlignmentCalculator.updateEndLimit(endEdge, endViewAnchor, parentAlignment)
-            parentAlignmentCalculator.updateStartLimit(startEdge, startViewAnchor, parentAlignment)
+            if (layoutInfo.isLoopingAllowed) {
+                // If we're looping, there's no end scroll limit
+                parentAlignmentCalculator.invalidateEndLimit()
+            } else {
+                parentAlignmentCalculator.updateEndLimit(endEdge, endViewAnchor, parentAlignment)
+            }
+            if (layoutInfo.isLoopingStart) {
+                parentAlignmentCalculator.invalidateStartLimit()
+            } else {
+                parentAlignmentCalculator.updateStartLimit(
+                    startEdge, startViewAnchor, parentAlignment
+                )
+            }
         } else {
-            parentAlignmentCalculator.updateStartLimit(endEdge, endViewAnchor, parentAlignment)
-            parentAlignmentCalculator.updateEndLimit(startEdge, startViewAnchor, parentAlignment)
+            if (layoutInfo.isLoopingAllowed) {
+                parentAlignmentCalculator.invalidateStartLimit()
+            } else {
+                parentAlignmentCalculator.updateStartLimit(endEdge, endViewAnchor, parentAlignment)
+            }
+            if (layoutInfo.isLoopingStart) {
+                parentAlignmentCalculator.invalidateEndLimit()
+            } else {
+                parentAlignmentCalculator.updateEndLimit(
+                    startEdge, startViewAnchor, parentAlignment
+                )
+            }
+
         }
     }
 

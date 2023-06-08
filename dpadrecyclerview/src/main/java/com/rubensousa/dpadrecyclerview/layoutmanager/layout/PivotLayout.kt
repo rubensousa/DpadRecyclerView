@@ -16,9 +16,12 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnChildLaidOutListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
@@ -189,6 +192,27 @@ internal class PivotLayout(
         return scrollBy(dy, recycler, state)
     }
 
+    fun onSaveInstanceState(): Parcelable {
+        return SavedState(
+            pivotSelector.position,
+            layoutInfo.isLoopingStart,
+            layoutInfo.isLoopingAllowed,
+            layoutInfo.getConfiguration().loopDirection
+        )
+    }
+
+    fun onRestoreInstanceState(state: Parcelable?) {
+        if (state is SavedState) {
+            pivotSelector.update(state.selectedPosition)
+            layoutInfo.updateLoopingState(state.isLoopingStart, state.isLoopingAllowed)
+            layoutInfo.getConfiguration().setLoopDirection(state.loopDirection)
+            if (state.selectedPosition != RecyclerView.NO_POSITION) {
+                pivotSelector.setSelectionUpdatePending()
+                layoutManager.requestLayout()
+            }
+        }
+    }
+
     private fun scrollBy(
         offset: Int,
         recycler: RecyclerView.Recycler,
@@ -212,6 +236,42 @@ internal class PivotLayout(
                 "didStructureChange=${didStructureChange()}, " +
                 "remainingScroll=$remainingScroll, " +
                 "predictiveAnimations=${willRunPredictiveAnimations()}"
+    }
+
+    private data class SavedState(
+        val selectedPosition: Int,
+        val isLoopingStart: Boolean,
+        val isLoopingAllowed: Boolean,
+        val loopDirection: DpadLoopDirection
+    ) : Parcelable {
+
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel): SavedState {
+                return SavedState(parcel)
+            }
+
+            override fun newArray(size: Int): Array<SavedState?> {
+                return arrayOfNulls(size)
+            }
+        }
+
+        constructor(parcel: Parcel) : this(
+            selectedPosition = parcel.readInt(),
+            isLoopingStart = parcel.readByte() == 1.toByte(),
+            isLoopingAllowed = parcel.readByte() == 1.toByte(),
+            loopDirection = DpadLoopDirection.values()[parcel.readInt()]
+        )
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            parcel.writeInt(selectedPosition)
+            parcel.writeByte(if (isLoopingStart) 1 else 0)
+            parcel.writeByte(if (isLoopingAllowed) 1 else 0)
+            parcel.writeInt(loopDirection.ordinal)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
     }
 
     private inner class ChildLayoutListener : OnChildLayoutListener {

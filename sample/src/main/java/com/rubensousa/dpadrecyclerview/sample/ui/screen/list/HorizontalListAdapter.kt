@@ -70,8 +70,7 @@ class HorizontalListAdapter(
     }
 
     override fun onViewRecycled(holder: HorizontalListViewHolder) {
-        val item = holder.item ?: return
-        stateHolder.save(holder.recyclerView, item.title)
+        stateHolder.save(holder.recyclerView)
         holder.recycle()
     }
 

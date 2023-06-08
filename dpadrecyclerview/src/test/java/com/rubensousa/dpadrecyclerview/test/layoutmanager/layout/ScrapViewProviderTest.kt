@@ -21,6 +21,7 @@ import android.view.View
 import androidx.collection.forEach
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.ScrapViewProvider
 import com.rubensousa.dpadrecyclerview.test.layoutmanager.mock.RecyclerViewStateMock
@@ -232,10 +233,12 @@ class ScrapViewProviderTest {
 
     private fun initLayoutRequest(reverseLayout: Boolean = false) {
         layoutRequest.init(
+            itemCount = 0,
             gravity = Gravity.START,
             isVertical = true,
             reverseLayout = reverseLayout,
-            infinite = false
+            infinite = false,
+            loopDirection = DpadLoopDirection.NONE
         )
     }
 

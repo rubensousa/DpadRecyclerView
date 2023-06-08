@@ -68,9 +68,16 @@ internal class ParentAlignmentCalculator {
     }
 
     fun invalidateScrollLimits() {
+        invalidateStartLimit()
+        invalidateEndLimit()
+    }
+
+    fun invalidateStartLimit() {
         startEdge = Int.MIN_VALUE
         startScrollLimit = Int.MIN_VALUE
+    }
 
+    fun invalidateEndLimit() {
         endEdge = Int.MAX_VALUE
         endScrollLimit = Int.MAX_VALUE
     }

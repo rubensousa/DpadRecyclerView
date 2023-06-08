@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.test.layoutmanager.layout
 
 import android.view.Gravity
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutRequest
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.provider.RecyclerViewProvider
@@ -119,10 +120,12 @@ class RecyclerViewProviderTest {
 
     private fun initLayoutRequest(reverseLayout: Boolean = false) {
         layoutRequest.init(
+            itemCount = 0,
             gravity = Gravity.START,
             isVertical = true,
             reverseLayout = reverseLayout,
-            infinite = false
+            infinite = false,
+            loopDirection = DpadLoopDirection.NONE
         )
     }
 }

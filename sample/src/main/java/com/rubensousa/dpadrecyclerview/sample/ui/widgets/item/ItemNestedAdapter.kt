@@ -37,6 +37,11 @@ class ItemNestedAdapter(
         notifyDataSetChanged()
     }
 
+    fun addItem() {
+        list = list + listOf(list.size)
+        notifyItemInserted(itemCount - 1)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(config.itemLayoutId, parent, false)
         return ItemViewHolder(view, view.findViewById(R.id.textView), config.animateFocusChanges)

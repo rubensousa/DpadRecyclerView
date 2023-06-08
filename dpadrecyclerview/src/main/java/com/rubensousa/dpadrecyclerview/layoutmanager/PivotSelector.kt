@@ -16,8 +16,6 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager
 
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.Log
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -189,20 +187,6 @@ internal class PivotSelector(
         }
     }
 
-    fun onSaveInstanceState(): Parcelable {
-        return SavedState(position)
-    }
-
-    fun onRestoreInstanceState(state: Parcelable?) {
-        if (state is SavedState) {
-            position = state.selectedPosition
-            if (position != RecyclerView.NO_POSITION) {
-                isSelectionUpdatePending = true
-                layoutManager.requestLayout()
-            }
-        }
-    }
-
     fun dispatchViewHolderSelected() {
         val recyclerView = this.recyclerView ?: return
         val view = if (position == RecyclerView.NO_POSITION) {
@@ -333,28 +317,5 @@ internal class PivotSelector(
     }
 
     private fun hasSelectionListeners(): Boolean = selectionListeners.isNotEmpty()
-
-    data class SavedState(val selectedPosition: Int) : Parcelable {
-
-        companion object CREATOR : Parcelable.Creator<SavedState> {
-            override fun createFromParcel(parcel: Parcel): SavedState {
-                return SavedState(parcel)
-            }
-
-            override fun newArray(size: Int): Array<SavedState?> {
-                return arrayOfNulls(size)
-            }
-        }
-
-        constructor(parcel: Parcel) : this(parcel.readInt())
-
-        override fun writeToParcel(parcel: Parcel, flags: Int) {
-            parcel.writeInt(selectedPosition)
-        }
-
-        override fun describeContents(): Int {
-            return 0
-        }
-    }
 
 }

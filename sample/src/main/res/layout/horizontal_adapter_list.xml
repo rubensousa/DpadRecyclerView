@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/list_margin_start"
         android:layout_marginTop="16dp"
+        android:focusable="false"
         android:textColor="@color/white"
         android:textSize="14sp"
         tools:text="Headline" />
@@ -29,9 +30,9 @@
         app:dpadRecyclerViewChildAlignmentFraction="0"
         app:dpadRecyclerViewFocusOutBack="false"
         app:dpadRecyclerViewFocusOutFront="false"
-        app:dpadRecyclerViewParentAlignmentEdge="none"
-        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-        app:dpadRecyclerViewParentAlignmentFractionEnabled="false" />
+        app:dpadRecyclerViewParentAlignmentEdge="max"
+        app:dpadRecyclerViewParentAlignmentFraction="0"
+        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start" />
 
 
 </LinearLayout>
