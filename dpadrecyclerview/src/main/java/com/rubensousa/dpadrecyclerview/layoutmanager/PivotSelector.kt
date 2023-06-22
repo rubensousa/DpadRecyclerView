@@ -79,9 +79,13 @@ internal class PivotSelector(
     }
 
     private fun applyPositionOffset() {
+        val previousPosition = position
         position += positionOffset
         // Ensure selection is within bounds
         position = max(0, min(layoutManager.itemCount - 1, position))
+        if (position != previousPosition) {
+            isSelectionUpdatePending = true
+        }
     }
 
     fun onLayoutChildren(state: RecyclerView.State) {
