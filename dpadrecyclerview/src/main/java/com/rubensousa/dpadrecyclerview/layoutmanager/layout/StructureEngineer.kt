@@ -163,6 +163,7 @@ internal abstract class StructureEngineer(
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
     ) {
+        layoutManager.detachAndScrapAttachedViews(recycler)
         val firstView = preLayoutRequest.firstView
         if (firstView != null) {
             layoutRequest.prepend(preLayoutRequest.firstPosition) {

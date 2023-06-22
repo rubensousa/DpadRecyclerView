@@ -24,6 +24,8 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Responsibilities:
@@ -68,12 +70,18 @@ internal class PivotSelector(
     fun consumePendingSelectionChanges(): Boolean {
         var consumed = false
         if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
-            position += positionOffset
+            applyPositionOffset()
             subPosition = 0
             consumed = true
         }
         positionOffset = 0
         return consumed
+    }
+
+    private fun applyPositionOffset() {
+        position += positionOffset
+        // Ensure selection is within bounds
+        position = max(0, min(layoutManager.itemCount - 1, position))
     }
 
     fun onLayoutChildren(state: RecyclerView.State) {
@@ -119,7 +127,10 @@ internal class PivotSelector(
 
     fun onItemsAdded(positionStart: Int, itemCount: Int) {
         if (DpadRecyclerView.DEBUG) {
-            Log.i(DpadRecyclerView.TAG, "onItemsAdded: $positionStart, $itemCount")
+            Log.i(
+                DpadRecyclerView.TAG,
+                "onItemsAdded: $itemCount, positionStart: $positionStart, totalItems: ${layoutManager.itemCount}"
+            )
         }
         if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
             val finalPosition = position + positionOffset
@@ -137,7 +148,10 @@ internal class PivotSelector(
 
     fun onItemsRemoved(positionStart: Int, itemCount: Int) {
         if (DpadRecyclerView.DEBUG) {
-            Log.i(DpadRecyclerView.TAG, "onItemsRemoved: $positionStart, $itemCount")
+            Log.i(
+                DpadRecyclerView.TAG,
+                "onItemsRemoved: $itemCount, positionStart: $positionStart, totalItems: ${layoutManager.itemCount}"
+            )
         }
         if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
             val finalPosition = position + positionOffset
@@ -149,7 +163,7 @@ internal class PivotSelector(
                 // If the focused position was removed,
                 // stop updating the offset until the next layout pass
                 positionOffset += positionStart - finalPosition
-                position += positionOffset
+                applyPositionOffset()
                 positionOffset = Int.MIN_VALUE
                 isSelectionUpdatePending = true
             } else {
@@ -160,7 +174,10 @@ internal class PivotSelector(
 
     fun onItemsMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
         if (DpadRecyclerView.DEBUG) {
-            Log.i(DpadRecyclerView.TAG, "onItemsMoved: $fromPosition, $toPosition, $itemCount")
+            Log.i(
+                DpadRecyclerView.TAG, "onItemsMoved $itemCount fromPosition $fromPosition, " +
+                        "toPosition: $toPosition, totalItems: ${layoutManager.itemCount}"
+            )
         }
         if (position != RecyclerView.NO_POSITION && positionOffset != Int.MIN_VALUE) {
             val finalPosition = position + positionOffset
