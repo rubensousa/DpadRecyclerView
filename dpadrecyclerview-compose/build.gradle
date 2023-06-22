@@ -31,7 +31,7 @@ android {
     }
 
     testOptions {
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
+       // execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 
     compileOptions {
