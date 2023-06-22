@@ -41,6 +41,7 @@ class MainViewModel : ViewModel() {
             buildGridFeatureList(),
             buildComposeFeatureList(),
             buildFocusFeatureList(),
+            buildAnimationsFeatureList(),
         )
     }
 
@@ -112,6 +113,18 @@ class MainViewModel : ViewModel() {
                 ScreenDestination(
                     direction = MainFragmentDirections.openHorizontalLeanback(),
                     title = "Searching for unknown pivot"
+                )
+            ),
+        )
+    }
+
+    private fun buildAnimationsFeatureList(): FeatureList {
+        return FeatureList(
+            title = "Item animations",
+            destinations = listOf(
+                ScreenDestination(
+                    direction = MainFragmentDirections.openItemAnimations(),
+                    title = "Random updates"
                 )
             ),
         )
