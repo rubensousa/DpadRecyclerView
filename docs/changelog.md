@@ -2,6 +2,14 @@
 
 ## Version 1.1.0
 
+### 1.1.0-alpha02
+
+2023-06-23
+
+#### Bug fixes
+
+- Fixed crash when updating adapter contents too frequently: ([#153](https://github.com/rubensousa/DpadRecyclerView/issues/153))
+
 ### 1.1.0-alpha01
 
 2023-06-08
