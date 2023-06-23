@@ -30,22 +30,23 @@ class ItemAnimator(private val itemView: View) {
         itemView.animate()
             .scaleX(1.1f)
             .scaleY(1.1f)
+            .setListener(null)
             .setInterpolator(focusGainInterpolator)
             .duration = focusGainDuration
     }
 
     fun startFocusLossAnimation() {
-        cancel()
+        itemView.animate()
+            .scaleX(1f)
+            .scaleY(1f)
+            .setListener(null)
+            .duration = 0
     }
 
     fun cancel() {
-        cancelPendingAnimations()
+        itemView.animate().setListener(null).cancel()
         itemView.scaleX = 1f
         itemView.scaleY = 1f
-    }
-
-    private fun cancelPendingAnimations() {
-        itemView.animate().cancel()
     }
 
 }

@@ -68,6 +68,10 @@
             android:id="@+id/open_fading_edge"
             app:destination="@id/fading_edge_fragment" />
 
+        <action
+            android:id="@+id/open_item_animations"
+            app:destination="@id/item_animations_fragment" />
+
     </fragment>
 
     <fragment
@@ -156,7 +160,7 @@
 
     <fragment
         android:id="@+id/grid_paging_fragment"
-        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridPagingFragment"/>
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridPagingFragment" />
 
     <fragment
         android:id="@+id/compose_grid_fragment"
@@ -169,4 +173,8 @@
     <fragment
         android:id="@+id/fading_edge_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.fading.FadingEdgeFragment" />
+
+    <fragment
+        android:id="@+id/item_animations_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.animation.ItemAnimationsFragment" />
 </navigation>

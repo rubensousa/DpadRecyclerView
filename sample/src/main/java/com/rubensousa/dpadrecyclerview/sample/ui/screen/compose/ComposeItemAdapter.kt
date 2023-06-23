@@ -32,7 +32,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
 
 
 class ComposeItemAdapter(
-    private val onItemClick: (Int) -> Unit
+    private val onItemClick: (Int) -> Unit = {}
 ) : MutableListAdapter<Int, ComposeItemAdapter.ComposeItemViewHolder>(
     MutableGridAdapter.DIFF_CALLBACK
 ) {

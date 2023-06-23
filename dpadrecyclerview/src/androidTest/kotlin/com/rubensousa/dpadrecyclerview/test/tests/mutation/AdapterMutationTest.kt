@@ -17,6 +17,8 @@
 package com.rubensousa.dpadrecyclerview.test.tests.mutation
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
+import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -26,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertItemAtPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -33,8 +36,9 @@ import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import kotlin.random.Random
 
-class VerticalMutationTest : DpadRecyclerViewTest() {
+class AdapterMutationTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
@@ -236,4 +240,28 @@ class VerticalMutationTest : DpadRecyclerViewTest() {
         assertThat(newViewBounds).isEqualTo(oldViewBounds)
     }
 
+    @Test
+    fun testQuickUpdatesDoNotCrash() {
+        val totalItems = 25
+        val random = Random.Default
+        val newItems = mutableSetOf<Int>()
+        lateinit var testAdapter: AbstractTestAdapter<*>
+        mutateAdapter { adapter ->
+            testAdapter = adapter
+        }
+        repeat(50) {
+            val newListSize = random.nextInt(totalItems)
+            repeat(newListSize) {
+                val item = random.nextInt(totalItems - 1)
+                newItems.add(item)
+            }
+            InstrumentationRegistry.getInstrumentation().runOnMainSync {
+                testAdapter.submitList(newItems.toMutableList())
+            }
+            newItems.clear()
+            Thread.sleep(250L)
+        }
+        Espresso.onIdle()
+
+    }
 }
