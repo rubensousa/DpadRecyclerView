@@ -106,20 +106,8 @@ abstract class DpadSpanSizeLookup {
         cacheSpanGroupIndices = enabled
     }
 
-
-    /**
-     * Clears the span index cache. GridLayoutManager automatically calls this method when
-     * adapter changes occur.
-     */
-    fun invalidateSpanIndexCache() {
+    fun invalidateCache() {
         spanIndexCache.clear()
-    }
-
-    /**
-     * Clears the span group index cache. GridLayoutManager automatically calls this method
-     * when adapter changes occur.
-     */
-    fun invalidateSpanGroupIndexCache() {
         spanGroupIndexCache.clear()
     }
 

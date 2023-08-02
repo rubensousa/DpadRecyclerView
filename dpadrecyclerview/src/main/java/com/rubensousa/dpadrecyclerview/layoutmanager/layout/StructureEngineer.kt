@@ -397,6 +397,7 @@ internal abstract class StructureEngineer(
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
     ): Int {
+        var newSpace = 0
         var remainingSpace = layoutRequest.fillSpace
         layoutResult.reset()
 
@@ -410,6 +411,8 @@ internal abstract class StructureEngineer(
             layoutRequest.offsetCheckpoint(
                 layoutResult.consumedSpace * layoutRequest.direction.value
             )
+
+            newSpace += layoutResult.consumedSpace
 
             if (!layoutResult.skipConsumption) {
                 remainingSpace -= layoutResult.consumedSpace
@@ -429,7 +432,7 @@ internal abstract class StructureEngineer(
         // Recycle once again after layout is done
         viewRecycler.recycleByLayoutRequest(recycler, layoutRequest)
 
-        return layoutRequest.fillSpace - remainingSpace
+        return newSpace
     }
 
     private fun updateLoopingState() {

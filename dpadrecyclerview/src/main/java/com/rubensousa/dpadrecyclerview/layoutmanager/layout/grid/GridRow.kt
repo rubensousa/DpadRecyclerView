@@ -90,30 +90,8 @@ internal class GridRow(
         return startIndex == RecyclerView.NO_POSITION && endIndex == RecyclerView.NO_POSITION
     }
 
-    fun getAvailableAppendSpans(): Int {
-        if (endIndex == RecyclerView.NO_POSITION) {
-            if (startIndex == RecyclerView.NO_POSITION) {
-                return numberOfSpans
-            }
-            return numberOfSpans - startIndex
-        }
-        // Spans: 3, filled: [X, -, -],
-        return numberOfSpans - endIndex - 1
-    }
-
-    fun getAvailablePrependSpans(): Int {
-        if (startIndex == RecyclerView.NO_POSITION) {
-            if (endIndex == RecyclerView.NO_POSITION) {
-                return numberOfSpans
-            }
-            return endIndex
-        }
-        // Spans: 3, filled: [X, -, -],
-        return startIndex
-    }
-
-    fun getSpanBorder(index: Int): Int {
-        return spanBorders[index]
+    fun getSpanBorder(spanIndex: Int): Int {
+        return spanBorders[spanIndex]
     }
 
     fun getSpaceForSpanRange(
@@ -132,28 +110,6 @@ internal class GridRow(
     fun offsetBy(dy: Int) {
         startOffset += dy
         endOffset += dy
-    }
-
-    fun fitsEnd(spanSize: Int): Boolean {
-        if (endIndex == RecyclerView.NO_POSITION) {
-            return spanSize <= numberOfSpans
-        }
-        return endIndex + spanSize < numberOfSpans
-    }
-
-    fun fitsStart(spanSize: Int): Boolean {
-        if (startIndex == RecyclerView.NO_POSITION) {
-            return spanSize <= numberOfSpans
-        }
-        return startIndex - spanSize >= 0
-    }
-
-    fun isEndComplete(): Boolean {
-        return endIndex == numberOfSpans - 1
-    }
-
-    fun isStartComplete(): Boolean {
-        return startIndex == 0
     }
 
     fun getSpanSpace(): Int {
@@ -192,51 +148,22 @@ internal class GridRow(
         return getSpanBorder(endIndex + 1)
     }
 
-    fun append(viewSize: Int, viewPosition: Int, spanSize: Int): Int {
-        val viewSpanIndex = endIndex + 1
-        val viewStart = getSpanSpace() * viewSpanIndex
-        updateSpans(viewSize, viewPosition, viewSpanIndex, spanSize)
+    fun append(viewSize: Int, viewPosition: Int, spanIndex: Int, spanSize: Int) {
+        endIndex = spanIndex + spanSize - 1
+        updateSpans(viewSize, viewPosition, spanIndex, spanSize)
         endOffset = startOffset + height
-        endIndex += spanSize
         if (startIndex == RecyclerView.NO_POSITION) {
-            startIndex = 0
+            startIndex = spanIndex
         }
-        return viewStart
     }
 
-    fun prepend(viewSize: Int, viewPosition: Int, spanSize: Int): Int {
-        if (startIndex == RecyclerView.NO_POSITION) {
-            startIndex = numberOfSpans - spanSize
-        } else {
-            startIndex -= spanSize
-        }
-        updateSpans(viewSize, viewPosition, startIndex, spanSize)
+    fun prepend(viewSize: Int, viewPosition: Int, spanIndex: Int, spanSize: Int) {
+        startIndex = spanIndex
+        updateSpans(viewSize, viewPosition, spanIndex, spanSize)
         startOffset = endOffset - height
         if (endIndex == RecyclerView.NO_POSITION) {
-            endIndex = numberOfSpans - 1
+            endIndex = spanIndex + spanSize - 1
         }
-        return getSpanSpace() * startIndex
-    }
-
-    /**
-     * @return next item position
-     */
-    fun moveToNext(): Int {
-        val nextPosition = getPositionAt(numberOfSpans - 1) + 1
-        startOffset += height
-        endOffset = startOffset
-        resetSpans()
-        return nextPosition
-    }
-
-    /**
-     * @return previous item position
-     */
-    fun moveToPrevious(): Int {
-        val previousPosition = getPositionAt(0) - 1
-        endOffset = startOffset
-        resetSpans()
-        return previousPosition
     }
 
     fun reset(keyline: Int) {

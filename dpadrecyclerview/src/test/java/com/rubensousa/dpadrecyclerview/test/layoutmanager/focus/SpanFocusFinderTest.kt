@@ -85,6 +85,21 @@ class SpanFocusFinderTest {
     }
 
     @Test
+    fun `previous span focus is set to header when focus is on any span`() {
+        repeat(spanCount) { spanIndex ->
+            assertThat(
+                finder.findNextSpanPosition(
+                    focusedPosition = spanIndex + 1,
+                    spanSizeLookup = headerSpanSizeLookup,
+                    forward = false,
+                    edgePosition = 0,
+                    reverseLayout = false
+                )
+            ).isEqualTo(0)
+        }
+    }
+
+    @Test
     fun `next span focus is correctly set for last possible view`() {
         assertThat(
             finder.findNextSpanPosition(
@@ -127,7 +142,7 @@ class SpanFocusFinderTest {
                 edgePosition = spanCount + 2,
                 reverseLayout = true
             )
-        ).isEqualTo( spanCount + 2)
+        ).isEqualTo(spanCount + 2)
     }
 
     @Test
@@ -259,5 +274,86 @@ class SpanFocusFinderTest {
             )
         ).isEqualTo(RecyclerView.NO_POSITION)
     }
+
+    @Test
+    fun `next position is found for full span configuration`() {
+        val spanSizeLookup = object : DpadSpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position == 0 || position.rem(9) == 0) {
+                    spanCount
+                } else {
+                    1
+                }
+            }
+        }
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 0,
+                spanSizeLookup = spanSizeLookup,
+                forward = true,
+                edgePosition = 199,
+                reverseLayout = false
+            )
+        ).isEqualTo(1)
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 1,
+                spanSizeLookup = spanSizeLookup,
+                forward = true,
+                edgePosition = 199,
+                reverseLayout = false
+            )
+        ).isEqualTo(6)
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 6,
+                spanSizeLookup = spanSizeLookup,
+                forward = true,
+                edgePosition = 199,
+                reverseLayout = false
+            )
+        ).isEqualTo(9)
+    }
+
+    @Test
+    fun `previous position is found for full span configuration`() {
+        val spanSizeLookup = object : DpadSpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                return if (position == 0 || position.rem(9) == 0) {
+                    spanCount
+                } else {
+                    1
+                }
+            }
+        }
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 1,
+                spanSizeLookup = spanSizeLookup,
+                forward = false,
+                edgePosition = 199,
+                reverseLayout = false
+            )
+        ).isEqualTo(0)
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 6,
+                spanSizeLookup = spanSizeLookup,
+                forward = false,
+                edgePosition = 199,
+                reverseLayout = false
+            )
+        ).isEqualTo(1)
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 9,
+                spanSizeLookup = spanSizeLookup,
+                forward = false,
+                edgePosition = 199,
+                reverseLayout = false
+            )
+        ).isEqualTo(6)
+    }
+
 
 }

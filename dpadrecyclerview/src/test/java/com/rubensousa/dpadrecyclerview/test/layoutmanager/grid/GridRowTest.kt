@@ -44,7 +44,12 @@ class GridRowTest {
     @Test
     fun `constructor copies the state of another row`() {
         val startRow = createRow()
-        startRow.append(viewSize = 500, viewPosition = 0, spanSize = defaultNumberOfSpans)
+        startRow.append(
+            viewSize = 500,
+            viewPosition = 0,
+            spanIndex = 0,
+            spanSize = defaultNumberOfSpans
+        )
         val endRow = GridRow(startRow)
 
         assertThat(endRow.startOffset).isEqualTo(startRow.startOffset)
@@ -70,29 +75,6 @@ class GridRowTest {
     }
 
     @Test
-    fun `fits end only returns true if item can be appended to the row`() {
-        val row = createRow()
-        repeat(defaultNumberOfSpans) { index ->
-            assertThat(row.fitsEnd(spanSize = index + 1)).isTrue()
-        }
-
-        row.append(viewSize = defaultViewSize, viewPosition = 0, spanSize = 1)
-        assertThat(row.fitsEnd(spanSize = defaultNumberOfSpans)).isFalse()
-    }
-
-    @Test
-    fun `fits start only returns true if item can be prepended to the row`() {
-        val row = createRow()
-        repeat(defaultNumberOfSpans) { index ->
-            assertThat(row.fitsStart(spanSize = index + 1)).isTrue()
-        }
-
-        row.prepend(viewSize = defaultViewSize, viewPosition = 0, spanSize = 1)
-
-        assertThat(row.fitsStart(spanSize = defaultNumberOfSpans)).isFalse()
-    }
-
-    @Test
     fun `getSpanSpace returns the minimum size of a span`() {
         val row = createRow()
         assertThat(row.getSpanSpace()).isEqualTo(defaultWidth / defaultNumberOfSpans)
@@ -104,10 +86,10 @@ class GridRowTest {
         // Row is empty, so offset should be 0
         assertThat(row.getSpanStartOffset()).isEqualTo(0)
 
-        row.prepend(viewSize = defaultViewSize, viewPosition = 3, spanSize = 1)
-        assertThat(row.getSpanStartOffset()).isEqualTo(row.getSpanSpace() * 4)
+        row.prepend(viewSize = defaultViewSize, viewPosition = 3, spanIndex = 3, spanSize = 1)
+        assertThat(row.getSpanStartOffset()).isEqualTo(row.getSpanSpace() * 3)
 
-        row.prepend(viewSize = defaultViewSize, viewPosition = 2, spanSize = 4)
+        row.prepend(viewSize = defaultViewSize, viewPosition = 2, spanIndex = 0, spanSize = 4)
         assertThat(row.getSpanStartOffset()).isEqualTo(0)
     }
 
@@ -118,10 +100,10 @@ class GridRowTest {
         assertThat(row.getSpanEndOffset()).isEqualTo(0)
 
         // Appending an item moves the end offset
-        row.append(viewSize = defaultViewSize, viewPosition = 0, spanSize = 1)
+        row.append(viewSize = defaultViewSize, viewPosition = 0, spanIndex = 0, spanSize = 1)
         assertThat(row.getSpanEndOffset()).isEqualTo(row.getSpanSpace())
 
-        row.append(viewSize = defaultViewSize, viewPosition = 1, spanSize = 4)
+        row.append(viewSize = defaultViewSize, viewPosition = 1, spanIndex = 1, spanSize = 4)
         assertThat(row.getSpanEndOffset()).isEqualTo(row.getWidth())
     }
 
@@ -129,15 +111,13 @@ class GridRowTest {
     fun `append inserts item at the end of a row and updates row height`() {
         val row = createRow()
 
-        var viewLeft = row.append(viewSize = defaultViewSize, viewPosition = 0, spanSize = 1)
-        assertThat(viewLeft).isEqualTo(0)
+        row.append(viewSize = defaultViewSize, viewPosition = 0, spanIndex = 0, spanSize = 1)
         assertThat(row.startIndex).isEqualTo(0)
         assertThat(row.endIndex).isEqualTo(0)
         assertThat(row.height).isEqualTo(defaultViewSize)
 
         val newHeight = defaultViewSize + 50
-        viewLeft = row.append(viewSize = newHeight, viewPosition = 1, spanSize = 1)
-        assertThat(viewLeft).isEqualTo(row.getSpanSpace())
+        row.append(viewSize = newHeight, viewPosition = 1, spanIndex = 1, spanSize = 1)
         assertThat(row.height).isEqualTo(newHeight)
         assertThat(row.startIndex).isEqualTo(0)
         assertThat(row.endIndex).isEqualTo(1)
@@ -147,13 +127,18 @@ class GridRowTest {
     fun `prepend inserts item at the start of a row and updates row height`() {
         val row = createRow()
 
-        var viewLeft = row.prepend(viewSize = defaultViewSize, viewPosition = 0, spanSize = 1)
-        assertThat(viewLeft).isEqualTo(row.getSpanSpace() * (defaultNumberOfSpans - 1))
+        row.prepend(
+            viewSize = defaultViewSize,
+            viewPosition = 0,
+            spanIndex = 0,
+            spanSize = 1
+        )
+
+        assertThat(row.getSpanStartOffset()).isEqualTo(0)
         assertThat(row.height).isEqualTo(defaultViewSize)
 
         val newHeight = defaultViewSize + 50
-        viewLeft = row.prepend(viewSize = newHeight, viewPosition = 1, spanSize = 1)
-        assertThat(viewLeft).isEqualTo(row.getSpanSpace() * (defaultNumberOfSpans - 2))
+        row.prepend(viewSize = newHeight, viewPosition = 1, spanIndex = 1, spanSize = 1)
         assertThat(row.height).isEqualTo(newHeight)
     }
 
@@ -173,7 +158,7 @@ class GridRowTest {
     ): GridRow {
         val row = createRow(numberOfSpans, width)
         row.offsetBy(top)
-        row.append(viewSize, viewPosition = 0, spanSize)
+        row.append(viewSize, viewPosition = 0, spanIndex = 0, spanSize)
         return row
     }
 }
