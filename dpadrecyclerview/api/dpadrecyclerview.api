@@ -189,8 +189,7 @@ public abstract class com/rubensousa/dpadrecyclerview/DpadSpanSizeLookup {
 	public fun getSpanGroupIndex (II)I
 	public fun getSpanIndex (II)I
 	public abstract fun getSpanSize (I)I
-	public final fun invalidateSpanGroupIndexCache ()V
-	public final fun invalidateSpanIndexCache ()V
+	public final fun invalidateCache ()V
 	public final fun setSpanGroupIndexCacheEnabled (Z)V
 	public final fun setSpanIndexCacheEnabled (Z)V
 }
