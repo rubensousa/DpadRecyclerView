@@ -2,6 +2,14 @@
 
 ## Version 1.1.0
 
+### 1.1.0-alpha03
+
+2023-08-04
+
+#### Bug fixes
+
+- Fixed grid layout not placing views in the correct spans when scrolling in opposite direction: ([#156](https://github.com/rubensousa/DpadRecyclerView/issues/156))
+
 ### 1.1.0-alpha02
 
 2023-06-23

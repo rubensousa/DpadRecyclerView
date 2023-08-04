@@ -74,22 +74,22 @@ class DpadGridSpacingDecoration private constructor(
         val reverseLayout = parent.isLayoutReversed()
         val itemCount = state.itemCount
         val spanSize = layoutParams.spanSize
+        val realSpanIndex = if (!reverseLayout) {
+            spanIndex
+        } else {
+            spanCount - 1 - spanIndex
+        }
 
         val isAtStartEdge = layoutParams.spanGroupIndex == 0
-
-        val isAtEndEdge = if (!reverseLayout) {
-            (layoutPosition + spanCount - spanIndex - spanSize) >= itemCount - 1
-        } else {
-            (layoutPosition + spanSize + spanIndex) >= itemCount
-        }
+        val isAtEndEdge = layoutPosition + (spanCount - spanIndex - spanSize) >= itemCount - 1
 
         if (parent.getOrientation() == RecyclerView.VERTICAL) {
             applyVertically(
-                outRect, spanIndex, spanSize, spanCount, isAtStartEdge, isAtEndEdge, reverseLayout
+                outRect, realSpanIndex, spanSize, spanCount, isAtStartEdge, isAtEndEdge, reverseLayout
             )
         } else {
             applyHorizontally(
-                outRect, spanIndex, spanSize, spanCount, isAtStartEdge, isAtEndEdge, reverseLayout
+                outRect, realSpanIndex, spanSize, spanCount, isAtStartEdge, isAtEndEdge, reverseLayout
             )
         }
     }

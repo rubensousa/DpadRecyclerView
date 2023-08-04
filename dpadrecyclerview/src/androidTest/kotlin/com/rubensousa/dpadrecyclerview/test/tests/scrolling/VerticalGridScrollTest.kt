@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.FocusableDirection
@@ -269,6 +270,40 @@ class VerticalGridScrollTest : DpadRecyclerViewTest() {
             KeyEvents.pressDown()
         }
         assertFocusAndSelection(position = 78)
+    }
+
+    @Test
+    fun testLayoutStaysTheSameWhenScrollingInOppositeDirection() {
+        launchFragment()
+        onRecyclerView("Change span size lookup") { recyclerView ->
+            recyclerView.setParentAlignment(ParentAlignment(fraction = 0.0f))
+            recyclerView.setChildAlignment(ChildAlignment(fraction = 0.0f))
+            recyclerView.setSpanSizeLookup(object : DpadSpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int {
+                    return if (position == 0 || position.rem(9) == 0) {
+                        spanCount
+                    } else {
+                        1
+                    }
+                }
+            })
+        }
+        waitForIdleScrollState()
+
+        val childPositions = getChildrenBounds()
+
+        // Scroll down until last uneven child is visible
+        repeat(5) {
+            KeyEvents.pressDown(delay = 500L)
+        }
+
+        waitForIdleScrollState()
+
+        repeat(5) {
+            KeyEvents.pressUp(delay = 500L)
+        }
+
+        assertThat(getChildrenBounds()).isEqualTo(childPositions)
     }
 
     private fun scrollUp(grid: VerticalGridLayout) {

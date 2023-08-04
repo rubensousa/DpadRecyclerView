@@ -169,10 +169,15 @@ internal class LayoutConfiguration(properties: Properties) {
 
     fun setSpanCount(count: Int) {
         spanCount = max(1, count)
+        spanSizeLookup.invalidateCache()
     }
 
     fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
         this.spanSizeLookup = spanSizeLookup
+        if (spanSizeLookup !== DpadSpanSizeLookup.DEFAULT) {
+            spanSizeLookup.setSpanIndexCacheEnabled(true)
+            spanSizeLookup.setSpanGroupIndexCacheEnabled(true)
+        }
     }
 
     fun setChildDrawingOrderEnabled(enabled: Boolean) {

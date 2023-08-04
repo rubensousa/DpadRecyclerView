@@ -243,9 +243,12 @@ internal class GridLayoutEngineer(
         layoutResult: LayoutResult
     ) {
         layoutRow.reset(keyline = layoutRequest.checkpoint)
-        val fillSpanCount = calculateSpansToFill(layoutRequest)
-        val viewCount = getViewsForRow(layoutRequest, viewProvider, recycler, state, fillSpanCount)
-        assignSpans(recycler, state, viewCount, appending = layoutRequest.isAppending())
+        val anchorSpanIndex = getSpanIndex(recycler, state, layoutRequest.currentPosition)
+        val anchorSpanSize = getSpanSize(recycler, state, layoutRequest.currentPosition)
+        val availableSpans = calculateAvailableSpans(layoutRequest, anchorSpanIndex, anchorSpanSize)
+        val viewCount = getViewsForRow(
+            layoutRequest, viewProvider, recycler, state, anchorSpanIndex, availableSpans
+        )
 
         val rowHeight = fillRow(viewCount, layoutRow, layoutRequest)
         layoutResult.consumedSpace = rowHeight
@@ -266,12 +269,6 @@ internal class GridLayoutEngineer(
         repeat(viewCount) { index ->
             val view = getRowViewAt(index)
             val layoutParams = layoutInfo.getLayoutParams(view)
-            if (layoutRequest.isAppending() && !row.fitsEnd(layoutParams.spanSize)) {
-                return row.height
-            }
-            if (layoutRequest.isPrepending() && !row.fitsStart(layoutParams.spanSize)) {
-                return row.height
-            }
             addView(view, layoutRequest)
             layoutManager.calculateItemDecorationsForChild(view, insets)
 
@@ -287,12 +284,14 @@ internal class GridLayoutEngineer(
                 row.append(
                     decoratedSize,
                     layoutParams.viewLayoutPosition,
+                    layoutParams.spanIndex,
                     layoutParams.spanSize
                 )
             } else {
                 row.prepend(
                     decoratedSize,
                     layoutParams.viewLayoutPosition,
+                    layoutParams.spanIndex,
                     layoutParams.spanSize
                 )
             }
@@ -372,15 +371,30 @@ internal class GridLayoutEngineer(
     ) {
         val perpendicularSize = layoutInfo.getPerpendicularDecoratedSize(view)
         if (layoutRequest.isVertical) {
-            bounds.left = layoutManager.paddingLeft + layoutRow.getSpanBorder(
-                layoutParams.spanIndex
-            )
-            bounds.right = bounds.left + perpendicularSize
+            if (!layoutRequest.reverseLayout) {
+                bounds.left = layoutManager.paddingLeft + layoutRow.getSpanBorder(
+                    layoutParams.spanIndex
+                )
+                bounds.right = bounds.left + perpendicularSize
+            } else {
+                bounds.right = layoutRow.getSpanBorder(
+                    layoutRow.numberOfSpans - layoutParams.spanIndex
+                ) - layoutManager.paddingRight
+                bounds.left = bounds.right - perpendicularSize
+            }
         } else {
-            bounds.top = layoutManager.paddingTop + layoutRow.getSpanBorder(
-                layoutParams.spanIndex
-            )
-            bounds.bottom = bounds.top + perpendicularSize
+            if (!layoutRequest.reverseLayout) {
+                bounds.top = layoutManager.paddingTop + layoutRow.getSpanBorder(
+                    layoutParams.spanIndex,
+                )
+                bounds.bottom = bounds.top + perpendicularSize
+            } else {
+                bounds.bottom = layoutRow.getSpanBorder(
+                    layoutRow.numberOfSpans - layoutParams.spanIndex
+                ) - layoutManager.paddingBottom
+                bounds.top = bounds.bottom - perpendicularSize
+            }
+
         }
     }
 
@@ -489,11 +503,15 @@ internal class GridLayoutEngineer(
         }
     }
 
-    private fun calculateSpansToFill(request: LayoutRequest): Int {
-        return if (request.isAppending()) {
-            layoutRow.getAvailableAppendSpans()
+    private fun calculateAvailableSpans(
+        request: LayoutRequest,
+        anchorSpanIndex: Int,
+        anchorSpanSize: Int
+    ): Int {
+        return if (request.isAppending() != request.reverseLayout) {
+            layoutRow.numberOfSpans - anchorSpanIndex
         } else {
-            layoutRow.getAvailablePrependSpans()
+            anchorSpanIndex + anchorSpanSize
         }
     }
 
@@ -502,9 +520,11 @@ internal class GridLayoutEngineer(
         viewProvider: ViewProvider,
         recycler: Recycler,
         state: State,
-        spansToFill: Int
+        anchorSpanIndex: Int,
+        availableSpans: Int
     ): Int {
-        var remainingSpans = spansToFill
+        var currentSpanIndex = anchorSpanIndex
+        var remainingSpans = availableSpans
         var viewCount = 0
         while (isRowIncomplete(viewCount, viewProvider, layoutRequest, state, remainingSpans)) {
             val position = layoutRequest.currentPosition
@@ -521,11 +541,22 @@ internal class GridLayoutEngineer(
                 break
             }
             val view = viewProvider.next(layoutRequest, state)
+            val params = layoutInfo.getLayoutParams(view)
+            params.updateSpan(
+                index = currentSpanIndex,
+                groupIndex = getSpanGroupIndex(recycler, state, position),
+                size = spanSize
+            )
             if (position == pivotLayoutPosition) {
                 pivotView = view
             }
             rowViews[viewCount] = view
             viewCount++
+            if (layoutRequest.isAppending() != layoutRequest.reverseLayout) {
+                currentSpanIndex += spanSize
+            } else {
+                currentSpanIndex -= spanSize
+            }
         }
         return viewCount
     }
@@ -542,43 +573,6 @@ internal class GridLayoutEngineer(
                 && remainingSpans > 0
     }
 
-    /**
-     * Assigns a span index and span size to each view inside [rowViews].
-     */
-    private fun assignSpans(
-        recycler: Recycler,
-        state: State,
-        count: Int,
-        appending: Boolean
-    ) {
-        var start = 0
-        var end = 0
-        var increment = 0
-        if (appending) {
-            start = 0
-            end = count
-            increment = 1
-        } else {
-            start = count - 1
-            end = -1
-            increment = -1
-        }
-        var span = 0
-        var i = start
-        while (i != end) {
-            val view = getRowViewAt(i)
-            val params = layoutInfo.getLayoutParams(view)
-            val layoutPosition = layoutInfo.getLayoutPositionOf(view)
-            params.updateSpan(
-                index = span,
-                groupIndex = getSpanGroupIndex(recycler, state, layoutPosition),
-                size = getSpanSize(recycler, state, layoutPosition)
-            )
-            span += params.spanSize
-            i += increment
-        }
-    }
-
     private fun getSpanIndex(recycler: Recycler, state: State, position: Int): Int {
         if (!state.isPreLayout) {
             return layoutInfo.getStartSpanIndex(position)
@@ -591,9 +585,9 @@ internal class GridLayoutEngineer(
         if (adapterPosition == RecyclerView.NO_POSITION) {
             Log.w(
                 DpadRecyclerView.TAG,
-                "Cannot find span index for pre layout position: $position"
+                "Cannot find post layout position for pre layout position: $position"
             )
-            return 1
+            return layoutInfo.getStartSpanIndex(position)
         }
         return layoutInfo.getStartSpanIndex(adapterPosition)
     }
@@ -610,9 +604,9 @@ internal class GridLayoutEngineer(
         if (adapterPosition == RecyclerView.NO_POSITION) {
             Log.w(
                 DpadRecyclerView.TAG,
-                "Cannot find span size for pre layout position: $position"
+                "Cannot find post layout position for pre layout position: $position"
             )
-            return 1
+            return layoutInfo.getSpanSize(position)
         }
         return layoutInfo.getSpanSize(adapterPosition)
     }
@@ -629,9 +623,9 @@ internal class GridLayoutEngineer(
         if (adapterPosition == RecyclerView.NO_POSITION) {
             Log.w(
                 DpadRecyclerView.TAG,
-                "Cannot find span size for pre layout position: $position"
+                "Cannot find post layout position for pre layout position: $position"
             )
-            return 1
+            return layoutInfo.getSpanGroupIndex(position)
         }
         return layoutInfo.getSpanGroupIndex(adapterPosition)
     }
