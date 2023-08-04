@@ -26,7 +26,7 @@ import org.junit.Test
 class SpanFocusFinderTest {
 
     private val itemCount = 1000
-    private val spanCount = 5
+    private var spanCount = 5
     private val finder = SpanFocusFinder()
     private val headerPosition = 0
     private val headerSpanSizeLookup = object : DpadSpanSizeLookup() {
@@ -353,6 +353,58 @@ class SpanFocusFinderTest {
                 reverseLayout = false
             )
         ).isEqualTo(6)
+    }
+
+    @Test
+    fun `finding next position does not query span size out of bounds`() {
+        spanCount = 3
+        finder.setSpanCount(spanCount)
+        val spanSizeQueries = mutableSetOf<Int>()
+        val spanSizeLookup = object: DpadSpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                spanSizeQueries.add(position)
+                return 1
+            }
+        }
+
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 0,
+                spanSizeLookup = spanSizeLookup,
+                forward = true,
+                edgePosition = 0,
+                reverseLayout = false
+            )
+        ).isEqualTo(RecyclerView.NO_POSITION)
+
+        assertThat(spanSizeQueries).hasSize(1)
+        assertThat(spanSizeQueries).contains(0)
+    }
+
+    @Test
+    fun `finding previous position does not query span size out of bounds`() {
+        spanCount = 3
+        finder.setSpanCount(spanCount)
+        val spanSizeQueries = mutableSetOf<Int>()
+        val spanSizeLookup = object: DpadSpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int {
+                spanSizeQueries.add(position)
+                return 1
+            }
+        }
+
+        assertThat(
+            finder.findNextSpanPosition(
+                focusedPosition = 0,
+                spanSizeLookup = spanSizeLookup,
+                forward = false,
+                edgePosition = 0,
+                reverseLayout = false
+            )
+        ).isEqualTo(RecyclerView.NO_POSITION)
+
+        assertThat(spanSizeQueries).hasSize(1)
+        assertThat(spanSizeQueries).contains(0)
     }
 
 

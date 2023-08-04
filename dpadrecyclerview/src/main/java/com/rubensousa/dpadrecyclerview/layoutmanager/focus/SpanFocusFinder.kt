@@ -66,7 +66,6 @@ internal class SpanFocusFinder {
             return RecyclerView.NO_POSITION
         }
         var positionDirection = if (forward) 1 else -1
-        val spanDirection = getSpanDirection(forward, reverseLayout)
         if (spanSizeLookup === DpadSpanSizeLookup.DEFAULT) {
             return findNextEvenSpanPosition(
                 spanSizeLookup, focusedPosition, edgePosition, positionDirection
@@ -75,14 +74,21 @@ internal class SpanFocusFinder {
         val focusedSpanIndex = spanSizeLookup.getCachedSpanIndex(focusedPosition, spanCount)
 
         val firstPositionInNextSpanGroup = moveToStartOfNextSpanGroup(
-            focusedPosition, focusedSpanIndex, spanSizeLookup,
-            spanDirection, positionDirection, reverseLayout
+            position = focusedPosition,
+            spanIndex = focusedSpanIndex,
+            lookup = spanSizeLookup,
+            spanDir = getSpanDirection(forward, reverseLayout),
+            posDir = positionDirection,
+            edgePosition = edgePosition,
+            forward = forward,
+            reverseLayout = reverseLayout
         )
-        var currentPosition = firstPositionInNextSpanGroup
 
-        if (isPositionOutOfBounds(currentPosition, edgePosition, forward)) {
+        if (firstPositionInNextSpanGroup == RecyclerView.NO_POSITION) {
             return RecyclerView.NO_POSITION
         }
+
+        var currentPosition = firstPositionInNextSpanGroup
 
         // 1. If there's no cache, just return the current position that's sitting on an edge
         // 2. If the item takes the entire size, just return it since there's no other valid option
@@ -154,6 +160,8 @@ internal class SpanFocusFinder {
         lookup: DpadSpanSizeLookup,
         spanDir: Int,
         posDir: Int,
+        edgePosition: Int,
+        forward: Boolean,
         reverseLayout: Boolean
     ): Int {
         var currentPos = position
@@ -161,7 +169,9 @@ internal class SpanFocusFinder {
         val startSpanIndex = if (!reverseLayout) 0 else spanCount - 1
 
         // First step: move to edge of current span group
-        while (fitsNextInCurrentSpanGroup(lookup, currentSpan, currentPos, spanDir, posDir)) {
+        while (!isPositionOutOfBounds(currentPos + posDir, edgePosition, forward)
+            && fitsNextInCurrentSpanGroup(lookup, currentSpan, currentPos, spanDir, posDir)
+        ) {
             currentPos += posDir
             currentSpan = getNextSpanEnd(lookup, currentSpan, currentPos, spanDir, posDir)
         }
@@ -169,11 +179,23 @@ internal class SpanFocusFinder {
         // Move to next span group
         currentPos += posDir
 
+        if (isPositionOutOfBounds(currentPos, edgePosition, forward)) {
+            return RecyclerView.NO_POSITION
+        }
+
         // Second step: move to start of next span group
         currentSpan = lookup.getCachedSpanIndex(currentPos, spanCount)
-        while (currentSpan != startSpanIndex && currentSpan > 0 && currentSpan < spanCount) {
+        while (currentSpan != startSpanIndex
+            && currentSpan > 0
+            && currentSpan < spanCount
+            && !isPositionOutOfBounds(currentPos + posDir, edgePosition, forward)
+        ) {
             currentSpan += lookup.getSpanSize(currentPos) * spanDir
             currentPos += posDir
+        }
+
+        if (isPositionOutOfBounds(currentPos, edgePosition, forward)) {
+            return RecyclerView.NO_POSITION
         }
 
         return currentPos
