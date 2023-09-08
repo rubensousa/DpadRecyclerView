@@ -32,7 +32,8 @@
         app:dpadRecyclerViewFocusOutFront="false"
         app:dpadRecyclerViewParentAlignmentEdge="max"
         app:dpadRecyclerViewParentAlignmentFraction="0"
-        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start" />
+        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
+        app:dpadRecyclerViewParentAlignmentPreferKeylineOverEdge="true" />
 
 
 </LinearLayout>

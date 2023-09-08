@@ -91,13 +91,15 @@ internal class ParentAlignmentCalculator {
         val keyLine = calculateKeyline(alignment)
         startScrollLimit = if (shouldAlignViewToStart(viewAnchor, keyLine, alignment)) {
             calculateScrollOffsetToStartEdge(edge)
-        } else {
+        } else if (startEdge <= getLayoutStartEdge() || alignment.preferKeylineOverEdge) {
             calculateScrollOffsetToKeyline(viewAnchor, keyLine)
+        } else {
+            0
         }
     }
 
     fun updateEndLimit(edge: Int, viewAnchor: Int, alignment: ParentAlignment) {
-        this.endEdge = edge
+        endEdge = edge
         if (isEndUnknown) {
             endScrollLimit = Int.MAX_VALUE
             return
@@ -105,8 +107,10 @@ internal class ParentAlignmentCalculator {
         val keyline = calculateKeyline(alignment)
         endScrollLimit = if (shouldAlignViewToEnd(viewAnchor, keyline, alignment)) {
             calculateScrollOffsetToEndEdge(edge)
-        } else {
+        } else if (endEdge >= getLayoutEndEdge() || alignment.preferKeylineOverEdge) {
             calculateScrollOffsetToKeyline(viewAnchor, keyline)
+        } else {
+            0
         }
     }
 
@@ -173,7 +177,8 @@ internal class ParentAlignmentCalculator {
         }
         if (alignment.preferKeylineOverEdge
             && isStartEdge(alignment.edge)
-            && (startEdge >= getLayoutStartEdge() && !isEndUnknown)) {
+            && (startEdge >= getLayoutStartEdge() && !isEndUnknown)
+        ) {
             return false
         }
         return viewAnchor + getLayoutStartEdge() <= startEdge + keyline
@@ -189,7 +194,8 @@ internal class ParentAlignmentCalculator {
         }
         if (alignment.preferKeylineOverEdge
             && isEndEdge(alignment.edge)
-            && (endEdge <= getLayoutEndEdge() && !isStartUnknown)) {
+            && (endEdge <= getLayoutEndEdge() && !isStartUnknown)
+        ) {
             return false
         }
         return viewAnchor + getLayoutEndEdge() >= endEdge + keyline

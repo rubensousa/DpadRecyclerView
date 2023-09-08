@@ -328,6 +328,32 @@ class ParentAlignmentCalculatorTest {
         ).isEqualTo(distanceToKeyline)
     }
 
+    @Test
+    fun `end scroll limit should be zero when layout is not completely filled for max edge`() {
+        setLayoutProperties(orientation = RecyclerView.HORIZONTAL, reverseLayout = false)
+
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MAX,
+            offset = 0,
+            fraction = 0f,
+            preferKeylineOverEdge = true
+        )
+
+        alignmentCalculator.updateStartLimit(
+            edge = 0,
+            viewAnchor = 0,
+            alignment = alignment
+        )
+
+        alignmentCalculator.updateEndLimit(
+            edge = horizontalViewWidth * 3,
+            viewAnchor = horizontalViewWidth,
+            alignment = alignment
+        )
+
+        assertThat(alignmentCalculator.endScrollLimit).isEqualTo(0)
+    }
+
     private fun setLayoutProperties(orientation: Int, reverseLayout: Boolean) {
         if (orientation == RecyclerView.VERTICAL) {
             alignmentCalculator.updateLayoutInfo(
