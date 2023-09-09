@@ -225,6 +225,9 @@ internal class ParentAlignmentCalculator {
     }
 
     private fun isLayoutIncomplete(): Boolean {
+        if (isEndUnknown || isStartUnknown) {
+            return false
+        }
         return if (!reverseLayout) {
             endEdge < size - paddingEnd
         } else {

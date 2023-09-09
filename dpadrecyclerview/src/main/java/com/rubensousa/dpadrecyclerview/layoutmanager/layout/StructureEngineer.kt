@@ -639,7 +639,7 @@ internal abstract class StructureEngineer(
                 if (startEdge >= layoutInfo.getStartAfterPadding() && preferKeylineOverEdge) {
                     return false
                 }
-                fixEndGap(startEdge, endEdge, endView, remainingScroll, recycler, state)
+                fixEndGap(startEdge, endEdge, startView, remainingScroll, recycler, state)
                 return true
             } else if (layoutRequest.reverseLayout && startEdge >= layoutInfo.getStartAfterPadding()) {
                 if (endEdge <= layoutInfo.getEndAfterPadding() && preferKeylineOverEdge) {
@@ -680,7 +680,7 @@ internal abstract class StructureEngineer(
         state: RecyclerView.State
     ) {
         val distanceToStart = max(0, startEdge - layoutInfo.getStartAfterPadding())
-        layoutRequest.prepend(layoutInfo.getLayoutPositionOf(endView)) {
+        layoutRequest.append(layoutInfo.getLayoutPositionOf(endView)) {
             setCheckpoint(endEdge)
             setFillSpace(distanceToStart)
         }
