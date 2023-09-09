@@ -368,25 +368,26 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
             layoutConfiguration = getDefaultLayoutConfiguration().copy(
                 parentAlignment = ParentAlignment(
                     edge = Edge.MIN,
-                    offset = 100,
-                    fraction = 0f
+                    offset = 0,
+                    fraction = 0f,
+                    preferKeylineOverEdge = true
                 ),
                 childAlignment = ChildAlignment(
                     offset = 0,
                     fraction = 0f
                 )
             ),
-            adapterConfiguration = getDefaultAdapterConfiguration().copy(numberOfItems = 5)
+            adapterConfiguration = getDefaultAdapterConfiguration().copy(numberOfItems = 4)
         )
 
-        KeyEvents.pressRight(times = 4)
+        KeyEvents.pressRight(times = 3)
         waitForIdleScrollState()
-        val childBounds = getItemViewBounds(position = 4)
+        val childBounds = getItemViewBounds(position = 3)
         onRecyclerView("Request layout") { recyclerView ->
             recyclerView.requestLayout()
         }
         Espresso.onIdle()
-        assertThat(getItemViewBounds(position = 4)).isEqualTo(childBounds)
+        assertThat(getItemViewBounds(position = 3)).isEqualTo(childBounds)
     }
 
     @Test

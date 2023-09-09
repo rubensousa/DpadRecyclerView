@@ -70,6 +70,8 @@ internal class LayoutManagerMock(
             }?.view
         }
         every { mock.paddingLeft }.answers { leftPadding }
+        every { mock.paddingStart }.answers { leftPadding }
+        every { mock.paddingEnd }.answers { rightPadding }
         every { mock.paddingTop }.answers { topPadding }
         every { mock.paddingRight }.answers { rightPadding }
         every { mock.paddingBottom }.answers { bottomPadding }

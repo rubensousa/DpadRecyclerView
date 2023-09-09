@@ -2,6 +2,15 @@
 
 ## Version 1.1.0
 
+### 1.1.0-beta01
+
+2023-09-10
+
+#### Bug fixes
+
+- Fixed wrong scrolling behavior when the layout isn't completely filled and `Edge.MAX` alignment is used: ([#160](https://github.com/rubensousa/DpadRecyclerView/issues/160))
+- Fixed XML attribute `app:dpadRecyclerViewParentAlignmentPreferKeylineOverEdge` not being applied correctly
+
 ### 1.1.0-alpha03
 
 2023-08-04

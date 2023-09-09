@@ -202,7 +202,8 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
             ParentAlignment(
                 edge = Edge.MAX,
                 offset = 0,
-                fraction = 0.5f
+                fraction = 0.5f,
+                preferKeylineOverEdge = true
             )
         )
 
@@ -361,27 +362,12 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testLayoutAlignsToMaxEdgeWhenThereAreNotManyItems() {
-        val parentAlignment = ParentAlignment(
-            edge = Edge.MAX,
-            offset = 0,
-            fraction = 0.5f,
-            preferKeylineOverEdge = false
-        )
-        launchFragment(
-            getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),
-            getDefaultAdapterConfiguration().copy(numberOfItems = 3)
-        )
-        val viewBounds = getItemViewBounds(position = 2)
-        assertThat(viewBounds.bottom).isEqualTo(getRecyclerViewBounds().bottom)
-    }
-
-    @Test
     fun testLayoutAlignsToKeylineInsteadOfMaxEdgeWhenThereAreNotManyItems() {
         val parentAlignment = ParentAlignment(
             edge = Edge.MAX,
             offset = 0,
-            fraction = 0.5f
+            fraction = 0.5f,
+            preferKeylineOverEdge = true
         )
         launchFragment(
             getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),

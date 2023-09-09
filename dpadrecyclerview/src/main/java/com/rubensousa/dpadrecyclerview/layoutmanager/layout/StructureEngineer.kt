@@ -627,24 +627,67 @@ internal abstract class StructureEngineer(
                 return true
             }
         }
+        /**
+         * Scenario: user selected a max edge alignment
+         *
+         * If both the start and end of the layout are inside the viewport
+         * and [ParentAlignment.preferKeylineOverEdge] is false, then fill the required space
+         * to collapse to the max edge.
+         */
         if (edge == ParentAlignment.Edge.MAX) {
             if (!layoutRequest.reverseLayout && endEdge <= layoutInfo.getEndAfterPadding()) {
                 if (startEdge >= layoutInfo.getStartAfterPadding() && preferKeylineOverEdge) {
                     return false
                 }
-                val distanceToEnd = layoutInfo.getEndAfterPadding() - endEdge
-                scrollBy(-distanceToEnd - remainingScroll, recycler, state, false)
+                fixEndGap(startEdge, endEdge, startView, remainingScroll, recycler, state)
                 return true
             } else if (layoutRequest.reverseLayout && startEdge >= layoutInfo.getStartAfterPadding()) {
                 if (endEdge <= layoutInfo.getEndAfterPadding() && preferKeylineOverEdge) {
                     return false
                 }
-                val distanceToStart = startEdge - layoutInfo.getStartAfterPadding()
-                scrollBy(distanceToStart - remainingScroll, recycler, state, false)
+                fixStartGap(startEdge, endEdge, endView, remainingScroll, recycler, state)
                 return true
             }
         }
         return false
+    }
+
+    private fun fixEndGap(
+        startEdge: Int,
+        endEdge: Int,
+        startView: View,
+        remainingScroll: Int,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ) {
+        val distanceToEndEdge = max(0, layoutInfo.getEndAfterPadding() - endEdge)
+        layoutRequest.prepend(layoutInfo.getLayoutPositionOf(startView)) {
+            setCheckpoint(startEdge)
+            setFillSpace(distanceToEndEdge)
+        }
+        val newStartSpace = fill(layoutRequest, recyclerViewProvider, recycler, state)
+        var scrollOffset = -newStartSpace + min(0, startEdge) // Include the start edge if negative
+        scrollOffset = max(-distanceToEndEdge, scrollOffset)
+        scrollBy(scrollOffset - remainingScroll, recycler, state, recycleChildren = false)
+    }
+
+    private fun fixStartGap(
+        startEdge: Int,
+        endEdge: Int,
+        endView: View,
+        remainingScroll: Int,
+        recycler: RecyclerView.Recycler,
+        state: RecyclerView.State
+    ) {
+        val distanceToStart = max(0, startEdge - layoutInfo.getStartAfterPadding())
+        layoutRequest.append(layoutInfo.getLayoutPositionOf(endView)) {
+            setCheckpoint(endEdge)
+            setFillSpace(distanceToStart)
+        }
+        val newEndSpace = fill(layoutRequest, recyclerViewProvider, recycler, state)
+        var scrollOffset = newEndSpace + max(0, endEdge - layoutInfo.getEndAfterPadding())
+        scrollOffset = min(distanceToStart, scrollOffset)
+        scrollBy(scrollOffset - remainingScroll, recycler, state, recycleChildren = false)
     }
 
     protected fun addView(view: View, layoutRequest: LayoutRequest) {
