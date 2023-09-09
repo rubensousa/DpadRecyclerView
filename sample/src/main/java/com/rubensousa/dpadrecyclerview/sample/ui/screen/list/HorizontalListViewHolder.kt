@@ -52,6 +52,9 @@ class HorizontalListViewHolder(
             DpadLinearSpacingDecoration.create(
                 itemSpacing = itemView.resources.getDimensionPixelOffset(
                     R.dimen.horizontal_item_spacing
+                ),
+                edgeSpacing = itemView.resources.getDimensionPixelOffset(
+                    R.dimen.list_margin_start
                 )
             )
         )

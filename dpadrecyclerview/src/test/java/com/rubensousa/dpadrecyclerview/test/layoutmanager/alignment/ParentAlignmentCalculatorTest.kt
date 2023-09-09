@@ -347,7 +347,7 @@ class ParentAlignmentCalculatorTest {
 
         alignmentCalculator.updateEndLimit(
             edge = horizontalViewWidth * 3,
-            viewAnchor = horizontalViewWidth,
+            viewAnchor = 0,
             alignment = alignment
         )
 
