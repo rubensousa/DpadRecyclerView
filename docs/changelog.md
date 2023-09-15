@@ -2,6 +2,14 @@
 
 ## Version 1.1.0
 
+### 1.1.0-beta02
+
+2023-09-15
+
+#### Bug fixes
+
+- Fixed wrong scrolling behavior when the `app:spanCount` attribute is used for grids ([#162](https://github.com/rubensousa/DpadRecyclerView/issues/162))
+
 ### 1.1.0-beta01
 
 2023-09-10
