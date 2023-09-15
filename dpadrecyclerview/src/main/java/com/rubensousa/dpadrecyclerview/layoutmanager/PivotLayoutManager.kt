@@ -23,6 +23,7 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.VisibleForTesting
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
@@ -53,7 +54,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     private val layoutInfo = LayoutInfo(this, configuration)
     private val pivotSelector = PivotSelector(this, layoutInfo)
     private val layoutAlignment = LayoutAlignment(this, layoutInfo)
-    private val spanFocusFinder = SpanFocusFinder()
+    private val spanFocusFinder = SpanFocusFinder(configuration)
     private val scroller = LayoutScroller(
         this, layoutInfo, layoutAlignment, configuration, pivotSelector, spanFocusFinder
     )
@@ -396,7 +397,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun setSpanCount(spanCount: Int) {
         if (configuration.spanCount != spanCount) {
             configuration.setSpanCount(spanCount)
-            spanFocusFinder.setSpanCount(spanCount)
+            spanFocusFinder.clearSpanCache()
             pivotLayout.updateStructure()
             requestLayout()
         }
@@ -407,7 +408,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun setSpanSizeLookup(spanSizeLookup: DpadSpanSizeLookup) {
         if (spanSizeLookup !== configuration.spanSizeLookup) {
             configuration.setSpanSizeLookup(spanSizeLookup)
-            spanFocusFinder.setSpanCount(configuration.spanCount)
+            spanFocusFinder.clearSpanCache()
             requestLayout()
         }
     }
@@ -568,6 +569,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         } else {
             requestLayout()
         }
+    }
+
+    @VisibleForTesting
+    internal fun getFocusFinderSpanCount(): Int {
+        return spanFocusFinder.spanCount
     }
 
 }

@@ -18,18 +18,20 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
 /**
  * Holds information about the previous focused spanIndex on all spanGroups
  */
-internal class SpanFocusFinder {
+internal class SpanFocusFinder(private val configuration: LayoutConfiguration) {
 
-    private var spanCount = 1
+    val spanCount: Int
+        get() = configuration.spanCount
+
     private var cachedSpanIndex = RecyclerView.NO_POSITION
     private var cachedSpanSize = 1
 
-    fun setSpanCount(newSpanCount: Int) {
-        spanCount = newSpanCount
+    fun clearSpanCache() {
         cachedSpanIndex = RecyclerView.NO_POSITION
         cachedSpanSize = 1
     }
