@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.test.layoutmanager.focus
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
+import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.focus.SpanFocusFinder
 import org.junit.Before
 import org.junit.Test
@@ -26,13 +27,17 @@ import org.junit.Test
 class SpanFocusFinderTest {
 
     private val itemCount = 1000
-    private var spanCount = 5
-    private val finder = SpanFocusFinder()
+    private val configuration = LayoutConfiguration(RecyclerView.LayoutManager.Properties().apply {
+        spanCount = 5
+    })
+    private val spanCount: Int
+        get() = configuration.spanCount
+    private val finder = SpanFocusFinder(configuration)
     private val headerPosition = 0
     private val headerSpanSizeLookup = object : DpadSpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
             return if (position == headerPosition) {
-                spanCount
+                configuration.spanCount
             } else {
                 1
             }
@@ -40,18 +45,18 @@ class SpanFocusFinderTest {
     }
     private val multipleHeadersLookup = object : DpadSpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
-            return if (position.rem(spanCount + 1) == 0 || position == 0) {
-                spanCount
+            return if (position.rem(configuration.spanCount + 1) == 0 || position == 0) {
+                configuration.spanCount
             } else {
                 1
             }
         }
     }
-    private val secondHeaderPosition = spanCount + 1
+    private val secondHeaderPosition = configuration.spanCount + 1
 
     @Before
     fun setup() {
-        finder.setSpanCount(newSpanCount = spanCount)
+        finder.clearSpanCache()
     }
 
     @Test
@@ -357,10 +362,10 @@ class SpanFocusFinderTest {
 
     @Test
     fun `finding next position does not query span size out of bounds`() {
-        spanCount = 3
-        finder.setSpanCount(spanCount)
+        configuration.setSpanCount(3)
+        finder.clearSpanCache()
         val spanSizeQueries = mutableSetOf<Int>()
-        val spanSizeLookup = object: DpadSpanSizeLookup() {
+        val spanSizeLookup = object : DpadSpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 spanSizeQueries.add(position)
                 return 1
@@ -383,10 +388,10 @@ class SpanFocusFinderTest {
 
     @Test
     fun `finding previous position does not query span size out of bounds`() {
-        spanCount = 3
-        finder.setSpanCount(spanCount)
+        configuration.setSpanCount(3)
+        finder.clearSpanCache()
         val spanSizeQueries = mutableSetOf<Int>()
-        val spanSizeLookup = object: DpadSpanSizeLookup() {
+        val spanSizeLookup = object : DpadSpanSizeLookup() {
             override fun getSpanSize(position: Int): Int {
                 spanSizeQueries.add(position)
                 return 1
@@ -407,5 +412,10 @@ class SpanFocusFinderTest {
         assertThat(spanSizeQueries).contains(0)
     }
 
+    @Test
+    fun `span count is derived from the layout configuration`() {
+        configuration.setSpanCount(10)
+        assertThat(finder.spanCount).isEqualTo(10)
+    }
 
 }
