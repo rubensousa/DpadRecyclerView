@@ -6,7 +6,10 @@
 
 2023-10-18
 
+#### Dependency updates
+
 - Updated `androidx.recyclerview` to version `1.3.2` to fix sporadic crashes during animations: https://android.googlesource.com/platform/frameworks/support/+/9e69afd7854894754df62143d0b3c2f8be9ddaa0
+- Updated `androidx.collection` to stable version `1.3.0`
 
 ### 1.1.0-beta02
 
