@@ -1,7 +1,7 @@
 name: Pull requests
 
 env:
-  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g -Dorg.gradle.daemon=false -Dkotlin.incremental=false"
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4g"
 
 on:
   pull_request:
