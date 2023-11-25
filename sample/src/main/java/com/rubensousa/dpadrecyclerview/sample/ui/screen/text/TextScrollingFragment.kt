@@ -29,7 +29,7 @@ class TextScrollingFragment : Fragment(R.layout.screen_text_scrolling) {
         val adapter = TextAdapter()
         val text = view.resources.getString(R.string.placeholder_text)
         val list = mutableListOf<String>()
-        repeat(50) {
+        repeat(20) {
             list.add(text)
         }
         adapter.submitList(list)

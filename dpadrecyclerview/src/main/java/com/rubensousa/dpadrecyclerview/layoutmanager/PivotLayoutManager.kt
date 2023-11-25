@@ -23,7 +23,6 @@ import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.VisibleForTesting
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
@@ -41,6 +40,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.focus.SpanFocusFinder
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutPrefetchCollector
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.PivotLayout
+import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.DpadScrollbarHelper
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
 
 /**
@@ -168,6 +168,73 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
     ): Int = pivotLayout.scrollVerticallyBy(dy, recycler, state)
+
+    override fun computeHorizontalScrollOffset(state: RecyclerView.State): Int {
+        return computeScrollOffset(state)
+    }
+
+    override fun computeVerticalScrollOffset(state: RecyclerView.State): Int {
+        return computeScrollOffset(state)
+    }
+
+    override fun computeHorizontalScrollExtent(state: RecyclerView.State): Int {
+        return computeScrollExtent(state)
+    }
+
+    override fun computeVerticalScrollExtent(state: RecyclerView.State): Int {
+        return computeScrollExtent(state)
+    }
+
+    override fun computeHorizontalScrollRange(state: RecyclerView.State): Int {
+        return computeScrollRange(state)
+    }
+
+    override fun computeVerticalScrollRange(state: RecyclerView.State): Int {
+        return computeScrollRange(state)
+    }
+
+    private fun computeScrollOffset(state: RecyclerView.State): Int {
+        if (childCount == 0) {
+            return 0
+        }
+        return DpadScrollbarHelper.computeScrollOffset(
+            state = state,
+            orientationHelper = layoutInfo.orientationHelper,
+            startChild = layoutInfo.findFirstVisibleChild(),
+            endChild = layoutInfo.findLastVisibleChild(),
+            lm = this,
+            smoothScrollbarEnabled = true,
+            reverseLayout = configuration.reverseLayout
+        )
+    }
+
+    private fun computeScrollExtent(state: RecyclerView.State): Int {
+        if (childCount == 0) {
+            return 0
+        }
+        return DpadScrollbarHelper.computeScrollExtent(
+            state = state,
+            orientationHelper = layoutInfo.orientationHelper,
+            startChild = layoutInfo.findFirstVisibleChild(),
+            endChild = layoutInfo.findLastVisibleChild(),
+            lm = this,
+            smoothScrollbarEnabled = true,
+        )
+    }
+
+    private fun computeScrollRange(state: RecyclerView.State): Int {
+        if (childCount == 0) {
+            return 0
+        }
+        return  DpadScrollbarHelper.computeScrollRange(
+            state = state,
+            orientationHelper = layoutInfo.orientationHelper,
+            startChild = layoutInfo.findFirstVisibleChild(),
+            endChild = layoutInfo.findLastVisibleChild(),
+            lm = this,
+            smoothScrollbarEnabled = true,
+        )
+    }
 
     override fun scrollToPosition(position: Int) {
         scroller.scrollToPosition(position)
@@ -569,11 +636,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         } else {
             requestLayout()
         }
-    }
-
-    @VisibleForTesting
-    internal fun getFocusFinderSpanCount(): Int {
-        return spanFocusFinder.spanCount
     }
 
 }
