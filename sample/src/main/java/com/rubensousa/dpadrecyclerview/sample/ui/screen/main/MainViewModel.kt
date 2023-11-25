@@ -40,7 +40,7 @@ class MainViewModel : ViewModel() {
             buildNestedFeatureList(),
             buildGridFeatureList(),
             buildComposeFeatureList(),
-            buildFocusFeatureList(),
+            buildScrollingFeatureList(),
             buildAnimationsFeatureList(),
         )
     }
@@ -106,13 +106,17 @@ class MainViewModel : ViewModel() {
         )
     }
 
-    private fun buildFocusFeatureList(): FeatureList {
+    private fun buildScrollingFeatureList(): FeatureList {
         return FeatureList(
-            title = "Focus",
+            title = "Scrolling features",
             destinations = listOf(
                 ScreenDestination(
+                    direction = MainFragmentDirections.openTextScrolling(),
+                    title = "Long text scrolling"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openHorizontalLeanback(),
-                    title = "Searching for unknown pivot"
+                    title = "Searching for next view"
                 )
             ),
         )
