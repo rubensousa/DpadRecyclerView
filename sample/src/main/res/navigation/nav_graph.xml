@@ -72,6 +72,10 @@
             android:id="@+id/open_item_animations"
             app:destination="@id/item_animations_fragment" />
 
+        <action
+            android:id="@+id/open_text_scrolling"
+            app:destination="@id/text_scrolling_fragment" />
+
     </fragment>
 
     <fragment
@@ -177,4 +181,8 @@
     <fragment
         android:id="@+id/item_animations_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.animation.ItemAnimationsFragment" />
+
+    <fragment
+        android:id="@+id/text_scrolling_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.text.TextScrollingFragment" />
 </navigation>

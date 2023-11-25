@@ -16,4 +16,9 @@
         <item name="cornerSize">@dimen/corner_size</item>
     </style>
 
+    <style name="ShapeAppearance.App.Circle" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
 </resources>

@@ -281,6 +281,22 @@ internal class LayoutInfo(
         )
     }
 
+    fun findFirstVisibleChild(): View? {
+        val childPosition = findFirstVisiblePosition()
+        if (childPosition == RecyclerView.NO_POSITION) {
+            return null
+        }
+        return layout.findViewByPosition(childPosition)
+    }
+
+    fun findLastVisibleChild(): View? {
+        val childPosition = findLastVisiblePosition()
+        if (childPosition == RecyclerView.NO_POSITION) {
+            return null
+        }
+        return layout.findViewByPosition(childPosition)
+    }
+
     /**
      * @param startIndex index at which the search should start
      * @param endIndex index at which the search should stop (not inclusive)
