@@ -354,6 +354,34 @@ class ParentAlignmentCalculatorTest {
         assertThat(alignmentCalculator.endScrollLimit).isEqualTo(0)
     }
 
+    @Test
+    fun `start scroll limit should be distance to keyline when layout is incomplete and edge none is set`() {
+        setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.NONE,
+            offset = 0,
+            fraction = 0.5f,
+        )
+
+        val viewAnchor = verticalCenterKeyline + verticalViewHeight / 2
+        alignmentCalculator.updateStartLimit(
+            edge = 0,
+            viewAnchor = viewAnchor,
+            alignment = alignment
+        )
+
+        alignmentCalculator.updateEndLimit(
+            edge = height - verticalViewHeight,
+            viewAnchor = height - verticalViewHeight / 2,
+            alignment = alignment
+        )
+
+        assertThat(alignmentCalculator.startScrollLimit).isEqualTo(
+            viewAnchor - verticalCenterKeyline,
+        )
+    }
+
     private fun setLayoutProperties(orientation: Int, reverseLayout: Boolean) {
         if (orientation == RecyclerView.VERTICAL) {
             alignmentCalculator.updateLayoutInfo(
