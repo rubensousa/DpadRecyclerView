@@ -97,7 +97,7 @@ internal class ParentAlignmentCalculator {
             calculateScrollOffsetToStartEdge(edge)
         } else if (isLayoutComplete()
             || alignment.preferKeylineOverEdge
-            || alignment.edge == Edge.NONE
+            || !shouldAlignToStartEdge(alignment.edge)
         ) {
             calculateScrollOffsetToKeyline(viewAnchor, keyLine)
         } else {
@@ -120,7 +120,7 @@ internal class ParentAlignmentCalculator {
             calculateScrollOffsetToEndEdge(edge)
         } else if (isLayoutComplete()
             || alignment.preferKeylineOverEdge
-            || alignment.edge == Edge.NONE
+            || !shouldAlignToEndEdge(alignment.edge)
         ) {
             calculateScrollOffsetToKeyline(viewAnchor, keyline)
         } else {
@@ -192,7 +192,7 @@ internal class ParentAlignmentCalculator {
         if (isStartUnknown || !shouldAlignToStartEdge(alignment.edge)) {
             return false
         }
-        if (!isLayoutIncomplete()) {
+        if (isLayoutComplete()) {
             return viewAnchor + getLayoutStartEdge() <= startEdge + keyline
         }
         return isLayoutIncomplete() && !alignment.preferKeylineOverEdge
@@ -206,7 +206,7 @@ internal class ParentAlignmentCalculator {
         if (isEndUnknown || !shouldAlignToEndEdge(alignment.edge)) {
             return false
         }
-        if (!isLayoutIncomplete()) {
+        if (isLayoutComplete()) {
             return viewAnchor + getLayoutEndEdge() >= endEdge + keyline
         }
         return isLayoutIncomplete() && !alignment.preferKeylineOverEdge
@@ -225,12 +225,7 @@ internal class ParentAlignmentCalculator {
     }
 
     private fun isLayoutComplete(): Boolean {
-        if (isEndUnknown || isStartUnknown) {
-            return false
-        }
-        return endEdge - startEdge >= size - paddingEnd - paddingStart
-                && endEdge <= size - paddingEnd
-                && startEdge >= paddingStart
+        return endEdge >= getLayoutEndEdge() && startEdge <= getLayoutStartEdge()
     }
 
     private fun isLayoutIncomplete(): Boolean {
@@ -238,9 +233,9 @@ internal class ParentAlignmentCalculator {
             return false
         }
         return if (!reverseLayout) {
-            endEdge < size - paddingEnd
+            endEdge < getLayoutEndEdge()
         } else {
-            startEdge > paddingStart
+            startEdge > getLayoutStartEdge()
         }
     }
 
