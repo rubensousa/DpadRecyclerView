@@ -9,4 +9,5 @@
     <color name="placeholder">#4B4B4B</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
+    <color name="focused_text">#2B2B2B</color>
 </resources>
