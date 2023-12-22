@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 1.2.0
+
+### 1.2.0-alpha01
+
+2023-11-25
+
+#### New Features
+
+- Added support for scrollbars
+- Added `DpadScroller` for scrolling without any alignment. Typical use case is for long text displays (terms & conditions and consent pages).
+
 ## Version 1.1.0
 
 ### 1.1.0
