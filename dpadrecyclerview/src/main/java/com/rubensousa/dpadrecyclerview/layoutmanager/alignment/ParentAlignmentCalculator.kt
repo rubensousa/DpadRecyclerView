@@ -97,7 +97,7 @@ internal class ParentAlignmentCalculator {
             calculateScrollOffsetToStartEdge(edge)
         } else if (isLayoutComplete()
             || alignment.preferKeylineOverEdge
-             || alignment.edge == Edge.NONE
+            || alignment.edge == Edge.NONE
         ) {
             calculateScrollOffsetToKeyline(viewAnchor, keyLine)
         } else {
