@@ -31,6 +31,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.updateChildAlignment
 import com.rubensousa.dpadrecyclerview.test.helpers.updateParentAlignment
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -346,7 +347,7 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testLayoutAlignsToKeylineWhenThereAreNotManyItems() {
+    fun testLayoutAlignsToKeylineWhenThereAreNotManyItemsAndEdgeMinIsUsed() {
         val parentAlignment = ParentAlignment(
             edge = Edge.MIN,
             offset = 0,
@@ -355,11 +356,60 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
         )
         launchFragment(
             getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),
-            getDefaultAdapterConfiguration().copy(numberOfItems = 2)
+            getDefaultAdapterConfiguration().copy(numberOfItems = 3)
         )
         val viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.centerY()).isEqualTo(getRecyclerViewBounds().centerY())
+        KeyEvents.pressDown()
+        waitForIdleScrollState()
+        KeyEvents.pressUp()
+        waitForIdleScrollState()
+        assertThat(getItemViewBounds(position = 0).centerY())
+            .isEqualTo(getRecyclerViewBounds().centerY())
     }
+
+    @Test
+    fun testLayoutAlignsToKeylineWhenThereAreNotManyItemsAndEdgeMaxIsUsed() {
+        val parentAlignment = ParentAlignment(
+            edge = Edge.MAX,
+            offset = 0,
+            fraction = 0.5f,
+        )
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),
+            getDefaultAdapterConfiguration().copy(numberOfItems = 3)
+        )
+        val viewBounds = getItemViewBounds(position = 0)
+        assertThat(viewBounds.centerY()).isEqualTo(getRecyclerViewBounds().centerY())
+        KeyEvents.pressDown()
+        waitForIdleScrollState()
+        KeyEvents.pressUp()
+        waitForIdleScrollState()
+        assertThat(getItemViewBounds(position = 0).centerY())
+            .isEqualTo(getRecyclerViewBounds().centerY())
+    }
+
+    @Test
+    fun testLayoutAlignsToKeylineWhenThereAreNotManyItemsAndEdgeNoneIsUsed() {
+        val parentAlignment = ParentAlignment(
+            edge = Edge.NONE,
+            offset = 0,
+            fraction = 0.5f,
+        )
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),
+            getDefaultAdapterConfiguration().copy(numberOfItems = 3)
+        )
+        val viewBounds = getItemViewBounds(position = 0)
+        assertThat(viewBounds.centerY()).isEqualTo(getRecyclerViewBounds().centerY())
+        KeyEvents.pressDown()
+        waitForIdleScrollState()
+        KeyEvents.pressUp()
+        waitForIdleScrollState()
+        assertThat(getItemViewBounds(position = 0).centerY())
+            .isEqualTo(getRecyclerViewBounds().centerY())
+    }
+
 
     @Test
     fun testLayoutAlignsToKeylineInsteadOfMaxEdgeWhenThereAreNotManyItems() {

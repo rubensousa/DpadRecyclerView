@@ -46,7 +46,7 @@ internal class ParentAlignmentCalculator {
     fun updateLayoutInfo(
         layoutManager: LayoutManager,
         isVertical: Boolean,
-        reverseLayout: Boolean
+        reverseLayout: Boolean,
     ) {
         size = if (isVertical) {
             layoutManager.height
@@ -85,7 +85,7 @@ internal class ParentAlignmentCalculator {
     fun updateStartLimit(
         edge: Int,
         viewAnchor: Int,
-        alignment: ParentAlignment
+        alignment: ParentAlignment,
     ) {
         startEdge = edge
         if (isStartUnknown) {
@@ -95,7 +95,10 @@ internal class ParentAlignmentCalculator {
         val keyLine = calculateKeyline(alignment)
         startScrollLimit = if (shouldAlignViewToStart(viewAnchor, keyLine, alignment)) {
             calculateScrollOffsetToStartEdge(edge)
-        } else if (!isLayoutIncomplete() || alignment.preferKeylineOverEdge) {
+        } else if (isLayoutComplete()
+            || alignment.preferKeylineOverEdge
+             || alignment.edge == Edge.NONE
+        ) {
             calculateScrollOffsetToKeyline(viewAnchor, keyLine)
         } else {
             0
@@ -115,7 +118,10 @@ internal class ParentAlignmentCalculator {
         val keyline = calculateKeyline(alignment)
         endScrollLimit = if (shouldAlignViewToEnd(viewAnchor, keyline, alignment)) {
             calculateScrollOffsetToEndEdge(edge)
-        } else if (!isLayoutComplete() || alignment.preferKeylineOverEdge) {
+        } else if (isLayoutComplete()
+            || alignment.preferKeylineOverEdge
+            || alignment.edge == Edge.NONE
+        ) {
             calculateScrollOffsetToKeyline(viewAnchor, keyline)
         } else {
             0
@@ -137,7 +143,7 @@ internal class ParentAlignmentCalculator {
      */
     fun calculateScrollOffset(
         viewAnchor: Int,
-        alignment: ParentAlignment
+        alignment: ParentAlignment,
     ): Int {
         val keyline = calculateKeyline(alignment)
         val alignToStartEdge = shouldAlignViewToStart(viewAnchor, keyline, alignment)
@@ -181,7 +187,7 @@ internal class ParentAlignmentCalculator {
     private fun shouldAlignViewToStart(
         viewAnchor: Int,
         keyline: Int,
-        alignment: ParentAlignment
+        alignment: ParentAlignment,
     ): Boolean {
         if (isStartUnknown || !shouldAlignToStartEdge(alignment.edge)) {
             return false
@@ -195,7 +201,7 @@ internal class ParentAlignmentCalculator {
     private fun shouldAlignViewToEnd(
         viewAnchor: Int,
         keyline: Int,
-        alignment: ParentAlignment
+        alignment: ParentAlignment,
     ): Boolean {
         if (isEndUnknown || !shouldAlignToEndEdge(alignment.edge)) {
             return false
@@ -219,6 +225,9 @@ internal class ParentAlignmentCalculator {
     }
 
     private fun isLayoutComplete(): Boolean {
+        if (isEndUnknown || isStartUnknown) {
+            return false
+        }
         return endEdge - startEdge >= size - paddingEnd - paddingStart
                 && endEdge <= size - paddingEnd
                 && startEdge >= paddingStart

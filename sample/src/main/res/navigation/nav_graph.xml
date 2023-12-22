@@ -72,6 +72,10 @@
             android:id="@+id/open_item_animations"
             app:destination="@id/item_animations_fragment" />
 
+        <action
+            android:id="@+id/open_short_list"
+            app:destination="@id/short_list_fragment" />
+
     </fragment>
 
     <fragment
@@ -177,4 +181,9 @@
     <fragment
         android:id="@+id/item_animations_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.animation.ItemAnimationsFragment" />
+
+    <fragment
+        android:id="@+id/short_list_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ShortListFragment" />
+
 </navigation>
