@@ -64,9 +64,11 @@ class ParentAlignmentCalculatorTest {
     fun `keyline for child near start edge is the start edge`() {
         setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
 
-        alignmentCalculator.updateStartLimit(
-            edge = 0,
-            viewAnchor = verticalViewHeight / 2,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = 0,
+            endEdge = height,
+            startViewAnchor = verticalViewHeight / 2,
+            endViewAnchor = verticalViewHeight / 2,
             alignment = centerParentAlignment
         )
 
@@ -82,9 +84,11 @@ class ParentAlignmentCalculatorTest {
     fun `keyline for child near end edge is the end edge`() {
         setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
 
-        alignmentCalculator.updateEndLimit(
-            edge = height,
-            viewAnchor = height - verticalViewHeight / 2,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = 0,
+            endEdge = height,
+            startViewAnchor = 0,
+            endViewAnchor = height - verticalViewHeight / 2,
             alignment = centerParentAlignment
         )
 
@@ -137,14 +141,16 @@ class ParentAlignmentCalculatorTest {
     fun `child is aligned to end edge in regular layout direction`() {
         setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
 
-        alignmentCalculator.updateEndLimit(
-            edge = height / 2 + verticalViewHeight / 2,
-            viewAnchor = verticalViewHeight / 2,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = 0,
+            endEdge = height + verticalViewHeight,
+            startViewAnchor = verticalViewHeight / 2,
+            endViewAnchor = height + verticalViewHeight / 2,
             alignment = centerParentAlignment
         )
         assertThat(
             alignmentCalculator.calculateScrollOffset(
-                viewAnchor = height / 2,
+                viewAnchor = height + verticalViewHeight / 2,
                 alignment = centerParentAlignment
             )
         ).isEqualTo(alignmentCalculator.endScrollLimit)
@@ -155,9 +161,11 @@ class ParentAlignmentCalculatorTest {
     fun `child is aligned to start edge in regular layout direction`() {
         setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
 
-        alignmentCalculator.updateStartLimit(
-            edge = height / 2 - verticalViewHeight / 2,
-            viewAnchor = verticalViewHeight / 2,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = height / 2 - verticalViewHeight / 2,
+            endEdge = height / 2 + verticalViewHeight / 2,
+            startViewAnchor = verticalViewHeight / 2,
+            endViewAnchor = verticalViewHeight / 2,
             alignment = centerParentAlignment
         )
 
@@ -173,9 +181,11 @@ class ParentAlignmentCalculatorTest {
     fun `child is aligned to end edge in reverse layout`() {
         setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = true)
 
-        alignmentCalculator.updateEndLimit(
-            edge = height / 2 + verticalViewHeight / 2,
-            viewAnchor = verticalViewHeight / 2,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = height / 2 - verticalViewHeight / 2,
+            endEdge = height / 2 + verticalViewHeight / 2,
+            startViewAnchor = verticalViewHeight / 2,
+            endViewAnchor = verticalViewHeight / 2,
             alignment = centerParentAlignment
         )
 
@@ -194,18 +204,27 @@ class ParentAlignmentCalculatorTest {
     fun `child is aligned to start edge in reverse layout`() {
         setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = true)
 
-        alignmentCalculator.updateStartLimit(
-            edge = height / 2 - verticalViewHeight / 2,
-            viewAnchor = verticalViewHeight / 2,
-            alignment = centerParentAlignment
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MAX,
+            fraction = 1.0f
         )
 
-        assertThat(alignmentCalculator.startScrollLimit).isEqualTo(height / 2 - verticalViewHeight / 2)
+        alignmentCalculator.updateScrollLimits(
+            startEdge = height,
+            endEdge = verticalViewHeight,
+            startViewAnchor = verticalViewHeight,
+            endViewAnchor = verticalViewHeight,
+            alignment = alignment
+        )
+
+        assertThat(alignmentCalculator.startScrollLimit).isEqualTo(
+            verticalViewHeight
+        )
 
         assertThat(
             alignmentCalculator.calculateScrollOffset(
-                viewAnchor = height / 2,
-                alignment = centerParentAlignment
+                viewAnchor = verticalViewHeight,
+                alignment = alignment
             )
         ).isEqualTo(alignmentCalculator.startScrollLimit)
     }
@@ -216,17 +235,13 @@ class ParentAlignmentCalculatorTest {
         val alignment = ParentAlignment(
             edge = ParentAlignment.Edge.MIN,
             offset = 0,
-            fraction = 0.5f,
-            preferKeylineOverEdge = false
+            fraction = 0.5f
         )
-        alignmentCalculator.updateStartLimit(
-            edge = verticalCenterKeyline - verticalViewHeight / 2,
-            viewAnchor = verticalCenterKeyline,
-            alignment = alignment
-        )
-        alignmentCalculator.updateEndLimit(
-            edge = verticalCenterKeyline + verticalViewHeight / 2,
-            viewAnchor = verticalCenterKeyline,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = verticalCenterKeyline - verticalViewHeight / 2,
+            startViewAnchor = verticalCenterKeyline,
+            endEdge = verticalCenterKeyline + verticalViewHeight / 2,
+            endViewAnchor = verticalCenterKeyline,
             alignment = alignment
         )
 
@@ -249,14 +264,12 @@ class ParentAlignmentCalculatorTest {
             fraction = 0.5f,
             preferKeylineOverEdge = false
         )
-        alignmentCalculator.updateStartLimit(
-            edge = -verticalViewHeight / 2,
-            viewAnchor = verticalViewHeight / 2,
-            alignment = alignment
-        )
-        alignmentCalculator.updateEndLimit(
-            edge = verticalCenterKeyline + verticalViewHeight,
-            viewAnchor = verticalCenterKeyline + verticalViewHeight / 2,
+
+        alignmentCalculator.updateScrollLimits(
+            startEdge = -verticalViewHeight / 2,
+            endEdge = verticalCenterKeyline + verticalViewHeight,
+            startViewAnchor = verticalViewHeight / 2,
+            endViewAnchor = verticalCenterKeyline + verticalViewHeight / 2,
             alignment = alignment
         )
 
@@ -277,25 +290,19 @@ class ParentAlignmentCalculatorTest {
             fraction = 0.5f,
             preferKeylineOverEdge = true
         )
-        alignmentCalculator.updateStartLimit(
-            edge = verticalCenterKeyline - verticalViewHeight / 2,
-            viewAnchor = verticalCenterKeyline,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = verticalCenterKeyline - verticalViewHeight / 2,
+            endEdge = verticalCenterKeyline + verticalViewHeight / 2,
+            startViewAnchor = verticalCenterKeyline,
+            endViewAnchor = verticalCenterKeyline,
             alignment = alignment
         )
-        alignmentCalculator.updateEndLimit(
-            edge = verticalCenterKeyline + verticalViewHeight / 2,
-            viewAnchor = verticalCenterKeyline,
-            alignment = alignment
-        )
-
-        val distanceToKeyline = 0
-
         assertThat(
             alignmentCalculator.calculateScrollOffset(
                 viewAnchor = height / 2,
                 alignment = alignment
             )
-        ).isEqualTo(distanceToKeyline)
+        ).isEqualTo(0)
     }
 
     @Test
@@ -307,14 +314,11 @@ class ParentAlignmentCalculatorTest {
             fraction = 0.5f,
             preferKeylineOverEdge = true
         )
-        alignmentCalculator.updateStartLimit(
-            edge = 0,
-            viewAnchor = verticalCenterKeyline,
-            alignment = alignment
-        )
-        alignmentCalculator.updateEndLimit(
-            edge = verticalCenterKeyline + verticalViewHeight / 2,
-            viewAnchor = verticalCenterKeyline,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = 0,
+            startViewAnchor = verticalCenterKeyline,
+            endEdge = verticalCenterKeyline + verticalViewHeight / 2,
+            endViewAnchor = verticalCenterKeyline,
             alignment = alignment
         )
 
@@ -338,16 +342,11 @@ class ParentAlignmentCalculatorTest {
             fraction = 0f,
             preferKeylineOverEdge = true
         )
-
-        alignmentCalculator.updateStartLimit(
-            edge = 0,
-            viewAnchor = 0,
-            alignment = alignment
-        )
-
-        alignmentCalculator.updateEndLimit(
-            edge = horizontalViewWidth * 3,
-            viewAnchor = 0,
+        alignmentCalculator.updateScrollLimits(
+            startEdge = 0,
+            endEdge = horizontalViewWidth * 3,
+            startViewAnchor = 0,
+            endViewAnchor = 0,
             alignment = alignment
         )
 
@@ -364,22 +363,17 @@ class ParentAlignmentCalculatorTest {
             fraction = 0.5f,
         )
 
-        val viewAnchor = verticalCenterKeyline + verticalViewHeight / 2
-        alignmentCalculator.updateStartLimit(
-            edge = 0,
-            viewAnchor = viewAnchor,
+        val keyline = verticalCenterKeyline
+
+        alignmentCalculator.updateScrollLimits(
+            startEdge = keyline - verticalViewHeight,
+            startViewAnchor = keyline - verticalViewHeight / 2,
+            endEdge = keyline,
+            endViewAnchor = keyline - verticalViewHeight / 2,
             alignment = alignment
         )
 
-        alignmentCalculator.updateEndLimit(
-            edge = height - verticalViewHeight,
-            viewAnchor = height - verticalViewHeight / 2,
-            alignment = alignment
-        )
-
-        assertThat(alignmentCalculator.startScrollLimit).isEqualTo(
-            viewAnchor - verticalCenterKeyline,
-        )
+        assertThat(alignmentCalculator.startScrollLimit).isEqualTo(-verticalViewHeight / 2)
     }
 
     private fun setLayoutProperties(orientation: Int, reverseLayout: Boolean) {
