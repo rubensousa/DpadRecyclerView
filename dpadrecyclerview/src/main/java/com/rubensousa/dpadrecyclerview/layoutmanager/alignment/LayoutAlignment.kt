@@ -27,7 +27,7 @@ import kotlin.math.sign
 
 internal class LayoutAlignment(
     private val layoutManager: LayoutManager,
-    private val layoutInfo: LayoutInfo
+    private val layoutInfo: LayoutInfo,
 ) {
 
     companion object {
@@ -242,40 +242,41 @@ internal class LayoutAlignment(
             startViewAnchor = Int.MIN_VALUE
         }
         if (!reverseLayout) {
+            parentAlignmentCalculator.updateScrollLimits(
+                startEdge = startEdge,
+                endEdge = endEdge,
+                startViewAnchor = startViewAnchor,
+                endViewAnchor = endViewAnchor,
+                alignment = parentAlignment
+            )
             if (layoutInfo.isLoopingAllowed) {
                 // If we're looping, there's no end scroll limit
                 parentAlignmentCalculator.invalidateEndLimit()
-            } else {
-                parentAlignmentCalculator.updateEndLimit(endEdge, endViewAnchor, parentAlignment)
             }
             if (layoutInfo.isLoopingStart) {
                 parentAlignmentCalculator.invalidateStartLimit()
-            } else {
-                parentAlignmentCalculator.updateStartLimit(
-                    startEdge, startViewAnchor, parentAlignment
-                )
             }
         } else {
+            parentAlignmentCalculator.updateScrollLimits(
+                startEdge = endEdge,
+                endEdge = startEdge,
+                startViewAnchor = endViewAnchor,
+                endViewAnchor = startViewAnchor,
+                alignment = parentAlignment
+            )
             if (layoutInfo.isLoopingAllowed) {
                 parentAlignmentCalculator.invalidateStartLimit()
-            } else {
-                parentAlignmentCalculator.updateStartLimit(endEdge, endViewAnchor, parentAlignment)
             }
             if (layoutInfo.isLoopingStart) {
                 parentAlignmentCalculator.invalidateEndLimit()
-            } else {
-                parentAlignmentCalculator.updateEndLimit(
-                    startEdge, startViewAnchor, parentAlignment
-                )
             }
-
         }
     }
 
     private fun isEndAvailable(
         adapterPosition: Int,
         maxLayoutPosition: Int,
-        minLayoutPosition: Int
+        minLayoutPosition: Int,
     ): Boolean {
         return if (!reverseLayout) {
             adapterPosition == maxLayoutPosition
@@ -287,7 +288,7 @@ internal class LayoutAlignment(
     private fun isStartAvailable(
         adapterPosition: Int,
         maxLayoutPosition: Int,
-        minLayoutPosition: Int
+        minLayoutPosition: Int,
     ): Boolean {
         return if (!reverseLayout) {
             adapterPosition == minLayoutPosition
@@ -343,7 +344,7 @@ internal class LayoutAlignment(
     private fun calculateAdjustedAlignedScrollDistance(
         offset: Int,
         view: View,
-        childView: View
+        childView: View,
     ): Int {
         var scrollValue = offset
         val subPosition = getSubPositionOfView(view, childView)

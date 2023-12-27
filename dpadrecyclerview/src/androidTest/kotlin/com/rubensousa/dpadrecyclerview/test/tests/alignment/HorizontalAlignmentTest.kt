@@ -416,4 +416,32 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
         }
         assertThat(getItemViewBounds(position = 0)).isEqualTo(childBounds)
     }
+
+    @Test
+    fun testFirstItemIsAlignedCorrectlyWhenScrollingBack() {
+        launchFragment(
+            layoutConfiguration = getDefaultLayoutConfiguration().copy(
+                parentAlignment = ParentAlignment(
+                    edge = Edge.MAX,
+                    offset = 200,
+                    fraction = 0f,
+                    preferKeylineOverEdge = false
+                ),
+                childAlignment = ChildAlignment(
+                    offset = 0,
+                    fraction = 0f
+                )
+            ),
+            adapterConfiguration = getDefaultAdapterConfiguration()
+        )
+
+        val childBounds = getItemViewBounds(position = 0)
+        assertThat(childBounds.left).isEqualTo(200)
+        KeyEvents.pressRight()
+        waitForIdleScrollState()
+        KeyEvents.pressLeft()
+        waitForIdleScrollState()
+        waitForIdleScrollState()
+        assertThat(getItemViewBounds(position = 0)).isEqualTo(childBounds)
+    }
 }
