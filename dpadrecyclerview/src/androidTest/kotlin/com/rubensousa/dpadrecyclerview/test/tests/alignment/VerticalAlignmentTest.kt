@@ -251,14 +251,15 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
                 fraction = 0f
             )
         )
-        KeyEvents.pressDown(times = 5)
         val recyclerViewBounds = getRecyclerViewBounds()
         val startPosition = 5
+        selectPosition(startPosition)
         repeat(5) {
             val viewBounds = getItemViewBounds(position = startPosition + it)
             assertThat(viewBounds.top)
                 .isEqualTo(recyclerViewBounds.top + containerOffset + abs(itemOffset))
             KeyEvents.pressDown()
+            waitForIdleScrollState()
         }
     }
 

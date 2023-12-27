@@ -82,58 +82,56 @@ internal class ParentAlignmentCalculator {
         endScrollLimit = Int.MAX_VALUE
     }
 
-    fun updateStartLimit(
-        edge: Int,
-        viewAnchor: Int,
+    fun updateScrollLimits(
+        startEdge: Int,
+        endEdge: Int,
+        startViewAnchor: Int,
+        endViewAnchor: Int,
         alignment: ParentAlignment,
     ) {
-        startEdge = edge
-        if (isStartUnknown) {
-            startScrollLimit = Int.MIN_VALUE
-            return
-        }
-        val keyLine = calculateKeyline(alignment)
-        startScrollLimit = if (shouldAlignViewToStart(viewAnchor, keyLine, alignment)) {
-            calculateScrollOffsetToStartEdge(edge)
-        } else if (isLayoutComplete()
-            || alignment.preferKeylineOverEdge
-            || alignment.edge == Edge.NONE
-        ) {
-            calculateScrollOffsetToKeyline(viewAnchor, keyLine)
-        } else {
-            0
-        }
-    }
-
-    fun updateEndLimit(
-        edge: Int,
-        viewAnchor: Int,
-        alignment: ParentAlignment,
-    ) {
-        endEdge = edge
-        if (isEndUnknown) {
-            endScrollLimit = Int.MAX_VALUE
-            return
-        }
+        this.startEdge = startEdge
+        this.endEdge = endEdge
         val keyline = calculateKeyline(alignment)
-        endScrollLimit = if (shouldAlignViewToEnd(viewAnchor, keyline, alignment)) {
-            calculateScrollOffsetToEndEdge(edge)
-        } else if (isLayoutComplete()
-            || alignment.preferKeylineOverEdge
-            || alignment.edge == Edge.NONE
-        ) {
-            calculateScrollOffsetToKeyline(viewAnchor, keyline)
-        } else {
-            0
+        startScrollLimit = when {
+            isStartUnknown -> Int.MIN_VALUE
+            shouldAlignViewToStart(startViewAnchor, keyline, alignment) -> {
+                calculateScrollOffsetToStartEdge(startEdge)
+            }
+
+            shouldAlignStartToKeyline(alignment) -> {
+                calculateScrollOffsetToKeyline(startViewAnchor, keyline)
+            }
+
+            else -> 0
+        }
+        endScrollLimit = when {
+            isEndUnknown -> Int.MAX_VALUE
+            shouldAlignViewToEnd(endViewAnchor, keyline, alignment) -> {
+                calculateScrollOffsetToEndEdge(endEdge)
+            }
+
+            shouldAlignEndToKeyline(alignment) -> {
+                calculateScrollOffsetToKeyline(endViewAnchor, keyline)
+            }
+
+            else -> 0
         }
     }
 
-    private fun calculateScrollOffsetToEndEdge(edge: Int): Int {
-        return edge - getLayoutEndEdge()
+    private fun shouldAlignStartToKeyline(alignment: ParentAlignment): Boolean {
+        return !shouldAlignToStartEdge(alignment.edge) || preferKeylineOverEdge(alignment)
     }
 
-    private fun calculateScrollOffsetToStartEdge(edge: Int): Int {
-        return edge - getLayoutStartEdge()
+    private fun shouldAlignEndToKeyline(alignment: ParentAlignment): Boolean {
+        return !shouldAlignToEndEdge(alignment.edge) || preferKeylineOverEdge(alignment)
+    }
+
+    private fun calculateScrollOffsetToEndEdge(anchor: Int): Int {
+        return anchor - getLayoutAbsoluteEnd()
+    }
+
+    private fun calculateScrollOffsetToStartEdge(anchor: Int): Int {
+        return anchor - getLayoutAbsoluteStart()
     }
 
     /**
@@ -192,10 +190,10 @@ internal class ParentAlignmentCalculator {
         if (isStartUnknown || !shouldAlignToStartEdge(alignment.edge)) {
             return false
         }
-        if (!isLayoutIncomplete()) {
-            return viewAnchor + getLayoutStartEdge() <= startEdge + keyline
+        if (isLayoutComplete()) {
+            return viewAnchor + getLayoutAbsoluteStart() <= startEdge + keyline
         }
-        return isLayoutIncomplete() && !alignment.preferKeylineOverEdge
+        return isLayoutStartKnown() && !preferKeylineOverEdge(alignment)
     }
 
     private fun shouldAlignViewToEnd(
@@ -206,41 +204,46 @@ internal class ParentAlignmentCalculator {
         if (isEndUnknown || !shouldAlignToEndEdge(alignment.edge)) {
             return false
         }
-        if (!isLayoutIncomplete()) {
-            return viewAnchor + getLayoutEndEdge() >= endEdge + keyline
+        if (isLayoutComplete()) {
+            return viewAnchor + getLayoutAbsoluteEnd() >= endEdge + keyline
         }
-        return isLayoutIncomplete() && !alignment.preferKeylineOverEdge
+        return isLayoutStartKnown() && !preferKeylineOverEdge(alignment)
     }
 
     private fun calculateScrollOffsetToKeyline(anchor: Int, keyline: Int): Int {
         return anchor - keyline
     }
 
-    private fun getLayoutEndEdge(): Int {
+    private fun getLayoutAbsoluteEnd(): Int {
         return size - paddingEnd
     }
 
-    private fun getLayoutStartEdge(): Int {
+    private fun getLayoutAbsoluteStart(): Int {
         return paddingStart
     }
 
     private fun isLayoutComplete(): Boolean {
-        if (isEndUnknown || isStartUnknown) {
-            return false
-        }
-        return endEdge - startEdge >= size - paddingEnd - paddingStart
-                && endEdge <= size - paddingEnd
-                && startEdge >= paddingStart
-    }
-
-    private fun isLayoutIncomplete(): Boolean {
-        if (isEndUnknown || isStartUnknown) {
-            return false
+        if (isEndUnknown && isStartUnknown) {
+            return true
         }
         return if (!reverseLayout) {
-            endEdge < size - paddingEnd
+            (startEdge <= getLayoutAbsoluteStart()
+                    && (endEdge >= getLayoutAbsoluteEnd() || isEndUnknown))
         } else {
-            startEdge > paddingStart
+            (endEdge >= getLayoutAbsoluteEnd()
+                    && (startEdge <= getLayoutAbsoluteStart() || isStartUnknown))
+        }
+    }
+
+    private fun preferKeylineOverEdge(alignment: ParentAlignment): Boolean {
+        return alignment.preferKeylineOverEdge || alignment.edge == Edge.NONE
+    }
+
+    private fun isLayoutStartKnown(): Boolean {
+        return if (!reverseLayout) {
+            !isStartUnknown
+        } else {
+            !isEndUnknown
         }
     }
 
