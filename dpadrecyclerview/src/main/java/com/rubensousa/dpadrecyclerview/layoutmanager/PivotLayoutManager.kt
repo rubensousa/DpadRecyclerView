@@ -50,6 +50,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  */
 class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() {
 
+    private var layoutDirection: Int = View.LAYOUT_DIRECTION_LTR
     private val configuration = LayoutConfiguration(properties)
     private val layoutInfo = LayoutInfo(this, configuration)
     private val pivotSelector = PivotSelector(this, layoutInfo)
@@ -389,7 +390,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         pivotLayout.onRestoreInstanceState(state)
     }
 
-    internal fun onRtlPropertiesChanged() {
+    internal fun onRtlPropertiesChanged(layoutDirection: Int) {
+        if (this.layoutDirection == layoutDirection) {
+            return
+        }
+        this.layoutDirection = layoutDirection
         requestLayout()
     }
 
@@ -406,6 +411,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     internal fun getConfig() = configuration
 
     internal fun setScrollingFromTouchEvent(isTouching: Boolean) {
+        configuration.setKeepLayoutAnchor(isTouching)
         isScrollingFromTouchEvent = isTouching
     }
 

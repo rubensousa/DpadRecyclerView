@@ -376,7 +376,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun onRtlPropertiesChanged(layoutDirection: Int) {
         super.onRtlPropertiesChanged(layoutDirection)
-        pivotLayoutManager?.onRtlPropertiesChanged()
+        pivotLayoutManager?.onRtlPropertiesChanged(layoutDirection)
     }
 
     final override fun smoothScrollBy(dx: Int, dy: Int) {
