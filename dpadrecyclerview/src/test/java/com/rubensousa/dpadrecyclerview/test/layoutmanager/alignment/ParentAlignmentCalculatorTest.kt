@@ -235,7 +235,8 @@ class ParentAlignmentCalculatorTest {
         val alignment = ParentAlignment(
             edge = ParentAlignment.Edge.MIN,
             offset = 0,
-            fraction = 0.5f
+            fraction = 0.5f,
+            preferKeylineOverEdge = false
         )
         alignmentCalculator.updateScrollLimits(
             startEdge = verticalCenterKeyline - verticalViewHeight / 2,
@@ -278,7 +279,7 @@ class ParentAlignmentCalculatorTest {
                 viewAnchor = verticalCenterKeyline + verticalViewHeight / 2,
                 alignment = alignment
             )
-        ).isEqualTo(alignmentCalculator.endScrollLimit)
+        ).isEqualTo(-(height - (verticalCenterKeyline + verticalViewHeight)))
     }
 
     @Test
@@ -333,24 +334,24 @@ class ParentAlignmentCalculatorTest {
     }
 
     @Test
-    fun `end scroll limit should be zero when layout is not completely filled for max edge`() {
+    fun `end scroll limit should be limited to distance to end edge when layout is not completely filled`() {
         setLayoutProperties(orientation = RecyclerView.HORIZONTAL, reverseLayout = false)
 
         val alignment = ParentAlignment(
             edge = ParentAlignment.Edge.MAX,
             offset = 0,
             fraction = 0f,
-            preferKeylineOverEdge = true
+            preferKeylineOverEdge = false
         )
         alignmentCalculator.updateScrollLimits(
             startEdge = 0,
             endEdge = horizontalViewWidth * 3,
             startViewAnchor = 0,
-            endViewAnchor = 0,
+            endViewAnchor = horizontalViewWidth * 2,
             alignment = alignment
         )
 
-        assertThat(alignmentCalculator.endScrollLimit).isEqualTo(0)
+        assertThat(alignmentCalculator.endScrollLimit).isEqualTo(horizontalViewWidth * 3 - width)
     }
 
     @Test
