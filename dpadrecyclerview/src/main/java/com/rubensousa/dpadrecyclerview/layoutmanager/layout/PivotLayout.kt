@@ -38,7 +38,7 @@ internal class PivotLayout(
     private val configuration: LayoutConfiguration,
     private val pivotSelector: PivotSelector,
     private val scroller: LayoutScroller,
-    private val layoutInfo: LayoutInfo
+    private val layoutInfo: LayoutInfo,
 ) {
 
     companion object {
@@ -50,6 +50,7 @@ internal class PivotLayout(
     private var structureEngineer = createStructureEngineer()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
     private val itemChanges = ItemChanges()
+    private var anchor: Int? = null
 
     fun updateStructure() {
         structureEngineer = createStructureEngineer()
@@ -91,7 +92,7 @@ internal class PivotLayout(
     private fun preLayoutChildren(
         pivotPosition: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         val childCount = layoutManager.childCount
         if (childCount == 0) {
@@ -116,7 +117,15 @@ internal class PivotLayout(
             structureEngineer.logChildren()
         }
 
+        if (configuration.keepLayoutAnchor) {
+            saveAnchorState()
+        }
+
         structureEngineer.layoutChildren(pivotSelector.position, itemChanges, recycler, state)
+
+        if (configuration.keepLayoutAnchor) {
+            restoreAnchorState(recycler, state)
+        }
 
         if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "LayoutFinished")
@@ -124,6 +133,41 @@ internal class PivotLayout(
         }
 
         structureEngineer.onLayoutFinished()
+    }
+
+    private fun saveAnchorState() {
+        val currentPivotPosition = if (!layoutInfo.shouldReverseLayout()) {
+            layoutInfo.findFirstVisiblePosition()
+        } else {
+            layoutInfo.findLastVisiblePosition()
+        }
+        if (currentPivotPosition == RecyclerView.NO_POSITION) {
+            return
+        }
+        pivotSelector.update(currentPivotPosition)
+        layoutInfo.findViewByPosition(currentPivotPosition)?.let { view ->
+            anchor = if (!layoutInfo.shouldReverseLayout()) {
+                layoutInfo.getDecoratedStart(view)
+            } else {
+                layoutInfo.getDecoratedEnd(view)
+            }
+        }
+    }
+
+    private fun restoreAnchorState(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
+        anchor?.let { previousAnchor ->
+            if (pivotSelector.position != RecyclerView.NO_POSITION) {
+                layoutInfo.findViewByPosition(pivotSelector.position)?.let { view ->
+                    val currentAnchor = if (!layoutInfo.shouldReverseLayout()) {
+                        layoutInfo.getDecoratedStart(view)
+                    } else {
+                        layoutInfo.getDecoratedEnd(view)
+                    }
+                    scrollBy(currentAnchor - previousAnchor, recycler, state)
+                }
+            }
+            anchor = null
+        }
     }
 
     fun reset() {
@@ -173,7 +217,7 @@ internal class PivotLayout(
     fun scrollHorizontallyBy(
         dx: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Int {
         if (configuration.isVertical()) {
             return 0
@@ -184,7 +228,7 @@ internal class PivotLayout(
     fun scrollVerticallyBy(
         dy: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Int {
         if (configuration.isHorizontal()) {
             return 0
@@ -216,7 +260,7 @@ internal class PivotLayout(
     private fun scrollBy(
         offset: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Int {
         // Do nothing if we don't have children
         if (state.itemCount == 0 || offset == 0 || !configuration.isLayoutEnabled) {
@@ -242,7 +286,7 @@ internal class PivotLayout(
         val selectedPosition: Int,
         val isLoopingStart: Boolean,
         val isLoopingAllowed: Boolean,
-        val loopDirection: DpadLoopDirection
+        val loopDirection: DpadLoopDirection,
     ) : Parcelable {
 
         companion object CREATOR : Parcelable.Creator<SavedState> {

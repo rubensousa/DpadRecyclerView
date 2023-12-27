@@ -266,6 +266,7 @@ internal class FocusDispatcher(
      * Request focus to the current pivot if it exists
      */
     fun onRequestFocusInDescendants(direction: Int, previouslyFocusedRect: Rect?): Boolean {
+        if (configuration.isFocusSearchDisabled) return false
         val view = layout.findViewByPosition(pivotSelector.position) ?: return false
         return view.requestFocus(direction, previouslyFocusedRect)
     }
