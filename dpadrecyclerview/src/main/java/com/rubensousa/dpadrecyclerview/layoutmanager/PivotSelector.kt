@@ -94,7 +94,7 @@ internal class PivotSelector(
             itemCount = itemCount
         )
         if (position != previousPosition) {
-            isSelectionUpdatePending = true
+            setSelectionUpdatePending()
         }
     }
 
@@ -102,6 +102,9 @@ internal class PivotSelector(
      * Calculates the pivot position so that is within bounds of the current layout state
      */
     private fun constrainPivotPosition(position: Int, itemCount: Int): Int {
+        if (itemCount == 0) {
+            return RecyclerView.NO_POSITION
+        }
         return max(0, min(itemCount - 1, position))
     }
 
@@ -118,7 +121,7 @@ internal class PivotSelector(
             // Make sure the pivot is set to 0 by default whenever we have items
             position = 0
             positionOffset = 0
-            isSelectionUpdatePending = true
+            setSelectionUpdatePending()
         }
     }
 
@@ -186,7 +189,7 @@ internal class PivotSelector(
                 positionOffset += positionStart - finalPosition
                 applyPositionOffset(layoutManager.itemCount)
                 positionOffset = Int.MIN_VALUE
-                isSelectionUpdatePending = true
+                setSelectionUpdatePending()
             } else {
                 positionOffset -= itemCount
             }
