@@ -132,6 +132,9 @@ internal class LayoutConfiguration(properties: Properties) {
     var recycleChildrenOnDetach: Boolean = false
         private set
 
+    var keepLayoutAnchor: Boolean = false
+        private set
+
     init {
         setSpanCount(properties.spanCount)
         setOrientation(properties.orientation)
@@ -248,6 +251,12 @@ internal class LayoutConfiguration(properties: Properties) {
         if (loopDirection != DpadLoopDirection.NONE) {
             extraLayoutSpaceStrategy = null
         }
+    }
+
+    // This flag will be used to try to keep layout consistency
+    // whenever the user scrolls the layout using touch events
+    fun setKeepLayoutAnchor(keep: Boolean) {
+        keepLayoutAnchor = keep
     }
 
 }

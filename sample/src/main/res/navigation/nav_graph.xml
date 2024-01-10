@@ -76,6 +76,10 @@
             android:id="@+id/open_text_scrolling"
             app:destination="@id/text_scrolling_fragment" />
 
+        <action
+            android:id="@+id/open_short_list"
+            app:destination="@id/short_list_fragment" />
+
     </fragment>
 
     <fragment
@@ -185,4 +189,9 @@
     <fragment
         android:id="@+id/text_scrolling_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.text.TextScrollingFragment" />
+
+    <fragment
+        android:id="@+id/short_list_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ShortListFragment" />
+
 </navigation>

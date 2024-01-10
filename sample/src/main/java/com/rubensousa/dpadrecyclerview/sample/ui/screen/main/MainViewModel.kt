@@ -37,7 +37,7 @@ class MainViewModel : ViewModel() {
 
     private fun buildFeatureLists(): List<FeatureList> {
         return listOf(
-            buildNestedFeatureList(),
+            buildListFeatures(),
             buildGridFeatureList(),
             buildComposeFeatureList(),
             buildScrollingFeatureList(),
@@ -45,13 +45,17 @@ class MainViewModel : ViewModel() {
         )
     }
 
-    private fun buildNestedFeatureList(): FeatureList {
+    private fun buildListFeatures(): FeatureList {
         return FeatureList(
             title = "Lists",
             destinations = listOf(
                 ScreenDestination(
                     direction = MainFragmentDirections.openList(),
                     title = "Nested"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openShortList(),
+                    title = "Short list"
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openList().apply {

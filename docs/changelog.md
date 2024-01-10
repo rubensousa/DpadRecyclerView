@@ -2,6 +2,15 @@
 
 ## Version 1.2.0
 
+### 1.2.0-alpha02
+
+2023-12-27
+
+#### Bug fixes
+
+- Fixed layout jumping to the top when the user scrolls with touch events ([#171](https://github.com/rubensousa/DpadRecyclerView/issues/171))
+- Fixed alignment configuration not being respected for small lists ([#172](https://github.com/rubensousa/DpadRecyclerView/issues/172))
+
 ### 1.2.0-alpha01
 
 2023-11-25
