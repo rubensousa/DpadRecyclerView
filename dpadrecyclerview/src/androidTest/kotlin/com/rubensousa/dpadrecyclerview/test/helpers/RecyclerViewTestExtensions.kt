@@ -58,11 +58,12 @@ fun selectPosition(
     position: Int,
     subPosition: Int = 0,
     smooth: Boolean = false,
+    waitForIdle: Boolean = smooth,
     id: Int = R.id.recyclerView
 ) {
     Espresso.onView(withId(id))
         .perform(DpadRecyclerViewActions.selectPosition(position, subPosition, smooth))
-    if (smooth) {
+    if (waitForIdle) {
         Espresso.onView(withId(id))
             .perform(DpadRecyclerViewActions.waitForIdleScroll())
     }

@@ -74,6 +74,11 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
         }
     }
 
+    fun setList(newList: MutableList<Int>) {
+        currentVersion++
+        items = newList
+    }
+
     private fun calculateDiff(
         oldList: List<Int>,
         newList: List<Int>

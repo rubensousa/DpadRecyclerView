@@ -32,6 +32,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertIsFocused
 import com.rubensousa.dpadrecyclerview.test.helpers.assertIsNotFocused
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertViewHolderSelected
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
@@ -255,6 +256,27 @@ class SelectionTest : DpadRecyclerViewTest() {
                     position = 20
                 )
             )
+    }
+
+    @Test
+    fun testSelectingPositionOutOfBoundsDoesNotCrash() {
+        val numberOfItems = 500
+        launchFragment(TestAdapterConfiguration(numberOfItems = numberOfItems))
+
+        selectPosition(numberOfItems + 100, smooth = true, waitForIdle = false)
+
+        Thread.sleep(1000L)
+
+        mutateAdapter { adapter ->
+            adapter.setList(MutableList(numberOfItems + 10) { it })
+            adapter.notifyItemRangeInserted(0, 100)
+        }
+
+        onRecyclerView("Request layout") { recyclerView ->
+            recyclerView.requestLayout()
+        }
+
+        assertFocusAndSelection(numberOfItems + 9)
     }
 
 }
