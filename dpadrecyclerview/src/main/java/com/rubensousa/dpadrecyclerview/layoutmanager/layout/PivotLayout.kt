@@ -77,8 +77,8 @@ internal class PivotLayout(
             return
         }
 
+        pivotSelector.consumePendingSelectionChanges(state)
         structureEngineer.onLayoutStarted(state)
-        pivotSelector.consumePendingSelectionChanges()
 
         if (state.isPreLayout) {
             preLayoutChildren(pivotSelector.position, recycler, state)
@@ -112,7 +112,7 @@ internal class PivotLayout(
 
     private fun layoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         if (DpadRecyclerView.DEBUG) {
-            Log.i(TAG, "LayoutStart: ${state.asString()}")
+            Log.i(TAG, "LayoutStart for pivot ${pivotSelector.position}: ${state.asString()}")
             structureEngineer.logChildren()
         }
 

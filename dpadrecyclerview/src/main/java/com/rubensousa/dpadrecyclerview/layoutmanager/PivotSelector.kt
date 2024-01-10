@@ -60,32 +60,48 @@ internal class PivotSelector(
     }
     private var selectedViewHolder: DpadViewHolder? = null
 
-    fun update(position: Int, subPosition: Int = 0): Boolean {
-        val changed = position != this.position || subPosition != this.subPosition
-        this.position = position
-        this.subPosition = subPosition
-        return changed
+    fun update(newPosition: Int, newSubPosition: Int = 0): Boolean {
+        position = constrainPivotPosition(
+            position = newPosition,
+            itemCount = layoutManager.itemCount
+        )
+        subPosition = newSubPosition
+        return newPosition != position || newSubPosition != subPosition
     }
 
-    fun consumePendingSelectionChanges(): Boolean {
+    fun consumePendingSelectionChanges(state: RecyclerView.State): Boolean {
         var consumed = false
         if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
-            applyPositionOffset()
+            applyPositionOffset(state.itemCount)
             subPosition = 0
             consumed = true
+        } else {
+            // If we didn't adjust the pivot, just ensure it's still within bounds
+            position = constrainPivotPosition(
+                position = position,
+                itemCount = state.itemCount
+            )
         }
         positionOffset = 0
         return consumed
     }
 
-    private fun applyPositionOffset() {
+    private fun applyPositionOffset(itemCount: Int) {
         val previousPosition = position
-        position += positionOffset
-        // Ensure selection is within bounds
-        position = max(0, min(layoutManager.itemCount - 1, position))
+        position = constrainPivotPosition(
+            position = position + positionOffset,
+            itemCount = itemCount
+        )
         if (position != previousPosition) {
             isSelectionUpdatePending = true
         }
+    }
+
+    /**
+     * Calculates the pivot position so that is within bounds of the current layout state
+     */
+    private fun constrainPivotPosition(position: Int, itemCount: Int): Int {
+        return max(0, min(itemCount - 1, position))
     }
 
     fun onLayoutChildren(state: RecyclerView.State) {
@@ -167,7 +183,7 @@ internal class PivotSelector(
                 // If the focused position was removed,
                 // stop updating the offset until the next layout pass
                 positionOffset += positionStart - finalPosition
-                applyPositionOffset()
+                applyPositionOffset(layoutManager.itemCount)
                 positionOffset = Int.MIN_VALUE
                 isSelectionUpdatePending = true
             } else {

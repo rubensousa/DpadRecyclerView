@@ -123,6 +123,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         // If we have focus, save it temporarily since the views will change and we might lose it
         hadFocusBeforeLayout = hasFocus()
+        scroller.cancelSmoothScroller()
         pivotSelector.onLayoutChildren(state)
         pivotLayout.onLayoutChildren(recycler, state)
     }
