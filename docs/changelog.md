@@ -2,6 +2,14 @@
 
 ## Version 1.2.0
 
+### 1.2.0-alpha03
+
+2024-01-10
+
+#### Bug fixes
+
+- Fixed crash when requesting layout after a selection to an index out of bounds ([#178](https://github.com/rubensousa/DpadRecyclerView/issues/178))
+
 ### 1.2.0-alpha02
 
 2023-12-27
