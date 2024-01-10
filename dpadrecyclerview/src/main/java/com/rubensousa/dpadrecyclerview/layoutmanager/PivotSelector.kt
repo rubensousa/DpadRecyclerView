@@ -61,12 +61,13 @@ internal class PivotSelector(
     private var selectedViewHolder: DpadViewHolder? = null
 
     fun update(newPosition: Int, newSubPosition: Int = 0): Boolean {
+        val previousPosition = position
         position = constrainPivotPosition(
             position = newPosition,
             itemCount = layoutManager.itemCount
         )
         subPosition = newSubPosition
-        return newPosition != position || newSubPosition != subPosition
+        return position != previousPosition || newSubPosition != subPosition
     }
 
     fun consumePendingSelectionChanges(state: RecyclerView.State): Boolean {
