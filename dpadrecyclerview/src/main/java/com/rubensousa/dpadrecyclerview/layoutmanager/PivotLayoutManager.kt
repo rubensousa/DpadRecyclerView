@@ -399,7 +399,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         requestLayout()
     }
 
-    internal fun updateRecyclerView(recyclerView: RecyclerView?) {
+    internal fun updateRecyclerView(recyclerView: DpadRecyclerView?) {
         if (recyclerView == null) {
             focusDispatcher.clearParentRecyclerView()
         }
