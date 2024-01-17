@@ -2,6 +2,19 @@
 
 ## Version 1.2.0
 
+### 1.2.0-beta01
+
+2024-01-17
+
+#### New Features
+
+- Added new `setSelectedSubPosition` that allows passing a callback for the target alignment ([#43](https://github.com/rubensousa/DpadRecyclerView/issues/43))
+
+#### Bug fixes
+
+- Fixed navigation sound not being played when searching for pivot ([#167](https://github.com/rubensousa/DpadRecyclerView/issues/167))
+- Fixed sub selection not being dispatched when used multiple times in a row
+
 ### 1.2.0-alpha03
 
 2024-01-10
