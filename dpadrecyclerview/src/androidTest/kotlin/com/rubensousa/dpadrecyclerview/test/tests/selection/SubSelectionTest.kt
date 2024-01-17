@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.matcher.ViewMatchers
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
@@ -40,7 +41,9 @@ import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderSelectionCountA
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectSubPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.Test
@@ -136,6 +139,62 @@ class SubSelectionTest : DpadRecyclerViewTest() {
             )
     }
 
+    @Test
+    fun testTaskIsExecutedAfterViewHolderIsSelectedAndAligned() {
+        launchSubPositionFragment()
+
+        selectWithTask(
+            position = 0,
+            subPosition = 1,
+            smooth = true,
+            executeWhenAligned = true
+        )
+
+        waitForIdleScrollState()
+
+        selectWithTask(
+            position = 0,
+            subPosition = 2,
+            smooth = false,
+            executeWhenAligned = false
+        )
+
+        waitForIdleScrollState()
+
+        assertThat(getSelectionsFromTasks()).isEqualTo(
+            listOf(
+                DpadSelectionEvent(
+                    position = 0,
+                    subPosition = 1
+                ),
+                DpadSelectionEvent(
+                    position = 0,
+                    subPosition = 2
+                )
+            )
+        )
+    }
+
+
+    private fun getSelectionsFromTasks(): List<DpadSelectionEvent> {
+        var events = listOf<DpadSelectionEvent>()
+        fragmentScenario.onFragment { fragment ->
+            events = fragment.getTasksExecuted()
+        }
+        return events
+    }
+
+    private fun selectWithTask(
+        position: Int,
+        subPosition: Int,
+        smooth: Boolean,
+        executeWhenAligned: Boolean
+    ) {
+        fragmentScenario.onFragment { fragment ->
+            fragment.selectWithTask(position, subPosition, smooth, executeWhenAligned)
+        }
+    }
+
     private fun launchSubPositionFragment() {
         launchSubPositionFragment(
             getDefaultLayoutConfiguration(),
@@ -147,15 +206,14 @@ class SubSelectionTest : DpadRecyclerViewTest() {
         layoutConfiguration: TestLayoutConfiguration,
         adapterConfiguration: TestAdapterConfiguration
     ): FragmentScenario<TestSubPositionFragment> {
-        return launchFragmentInContainer<TestSubPositionFragment>(
+        fragmentScenario = launchFragmentInContainer<TestSubPositionFragment>(
             fragmentArgs = TestGridFragment.getArgs(
                 layoutConfiguration,
                 adapterConfiguration
             ),
             themeResId = R.style.DpadRecyclerViewTestTheme
-        ).also {
-            fragmentScenario = it
-        }
+        )
+        return fragmentScenario
     }
 
     class TestSubPositionFragment : TestGridFragment() {

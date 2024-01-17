@@ -141,8 +141,10 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setSelectedPositionSmooth (ILcom/rubensousa/dpadrecyclerview/ViewHolderTask;)V
 	public final fun setSelectedSubPosition (I)V
 	public final fun setSelectedSubPosition (II)V
+	public final fun setSelectedSubPosition (IILcom/rubensousa/dpadrecyclerview/ViewHolderTask;)V
 	public final fun setSelectedSubPositionSmooth (I)V
 	public final fun setSelectedSubPositionSmooth (II)V
+	public final fun setSelectedSubPositionSmooth (IILcom/rubensousa/dpadrecyclerview/ViewHolderTask;)V
 	public final fun setSmoothFocusChangesEnabled (Z)V
 	public final fun setSmoothScrollBehavior (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$SmoothScrollByBehavior;)V
 	public final fun setSmoothScrollMaxPendingAlignments (I)V

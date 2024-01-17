@@ -999,6 +999,18 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Performs a task on a ViewHolder at a given position and sub position after scrolling to it.
+     *
+     * @param position Adapter position of the item to select
+     * @param subPosition index of the alignment from [DpadViewHolder.getSubPositionAlignments]
+     * @param task     Task to executed on the ViewHolder at the given position
+     */
+    fun setSelectedSubPosition(position: Int, subPosition: Int, task: ViewHolderTask) {
+        viewHolderTaskExecutor.schedule(position, subPosition, task)
+        requireLayout().selectPosition(position, subPosition, smooth = false)
+    }
+
+    /**
      * Changes the sub selected view immediately without any scroll animation.
      * @param subPosition index of the alignment from [DpadViewHolder.getSubPositionAlignments]
      */
@@ -1020,6 +1032,18 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param subPosition index of the alignment from [DpadViewHolder.getSubPositionAlignments]
      */
     fun setSelectedSubPositionSmooth(position: Int, subPosition: Int) {
+        requireLayout().selectPosition(position, subPosition, smooth = true)
+    }
+
+    /**
+     * Performs a task on a ViewHolder at a given position and sub position after scrolling to it.
+     *
+     * @param position Adapter position of the item to select
+     * @param subPosition index of the alignment from [DpadViewHolder.getSubPositionAlignments]
+     * @param task     Task to executed on the ViewHolder at the given position
+     */
+    fun setSelectedSubPositionSmooth(position: Int, subPosition: Int, task: ViewHolderTask) {
+        viewHolderTaskExecutor.schedule(position, subPosition, task)
         requireLayout().selectPosition(position, subPosition, smooth = true)
     }
 
