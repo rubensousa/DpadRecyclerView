@@ -21,10 +21,18 @@ import androidx.recyclerview.widget.RecyclerView
 internal class ViewHolderTaskExecutor : OnViewHolderSelectedListener {
 
     private var targetPosition = RecyclerView.NO_POSITION
+    private var targetSubPosition = RecyclerView.NO_POSITION
     private var pendingTask: ViewHolderTask? = null
 
     fun schedule(position: Int, task: ViewHolderTask) {
         targetPosition = position
+        targetSubPosition = RecyclerView.NO_POSITION
+        pendingTask = task
+    }
+
+    fun schedule(position: Int, subPosition: Int, task: ViewHolderTask) {
+        targetPosition = position
+        targetSubPosition = subPosition
         pendingTask = task
     }
 
@@ -36,6 +44,7 @@ internal class ViewHolderTaskExecutor : OnViewHolderSelectedListener {
     ) {
         if (position == targetPosition
             && child != null
+            && (targetSubPosition == RecyclerView.NO_POSITION || targetSubPosition == subPosition)
             && pendingTask?.executeWhenAligned == false
         ) {
             executePendingTask(child)
@@ -50,6 +59,7 @@ internal class ViewHolderTaskExecutor : OnViewHolderSelectedListener {
     ) {
         if (position == targetPosition
             && child != null
+            && (targetSubPosition == RecyclerView.NO_POSITION || targetSubPosition == subPosition)
             && pendingTask?.executeWhenAligned == true
         ) {
             executePendingTask(child)

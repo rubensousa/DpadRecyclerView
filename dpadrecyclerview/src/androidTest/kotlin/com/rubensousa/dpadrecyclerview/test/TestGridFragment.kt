@@ -107,7 +107,8 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         recyclerView: DpadRecyclerView,
         adapterConfig: TestAdapterConfiguration
     ): RecyclerView.Adapter<*> {
-        return TestAdapter(adapterConfig,
+        return TestAdapter(
+            adapterConfig,
             onViewHolderSelected = ::addViewHolderSelected,
             onViewHolderDeselected = ::addViewHolderDeselected
         )
@@ -142,6 +143,30 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
             recyclerView.setSelectedPositionSmooth(position, task)
         } else {
             recyclerView.setSelectedPosition(position, task)
+        }
+    }
+
+    fun selectWithTask(
+        position: Int,
+        subPosition: Int,
+        smooth: Boolean,
+        executeWhenAligned: Boolean = false
+    ) {
+        val recyclerView = requireView().findViewById<DpadRecyclerView>(R.id.recyclerView)
+        val task = object : ViewHolderTask(executeWhenAligned) {
+            override fun execute(viewHolder: RecyclerView.ViewHolder) {
+                tasks.add(
+                    DpadSelectionEvent(
+                        position = position,
+                        subPosition = subPosition
+                    )
+                )
+            }
+        }
+        if (smooth) {
+            recyclerView.setSelectedSubPositionSmooth(position, subPosition, task)
+        } else {
+            recyclerView.setSelectedSubPosition(position, subPosition, task)
         }
     }
 
