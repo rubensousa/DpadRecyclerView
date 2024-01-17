@@ -16,8 +16,11 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.scroll
 
+import android.media.AudioManager
 import android.util.Log
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -45,7 +48,8 @@ internal class LayoutScroller(
     var isSelectionInProgress = false
         private set
 
-    private var recyclerView: RecyclerView? = null
+    private var audioManager: AudioManager? = null
+    private var recyclerView: DpadRecyclerView? = null
     private var pivotSelectionScroller: PivotSelectionSmoothScroller? = null
     private var searchPivotScroller: SearchPivotSmoothScroller? = null
     private val alignmentQueue = ScrollAlignmentQueue(configuration, layoutAlignment, layoutInfo)
@@ -53,7 +57,7 @@ internal class LayoutScroller(
     private val searchPivotListener = SearchPivotListener()
     private val selectionPivotListener = SelectionPivotListener()
 
-    fun setRecyclerView(newRecyclerView: RecyclerView?) {
+    fun setRecyclerView(newRecyclerView: DpadRecyclerView?) {
         recyclerView?.removeOnScrollListener(idleScrollListener)
         newRecyclerView?.addOnScrollListener(idleScrollListener)
         recyclerView = newRecyclerView
@@ -251,6 +255,7 @@ internal class LayoutScroller(
                         return false
                     }
                 }
+
                 !forward && layoutInfo.hasCreatedFirstItem() -> {
                     if (!layoutInfo.isLoopingStart) {
                         return false
@@ -264,6 +269,7 @@ internal class LayoutScroller(
                         return false
                     }
                 }
+
                 !forward && layoutInfo.hasCreatedLastItem() -> {
                     if (!layoutInfo.isLoopingStart) {
                         return false
@@ -292,7 +298,31 @@ internal class LayoutScroller(
         if (consume) {
             searchPivotScroller?.consumeOneMovement()
         }
+        playSoundEffect(forward, currentRecyclerView)
         return true
+    }
+
+    /**
+     * Plays a sound effect when smooth scrolling to an unknown view
+     */
+    private fun playSoundEffect(forward: Boolean, recyclerView: DpadRecyclerView) {
+        val soundEffect: Int = if (recyclerView.getOrientation() == RecyclerView.VERTICAL) {
+            if (forward) {
+                AudioManager.FX_FOCUS_NAVIGATION_DOWN
+            } else {
+                AudioManager.FX_FOCUS_NAVIGATION_UP
+            }
+        } else {
+            // !rtl && !forward = LEFT / rtl && forward = LEFT
+            // !rtl && forward = RIGHT / rtl && !forward = RIGHT
+            val rtl = recyclerView.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL
+            if (rtl.xor(forward)) {
+                AudioManager.FX_FOCUS_NAVIGATION_RIGHT
+            } else {
+                AudioManager.FX_FOCUS_NAVIGATION_LEFT
+            }
+        }
+        getAudioManager(recyclerView)?.playSoundEffect(soundEffect)
     }
 
     fun scrollToView(view: View?, subPositionView: View?, smooth: Boolean, requestFocus: Boolean) {
@@ -400,6 +430,16 @@ internal class LayoutScroller(
         }
         val scrollOffset = layoutAlignment.calculateScrollOffset(parentView, subView)
         return alignmentQueue.push(parentView, subView, scrollOffset)
+    }
+
+    private fun getAudioManager(recyclerView: RecyclerView): AudioManager? {
+        audioManager?.let { return it }
+        audioManager = try {
+            ContextCompat.getSystemService(recyclerView.context, AudioManager::class.java)
+        } catch (error: Throwable) {
+            null
+        }
+        return audioManager
     }
 
     private inner class SearchPivotListener : SearchPivotSmoothScroller.Listener {
