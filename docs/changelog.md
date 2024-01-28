@@ -11,6 +11,10 @@
 - Added new `RecyclerViewCompositionStrategy.DisposeOnRecycled` for compose interop 
 to re-use compositions when views are detached and attached from the window again.
 
+#### Bug fixes
+
+- Fixed views not being laid out correctly sometimes when `setRecycleChildrenOnDetach` is used.
+
 ### 1.2.0-beta01
 
 2024-01-17
