@@ -17,6 +17,7 @@ package com.rubensousa.dpadrecyclerview.compose
 
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ViewCompositionStrategy
 
 /**
  * A basic implementation of [DpadAbstractComposeViewHolder]
@@ -44,8 +45,9 @@ open class DpadComposeViewHolder<T>(
     onClick: ((item: T) -> Unit)? = null,
     onLongClick: ((item: T) -> Boolean)? = null,
     isFocusable: Boolean = true,
+    compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
     private val composable: DpadComposable<T>,
-) : DpadAbstractComposeViewHolder<T>(parent, isFocusable) {
+) : DpadAbstractComposeViewHolder<T>(parent, isFocusable, compositionStrategy) {
 
     init {
         if (onClick != null) {
