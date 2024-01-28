@@ -34,6 +34,7 @@ public final class com/rubensousa/dpadrecyclerview/DpadLoopDirection : java/lang
 	public static final field MAX Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
 	public static final field MIN_MAX Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
 	public static final field NONE Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
 	public static fun values ()[Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
 }
@@ -237,6 +238,7 @@ public final class com/rubensousa/dpadrecyclerview/FocusableDirection : java/lan
 	public static final field CIRCULAR Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
 	public static final field CONTINUOUS Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
 	public static final field STANDARD Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
 	public static fun values ()[Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
 }
@@ -292,6 +294,7 @@ public final class com/rubensousa/dpadrecyclerview/ParentAlignment$Edge : java/l
 	public static final field MIN Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
 	public static final field MIN_MAX Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
 	public static final field NONE Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
 	public static fun valueOf (Ljava/lang/String;)Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
 	public static fun values ()[Lcom/rubensousa/dpadrecyclerview/ParentAlignment$Edge;
 }
