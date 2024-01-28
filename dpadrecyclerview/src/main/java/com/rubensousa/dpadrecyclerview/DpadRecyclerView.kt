@@ -28,6 +28,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Interpolator
 import androidx.annotation.Px
+import androidx.annotation.VisibleForTesting
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -1217,6 +1218,16 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @return the listener set by [setOnMotionInterceptListener]
      */
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
+
+    @VisibleForTesting
+    internal fun detachFromWindow() {
+        onDetachedFromWindow()
+    }
+
+    @VisibleForTesting
+    internal fun attachToWindow() {
+        onAttachedToWindow()
+    }
 
     private fun removeSelectionForRecycledViewHolders() {
         addRecyclerListener { holder ->
