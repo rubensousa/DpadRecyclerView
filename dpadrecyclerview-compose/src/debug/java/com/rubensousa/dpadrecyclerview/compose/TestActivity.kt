@@ -32,12 +32,18 @@ class TestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: DpadRecyclerView
     private val clicks = ArrayList<Int>()
+    private val disposals = ArrayList<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.compose_test)
         recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.adapter = Adapter(List(100) { it })
+        recyclerView.adapter = Adapter(
+            items = List(100) { it },
+            onDispose = { item ->
+                disposals.add(item)
+            }
+        )
         recyclerView.requestFocus()
     }
 
@@ -53,9 +59,15 @@ class TestActivity : AppCompatActivity() {
         return clicks
     }
 
+    fun getDisposals(): List<Int> {
+        return disposals
+    }
+
     fun removeAdapter() {
         recyclerView.adapter = null
     }
+
+    fun getRecyclerView(): DpadRecyclerView = recyclerView
 
     fun getViewsHolders(): List<RecyclerView.ViewHolder> {
         val viewHolders = ArrayList<RecyclerView.ViewHolder>()
@@ -65,14 +77,17 @@ class TestActivity : AppCompatActivity() {
         return viewHolders
     }
 
-    inner class Adapter(private val items: List<Int>) :
-        RecyclerView.Adapter<DpadComposeViewHolder<Int>>() {
+    inner class Adapter(
+        private val items: List<Int>,
+        private val onDispose: (item: Int) -> Unit,
+    ) : RecyclerView.Adapter<DpadComposeViewHolder<Int>>() {
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
         ): DpadComposeViewHolder<Int> {
-            return DpadComposeViewHolder(parent,
+            return DpadComposeViewHolder(
+                parent,
                 composable = { item, isFocused, isSelected ->
                     TestComposable(
                         modifier = Modifier
@@ -80,13 +95,17 @@ class TestActivity : AppCompatActivity() {
                             .height(150.dp),
                         item = item,
                         isFocused = isFocused,
-                        isSelected = isSelected
+                        isSelected = isSelected,
+                        onDispose = {
+                            onDispose(item)
+                        }
                     )
                 },
                 onClick = {
                     clicks.add(it)
                 },
-                isFocusable = true)
+                isFocusable = true
+            )
         }
 
         override fun getItemCount(): Int = items.size

@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 
@@ -41,7 +42,8 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
  */
 abstract class DpadAbstractComposeViewHolder<T>(
     parent: ViewGroup,
-    isFocusable: Boolean = true
+    isFocusable: Boolean = true,
+    compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled
 ) : RecyclerView.ViewHolder(ComposeView(parent.context)), DpadViewHolder {
 
     private val itemState = mutableStateOf<T?>(null)
@@ -50,6 +52,7 @@ abstract class DpadAbstractComposeViewHolder<T>(
 
     init {
         val composeView = itemView as ComposeView
+        composeView.setViewCompositionStrategy(compositionStrategy)
         composeView.isFocusable = isFocusable
         composeView.isFocusableInTouchMode = isFocusable
         composeView.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS

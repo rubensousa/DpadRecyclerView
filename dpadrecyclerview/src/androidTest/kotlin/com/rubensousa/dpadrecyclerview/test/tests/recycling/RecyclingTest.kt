@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestGridFragment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
@@ -112,5 +113,34 @@ class RecyclingTest : DpadRecyclerViewTest() {
         assertThat(viewPool.getRecycledViewCount(0)).isEqualTo(0)
     }
 
+    @Test
+    fun testViewsAreRecreatedOnAttachedFromWindowAgain() {
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(
+                recycleChildrenOnDetach = true
+            )
+        )
+
+        waitForCondition("Waiting for RecyclerView layout") { recyclerView ->
+            recyclerView.layoutManager!!.childCount > 0 && !recyclerView.isLayoutRequested
+        }
+
+        val childBounds = getChildrenBounds()
+
+        onRecyclerView("Detach RecyclerView from window") { view ->
+            view.detachFromWindow()
+        }
+
+        onRecyclerView("Attach RecyclerView to window") { view ->
+            view.attachToWindow()
+        }
+
+        waitForCondition("Waiting for RecyclerView layout") { recyclerView ->
+            recyclerView.childCount > 0 && !recyclerView.isLayoutRequested
+        }
+
+        assertSelectedPosition(0)
+        assertChildrenPositions(childBounds)
+    }
 
 }

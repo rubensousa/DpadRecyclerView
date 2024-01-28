@@ -2,6 +2,15 @@
 
 ## Version 1.2.0
 
+### 1.2.0-beta02
+
+2024-01-28
+
+#### New Features
+
+- Added new `RecyclerViewCompositionStrategy.DisposeOnRecycled` for compose interop 
+to re-use compositions when views are detached and attached from the window again.
+
 ### 1.2.0-beta01
 
 2024-01-17

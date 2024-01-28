@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +29,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import org.junit.Rule
@@ -48,6 +50,15 @@ class DpadComposeViewHolderTest {
 
         assertFocus(item = 2, isFocused = false)
         assertSelection(item = 2, isSelected = false)
+
+        KeyEvents.pressDown()
+        waitForIdleScroll()
+
+        assertFocus(item = 0, isFocused = false)
+        assertSelection(item = 0, isSelected = false)
+
+        assertFocus(item = 1, isFocused = true)
+        assertSelection(item = 1, isSelected = true)
     }
 
     @Test
@@ -107,7 +118,7 @@ class DpadComposeViewHolderTest {
     }
 
     @Test
-    fun testCompositionIsCleared() {
+    fun testCompositionIsClearedWhenClearingAdapter() {
         val viewHolders = ArrayList<RecyclerView.ViewHolder>()
         composeTestRule.activityRule.scenario.onActivity { activity ->
             viewHolders.addAll(activity.getViewsHolders())
@@ -119,6 +130,41 @@ class DpadComposeViewHolderTest {
             assertThat(composeView.hasComposition).isFalse()
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
+    }
+
+    @Test
+    fun testCompositionIsNotClearedWhenDetachingFromWindow() {
+        composeTestRule.activityRule.scenario.onActivity { activity ->
+            activity.getRecyclerView().setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
+                override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
+                    return 1080
+                }
+            })
+        }
+        repeat(3) {
+            KeyEvents.pressDown()
+            waitForIdleScroll()
+        }
+
+        composeTestRule.onNodeWithText("0").assertExists()
+        composeTestRule.onNodeWithText("0").assertIsNotDisplayed()
+    }
+
+    @Test
+    fun testCompositionIsClearedWhenViewHolderIsRecycled() {
+        repeat(10) {
+            KeyEvents.pressDown()
+            waitForIdleScroll()
+        }
+
+        composeTestRule.onNodeWithText("0").assertDoesNotExist()
+
+        var disposals: List<Int> = emptyList()
+        composeTestRule.activityRule.scenario.onActivity { activity ->
+            disposals = activity.getDisposals()
+        }
+
+        assertThat(disposals).contains(0)
     }
 
     private fun waitForIdleScroll() {

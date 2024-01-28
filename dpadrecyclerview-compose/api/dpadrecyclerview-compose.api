@@ -1,7 +1,7 @@
 public abstract class com/rubensousa/dpadrecyclerview/compose/DpadAbstractComposeViewHolder : androidx/recyclerview/widget/RecyclerView$ViewHolder, com/rubensousa/dpadrecyclerview/DpadViewHolder {
 	public static final field $stable I
-	public fun <init> (Landroid/view/ViewGroup;Z)V
-	public synthetic fun <init> (Landroid/view/ViewGroup;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/view/ViewGroup;ZLandroidx/compose/ui/platform/ViewCompositionStrategy;)V
+	public synthetic fun <init> (Landroid/view/ViewGroup;ZLandroidx/compose/ui/platform/ViewCompositionStrategy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public abstract fun Content (Ljava/lang/Object;ZZLandroidx/compose/runtime/Composer;I)V
 	public final fun getItem ()Ljava/lang/Object;
 	public fun getSubPositionAlignments ()Ljava/util/List;
@@ -14,8 +14,19 @@ public abstract class com/rubensousa/dpadrecyclerview/compose/DpadAbstractCompos
 
 public class com/rubensousa/dpadrecyclerview/compose/DpadComposeViewHolder : com/rubensousa/dpadrecyclerview/compose/DpadAbstractComposeViewHolder {
 	public static final field $stable I
-	public fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function5;)V
-	public synthetic fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZLkotlin/jvm/functions/Function5;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function5;)V
+	public synthetic fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function5;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun Content (Ljava/lang/Object;ZZLandroidx/compose/runtime/Composer;I)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/compose/RecyclerViewCompositionStrategy {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/compose/RecyclerViewCompositionStrategy;
+}
+
+public final class com/rubensousa/dpadrecyclerview/compose/RecyclerViewCompositionStrategy$DisposeOnRecycled : androidx/compose/ui/platform/ViewCompositionStrategy {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/compose/RecyclerViewCompositionStrategy$DisposeOnRecycled;
+	public fun installFor (Landroidx/compose/ui/platform/AbstractComposeView;)Lkotlin/jvm/functions/Function0;
 }
 

@@ -228,7 +228,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         if (childCount == 0) {
             return 0
         }
-        return  DpadScrollbarHelper.computeScrollRange(
+        return DpadScrollbarHelper.computeScrollRange(
             state = state,
             orientationHelper = layoutInfo.orientationHelper,
             startChild = layoutInfo.findFirstVisibleChild(),
@@ -334,6 +334,9 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     override fun onAttachedToWindow(view: RecyclerView) {
         super.onAttachedToWindow(view)
         focusDispatcher.updateParentRecyclerView(view)
+        if (configuration.recycleChildrenOnDetach) {
+            requestLayout()
+        }
     }
 
     override fun onDetachedFromWindow(view: RecyclerView, recycler: RecyclerView.Recycler) {
