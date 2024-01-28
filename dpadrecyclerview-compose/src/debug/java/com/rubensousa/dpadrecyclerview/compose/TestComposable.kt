@@ -18,8 +18,10 @@ package com.rubensousa.dpadrecyclerview.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,7 +39,8 @@ fun TestComposable(
     modifier: Modifier = Modifier,
     item: Int,
     isFocused: Boolean,
-    isSelected: Boolean
+    isSelected: Boolean,
+    onDispose: () -> Unit = {},
 ) {
     val backgroundColor = if (isFocused) {
         Color.White
@@ -51,10 +54,24 @@ fun TestComposable(
             .background(backgroundColor),
         contentAlignment = Alignment.Center,
     ) {
-        Text(modifier = Modifier.semantics {
-            set(TestComposable.focusedKey, isFocused)
-            set(TestComposable.selectedKey, isSelected)
-        }, text = item.toString())
+        Text(
+            modifier = Modifier.semantics {
+                set(TestComposable.focusedKey, isFocused)
+                set(TestComposable.selectedKey, isSelected)
+            },
+            text = item.toString(),
+            style = MaterialTheme.typography.headlineLarge,
+            color = if(isFocused) {
+                Color.Black
+            } else {
+                Color.White
+            }
+        )
+    }
+    DisposableEffect(key1 = item) {
+        onDispose {
+            onDispose()
+        }
     }
 }
 

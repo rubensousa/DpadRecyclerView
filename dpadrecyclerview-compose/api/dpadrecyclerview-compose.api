@@ -19,3 +19,14 @@ public class com/rubensousa/dpadrecyclerview/compose/DpadComposeViewHolder : com
 	public fun Content (Ljava/lang/Object;ZZLandroidx/compose/runtime/Composer;I)V
 }
 
+public final class com/rubensousa/dpadrecyclerview/compose/RecyclerViewCompositionStrategy {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/compose/RecyclerViewCompositionStrategy;
+}
+
+public final class com/rubensousa/dpadrecyclerview/compose/RecyclerViewCompositionStrategy$DisposeOnRecycled : androidx/compose/ui/platform/ViewCompositionStrategy {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/compose/RecyclerViewCompositionStrategy$DisposeOnRecycled;
+	public fun installFor (Landroidx/compose/ui/platform/AbstractComposeView;)Lkotlin/jvm/functions/Function0;
+}
+

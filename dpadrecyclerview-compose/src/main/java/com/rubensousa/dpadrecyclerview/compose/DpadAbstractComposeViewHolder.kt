@@ -50,6 +50,7 @@ abstract class DpadAbstractComposeViewHolder<T>(
 
     init {
         val composeView = itemView as ComposeView
+        composeView.setViewCompositionStrategy(RecyclerViewCompositionStrategy.DisposeOnRecycled)
         composeView.isFocusable = isFocusable
         composeView.isFocusableInTouchMode = isFocusable
         composeView.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
