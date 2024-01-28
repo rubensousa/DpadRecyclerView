@@ -152,7 +152,7 @@ class DpadComposeViewHolderTest {
 
     @Test
     fun testCompositionIsClearedWhenViewHolderIsRecycled() {
-        repeat(5) {
+        repeat(10) {
             KeyEvents.pressDown()
             waitForIdleScroll()
         }
