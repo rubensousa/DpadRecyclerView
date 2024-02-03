@@ -70,6 +70,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var pivotLayoutManager: PivotLayoutManager? = null
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
+    private var startedTouchScroll = false
     private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
     private var keyInterceptListener: OnKeyInterceptListener? = null
@@ -403,15 +404,23 @@ open class DpadRecyclerView @JvmOverloads constructor(
     override fun startNestedScroll(axes: Int, type: Int): Boolean {
         val result = super.startNestedScroll(axes, type)
         if (type == ViewCompat.TYPE_TOUCH) {
-            pivotLayoutManager?.setScrollingFromTouchEvent(true)
+            startedTouchScroll = true
         }
         return result
+    }
+
+    override fun stopNestedScroll() {
+        super.stopNestedScroll()
+        startedTouchScroll = false
     }
 
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
         if (state == SCROLL_STATE_IDLE) {
+            startedTouchScroll = false
             pivotLayoutManager?.setScrollingFromTouchEvent(false)
+        } else if (startedTouchScroll) {
+            pivotLayoutManager?.setScrollingFromTouchEvent(true)
         }
     }
 

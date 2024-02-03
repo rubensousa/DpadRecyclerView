@@ -157,6 +157,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun smoothScrollBy (II)V
 	public final fun smoothScrollBy (IILandroid/view/animation/Interpolator;)V
 	public fun startNestedScroll (II)Z
+	public fun stopNestedScroll ()V
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView$OnKeyInterceptListener {

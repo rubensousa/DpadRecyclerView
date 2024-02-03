@@ -2,6 +2,14 @@
 
 ## Version 1.2.0
 
+### 1.2.0-rc01
+
+2024-02-03
+
+#### Bug fixes
+
+- Fixed focus being sent to the wrong item when scrolling with touch events before pressing a key ([#188](https://github.com/rubensousa/DpadRecyclerView/issues/188))
+
 ### 1.2.0-beta02
 
 2024-01-28
