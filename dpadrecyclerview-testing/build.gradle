@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 apply from: "$rootProject.projectDir/gradle/publish.gradle"
@@ -31,10 +31,6 @@ android {
         buildConfig false
     }
 
-    testOptions {
-        // execution 'ANDROIDX_TEST_ORCHESTRATOR'
-    }
-
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -55,20 +51,18 @@ android {
 
 dependencies {
     implementation project (':dpadrecyclerview')
-    debugImplementation "androidx.fragment:fragment-testing-manifest:$versions.fragment"
-    api "androidx.recyclerview:recyclerview:$versions.recyclerview"
-    api "androidx.test:runner:$testVersions.runner"
-    api "androidx.test:core-ktx:$testVersions.core"
-    api "androidx.test:rules:$testVersions.rules"
-    api "androidx.test.ext:truth:$testVersions.espressoTruth"
-    api "androidx.test.ext:junit-ktx:$testVersions.espressoJunit"
-    api "androidx.test.espresso:espresso-idling-resource:$testVersions.espresso"
-    api "androidx.test.espresso:espresso-core:$testVersions.espresso"
-    api "androidx.test.espresso:espresso-contrib:$testVersions.espresso"
-    api "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
-
-    //noinspection FragmentGradleConfiguration
-    androidTestImplementation "androidx.fragment:fragment-testing:$versions.fragment"
+    debugImplementation libs.androidx.fragment.testing.manifest
+    api libs.androidx.test.runner
+    api libs.androidx.test.core.ktx
+    api libs.androidx.test.rules
+    api libs.androidx.test.rules
+    api libs.androidx.test.truth
+    api libs.androidx.test.junit
+    api libs.androidx.test.espresso.core
+    api libs.androidx.test.espresso.idling
+    api libs.androidx.test.espresso.contrib
+    api libs.androidx.test.uiautomator
+    androidTestImplementation libs.androidx.fragment.testing
     androidTestImplementation project (':dpadrecyclerview-test-fixtures')
-    androidTestUtil "androidx.test.services:test-services:$testVersions.services"
+    androidTestUtil libs.androidx.test.services
 }

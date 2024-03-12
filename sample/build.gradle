@@ -1,7 +1,7 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'androidx.navigation.safeargs'
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.androidx.navigation.safeargs)
 }
 
 android {
@@ -41,7 +41,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "$composeVersions.compiler"
+        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
 
 }
@@ -49,24 +49,25 @@ android {
 dependencies {
     implementation project (":dpadrecyclerview")
     implementation project (":dpadrecyclerview-compose")
-    implementation "androidx.appcompat:appcompat:$versions.appcompat"
-    implementation "androidx.leanback:leanback-grid:1.0.0-alpha01"
-    implementation "androidx.constraintlayout:constraintlayout:$versions.constraintLayout"
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$versions.lifecycle"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.lifecycle"
-    implementation "androidx.navigation:navigation-fragment-ktx:$versions.navigation"
-    implementation "androidx.navigation:navigation-ui-ktx:$versions.navigation"
-    implementation "androidx.compose.material3:material3:$composeVersions.material3"
-    implementation "androidx.compose.ui:ui-tooling-preview:$composeVersions.ui"
-    implementation "androidx.customview:customview-poolingcontainer:$versions.poolingContainer"
-    implementation "androidx.paging:paging-runtime-ktx:$versions.paging"
-    debugImplementation "androidx.compose.ui:ui-tooling:$composeVersions.ui"
-    implementation "androidx.interpolator:interpolator:1.0.0"
-    implementation 'com.rubensousa:decorator:2.1.0'
-    implementation 'com.jakewharton.timber:timber:5.0.1'
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.leanback.grid
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.lifecycle.livedata
+    implementation libs.androidx.lifecycle.viewmodel
+    implementation libs.androidx.customview.poolingcontainer
+    implementation libs.androidx.paging.runtime
+    implementation libs.androidx.interpolator
+    implementation libs.decorator
+    implementation libs.timber
+    implementation libs.androidx.navigation.fragment
+    implementation libs.androidx.navigation.ui
+    implementation libs.androidx.compose.material3
+    implementation libs.androidx.compose.ui.tooling.preview
+    debugImplementation libs.androidx.compose.ui.tooling
 
-    androidTestImplementation "androidx.fragment:fragment-testing:$versions.fragment"
+
+    androidTestImplementation libs.androidx.fragment.testing
     androidTestImplementation project (':dpadrecyclerview-testing')
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$composeVersions.ui")
-    androidTestUtil "androidx.test.services:test-services:$testVersions.services"
+    androidTestImplementation libs.androidx.test.compose.ui.junit4
+    androidTestUtil libs.androidx.test.services
 }

@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 apply from: "$rootProject.projectDir/gradle/coverage.gradle"
@@ -32,11 +32,10 @@ android {
 
 dependencies {
     implementation project (':dpadrecyclerview')
-    implementation "androidx.recyclerview:recyclerview:$versions.recyclerview"
-    implementation "androidx.collection:collection-ktx:1.2.0"
-    implementation "junit:junit:$testVersions.junit"
-    implementation "com.google.truth:truth:$testVersions.truth"
-    api "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
-    api "androidx.test:runner:$testVersions.runner"
-    testImplementation "com.google.truth:truth:$testVersions.truth"
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.collection
+    implementation libs.junit
+    implementation libs.truth
+    api libs.androidx.test.uiautomator
+    api libs.androidx.test.runner
 }
