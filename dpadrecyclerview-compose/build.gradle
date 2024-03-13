@@ -54,11 +54,11 @@ android {
 
 dependencies {
     api project(':dpadrecyclerview')
+    api libs.androidx.concurrent.futures
     implementation libs.androidx.appcompat
     implementation libs.androidx.recyclerview
     implementation libs.androidx.customview.poolingcontainer
     implementation libs.androidx.compose.ui
-    implementation libs.listenablefuture
 
     // Test dependencies
     debugImplementation libs.androidx.test.compose.ui.manifest

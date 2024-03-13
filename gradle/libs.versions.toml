@@ -2,6 +2,7 @@
 android-gradle-plugin = "8.3.0"
 androidx-appcompat = "1.6.1"
 androidx-collection = "1.4.0"
+androidx-concurrent-futures = "1.1.0"
 androidx-compose-compiler = "1.5.10"
 androidx-compose-material3 = '1.2.1'
 androidx-compose-ui = "1.6.3"
@@ -53,6 +54,7 @@ androidx-compose-material3 = { module = "androidx.compose.material3:material3-an
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-ui" }
+androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures", version.ref = "androidx-concurrent-futures" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-customview = { module = "androidx.customview:customview", version.ref = "androidx-customview" }
 androidx-customview-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version.ref = "androidx-poolingcontainer" }
