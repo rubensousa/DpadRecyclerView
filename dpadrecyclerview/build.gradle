@@ -11,12 +11,11 @@ android {
     compileSdk versions.compileSdkVersion
 
     defaultConfig {
-        minSdk 19
+        minSdk versions.minSdkVersion
         targetSdk versions.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
         testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
-        multiDexEnabled true
     }
 
     buildTypes {
@@ -34,7 +33,6 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
-        // execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 
     compileOptions {
@@ -58,6 +56,8 @@ dependencies {
     api libs.androidx.recyclerview
     implementation libs.androidx.collection
 
+    // Required for dependency resolution
+    debugImplementation libs.guava
     debugImplementation libs.androidx.fragment.testing.manifest
     testImplementation libs.junit
     testImplementation libs.truth
