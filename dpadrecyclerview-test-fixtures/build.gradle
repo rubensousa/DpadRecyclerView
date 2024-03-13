@@ -31,6 +31,6 @@ dependencies {
     implementation libs.androidx.collection
     implementation libs.junit
     implementation libs.truth
-    api libs.androidx.test.uiautomator
-    api libs.androidx.test.runner
+    implementation libs.androidx.test.uiautomator
+    implementation libs.androidx.test.runner
 }
