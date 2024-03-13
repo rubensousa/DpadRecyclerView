@@ -66,9 +66,8 @@ dependencies {
     debugImplementation libs.androidx.compose.ui.tooling.preview
     debugImplementation libs.androidx.compose.material3
     debugImplementation libs.androidx.customview
-
-    androidTestImplementation project (':dpadrecyclerview-testing')
-    androidTestImplementation project (':dpadrecyclerview-test-fixtures')
+    androidTestImplementation project(':dpadrecyclerview-testing')
+    androidTestImplementation project(':dpadrecyclerview-test-fixtures')
     androidTestImplementation libs.androidx.test.compose.ui.junit4
     androidTestUtil libs.androidx.test.services
 }

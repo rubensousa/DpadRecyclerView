@@ -57,7 +57,6 @@ android {
 dependencies {
     api libs.androidx.recyclerview
     implementation libs.androidx.collection
-    implementation libs.listenablefuture
 
     debugImplementation libs.androidx.fragment.testing.manifest
     testImplementation libs.junit

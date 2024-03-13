@@ -51,7 +51,6 @@ android {
 
 dependencies {
     implementation project (':dpadrecyclerview')
-    implementation libs.listenablefuture
     debugImplementation libs.androidx.fragment.testing.manifest
     api libs.androidx.test.runner
     api libs.androidx.test.core.ktx
