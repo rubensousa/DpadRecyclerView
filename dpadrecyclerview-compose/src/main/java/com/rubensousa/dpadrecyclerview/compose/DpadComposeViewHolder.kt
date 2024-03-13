@@ -17,11 +17,23 @@ package com.rubensousa.dpadrecyclerview.compose
 
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 
 /**
  * A basic implementation of [DpadAbstractComposeViewHolder]
  * that forwards [Content] to [composable] and handles clicks.
+ *
+ * Focus is kept inside the internal [ComposeView] to ensure that it behaves correctly
+ * and to workaround the following issues:
+ *
+ * 1. Focus is not sent correctly from Views to Composables:
+ * [b/268248352](https://issuetracker.google.com/issues/268248352)
+ * This is solved by just holding the focus in [ComposeView]
+ *
+ * 2. Clicking on a focused Composable does not trigger the standard audio feedback:
+ * [b/268268856](https://issuetracker.google.com/issues/268268856)
+ * This is solved by just handling the click on [ComposeView] directly
  *
  * This allows inline definition of ViewHolders in `onCreateViewHolder`:
  *
@@ -45,9 +57,15 @@ open class DpadComposeViewHolder<T>(
     onClick: ((item: T) -> Unit)? = null,
     onLongClick: ((item: T) -> Boolean)? = null,
     isFocusable: Boolean = true,
+    dispatchFocusToComposable: Boolean = true,
     compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
     private val composable: DpadComposable<T>,
-) : DpadAbstractComposeViewHolder<T>(parent, isFocusable, compositionStrategy) {
+) : DpadAbstractComposeViewHolder<T>(
+    parent = parent,
+    isFocusable = isFocusable,
+    dispatchFocusToComposable = dispatchFocusToComposable,
+    compositionStrategy = compositionStrategy
+) {
 
     init {
         if (onClick != null) {

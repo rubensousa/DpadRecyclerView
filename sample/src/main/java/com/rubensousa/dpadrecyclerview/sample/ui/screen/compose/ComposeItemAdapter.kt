@@ -56,8 +56,6 @@ class ComposeItemAdapter(
         onItemClick: (Int) -> Unit
     ) : DpadAbstractComposeViewHolder<Int>(parent) {
 
-        private val itemAnimator = ItemAnimator(itemView)
-
         init {
             itemView.setOnClickListener {
                 getItem()?.let(onItemClick)
@@ -71,16 +69,11 @@ class ComposeItemAdapter(
                     .width(dimensionResource(id = R.dimen.list_item_width))
                     .aspectRatio(3 / 4f),
                 item = item,
-                isFocused = isFocused
             )
         }
 
         override fun onFocusChanged(hasFocus: Boolean) {
-            if (hasFocus) {
-                itemAnimator.startFocusGainAnimation()
-            } else {
-                itemAnimator.startFocusLossAnimation()
-            }
+
         }
 
     }

@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.compose
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
@@ -27,42 +26,33 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 /**
  * A ViewHolder that will render a [Composable] in [Content].
  *
- * Focus is kept inside the internal [ComposeView] to ensure that it behaves correctly
- * and to workaround the following issues:
- *
- * 1. Focus is not sent correctly from Views to Composables:
- * [b/268248352](https://issuetracker.google.com/issues/268248352)
- * This is solved by just holding the focus in [ComposeView]
- *
- * 2. Clicking on a focused Composable does not trigger the standard audio feedback:
- * [b/268268856](https://issuetracker.google.com/issues/268268856)
- * This is solved by just handling the click on [ComposeView] directly
- *
  * Check the default implementation at [DpadComposeViewHolder]
  */
 abstract class DpadAbstractComposeViewHolder<T>(
     parent: ViewGroup,
     isFocusable: Boolean = true,
+    dispatchFocusToComposable: Boolean = true,
     compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled
-) : RecyclerView.ViewHolder(ComposeView(parent.context)), DpadViewHolder {
+) : RecyclerView.ViewHolder(DpadComposeView(parent.context)), DpadViewHolder {
 
     private val itemState = mutableStateOf<T?>(null)
-    private val focusState = mutableStateOf(false)
     private val selectionState = mutableStateOf(false)
 
     init {
-        val composeView = itemView as ComposeView
-        composeView.setViewCompositionStrategy(compositionStrategy)
-        composeView.isFocusable = isFocusable
-        composeView.isFocusableInTouchMode = isFocusable
-        composeView.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
-        composeView.setOnFocusChangeListener { _, hasFocus ->
-            focusState.value = hasFocus
-            onFocusChanged(hasFocus)
-        }
-        composeView.setContent {
-            itemState.value?.let { item ->
-                Content(item, focusState.value, selectionState.value)
+        val composeView = itemView as DpadComposeView
+        composeView.apply {
+            setFocusConfiguration(
+                isFocusable = isFocusable,
+                dispatchFocusToComposable = dispatchFocusToComposable
+            )
+            setOnFocusChangeListener { _, hasFocus ->
+                onFocusChanged(hasFocus)
+            }
+            setViewCompositionStrategy(compositionStrategy)
+            setContent {
+                itemState.value?.let { item ->
+                    Content(item, composeView.hasFocus(), selectionState.value)
+                }
             }
         }
     }

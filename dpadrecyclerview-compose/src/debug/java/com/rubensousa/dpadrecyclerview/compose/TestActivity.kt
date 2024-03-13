@@ -88,21 +88,20 @@ class TestActivity : AppCompatActivity() {
         ): DpadComposeViewHolder<Int> {
             return DpadComposeViewHolder(
                 parent,
-                composable = { item, isFocused, isSelected ->
+                composable = { item, _, isSelected ->
                     TestComposable(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp),
                         item = item,
-                        isFocused = isFocused,
                         isSelected = isSelected,
+                        onClick = {
+                              clicks.add(item)
+                        },
                         onDispose = {
                             onDispose(item)
                         }
                     )
-                },
-                onClick = {
-                    clicks.add(it)
                 },
                 isFocusable = true
             )

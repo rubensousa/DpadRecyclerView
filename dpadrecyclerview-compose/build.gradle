@@ -59,15 +59,19 @@ dependencies {
     implementation libs.androidx.recyclerview
     implementation libs.androidx.customview.poolingcontainer
     implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.tooling.preview
 
     // Test dependencies
     debugImplementation libs.androidx.test.compose.ui.manifest
     debugImplementation libs.androidx.compose.ui.tooling
-    debugImplementation libs.androidx.compose.ui.tooling.preview
     debugImplementation libs.androidx.compose.material3
-    debugImplementation libs.androidx.customview
     androidTestImplementation project(':dpadrecyclerview-testing')
     androidTestImplementation project(':dpadrecyclerview-test-fixtures')
     androidTestImplementation libs.androidx.test.compose.ui.junit4
+    modules {
+        module("com.google.guava:listenablefuture") {
+            replacedBy("com.google.guava:guava", "listenablefuture is part of guava")
+        }
+    }
     androidTestUtil libs.androidx.test.services
 }

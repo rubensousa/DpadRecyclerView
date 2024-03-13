@@ -49,8 +49,6 @@ class ComposeGridAdapter : MutableListAdapter<Int, ComposeGridAdapter.ComposeGri
         onItemClick: (Int) -> Unit
     ) : DpadAbstractComposeViewHolder<Int>(parent) {
 
-        private val itemAnimator = ItemAnimator(itemView)
-
         init {
             itemView.setOnClickListener {
                 getItem()?.let(onItemClick)
@@ -59,15 +57,11 @@ class ComposeGridAdapter : MutableListAdapter<Int, ComposeGridAdapter.ComposeGri
 
         @Composable
         override fun Content(item: Int, isFocused: Boolean, isSelected: Boolean) {
-            GridItemComposable(item, isFocused)
+            GridItemComposable(item)
         }
 
         override fun onFocusChanged(hasFocus: Boolean) {
-            if (hasFocus) {
-                itemAnimator.startFocusGainAnimation()
-            } else {
-                itemAnimator.startFocusLossAnimation()
-            }
+
         }
 
     }
