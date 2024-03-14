@@ -71,7 +71,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
     private var startedTouchScroll = false
-    private var enableLayoutChangesWhileScrolling = true
+    private var layoutWhileScrollingEnabled = true
     private var hasPendingLayout = false
     private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
@@ -229,7 +229,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     final override fun requestLayout() {
-        if (enableLayoutChangesWhileScrolling || scrollState == SCROLL_STATE_IDLE) {
+        if (layoutWhileScrollingEnabled || scrollState == SCROLL_STATE_IDLE) {
             hasPendingLayout = false
             super.requestLayout()
             return
@@ -1254,8 +1254,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * or false if they should be postponed until [RecyclerView.SCROLL_STATE_IDLE].
      * Default is true.
      */
-    fun enableLayoutChangesWhileScrolling(enabled: Boolean) {
-        enableLayoutChangesWhileScrolling = enabled
+    fun setLayoutWhileScrollingEnabled(enabled: Boolean) {
+        layoutWhileScrollingEnabled = enabled
     }
 
     @VisibleForTesting
