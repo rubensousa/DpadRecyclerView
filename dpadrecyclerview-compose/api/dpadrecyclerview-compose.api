@@ -12,20 +12,6 @@ public final class com/rubensousa/dpadrecyclerview/compose/ComposableSingletons$
 	public final fun getLambda-1$dpadrecyclerview_compose_release ()Lkotlin/jvm/functions/Function5;
 }
 
-public abstract class com/rubensousa/dpadrecyclerview/compose/DpadAbstractComposeViewHolder : androidx/recyclerview/widget/RecyclerView$ViewHolder, com/rubensousa/dpadrecyclerview/DpadViewHolder {
-	public static final field $stable I
-	public fun <init> (Landroid/view/ViewGroup;ZZLandroidx/compose/ui/platform/ViewCompositionStrategy;)V
-	public synthetic fun <init> (Landroid/view/ViewGroup;ZZLandroidx/compose/ui/platform/ViewCompositionStrategy;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public abstract fun Content (Ljava/lang/Object;ZZLandroidx/compose/runtime/Composer;I)V
-	public final fun getItem ()Ljava/lang/Object;
-	public fun getSubPositionAlignments ()Ljava/util/List;
-	public fun onFocusChanged (Z)V
-	public fun onViewHolderDeselected ()V
-	public fun onViewHolderSelected ()V
-	public fun onViewHolderSelectedAndAligned ()V
-	public final fun setItemState (Ljava/lang/Object;)V
-}
-
 public final class com/rubensousa/dpadrecyclerview/compose/DpadComposeExtensionsKt {
 	public static final fun dpadClickable (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Landroidx/compose/ui/Modifier;
 }
