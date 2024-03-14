@@ -68,10 +68,5 @@ dependencies {
     androidTestImplementation project(':dpadrecyclerview-testing')
     androidTestImplementation project(':dpadrecyclerview-test-fixtures')
     androidTestImplementation libs.androidx.test.compose.ui.junit4
-    modules {
-        module("com.google.guava:listenablefuture") {
-            replacedBy("com.google.guava:guava", "listenablefuture is part of guava")
-        }
-    }
     androidTestUtil libs.androidx.test.services
 }
