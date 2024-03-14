@@ -48,6 +48,47 @@ object TestComposable {
 fun TestComposable(
     modifier: Modifier = Modifier,
     item: Int,
+    isFocused: Boolean,
+    isSelected: Boolean,
+    onDispose: () -> Unit = {},
+) {
+    val backgroundColor = if (isFocused) {
+        Color.White
+    } else if (isSelected) {
+        Color.Blue
+    } else {
+        Color.Black
+    }
+    Box(
+        modifier = modifier
+            .background(backgroundColor),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            modifier = Modifier.semantics {
+                set(TestComposable.focusedKey, isFocused)
+                set(TestComposable.selectedKey, isSelected)
+            },
+            text = item.toString(),
+            style = MaterialTheme.typography.headlineLarge,
+            color = if(isFocused) {
+                Color.Black
+            } else {
+                Color.White
+            }
+        )
+    }
+    DisposableEffect(key1 = item) {
+        onDispose {
+            onDispose()
+        }
+    }
+}
+
+@Composable
+fun TestComposableFocus(
+    modifier: Modifier = Modifier,
+    item: Int,
     isSelected: Boolean,
     onClick: () -> Unit,
     onDispose: () -> Unit = {},
@@ -96,7 +137,7 @@ fun TestComposable(
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 fun TestComposablePreviewNormal() {
-    TestComposable(
+    TestComposableFocus(
         item = 0,
         isSelected = false,
         onClick = {}
@@ -107,7 +148,7 @@ fun TestComposablePreviewNormal() {
 @Composable
 fun TestComposablePreviewFocused() {
     val focusRequester = remember { FocusRequester() }
-    TestComposable(
+    TestComposableFocus(
         item = 0,
         modifier = Modifier.focusRequester(focusRequester),
         isSelected = false,
@@ -121,7 +162,7 @@ fun TestComposablePreviewFocused() {
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 fun TestComposablePreviewSelected() {
-    TestComposable(
+    TestComposableFocus(
         item = 0,
         isSelected = true,
         onClick = {}

@@ -44,7 +44,7 @@ class ComposePlaceholderAdapter(
         viewType: Int
     ): DpadComposeViewHolder<Boolean> {
         return DpadComposeViewHolder(
-            parent,
+            parent = parent,
             composable = { _, _, _ ->
                 composable()
             },

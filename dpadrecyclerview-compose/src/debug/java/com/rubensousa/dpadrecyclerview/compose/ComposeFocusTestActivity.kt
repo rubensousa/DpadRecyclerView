@@ -28,7 +28,7 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
-class TestActivity : AppCompatActivity() {
+class ComposeFocusTestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: DpadRecyclerView
     private val clicks = ArrayList<Int>()
@@ -80,36 +80,35 @@ class TestActivity : AppCompatActivity() {
     inner class Adapter(
         private val items: List<Int>,
         private val onDispose: (item: Int) -> Unit,
-    ) : RecyclerView.Adapter<DpadComposeViewHolder<Int>>() {
+    ) : RecyclerView.Adapter<DpadComposeFocusViewHolder<Int>>() {
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): DpadComposeViewHolder<Int> {
-            return DpadComposeViewHolder(
-                parent,
-                composable = { item, _, isSelected ->
-                    TestComposable(
+        ): DpadComposeFocusViewHolder<Int> {
+            return DpadComposeFocusViewHolder(
+                parent = parent,
+                content = { item, isSelected ->
+                    TestComposableFocus(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp),
                         item = item,
                         isSelected = isSelected,
                         onClick = {
-                              clicks.add(item)
+                            clicks.add(item)
                         },
                         onDispose = {
                             onDispose(item)
                         }
                     )
                 },
-                isFocusable = true
             )
         }
 
         override fun getItemCount(): Int = items.size
 
-        override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
+        override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
             holder.setItemState(items[position])
         }
 

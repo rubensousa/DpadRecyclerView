@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.rubensousa.dpadrecyclerview.compose
 
 import androidx.compose.ui.test.SemanticsMatcher
@@ -33,10 +34,10 @@ import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import org.junit.Rule
 import org.junit.Test
 
-class DpadComposeViewHolderTest {
+class DpadComposeFocusViewHolderTest {
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ViewFocusTestActivity>()
+    val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()
 
     @Test
     fun testComposeItemsReceiveFocus() {
@@ -69,12 +70,24 @@ class DpadComposeViewHolderTest {
         assertFocus(item = 0, isFocused = false)
         assertSelection(item = 0, isSelected = true)
 
+        assertFocus(item = 1, isFocused = false)
+        assertSelection(item = 1, isSelected = false)
+
+        assertFocus(item = 2, isFocused = false)
+        assertSelection(item = 2, isSelected = false)
+
         composeTestRule.activityRule.scenario.onActivity { activity ->
             activity.requestFocus()
         }
 
         assertFocus(item = 0, isFocused = true)
         assertSelection(item = 0, isSelected = true)
+
+        assertFocus(item = 1, isFocused = false)
+        assertSelection(item = 1, isSelected = false)
+
+        assertFocus(item = 2, isFocused = false)
+        assertSelection(item = 2, isSelected = false)
     }
 
     @Test

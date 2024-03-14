@@ -17,53 +17,37 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.compose
 
 import android.view.ViewGroup
-import androidx.compose.runtime.Composable
-import com.rubensousa.dpadrecyclerview.compose.DpadAbstractComposeViewHolder
+import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ItemAnimator
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.GridItemComposable
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
+import timber.log.Timber
 
-class ComposeGridAdapter : MutableListAdapter<Int, ComposeGridAdapter.ComposeGridItemViewHolder>(
+class ComposeGridAdapter : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(
     MutableGridAdapter.DIFF_CALLBACK
 ) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ComposeGridItemViewHolder {
-        return ComposeGridItemViewHolder(parent, onItemClick = {})
+    ): DpadComposeFocusViewHolder<Int> {
+        return DpadComposeFocusViewHolder(parent) { item, isSelected ->
+            GridItemComposable(
+                item = item,
+                onClick = {
+                    Timber.i("Clicked: $item")
+                }
+            )
+        }
     }
 
-    override fun onBindViewHolder(holder: ComposeGridItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
         holder.setItemState(getItem(position))
     }
 
     override fun getItemViewType(position: Int): Int {
         return ListTypes.ITEM
-    }
-
-    class ComposeGridItemViewHolder(
-        parent: ViewGroup,
-        onItemClick: (Int) -> Unit
-    ) : DpadAbstractComposeViewHolder<Int>(parent) {
-
-        init {
-            itemView.setOnClickListener {
-                getItem()?.let(onItemClick)
-            }
-        }
-
-        @Composable
-        override fun Content(item: Int, isFocused: Boolean, isSelected: Boolean) {
-            GridItemComposable(item)
-        }
-
-        override fun onFocusChanged(hasFocus: Boolean) {
-
-        }
-
     }
 
 }
