@@ -26,10 +26,10 @@ jobs:
           java-version: 17
 
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/actions/setup-gradle@v3
 
       - name: Install Android SDK
-        uses: malinskiy/action-android/install-sdk@release/0.1.4
+        uses: malinskiy/action-android/install-sdk@release/0.1.6
 
       - name: Run quality checks
         run: ./gradlew --build-cache check --stacktrace
@@ -56,8 +56,21 @@ jobs:
           distribution: 'zulu'
           java-version: 17
 
-      - name: Gradle cache
-        uses: gradle/gradle-build-action@v2
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: false
 
       - name: Compile instrumented tests
         run: ./gradlew --build-cache assembleDebugAndroidTest

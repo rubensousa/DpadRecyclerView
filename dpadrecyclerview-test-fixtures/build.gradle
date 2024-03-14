@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 apply from: "$rootProject.projectDir/gradle/coverage.gradle"
@@ -10,16 +10,11 @@ android {
     compileSdk versions.compileSdkVersion
 
     defaultConfig {
-        minSdk 19
+        minSdk versions.minSdkVersion
         targetSdk versions.targetSdkVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-    }
-
-    buildTypes {
-        release {
-        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -32,11 +27,10 @@ android {
 
 dependencies {
     implementation project (':dpadrecyclerview')
-    implementation "androidx.recyclerview:recyclerview:$versions.recyclerview"
-    implementation "androidx.collection:collection-ktx:1.2.0"
-    implementation "junit:junit:$testVersions.junit"
-    implementation "com.google.truth:truth:$testVersions.truth"
-    api "androidx.test.uiautomator:uiautomator:$testVersions.uiautomator"
-    api "androidx.test:runner:$testVersions.runner"
-    testImplementation "com.google.truth:truth:$testVersions.truth"
+    implementation libs.androidx.recyclerview
+    implementation libs.androidx.collection
+    implementation libs.junit
+    implementation libs.truth
+    implementation libs.androidx.test.uiautomator
+    implementation libs.androidx.test.runner
 }

@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
 }
 
 apply from: "$rootProject.projectDir/gradle/publish.gradle"
@@ -11,12 +11,11 @@ android {
     compileSdk versions.compileSdkVersion
 
     defaultConfig {
-        minSdk 19
+        minSdk versions.minSdkVersion
         targetSdk versions.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
         testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
-        multiDexEnabled true
     }
 
     buildTypes {
@@ -34,7 +33,6 @@ android {
 
     testOptions {
         unitTests.returnDefaultValues = true
-        // execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 
     compileOptions {
@@ -55,16 +53,19 @@ android {
 }
 
 dependencies {
-    api "androidx.recyclerview:recyclerview:$versions.recyclerview"
-    implementation "androidx.collection:collection-ktx:$versions.collection"
-    testImplementation "junit:junit:$testVersions.junit"
-    testImplementation "com.google.truth:truth:$testVersions.truth"
-    testImplementation  "io.mockk:mockk:$testVersions.mockk"
+    api libs.androidx.recyclerview
+    implementation libs.androidx.collection
+
+    // Required for dependency resolution
+    debugImplementation libs.guava
+    debugImplementation libs.androidx.fragment.testing.manifest
+    testImplementation libs.junit
+    testImplementation libs.truth
+    testImplementation libs.mockk
     testImplementation project (':dpadrecyclerview-test-fixtures')
-    debugImplementation "androidx.fragment:fragment-testing-manifest:$versions.fragment"
-    //noinspection FragmentGradleConfiguration
-    androidTestImplementation "androidx.fragment:fragment-testing:$versions.fragment"
+
+    androidTestImplementation libs.androidx.fragment.testing
     androidTestImplementation project (':dpadrecyclerview-testing')
     androidTestImplementation project (':dpadrecyclerview-test-fixtures')
-    androidTestUtil "androidx.test.services:test-services:$testVersions.services"
+    androidTestUtil libs.androidx.test.services
 }

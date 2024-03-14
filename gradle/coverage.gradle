@@ -1,7 +1,8 @@
 apply plugin: 'jacoco'
+apply plugin: 'org.jetbrains.kotlinx.kover'
 
 jacoco {
-    toolVersion = testVersions.jacoco
+    toolVersion = libs.versions.jacoco.get()
 }
 
 tasks.withType(Test).configureEach {

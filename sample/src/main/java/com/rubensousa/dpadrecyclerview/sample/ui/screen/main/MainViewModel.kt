@@ -58,9 +58,7 @@ class MainViewModel : ViewModel() {
                     title = "Short list"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openList().apply {
-                        enableLooping = true
-                    },
+                    direction = MainFragmentDirections.openList(enableLooping = true),
                     title = "Infinite lists"
                 ),
                 ScreenDestination(
@@ -68,18 +66,18 @@ class MainViewModel : ViewModel() {
                     title = "Fading Edges"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openList().apply {
-                        showOverlay = true
+                    direction = MainFragmentDirections.openList(
+                        showOverlay = true,
                         slowScroll = true
-                    },
+                    ),
                     title = "Nested with Focus Overlay"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openList().apply { showHeader = true },
+                    direction = MainFragmentDirections.openList(showHeader = true),
                     title = "Nested with Header"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openList().apply { reverseLayout = true },
+                    direction = MainFragmentDirections.openList(reverseLayout = true),
                     title = "Reversed"
                 ),
             ),
@@ -95,11 +93,11 @@ class MainViewModel : ViewModel() {
                     title = "Default"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openGrid().apply { evenSpans = false },
+                    direction = MainFragmentDirections.openGrid(evenSpans = false),
                     title = "Different span sizes"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openGrid().apply { reverseLayout = true },
+                    direction = MainFragmentDirections.openGrid(reverseLayout = true),
                     title = "Reversed"
                 ),
                 ScreenDestination(
