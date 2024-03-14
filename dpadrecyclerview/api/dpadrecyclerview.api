@@ -53,7 +53,6 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	protected final fun dispatchGenericFocusedEvent (Landroid/view/MotionEvent;)Z
 	public final fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun dispatchTouchEvent (Landroid/view/MotionEvent;)Z
-	public final fun enableLayoutChangesWhileScrolling (Z)V
 	public final fun enableMaxEdgeFading (Z)V
 	public final fun enableMinEdgeFading (Z)V
 	public final fun findFirstCompletelyVisibleItemPosition ()I
@@ -122,6 +121,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setItemPrefetchEnabled (Z)V
 	public final fun setLayoutEnabled (Z)V
 	public final fun setLayoutManager (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)V
+	public final fun setLayoutWhileScrollingEnabled (Z)V
 	public final fun setLoopDirection (Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;)V
 	public final fun setMaxEdgeFadingLength (I)V
 	public final fun setMaxEdgeFadingOffset (I)V
