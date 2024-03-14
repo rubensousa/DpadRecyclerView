@@ -25,7 +25,6 @@ import androidx.compose.ui.res.dimensionResource
 import com.rubensousa.dpadrecyclerview.compose.DpadAbstractComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ItemAnimator
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemComposable
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter

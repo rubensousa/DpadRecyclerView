@@ -53,6 +53,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	protected final fun dispatchGenericFocusedEvent (Landroid/view/MotionEvent;)Z
 	public final fun dispatchKeyEvent (Landroid/view/KeyEvent;)Z
 	public fun dispatchTouchEvent (Landroid/view/MotionEvent;)Z
+	public final fun enableLayoutChangesWhileScrolling (Z)V
 	public final fun enableMaxEdgeFading (Z)V
 	public final fun enableMinEdgeFading (Z)V
 	public final fun findFirstCompletelyVisibleItemPosition ()I
@@ -100,6 +101,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public final fun removeView (Landroid/view/View;)V
 	public final fun removeViewAt (I)V
+	public final fun requestLayout ()V
 	public final fun setAlignments (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public final fun setChildAlignment (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public static synthetic fun setChildAlignment$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;ZILjava/lang/Object;)V
