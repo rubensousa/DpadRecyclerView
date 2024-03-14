@@ -38,7 +38,7 @@ jobs:
         run: ./gradlew --build-cache assembleRelease
 
   ui_test:
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     timeout-minutes: 60
     strategy:
       fail-fast: false
