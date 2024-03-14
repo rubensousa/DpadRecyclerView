@@ -24,10 +24,10 @@ import com.rubensousa.dpadrecyclerview.sample.ui.model.ItemModel
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
+import com.rubensousa.dpadrecyclerview.state.DpadRecyclerViewScrollState
 
 class NestedComposeListAdapter(
-    private val stateHolder: DpadStateHolder
+    private val scrollState: DpadRecyclerViewScrollState,
 ) : MutableListAdapter<ListModel, NestedComposeListViewHolder>(ItemModel.buildDiffCallback()) {
 
     private val viewPool = UnboundViewPool()
@@ -48,12 +48,16 @@ class NestedComposeListAdapter(
     override fun onBindViewHolder(holder: NestedComposeListViewHolder, position: Int) {
         val item = getItem(position)
         holder.bind(item)
-        stateHolder.restore(holder.getRecyclerView(), item.title, holder.getAdapter())
+        scrollState.restore(
+            recyclerView = holder.getRecyclerView(),
+            key = item.title,
+            adapter = holder.getAdapter()
+        )
     }
 
     override fun onViewRecycled(holder: NestedComposeListViewHolder) {
+        scrollState.save(holder.getRecyclerView())
         holder.cancelAnimations()
-        stateHolder.save(holder.getRecyclerView())
     }
 
 }

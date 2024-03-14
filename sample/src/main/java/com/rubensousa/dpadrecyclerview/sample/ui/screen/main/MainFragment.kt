@@ -23,12 +23,12 @@ import androidx.fragment.app.viewModels
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenMainBinding
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
+import com.rubensousa.dpadrecyclerview.state.DpadRecyclerViewStateRegistry
 
 class MainFragment : Fragment(R.layout.screen_main) {
 
-    private val stateHolder = DpadStateHolder()
+    private val stateRegistry = DpadRecyclerViewStateRegistry()
     private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +40,10 @@ class MainFragment : Fragment(R.layout.screen_main) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ScreenMainBinding.bind(view)
         val recyclerView = binding.recyclerView
-        val adapter = FeatureListAdapter(stateHolder, UnboundViewPool())
+        val adapter = FeatureListAdapter(
+            scrollState = stateRegistry.getScrollState(),
+            recycledViewPool = UnboundViewPool()
+        )
         recyclerView.adapter = adapter
         recyclerView.requestFocus()
         recyclerView.addItemDecoration(
