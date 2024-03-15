@@ -32,6 +32,7 @@ import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.OnChildLaidOutListener
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
@@ -588,6 +589,18 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     fun clearOnViewHolderSelectedListeners() {
         pivotSelector.clearOnViewHolderSelectedListeners()
+    }
+
+    fun addOnViewFocusedListener(listener: OnViewFocusedListener) {
+        pivotSelector.addOnViewHolderFocusedListener(listener)
+    }
+
+    fun removeOnViewFocusedListener(listener: OnViewFocusedListener) {
+        pivotSelector.removeOnViewHolderFocusedListener(listener)
+    }
+
+    fun clearOnViewFocusedListeners() {
+        pivotSelector.clearOnViewHolderFocusedListeners()
     }
 
     fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {

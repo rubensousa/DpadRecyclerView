@@ -17,11 +17,13 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.util.Log
+import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.max
@@ -55,6 +57,7 @@ internal class PivotSelector(
     private var recyclerView: RecyclerView? = null
     private var isSelectionUpdatePending = false
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
+    private val focusListeners = ArrayList<OnViewFocusedListener>()
     private val requestLayoutRunnable = Runnable {
         layoutManager.requestLayout()
     }
@@ -86,6 +89,19 @@ internal class PivotSelector(
         }
         positionOffset = 0
         return consumed
+    }
+
+    fun focus(view: View) {
+        view.requestFocus()
+        layoutInfo.getChildViewHolder(view)?.let { viewHolder ->
+            focusListeners.forEach { listener ->
+                listener.onViewFocused(
+                    parent = viewHolder,
+                    child = view,
+                    position = position,
+                )
+            }
+        }
     }
 
     private fun applyPositionOffset(itemCount: Int) {
@@ -334,6 +350,18 @@ internal class PivotSelector(
 
     fun clearOnViewHolderSelectedListeners() {
         selectionListeners.clear()
+    }
+
+    fun addOnViewHolderFocusedListener(listener: OnViewFocusedListener) {
+        focusListeners.add(listener)
+    }
+
+    fun removeOnViewHolderFocusedListener(listener: OnViewFocusedListener) {
+        focusListeners.remove(listener)
+    }
+
+    fun clearOnViewHolderFocusedListeners() {
+        focusListeners.clear()
     }
 
     fun setRecyclerView(recyclerView: RecyclerView?) {

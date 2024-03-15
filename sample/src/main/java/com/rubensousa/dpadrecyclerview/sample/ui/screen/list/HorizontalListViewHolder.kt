@@ -16,9 +16,11 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.list
 
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.HorizontalAdapterListBinding
@@ -26,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ListAnimator
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemNestedAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
+import timber.log.Timber
 
 class HorizontalListViewHolder(
     val binding: HorizontalAdapterListBinding,
@@ -58,6 +61,15 @@ class HorizontalListViewHolder(
                 )
             )
         )
+        recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+            override fun onViewFocused(
+                parent: RecyclerView.ViewHolder,
+                child: View,
+                position: Int,
+            ) {
+                Timber.i("ViewHolder focused: $position")
+            }
+        })
         applyConfig(config)
     }
 

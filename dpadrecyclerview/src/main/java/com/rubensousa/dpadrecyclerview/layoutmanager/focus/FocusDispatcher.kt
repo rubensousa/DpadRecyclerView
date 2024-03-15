@@ -102,7 +102,7 @@ internal class FocusDispatcher(
             val view = layout.findViewByPosition(index) ?: break
             if (layoutInfo.isViewFocusable(view)) {
                 if (!view.hasFocus()) {
-                    view.requestFocus()
+                    pivotSelector.focus(view)
                 }
                 break
             }
@@ -113,7 +113,7 @@ internal class FocusDispatcher(
     fun focusSelectedView() {
         val view = layoutInfo.findViewByAdapterPosition(pivotSelector.position) ?: return
         if (layoutInfo.isViewFocusable(view) && !view.hasFocus()) {
-            view.requestFocus()
+            pivotSelector.focus(view)
         }
     }
 

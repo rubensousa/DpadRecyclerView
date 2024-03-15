@@ -1137,6 +1137,29 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Registers a callback to be invoked when an item has been focused
+     * @param listener The listener to be invoked.
+     */
+    fun addOnViewFocusedListener(listener: OnViewFocusedListener) {
+        requireLayout().addOnViewFocusedListener(listener)
+    }
+
+    /**
+     * Removes a listener added by [addOnViewFocusedListener]
+     * @param listener The listener to be removed.
+     */
+    fun removeOnViewFocusedListener(listener: OnViewFocusedListener) {
+        requireLayout().removeOnViewFocusedListener(listener)
+    }
+
+    /**
+     * Clears all existing listeners added by [addOnViewFocusedListener]
+     */
+    fun clearOnViewFocusedListeners() {
+        requireLayout().clearOnViewFocusedListeners()
+    }
+
+    /**
      * Set a custom behavior for [smoothScrollBy]
      * @param behavior Custom behavior or null for the default behavior.
      */

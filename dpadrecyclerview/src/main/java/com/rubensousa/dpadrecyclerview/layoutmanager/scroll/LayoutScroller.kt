@@ -353,9 +353,9 @@ internal class LayoutScroller(
         }
 
         if (subPositionView != null && requestFocus) {
-            subPositionView.requestFocus()
+            pivotSelector.focus(subPositionView)
         } else if (requestFocus) {
-            view.requestFocus()
+            pivotSelector.focus(view)
         }
         performScrollToView(view, subPositionView, selectViewHolder, smooth)
     }
@@ -451,7 +451,7 @@ internal class LayoutScroller(
         override fun onPivotLaidOut(pivotView: View) {
             if (layoutManager.hasFocus()) {
                 isSelectionInProgress = true
-                pivotView.requestFocus()
+                pivotSelector.focus(pivotView)
                 isSelectionInProgress = false
             }
             addPendingAlignment(pivotView)
@@ -490,7 +490,11 @@ internal class LayoutScroller(
                 val subPositionView = layoutAlignment.getViewAtSubPosition(
                     pivotView, subPosition
                 )
-                subPositionView?.requestFocus() ?: pivotView.requestFocus()
+                if (subPositionView != null) {
+                    pivotSelector.focus(subPositionView)
+                } else {
+                    pivotSelector.focus(pivotView)
+                }
                 isSelectionInProgress = false
             }
             pivotSelector.dispatchViewHolderSelected()
