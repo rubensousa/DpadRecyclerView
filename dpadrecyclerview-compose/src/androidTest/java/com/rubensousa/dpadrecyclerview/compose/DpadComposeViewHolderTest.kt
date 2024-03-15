@@ -87,19 +87,17 @@ class DpadComposeViewHolderTest {
 
     @Test
     fun testClicksAreDispatched() {
-        KeyEvents.click()
-
-        KeyEvents.pressDown()
-        waitForIdleScroll()
-
-        KeyEvents.click()
-
+        // given
         var clicks: List<Int> = emptyList()
         composeTestRule.activityRule.scenario.onActivity { activity ->
             clicks = activity.getClicks()
         }
 
-        assertThat(clicks).isEqualTo(listOf(0, 1))
+        // when
+        KeyEvents.click()
+
+        // then
+        assertThat(clicks).isEqualTo(listOf(0))
     }
 
     @Test

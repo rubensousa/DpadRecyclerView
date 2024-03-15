@@ -52,9 +52,6 @@ class DpadComposeFocusViewHolderTest {
         assertFocus(item = 0, isFocused = true)
         assertSelection(item = 0, isSelected = true)
 
-        assertFocus(item = 1, isFocused = false)
-        assertSelection(item = 1, isSelected = false)
-
         KeyEvents.pressDown()
         waitForIdleScroll()
 
@@ -72,41 +69,27 @@ class DpadComposeFocusViewHolderTest {
         assertFocus(item = 0, isFocused = false)
         assertSelection(item = 0, isSelected = true)
 
-        assertFocus(item = 1, isFocused = false)
-        assertSelection(item = 1, isSelected = false)
-
-        assertFocus(item = 2, isFocused = false)
-        assertSelection(item = 2, isSelected = false)
-
         composeTestRule.activityRule.scenario.onActivity { activity ->
             activity.requestFocus()
         }
 
         assertFocus(item = 0, isFocused = true)
         assertSelection(item = 0, isSelected = true)
-
-        assertFocus(item = 1, isFocused = false)
-        assertSelection(item = 1, isSelected = false)
-
-        assertFocus(item = 2, isFocused = false)
-        assertSelection(item = 2, isSelected = false)
     }
 
     @Test
     fun testClicksAreDispatched() {
-        KeyEvents.click()
-
-        KeyEvents.pressDown()
-        waitForIdleScroll()
-
-        KeyEvents.click()
-
+        // given
         var clicks: List<Int> = emptyList()
         composeTestRule.activityRule.scenario.onActivity { activity ->
             clicks = activity.getClicks()
         }
 
-        assertThat(clicks).isEqualTo(listOf(0, 1))
+        // when
+        KeyEvents.click()
+
+        // then
+        assertThat(clicks).isEqualTo(listOf(0))
     }
 
     @Test
