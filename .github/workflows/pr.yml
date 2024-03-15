@@ -77,7 +77,7 @@ jobs:
           android: false
 
       - name: Compile instrumented tests
-        run: ./gradlew --build-cache assembleDebugAndroidTest
+        run: ./gradlew --build-cache assembleDebugAndroidTest uninstallAll
 
       # Retrieve the cached emulator snapshot.
       - name: AVD cache
