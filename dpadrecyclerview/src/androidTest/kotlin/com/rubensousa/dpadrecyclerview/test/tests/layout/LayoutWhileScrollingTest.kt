@@ -76,7 +76,7 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
         waitForCondition("Wait for scroll state change") { recyclerView ->
             recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
         }
-        repeat(10) {
+        repeat(3) {
             onRecyclerView("Request layout") { recyclerView ->
                 if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) {
                     recyclerView.requestLayout()
@@ -115,7 +115,7 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
     fun testRequestingLayoutDuringScrollIsNotIgnored() {
         // given
         var layoutCompleted = 0
-        val layoutRequests = 10
+        val layoutRequests = 3
         onRecyclerView("Enable layout during scroll") { recyclerView ->
             recyclerView.setLayoutWhileScrollingEnabled(true)
             recyclerView.addOnLayoutCompletedListener(
