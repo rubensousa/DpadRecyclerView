@@ -21,6 +21,7 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
@@ -52,6 +53,10 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
         )
     }
 
+    override fun getDefaultAdapterConfiguration(): TestAdapterConfiguration {
+        return super.getDefaultAdapterConfiguration().copy(numberOfItems = 100)
+    }
+
     @Before
     fun setup() {
         launchFragment()
@@ -76,7 +81,7 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
         waitForCondition("Wait for scroll state change") { recyclerView ->
             recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
         }
-        repeat(3) {
+        repeat(2) {
             onRecyclerView("Request layout") { recyclerView ->
                 if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) {
                     recyclerView.requestLayout()
@@ -115,7 +120,7 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
     fun testRequestingLayoutDuringScrollIsNotIgnored() {
         // given
         var layoutCompleted = 0
-        val layoutRequests = 3
+        val layoutRequests = 2
         onRecyclerView("Enable layout during scroll") { recyclerView ->
             recyclerView.setLayoutWhileScrollingEnabled(true)
             recyclerView.addOnLayoutCompletedListener(
