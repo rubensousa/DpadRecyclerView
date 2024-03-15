@@ -28,6 +28,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
+import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
@@ -39,6 +40,8 @@ class DpadComposeViewHolderTest {
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
 
+    @get:Rule
+    val screenRecorderRule = ScreenRecorderRule()
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ViewFocusTestActivity>()
