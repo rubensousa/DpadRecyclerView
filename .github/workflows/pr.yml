@@ -77,7 +77,7 @@ jobs:
           android: false
 
       - name: Compile instrumented tests
-        run: ./gradlew --build-cache assembleDebugAndroidTest uninstallAll
+        run: ./gradlew --build-cache assembleDebugAndroidTest
 
       # Retrieve the cached emulator snapshot.
       - name: AVD cache
@@ -116,6 +116,7 @@ jobs:
           ram-size: 4096M
           emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
+            ./gradlew uninstallAll
             ./gradlew --build-cache connectedDebugAndroidTest
 
       - name: Upload artifacts
