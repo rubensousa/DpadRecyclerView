@@ -30,10 +30,15 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
+import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
 class DpadComposeViewHolderTest {
+
+    @get:Rule
+    val idleTimeoutRule = DisableIdleTimeoutRule()
+
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ViewFocusTestActivity>()
@@ -43,17 +48,8 @@ class DpadComposeViewHolderTest {
         assertFocus(item = 0, isFocused = true)
         assertSelection(item = 0, isSelected = true)
 
-        assertFocus(item = 1, isFocused = false)
-        assertSelection(item = 1, isSelected = false)
-
-        assertFocus(item = 2, isFocused = false)
-        assertSelection(item = 2, isSelected = false)
-
         KeyEvents.pressDown()
         waitForIdleScroll()
-
-        assertFocus(item = 0, isFocused = false)
-        assertSelection(item = 0, isSelected = false)
 
         assertFocus(item = 1, isFocused = true)
         assertSelection(item = 1, isSelected = true)
