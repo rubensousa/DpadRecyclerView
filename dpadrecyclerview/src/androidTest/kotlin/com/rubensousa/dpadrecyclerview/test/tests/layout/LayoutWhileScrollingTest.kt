@@ -78,7 +78,9 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
         }
         repeat(10) {
             onRecyclerView("Request layout") { recyclerView ->
-                recyclerView.requestLayout()
+                if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) {
+                    recyclerView.requestLayout()
+                }
             }
         }
         waitForIdleScrollState()
