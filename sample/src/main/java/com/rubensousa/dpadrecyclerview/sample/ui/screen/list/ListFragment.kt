@@ -37,7 +37,7 @@ import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 
 class ListFragment : Fragment(R.layout.screen_recyclerview) {
 
-    private val stateRegistry = DpadStateRegistry()
+    private val stateRegistry = DpadStateRegistry(this)
     private var selectedPosition: Int = RecyclerView.NO_POSITION
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
     private val viewModel by viewModels<ListViewModel>()

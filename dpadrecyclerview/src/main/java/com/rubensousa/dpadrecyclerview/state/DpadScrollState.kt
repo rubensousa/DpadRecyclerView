@@ -16,6 +16,8 @@
 
 package com.rubensousa.dpadrecyclerview.state
 
+import android.os.Build
+import android.os.Bundle
 import android.os.Parcelable
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -26,10 +28,9 @@ import com.rubensousa.dpadrecyclerview.R
  * Holds the scroll state of nested [DpadRecyclerView]. Use it to save and restore
  * the scroll state of all RecyclerViews in a single screen.
  */
-class DpadScrollState internal constructor(
-    private val layoutManagerStates: MutableMap<String, Parcelable?>
-) {
+class DpadScrollState internal constructor() {
 
+    private val states = mutableMapOf<String, Parcelable>()
     private val selectionListener = object : OnViewHolderSelectedListener {
         override fun onViewHolderSelectedAndAligned(
             parent: RecyclerView,
@@ -39,8 +40,16 @@ class DpadScrollState internal constructor(
         ) {
             super.onViewHolderSelectedAndAligned(parent, child, position, subPosition)
             getScrollStateKey(parent)?.let { scrollStateKey ->
-                layoutManagerStates[scrollStateKey] = parent.layoutManager?.onSaveInstanceState()
+                saveOrClear(scrollStateKey, parent.layoutManager?.onSaveInstanceState())
             }
+        }
+    }
+
+    private fun saveOrClear(key: String, state: Parcelable?) {
+        if (state != null) {
+            states[key] = state
+        } else {
+            states.remove(key)
         }
     }
 
@@ -59,7 +68,7 @@ class DpadScrollState internal constructor(
         detachAdapter: Boolean = true,
     ) {
         setScrollStateKey(recyclerView, key)
-        layoutManagerStates[key] = recyclerView.layoutManager?.onSaveInstanceState()
+        saveOrClear(key, recyclerView.layoutManager?.onSaveInstanceState())
         recyclerView.removeOnViewHolderSelectedListener(selectionListener)
         if (detachAdapter) {
             recyclerView.adapter = null
@@ -83,7 +92,7 @@ class DpadScrollState internal constructor(
     ) {
         setScrollStateKey(recyclerView, key)
         recyclerView.adapter = adapter
-        layoutManagerStates[key]?.let { previousState ->
+        states[key]?.let { previousState ->
             recyclerView.layoutManager?.onRestoreInstanceState(previousState)
         }
         // Prevent duplicate registration
@@ -95,7 +104,30 @@ class DpadScrollState internal constructor(
      * @param key RecyclerView identifier of which state should be removed
      */
     fun clear(key: String) {
-        layoutManagerStates.remove(key)
+        states.remove(key)
+    }
+
+    /**
+     * Clears all scroll states to prevent them from being restored later
+     */
+    fun clear() {
+        states.clear()
+    }
+
+    internal fun saveState(): Bundle {
+        val bundle = Bundle()
+        states.entries.forEach { entry ->
+            bundle.putParcelable(entry.key, entry.value)
+        }
+        return bundle
+    }
+
+    internal fun restoreState(bundle: Bundle) {
+        bundle.keySet().forEach { key ->
+            bundle.getParcelableCompat(key)?.let { state ->
+                states[key] = state
+            }
+        }
     }
 
     private fun setScrollStateKey(recyclerView: RecyclerView, key: String?) {
@@ -104,6 +136,15 @@ class DpadScrollState internal constructor(
 
     private fun getScrollStateKey(recyclerView: RecyclerView): String? {
         return recyclerView.getTag(R.id.dpadrecyclerview_scroll_state_key) as? String?
+    }
+
+    private fun Bundle.getParcelableCompat(key: String): Parcelable? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            getParcelable(key, Parcelable::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            getParcelable(key)
+        }
     }
 
 }

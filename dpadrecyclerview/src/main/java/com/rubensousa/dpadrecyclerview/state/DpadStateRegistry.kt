@@ -16,17 +16,60 @@
 
 package com.rubensousa.dpadrecyclerview.state
 
-import android.os.Parcelable
-import android.util.SparseArray
+import android.app.Activity
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryOwner
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
-class DpadStateRegistry {
+private const val SAVED_STATE_PROVIDER_KEY = "#DpadStateRegistry"
+private const val SCROLL_STATE_KEY = "#ScrollStates"
+private const val VIEW_HOLDER_STATE_KEY = "#ViewHolderStates"
 
-    // TODO: Restore on configuration changes
-    private val scrollStates = mutableMapOf<String, Parcelable?>()
-    private val viewStates = mutableMapOf<String, SparseArray<Parcelable>>()
-    private val scrollState = DpadScrollState(scrollStates)
-    private val viewHolderState = DpadViewHolderState(viewStates)
+/**
+ * Saves and restores scroll states and ViewHolder states.
+ * Check [DpadScrollState] and [DpadViewHolderState] for more information.
+ *
+ * This class is lifecycle-aware and will contribute to
+ * [Activity.onSaveInstanceState] or [Fragment.onSaveInstanceState] via [SavedStateRegistryOwner],
+ * unless [setSaveInstanceStateEnabled] is used to disable this behavior.
+ */
+class DpadStateRegistry(registryOwner: SavedStateRegistryOwner) {
+
+    private val scrollState = DpadScrollState()
+    private val viewHolderState = DpadViewHolderState()
+    private val savedStateProvider = SavedStateRegistry.SavedStateProvider { saveState() }
+    private var saveInstanceStateEnabled = true
+    private var observer: LifecycleEventObserver? = null
+
+    init {
+        if (registryOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.CREATED)) {
+            register(registryOwner)
+        } else {
+            observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_CREATE) {
+                    register(registryOwner)
+                    observer?.let { registryOwner.lifecycle.removeObserver(it) }
+                    observer = null
+                }
+            }.also {
+                registryOwner.lifecycle.addObserver(it)
+            }
+        }
+    }
+
+    /**
+     * Control whether state should be saved via [Activity.onSaveInstanceState]
+     * or [Fragment.onSaveInstanceState], false otherwise. Default is true.
+     *
+     * @param enabled true if state should be persisted, false otherwise.
+     */
+    fun setSaveInstanceStateEnabled(enabled: Boolean) {
+        saveInstanceStateEnabled = enabled
+    }
 
     /**
      * @return [DpadScrollState] to save and restore scroll states of [DpadRecyclerView]
@@ -43,18 +86,29 @@ class DpadStateRegistry {
         return viewHolderState
     }
 
-    /**
-     * Clears all ViewHolder states to prevent them from being restored later
-     */
-    fun clearViewHolderState() {
-        viewStates.clear()
+    private fun register(registryOwner: SavedStateRegistryOwner) {
+        val registry = registryOwner.savedStateRegistry
+        registry.registerSavedStateProvider(SAVED_STATE_PROVIDER_KEY, savedStateProvider)
+        registry.consumeRestoredStateForKey(SAVED_STATE_PROVIDER_KEY)?.let { bundle ->
+            bundle.getBundle(SCROLL_STATE_KEY)?.let { scrollStateBundle ->
+                scrollState.restoreState(scrollStateBundle)
+            }
+            bundle.getBundle(VIEW_HOLDER_STATE_KEY)?.let { viewStateBundle ->
+                viewHolderState.restoreState(viewStateBundle)
+            }
+        }
     }
 
-    /**
-     * Clears all scroll states to prevent them from being restored later
-     */
-    fun clearScrollState() {
-        scrollStates.clear()
+    private fun saveState(): Bundle {
+        if (!saveInstanceStateEnabled) {
+            return Bundle()
+        }
+        val output = Bundle()
+        val viewHolderStateBundle = viewHolderState.saveState()
+        val scrollStateBundle = scrollState.saveState()
+        output.putBundle(SCROLL_STATE_KEY, scrollStateBundle)
+        output.putBundle(VIEW_HOLDER_STATE_KEY, viewHolderStateBundle)
+        return output
     }
 
 }

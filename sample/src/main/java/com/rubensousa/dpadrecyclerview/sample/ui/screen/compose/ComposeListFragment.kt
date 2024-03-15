@@ -48,7 +48,7 @@ import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
 
     private val viewModel by viewModels<ListViewModel>()
-    private val stateRegistry = DpadStateRegistry()
+    private val stateRegistry = DpadStateRegistry(this)
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
