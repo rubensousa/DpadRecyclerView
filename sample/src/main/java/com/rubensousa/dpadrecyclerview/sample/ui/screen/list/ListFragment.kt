@@ -33,11 +33,11 @@ import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import com.rubensousa.dpadrecyclerview.spacing.DpadSpacingLookup
-import com.rubensousa.dpadrecyclerview.state.DpadRecyclerViewStateRegistry
+import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 
 class ListFragment : Fragment(R.layout.screen_recyclerview) {
 
-    private val stateRegistry = DpadRecyclerViewStateRegistry()
+    private val stateRegistry = DpadStateRegistry()
     private var selectedPosition: Int = RecyclerView.NO_POSITION
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
     private val viewModel by viewModels<ListViewModel>()

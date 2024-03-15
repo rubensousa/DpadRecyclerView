@@ -27,10 +27,10 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.MainAdapterListFeature
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ItemModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ListAnimator
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
-import com.rubensousa.dpadrecyclerview.state.DpadRecyclerViewScrollState
+import com.rubensousa.dpadrecyclerview.state.DpadScrollState
 
 class FeatureListAdapter(
-    private val scrollState: DpadRecyclerViewScrollState,
+    private val scrollState: DpadScrollState,
     private val recycledViewPool: UnboundViewPool
 ) : ListAdapter<FeatureList, FeatureListAdapter.ViewHolder>(ItemModel.buildDiffCallback()) {
 
@@ -54,7 +54,9 @@ class FeatureListAdapter(
     }
 
     override fun onViewRecycled(holder: ViewHolder) {
-        scrollState.save(holder.recyclerView)
+        holder.item?.let { item ->
+            scrollState.save(holder.recyclerView, item.diffId)
+        }
         holder.onRecycled()
     }
 

@@ -24,11 +24,11 @@ import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenMainBinding
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
-import com.rubensousa.dpadrecyclerview.state.DpadRecyclerViewStateRegistry
+import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 
 class MainFragment : Fragment(R.layout.screen_main) {
 
-    private val stateRegistry = DpadRecyclerViewStateRegistry()
+    private val stateRegistry = DpadStateRegistry()
     private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

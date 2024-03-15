@@ -23,10 +23,10 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.HorizontalAdapterListB
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
-import com.rubensousa.dpadrecyclerview.state.DpadRecyclerViewScrollState
+import com.rubensousa.dpadrecyclerview.state.DpadScrollState
 
 class HorizontalListAdapter(
-    private val scrollState: DpadRecyclerViewScrollState,
+    private val scrollState: DpadScrollState,
     private val config: HorizontalListConfig
 ) : MutableListAdapter<ListModel, HorizontalListViewHolder>(DIFF_CALLBACK) {
 
@@ -74,7 +74,9 @@ class HorizontalListAdapter(
     }
 
     override fun onViewRecycled(holder: HorizontalListViewHolder) {
-        scrollState.save(holder.recyclerView)
+        holder.item?.let { item ->
+            scrollState.save(holder.recyclerView, item.diffId)
+        }
         holder.recycle()
     }
 

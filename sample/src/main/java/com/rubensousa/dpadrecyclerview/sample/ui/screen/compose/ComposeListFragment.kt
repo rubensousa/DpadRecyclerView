@@ -42,13 +42,13 @@ import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ComposePlaceholderAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
-import com.rubensousa.dpadrecyclerview.state.DpadRecyclerViewStateRegistry
+import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 
 
 class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
 
     private val viewModel by viewModels<ListViewModel>()
-    private val stateRegistry = DpadRecyclerViewStateRegistry()
+    private val stateRegistry = DpadStateRegistry()
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
