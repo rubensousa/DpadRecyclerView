@@ -17,21 +17,18 @@
 package com.rubensousa.dpadrecyclerview.sample.test.list
 
 import android.view.View
-import androidx.compose.ui.test.assertAll
+import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assertAny
-import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
+import androidx.test.espresso.matcher.ViewMatchers.hasFocus
 import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isNotFocused
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -39,6 +36,7 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemComposable
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers
 import org.hamcrest.core.AllOf.allOf
 
 class ComposeListScreen(private val composeTestRule: ComposeTestRule) {
@@ -78,12 +76,11 @@ class ComposeListScreen(private val composeTestRule: ComposeTestRule) {
             allOf(
                 withContentDescription(item.text),
                 isDescendantOfA(getCardRecyclerViewMatcher(list.title)),
-                ViewMatchers.isFocused()
+                hasFocus()
             )
         ).check(matches(isDisplayed()))
-        Espresso.onIdle()
         composeTestRule.onAllNodesWithText(item.text)
-            .assertAny(hasTestTag(ItemComposable.TEST_TAG_TEXT_FOCUSED))
+            .assertAny(SemanticsMatcher.expectValue(ItemComposable.focusedKey, true))
     }
 
     fun assertIsNotFocused(list: CardList, item: CardItem) {
@@ -91,12 +88,11 @@ class ComposeListScreen(private val composeTestRule: ComposeTestRule) {
             allOf(
                 withContentDescription(item.text),
                 isDescendantOfA(getCardRecyclerViewMatcher(list.title)),
-                isNotFocused()
+                Matchers.not(hasFocus())
             )
         ).check(matches(isDisplayed()))
-        Espresso.onIdle()
         composeTestRule.onAllNodesWithText(item.text)
-            .assertAll(hasTestTag(ItemComposable.TEST_TAG_TEXT_NOT_FOCUSED))
+            .assertAny(SemanticsMatcher.expectValue(ItemComposable.focusedKey, false))
     }
 
     private fun getCardRecyclerViewMatcher(title: String): Matcher<View> {

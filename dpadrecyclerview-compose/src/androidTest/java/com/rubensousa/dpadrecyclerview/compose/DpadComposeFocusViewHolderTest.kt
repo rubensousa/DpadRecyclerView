@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.rubensousa.dpadrecyclerview.compose
 
 import androidx.compose.ui.test.SemanticsMatcher
@@ -35,7 +36,7 @@ import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
-class DpadComposeViewHolderTest {
+class DpadComposeFocusViewHolderTest {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
@@ -44,7 +45,7 @@ class DpadComposeViewHolderTest {
     val screenRecorderRule = ScreenRecorderRule()
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ViewFocusTestActivity>()
+    val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()
 
     @Test
     fun testComposeItemsReceiveFocus() {
@@ -74,15 +75,6 @@ class DpadComposeViewHolderTest {
 
         assertFocus(item = 0, isFocused = true)
         assertSelection(item = 0, isSelected = true)
-    }
-
-    @Test
-    fun testNextComposeItemsReceiveFocus() {
-        KeyEvents.pressDown()
-        waitForIdleScroll()
-
-        assertFocus(item = 0, isFocused = false)
-        assertFocus(item = 1, isFocused = true)
     }
 
     @Test

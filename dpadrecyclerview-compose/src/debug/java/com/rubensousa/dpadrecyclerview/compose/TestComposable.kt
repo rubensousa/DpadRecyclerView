@@ -17,13 +17,23 @@
 package com.rubensousa.dpadrecyclerview.compose
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
@@ -75,20 +85,86 @@ fun TestComposable(
     }
 }
 
+@Composable
+fun TestComposableFocus(
+    modifier: Modifier = Modifier,
+    item: Int,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    onDispose: () -> Unit = {},
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    val backgroundColor = if (isFocused) {
+        Color.White
+    } else if (isSelected) {
+        Color.Blue
+    } else {
+        Color.Black
+    }
+    Box(
+        modifier = modifier
+            .onFocusChanged { focusState ->
+                isFocused = focusState.isFocused
+            }
+            .focusTarget()
+            .background(backgroundColor)
+            .clickable {
+                onClick()
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            modifier = Modifier.semantics {
+                set(TestComposable.focusedKey, isFocused)
+                set(TestComposable.selectedKey, isSelected)
+            },
+            text = item.toString(),
+            style = MaterialTheme.typography.headlineLarge,
+            color = if (isFocused) {
+                Color.Black
+            } else {
+                Color.White
+            }
+        )
+    }
+    DisposableEffect(key1 = item) {
+        onDispose {
+            onDispose()
+        }
+    }
+}
+
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 fun TestComposablePreviewNormal() {
-    TestComposable(item = 0, isFocused = false, isSelected = false)
+    TestComposableFocus(
+        item = 0,
+        isSelected = false,
+        onClick = {}
+    )
 }
 
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 fun TestComposablePreviewFocused() {
-    TestComposable(item = 0, isFocused = true, isSelected = false)
+    val focusRequester = remember { FocusRequester() }
+    TestComposableFocus(
+        item = 0,
+        modifier = Modifier.focusRequester(focusRequester),
+        isSelected = false,
+        onClick = {}
+    )
+    SideEffect {
+        focusRequester.requestFocus()
+    }
 }
 
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 fun TestComposablePreviewSelected() {
-    TestComposable(item = 0, isFocused = false, isSelected = true)
+    TestComposableFocus(
+        item = 0,
+        isSelected = true,
+        onClick = {}
+    )
 }

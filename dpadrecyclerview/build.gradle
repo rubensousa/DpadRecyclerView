@@ -15,6 +15,7 @@ android {
         targetSdk versions.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
+        testInstrumentationRunnerArguments additionalTestOutputDir: 'storage/emulated/0/recordings/com.rubensousa.dpadrecyclerview.test'
         testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
     }
 
