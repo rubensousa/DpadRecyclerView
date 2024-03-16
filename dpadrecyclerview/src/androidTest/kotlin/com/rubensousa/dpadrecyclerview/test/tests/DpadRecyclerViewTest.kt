@@ -30,6 +30,7 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutMatrix
@@ -124,6 +125,14 @@ abstract class DpadRecyclerViewTest {
         var events = listOf<Int>()
         fragmentScenario.onFragment { fragment ->
             events = fragment.getViewHolderSelections()
+        }
+        return events
+    }
+
+    fun getFocusEvents(): List<DpadFocusEvent> {
+        var events = listOf<DpadFocusEvent>()
+        fragmentScenario.onFragment { fragment ->
+            events = fragment.getFocusEvents()
         }
         return events
     }
