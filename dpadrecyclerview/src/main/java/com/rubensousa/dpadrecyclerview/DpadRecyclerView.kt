@@ -1250,7 +1250,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * 1. Compose animations trigger a full unnecessary layout-pass
      * 2. Content jumping around while scrolling is not ideal sometimes
      *
-     * [enabled] - true if layout requests should be possible while scrolling,
+     * @param enabled true if layout requests should be possible while scrolling,
      * or false if they should be postponed until [RecyclerView.SCROLL_STATE_IDLE].
      * Default is true.
      */
