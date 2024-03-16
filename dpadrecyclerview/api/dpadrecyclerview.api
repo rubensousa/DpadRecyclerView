@@ -100,6 +100,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public final fun removeView (Landroid/view/View;)V
 	public final fun removeViewAt (I)V
+	public final fun requestLayout ()V
 	public final fun setAlignments (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public final fun setChildAlignment (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public static synthetic fun setChildAlignment$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;ZILjava/lang/Object;)V
@@ -120,6 +121,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setItemPrefetchEnabled (Z)V
 	public final fun setLayoutEnabled (Z)V
 	public final fun setLayoutManager (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)V
+	public final fun setLayoutWhileScrollingEnabled (Z)V
 	public final fun setLoopDirection (Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;)V
 	public final fun setMaxEdgeFadingLength (I)V
 	public final fun setMaxEdgeFadingOffset (I)V

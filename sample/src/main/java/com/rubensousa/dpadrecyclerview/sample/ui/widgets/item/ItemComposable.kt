@@ -17,6 +17,9 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.widgets.item
 
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -24,24 +27,46 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.rubensousa.dpadrecyclerview.compose.dpadClickable
 
 object ItemComposable {
-    const val TEST_TAG_TEXT_FOCUSED = "focused_text"
-    const val TEST_TAG_TEXT_NOT_FOCUSED = "unfocused_text"
+    val focusedKey = SemanticsPropertyKey<Boolean>("Focused")
 }
 
 @Composable
 fun ItemComposable(
-    modifier: Modifier = Modifier, item: Int, isFocused: Boolean
+    item: Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
+    var isFocused by remember { mutableStateOf(false) }
+    val scaleState = animateFloatAsState(
+        targetValue = if (isFocused) 1.1f else 1.0f,
+        label = "scale",
+        animationSpec = tween(
+            durationMillis = if (isFocused) 350 else 0,
+            easing = FastOutSlowInEasing
+        )
+    )
     val backgroundColor = if (isFocused) {
         Color.White
     } else {
@@ -54,19 +79,23 @@ fun ItemComposable(
     }
     Box(
         modifier = modifier
+            .scale(scaleState.value)
             .clip(RoundedCornerShape(8.dp))
-            .background(backgroundColor),
+            .background(backgroundColor)
+            .onFocusChanged { focusState ->
+                isFocused = focusState.hasFocus
+            }
+            .focusTarget()
+            .dpadClickable {
+                onClick()
+            },
         contentAlignment = Alignment.Center,
     ) {
         Text(
             modifier = Modifier
-                .testTag(
-                    if (isFocused) {
-                        ItemComposable.TEST_TAG_TEXT_FOCUSED
-                    } else {
-                        ItemComposable.TEST_TAG_TEXT_NOT_FOCUSED
-                    }
-                ),
+                .semantics {
+                    set(ItemComposable.focusedKey, isFocused)
+                },
             text = item.toString(),
             color = textColor,
             fontSize = 35.sp
@@ -75,24 +104,37 @@ fun ItemComposable(
 }
 
 @Composable
-fun GridItemComposable(item: Int, isFocused: Boolean) {
+fun GridItemComposable(
+    item: Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
+) {
     ItemComposable(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(3f / 4f),
         item = item,
-        isFocused
+        onClick = onClick
     )
 }
 
 @Preview
 @Composable
 fun PreviewGridItemComposableFocused() {
-    GridItemComposable(item = 0, isFocused = true)
+    val focusRequester = remember {
+        FocusRequester()
+    }
+    GridItemComposable(
+        modifier = Modifier.focusRequester(focusRequester),
+        item = 0,
+    )
+    SideEffect {
+        focusRequester.requestFocus()
+    }
 }
 
 @Preview
 @Composable
 fun PreviewGridItemComposableNotFocused() {
-    GridItemComposable(item = 0, isFocused = false)
+    GridItemComposable(item = 0)
 }

@@ -71,6 +71,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
     private var startedTouchScroll = false
+    private var layoutWhileScrollingEnabled = true
+    private var hasPendingLayout = false
     private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
     private var keyInterceptListener: OnKeyInterceptListener? = null
@@ -224,6 +226,15 @@ open class DpadRecyclerView @JvmOverloads constructor(
             layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             pivotLayoutManager = layout
         }
+    }
+
+    final override fun requestLayout() {
+        if (layoutWhileScrollingEnabled || scrollState == SCROLL_STATE_IDLE) {
+            hasPendingLayout = false
+            super.requestLayout()
+            return
+        }
+        hasPendingLayout = true
     }
 
     // Overriding to prevent WRAP_CONTENT behavior by replacing it
@@ -419,6 +430,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
         if (state == SCROLL_STATE_IDLE) {
             startedTouchScroll = false
             pivotLayoutManager?.setScrollingFromTouchEvent(false)
+            if (hasPendingLayout) {
+                hasPendingLayout = false
+                requestLayout()
+            }
         } else if (startedTouchScroll) {
             pivotLayoutManager?.setScrollingFromTouchEvent(true)
         }
@@ -1227,6 +1242,21 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @return the listener set by [setOnMotionInterceptListener]
      */
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
+
+    /**
+     * By default, [DpadRecyclerView] allows triggering a layout-pass during scrolling.
+     * However, there might be some cases where someone is interested in disabling this behavior,
+     * for example:
+     * 1. Compose animations trigger a full unnecessary layout-pass
+     * 2. Content jumping around while scrolling is not ideal sometimes
+     *
+     * @param enabled true if layout requests should be possible while scrolling,
+     * or false if they should be postponed until [RecyclerView.SCROLL_STATE_IDLE].
+     * Default is true.
+     */
+    fun setLayoutWhileScrollingEnabled(enabled: Boolean) {
+        layoutWhileScrollingEnabled = enabled
+    }
 
     @VisibleForTesting
     internal fun detachFromWindow() {
