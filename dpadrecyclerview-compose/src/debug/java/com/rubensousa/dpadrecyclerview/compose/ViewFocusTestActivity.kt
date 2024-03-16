@@ -87,25 +87,24 @@ class ViewFocusTestActivity : AppCompatActivity() {
             viewType: Int
         ): DpadComposeViewHolder<Int> {
             return DpadComposeViewHolder(
-                parent,
-                composable = { item, isFocused, isSelected ->
-                    TestComposable(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp),
-                        item = item,
-                        isFocused = isFocused,
-                        isSelected = isSelected,
-                        onDispose = {
-                            onDispose(item)
-                        }
-                    )
-                },
+                parent = parent,
                 onClick = {
                     clicks.add(it)
                 },
                 isFocusable = true
-            )
+            ) { item, isFocused, isSelected ->
+                TestComposable(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    item = item,
+                    isFocused = isFocused,
+                    isSelected = isSelected,
+                    onDispose = {
+                        onDispose(item)
+                    }
+                )
+            }
         }
 
         override fun getItemCount(): Int = items.size

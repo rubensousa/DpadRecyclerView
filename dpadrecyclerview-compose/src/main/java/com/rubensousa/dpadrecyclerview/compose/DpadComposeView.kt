@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.compose
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View.OnFocusChangeListener
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
@@ -27,7 +28,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 /**
  * A wrapper for [ComposeView] to allow keeping focus inside the view system
  */
-class DpadComposeView @JvmOverloads constructor(
+internal class DpadComposeView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null
 ) : FrameLayout(context, attrs) {
 
