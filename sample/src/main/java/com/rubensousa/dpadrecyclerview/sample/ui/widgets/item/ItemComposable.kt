@@ -41,15 +41,15 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsPropertyKey
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rubensousa.dpadrecyclerview.compose.dpadClickable
 
 object ItemComposable {
-    const val TEST_TAG_TEXT_FOCUSED = "focused_text"
-    const val TEST_TAG_TEXT_NOT_FOCUSED = "unfocused_text"
+    val focusedKey = SemanticsPropertyKey<Boolean>("Focused")
 }
 
 @Composable
@@ -93,13 +93,9 @@ fun ItemComposable(
     ) {
         Text(
             modifier = Modifier
-                .testTag(
-                    if (isFocused) {
-                        ItemComposable.TEST_TAG_TEXT_FOCUSED
-                    } else {
-                        ItemComposable.TEST_TAG_TEXT_NOT_FOCUSED
-                    }
-                ),
+                .semantics {
+                    set(ItemComposable.focusedKey, isFocused)
+                },
             text = item.toString(),
             color = textColor,
             fontSize = 35.sp

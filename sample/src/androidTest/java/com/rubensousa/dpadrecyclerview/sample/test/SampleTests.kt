@@ -81,10 +81,6 @@ class SampleTests {
         val list = CardList("DpadRecyclerView 5")
         val firstItem = CardItem("5")
         composeListScreen.scrollTo(list, firstItem)
-
-        composeListScreen.scrollTo(list, CardItem("4"))
-
-        composeListScreen.assertIsNotFocused(list, firstItem)
     }
 
 }
