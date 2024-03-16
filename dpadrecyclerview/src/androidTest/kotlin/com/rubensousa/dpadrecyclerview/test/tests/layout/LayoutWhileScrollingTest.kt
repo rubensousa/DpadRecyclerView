@@ -25,7 +25,6 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -78,10 +77,7 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
 
         // when
         selectLastPosition(smooth = true)
-        waitForCondition("Wait for scroll state change") { recyclerView ->
-            recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
-        }
-        repeat(2) {
+        repeat(10) {
             onRecyclerView("Request layout") { recyclerView ->
                 if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) {
                     recyclerView.requestLayout()
@@ -110,6 +106,13 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
 
         // when
         KeyEvents.pressDown(times = 20)
+        repeat(10) {
+            onRecyclerView("Request layout") { recyclerView ->
+                if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) {
+                    recyclerView.requestLayout()
+                }
+            }
+        }
         waitForIdleScrollState()
 
         // then
