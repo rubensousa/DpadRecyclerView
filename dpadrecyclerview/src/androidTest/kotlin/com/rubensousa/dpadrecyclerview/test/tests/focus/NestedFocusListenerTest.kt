@@ -51,7 +51,7 @@ class NestedFocusListenerTest {
 
     @Test
     fun testChildRecyclerViewReceivesInitialFocusEvent() {
-        val events = getFocusEvents()
+        val events = getChildFocusEvents()
         assertThat(events).hasSize(1)
 
         val event = events.first()
@@ -73,7 +73,7 @@ class NestedFocusListenerTest {
         waitForIdleScrollState()
 
         // then
-        val events = getFocusEvents()
+        val events = getChildFocusEvents()
         assertThat(events).hasSize(2)
 
         val lastEvent = events.last()
@@ -88,10 +88,57 @@ class NestedFocusListenerTest {
         }
     }
 
-    private fun getFocusEvents(): List<DpadFocusEvent> {
+    @Test
+    fun testParentRecyclerViewReceivesChildFocusEvent() {
+        val events = getParentFocusEvents()
+        assertThat(events).hasSize(1)
+
+        val event = events.first()
+        onRecyclerView("Assert parent event properties") { parentRecyclerView ->
+            val firstParentViewHolder = parentRecyclerView.findViewHolderForLayoutPosition(0)!!
+            val childRecyclerView = firstParentViewHolder.itemView.findViewById<DpadRecyclerView>(
+                com.rubensousa.dpadrecyclerview.test.R.id.nestedRecyclerView
+            )
+            val firstChildViewHolder = childRecyclerView.findViewHolderForLayoutPosition(0)!!
+            assertThat(event.parent).isEqualTo(firstParentViewHolder)
+            assertThat(event.child).isEqualTo(firstChildViewHolder.itemView)
+        }
+    }
+
+    @Test
+    fun testParentRecyclerViewReceivesNextChildFocusEvent() {
+        // when
+        KeyEvents.pressDown()
+        waitForIdleScrollState()
+
+        // then
+        val events = getParentFocusEvents()
+        assertThat(events).hasSize(2)
+
+        val event = events.last()
+        onRecyclerView("Assert parent event properties") { parentRecyclerView ->
+            val parentViewHolder = parentRecyclerView.findViewHolderForLayoutPosition(1)!!
+            val childRecyclerView = parentViewHolder.itemView.findViewById<DpadRecyclerView>(
+                com.rubensousa.dpadrecyclerview.test.R.id.nestedRecyclerView
+            )
+            val firstChildViewHolder = childRecyclerView.findViewHolderForLayoutPosition(0)!!
+            assertThat(event.parent).isEqualTo(parentViewHolder)
+            assertThat(event.child).isEqualTo(firstChildViewHolder.itemView)
+        }
+    }
+
+    private fun getChildFocusEvents(): List<DpadFocusEvent> {
         var events = listOf<DpadFocusEvent>()
         fragmentScenario.onFragment { fragment ->
             events = fragment.getChildFocusEvents()
+        }
+        return events
+    }
+
+    private fun getParentFocusEvents(): List<DpadFocusEvent> {
+        var events = listOf<DpadFocusEvent>()
+        fragmentScenario.onFragment { fragment ->
+            events = fragment.getParentFocusEvents()
         }
         return events
     }

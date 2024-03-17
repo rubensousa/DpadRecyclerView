@@ -1291,6 +1291,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
         onAttachedToWindow()
     }
 
+    internal fun onNestedChildFocused(view: View) {
+        pivotLayoutManager?.notifyNestedChildFocus(view)
+    }
+
     private fun removeSelectionForRecycledViewHolders() {
         addRecyclerListener { holder ->
             val position = holder.absoluteAdapterPosition

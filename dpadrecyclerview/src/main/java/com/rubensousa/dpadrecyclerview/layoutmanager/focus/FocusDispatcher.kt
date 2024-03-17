@@ -291,6 +291,7 @@ internal class FocusDispatcher(
                 child, focused, configuration.isSmoothFocusChangesEnabled, requestFocus = true
             )
         }
+        pivotSelector.onChildFocused(focused)
         return true
     }
 

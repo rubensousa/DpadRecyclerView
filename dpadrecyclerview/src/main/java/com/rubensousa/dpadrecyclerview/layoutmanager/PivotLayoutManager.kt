@@ -603,6 +603,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         pivotSelector.clearOnViewHolderFocusedListeners()
     }
 
+    internal fun notifyNestedChildFocus(view: View) {
+        pivotSelector.notifyNestedChildFocus(view)
+    }
+
     fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {
         scroller.scrollToPosition(position, subPosition, smooth)
     }
