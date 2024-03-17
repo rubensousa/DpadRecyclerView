@@ -92,14 +92,13 @@ class ViewFocusTestActivity : AppCompatActivity() {
                     clicks.add(it)
                 },
                 isFocusable = true
-            ) { item, isFocused, isSelected ->
+            ) { item, isFocused ->
                 TestComposable(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp),
                     item = item,
                     isFocused = isFocused,
-                    isSelected = isSelected,
                     onDispose = {
                         onDispose(item)
                     }

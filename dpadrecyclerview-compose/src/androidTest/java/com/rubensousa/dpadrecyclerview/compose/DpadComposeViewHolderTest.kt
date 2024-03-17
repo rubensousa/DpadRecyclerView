@@ -49,13 +49,11 @@ class DpadComposeViewHolderTest {
     @Test
     fun testComposeItemsReceiveFocus() {
         assertFocus(item = 0, isFocused = true)
-        assertSelection(item = 0, isSelected = true)
 
         KeyEvents.pressDown()
         waitForIdleScroll()
 
         assertFocus(item = 1, isFocused = true)
-        assertSelection(item = 1, isSelected = true)
     }
 
     @Test
@@ -66,14 +64,12 @@ class DpadComposeViewHolderTest {
 
         Espresso.onIdle()
         assertFocus(item = 0, isFocused = false)
-        assertSelection(item = 0, isSelected = true)
 
         composeTestRule.activityRule.scenario.onActivity { activity ->
             activity.requestFocus()
         }
 
         assertFocus(item = 0, isFocused = true)
-        assertSelection(item = 0, isSelected = true)
     }
 
     @Test
@@ -158,11 +154,6 @@ class DpadComposeViewHolderTest {
     private fun assertFocus(item: Int, isFocused: Boolean) {
         composeTestRule.onNodeWithText(item.toString()).assertIsDisplayed()
             .assert(SemanticsMatcher.expectValue(TestComposable.focusedKey, isFocused))
-    }
-
-    private fun assertSelection(item: Int, isSelected: Boolean) {
-        composeTestRule.onNodeWithText(item.toString()).assertIsDisplayed()
-            .assert(SemanticsMatcher.expectValue(TestComposable.selectedKey, isSelected))
     }
 
 }

@@ -41,7 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 
 object TestComposable {
     val focusedKey = SemanticsPropertyKey<Boolean>("Focused")
-    val selectedKey = SemanticsPropertyKey<Boolean>("Selected")
 }
 
 @Composable
@@ -49,13 +48,10 @@ fun TestComposable(
     modifier: Modifier = Modifier,
     item: Int,
     isFocused: Boolean,
-    isSelected: Boolean,
     onDispose: () -> Unit = {},
 ) {
     val backgroundColor = if (isFocused) {
         Color.White
-    } else if (isSelected) {
-        Color.Blue
     } else {
         Color.Black
     }
@@ -67,7 +63,6 @@ fun TestComposable(
         Text(
             modifier = Modifier.semantics {
                 set(TestComposable.focusedKey, isFocused)
-                set(TestComposable.selectedKey, isSelected)
             },
             text = item.toString(),
             style = MaterialTheme.typography.headlineLarge,
@@ -89,15 +84,12 @@ fun TestComposable(
 fun TestComposableFocus(
     modifier: Modifier = Modifier,
     item: Int,
-    isSelected: Boolean,
     onClick: () -> Unit,
     onDispose: () -> Unit = {},
 ) {
     var isFocused by remember { mutableStateOf(false) }
     val backgroundColor = if (isFocused) {
         Color.White
-    } else if (isSelected) {
-        Color.Blue
     } else {
         Color.Black
     }
@@ -116,7 +108,6 @@ fun TestComposableFocus(
         Text(
             modifier = Modifier.semantics {
                 set(TestComposable.focusedKey, isFocused)
-                set(TestComposable.selectedKey, isSelected)
             },
             text = item.toString(),
             style = MaterialTheme.typography.headlineLarge,
@@ -139,7 +130,6 @@ fun TestComposableFocus(
 fun TestComposablePreviewNormal() {
     TestComposableFocus(
         item = 0,
-        isSelected = false,
         onClick = {}
     )
 }
@@ -151,20 +141,9 @@ fun TestComposablePreviewFocused() {
     TestComposableFocus(
         item = 0,
         modifier = Modifier.focusRequester(focusRequester),
-        isSelected = false,
         onClick = {}
     )
     SideEffect {
         focusRequester.requestFocus()
     }
-}
-
-@Preview(widthDp = 300, heightDp = 300)
-@Composable
-fun TestComposablePreviewSelected() {
-    TestComposableFocus(
-        item = 0,
-        isSelected = true,
-        onClick = {}
-    )
 }

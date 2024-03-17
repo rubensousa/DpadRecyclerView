@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.compose
 
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
@@ -50,13 +51,11 @@ class DpadComposeFocusViewHolderTest {
     @Test
     fun testComposeItemsReceiveFocus() {
         assertFocus(item = 0, isFocused = true)
-        assertSelection(item = 0, isSelected = true)
 
         KeyEvents.pressDown()
         waitForIdleScroll()
 
         assertFocus(item = 1, isFocused = true)
-        assertSelection(item = 1, isSelected = true)
     }
 
     @Test
@@ -67,15 +66,12 @@ class DpadComposeFocusViewHolderTest {
 
         Espresso.onIdle()
         assertFocus(item = 0, isFocused = false)
-        assertSelection(item = 0, isSelected = true)
 
         composeTestRule.activityRule.scenario.onActivity { activity ->
             activity.requestFocus()
         }
 
-        assertFocus(item = 0, isFocused = true)
-        assertSelection(item = 0, isSelected = true)
-    }
+        assertFocus(item = 0, isFocused = true) }
 
     @Test
     fun testClicksAreDispatched() {
@@ -101,8 +97,8 @@ class DpadComposeFocusViewHolderTest {
         }
 
         viewHolders.forEach { viewHolder ->
-            val composeView = viewHolder.itemView as DpadComposeView
-            assertThat(composeView.hasComposition()).isFalse()
+            val composeView = viewHolder.itemView as ComposeView
+            assertThat(composeView.hasComposition).isFalse()
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
     }
@@ -150,11 +146,6 @@ class DpadComposeFocusViewHolderTest {
     private fun assertFocus(item: Int, isFocused: Boolean) {
         composeTestRule.onNodeWithText(item.toString()).assertIsDisplayed()
             .assert(SemanticsMatcher.expectValue(TestComposable.focusedKey, isFocused))
-    }
-
-    private fun assertSelection(item: Int, isSelected: Boolean) {
-        composeTestRule.onNodeWithText(item.toString()).assertIsDisplayed()
-            .assert(SemanticsMatcher.expectValue(TestComposable.selectedKey, isSelected))
     }
 
 }
