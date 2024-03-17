@@ -4,6 +4,8 @@
 
 ### 1.3.0-alpha01
 
+2024-03-17
+
 #### New Features
 
 - Added `DpadComposeFocusViewHolder` that allows sending the focus state down to Composables ([#193](https://github.com/rubensousa/DpadRecyclerView/issues/193))
