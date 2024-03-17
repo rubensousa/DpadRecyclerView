@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipChildren="false"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="16dp"
+        android:focusable="false"
+        android:textColor="@color/dpadrecyclerview_white"
+        android:textSize="14sp"
+        tools:text="Headline" />
+
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+        android:id="@+id/nestedRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:dpadRecyclerViewChildAlignmentFraction="0"
+        app:dpadRecyclerViewParentAlignmentEdge="min_max"
+        app:dpadRecyclerViewParentAlignmentFraction="0"
+        app:dpadRecyclerViewParentAlignmentOffset="64dp" />
+
+
+</LinearLayout>

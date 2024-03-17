@@ -93,15 +93,30 @@ internal class PivotSelector(
 
     fun focus(view: View) {
         view.requestFocus()
-        layoutInfo.getChildViewHolder(view)?.let { viewHolder ->
-            focusListeners.forEach { listener ->
-                listener.onViewFocused(
-                    parent = viewHolder,
-                    child = view,
-                    position = position,
-                )
-            }
+        // Do not notify listeners for views that are not a direct child of this RecyclerView
+        // This will happen when a parent RecyclerView
+        // finds a focusable inside a nested RecyclerView
+        if (findParentRecyclerView(view) !== recyclerView) {
+            return
         }
+        val focusedViewHolder = recyclerView?.findContainingViewHolder(view) ?: return
+        focusListeners.forEach { listener ->
+            listener.onViewFocused(
+                parent = focusedViewHolder,
+                child = view,
+            )
+        }
+    }
+
+    private fun findParentRecyclerView(view: View): RecyclerView? {
+        val parent = view.parent
+        if (parent is RecyclerView) {
+            return parent
+        }
+        if (parent is View) {
+            return findParentRecyclerView(parent)
+        }
+        return null
     }
 
     private fun applyPositionOffset(itemCount: Int) {

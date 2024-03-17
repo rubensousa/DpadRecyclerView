@@ -65,9 +65,8 @@ class HorizontalListViewHolder(
             override fun onViewFocused(
                 parent: RecyclerView.ViewHolder,
                 child: View,
-                position: Int,
             ) {
-                Timber.i("ViewHolder focused: $position")
+                Timber.i("ViewHolder focused: ${parent.layoutPosition}")
             }
         })
         applyConfig(config)

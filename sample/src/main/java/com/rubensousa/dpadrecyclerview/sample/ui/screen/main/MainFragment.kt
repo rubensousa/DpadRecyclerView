@@ -55,9 +55,8 @@ class MainFragment : Fragment(R.layout.screen_main) {
             override fun onViewFocused(
                 parent: RecyclerView.ViewHolder,
                 child: View,
-                position: Int,
             ) {
-                Timber.i("Feature list focused: $position, view: $child")
+                Timber.i("Feature focused: ${parent.layoutPosition} view: $child")
             }
         })
 

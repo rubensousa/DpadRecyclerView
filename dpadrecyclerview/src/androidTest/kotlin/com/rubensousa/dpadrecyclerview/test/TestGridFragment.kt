@@ -201,8 +201,8 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
 
     fun getFocusEvents() = focusEvents.toList()
 
-    override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View, position: Int) {
-        focusEvents.add(DpadFocusEvent(parent, child, position))
+    override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
+        focusEvents.add(DpadFocusEvent(parent, child, parent.layoutPosition))
     }
 
     override fun onChildLaidOut(parent: RecyclerView, child: RecyclerView.ViewHolder) {

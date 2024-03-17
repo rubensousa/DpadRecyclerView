@@ -63,7 +63,6 @@ class FocusListenerTest : DpadRecyclerViewTest() {
     @Test
     fun testFocusListenerPassesCorrectView() {
         val event = getFocusEvents().first()
-        assertThat(event.position).isEqualTo(0)
         assertThat(event.parent.absoluteAdapterPosition).isEqualTo(0)
         assertThat(event.child).isEqualTo(event.parent.itemView)
     }
@@ -78,7 +77,7 @@ class FocusListenerTest : DpadRecyclerViewTest() {
 
         // then
         assertThat(getFocusEvents()).hasSize(2)
-        assertThat(getFocusEvents().last().position).isEqualTo(0)
+        assertThat(getFocusEvents().last().parent.absoluteAdapterPosition).isEqualTo(0)
     }
 
     @Test
@@ -88,7 +87,7 @@ class FocusListenerTest : DpadRecyclerViewTest() {
 
         // then
         assertThat(getFocusEvents()).hasSize(2)
-        assertThat(getFocusEvents().last().position).isEqualTo(1)
+        assertThat(getFocusEvents().last().parent.absoluteAdapterPosition).isEqualTo(1)
     }
 
     @Test
@@ -98,7 +97,7 @@ class FocusListenerTest : DpadRecyclerViewTest() {
 
         // then
         assertThat(getFocusEvents()).hasSize(2)
-        assertThat(getFocusEvents().last().position).isEqualTo(1)
+        assertThat(getFocusEvents().last().parent.absoluteAdapterPosition).isEqualTo(1)
     }
 
     @Test
@@ -113,7 +112,7 @@ class FocusListenerTest : DpadRecyclerViewTest() {
 
         // then
         assertThat(getFocusEvents()).hasSize(1)
-        assertThat(getFocusEvents().last().position).isEqualTo(0)
+        assertThat(getFocusEvents().last().parent.absoluteAdapterPosition).isEqualTo(0)
     }
 
     @Test
@@ -124,7 +123,6 @@ class FocusListenerTest : DpadRecyclerViewTest() {
             override fun onViewFocused(
                 parent: RecyclerView.ViewHolder,
                 child: View,
-                position: Int
             ) {
                 called = true
             }
@@ -152,8 +150,9 @@ class FocusListenerTest : DpadRecyclerViewTest() {
         waitForIdleScrollState()
 
         // then
-        assertThat(getFocusEvents()).hasSize(keyPresses + 1)
-        assertThat(getFocusEvents().map { it.position }.sorted()).isEqualTo(List(50) { it })
+        val events = getFocusEvents()
+        assertThat(events).hasSize(keyPresses + 1)
+        assertThat(events.map { it.position }.sorted()).isEqualTo(List(50) { it })
     }
 
 }

@@ -32,13 +32,12 @@ interface OnViewFocusedListener {
 
     /**
      * @param parent The [RecyclerView.ViewHolder] within the [RecyclerView] that is focused
-     * @param child  The actual [View] that received focus
-     * @param position  The position of the view in the adapter
+     * @param child  The actual child [View] that received focus.
+     * Can be a child of a nested RecyclerView.
      */
     fun onViewFocused(
         parent: RecyclerView.ViewHolder,
         child: View,
-        position: Int,
     )
 
 }
