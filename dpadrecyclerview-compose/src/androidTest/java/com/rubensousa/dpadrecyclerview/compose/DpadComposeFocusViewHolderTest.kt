@@ -31,9 +31,12 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.compose.test.ComposeFocusTestActivity
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
+import com.rubensousa.dpadrecyclerview.testing.actions.DpadViewActions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
@@ -140,6 +143,49 @@ class DpadComposeFocusViewHolderTest {
         }
 
         assertThat(disposals).contains(0)
+    }
+
+    @Test
+    fun testFocusEventIsReceivedForFirstChild() {
+        var focusEvents: List<DpadFocusEvent> = emptyList()
+        composeTestRule.activityRule.scenario.onActivity { activity ->
+            focusEvents = activity.getFocusEvents()
+        }
+
+        // when
+        onView(ViewMatchers.withId(R.id.recyclerView))
+            .perform(
+                DpadViewActions.waitForCondition<DpadRecyclerView>(
+                    description = "Wait for focus event",
+                    condition = { recyclerView -> focusEvents.isNotEmpty() }
+                )
+            )
+
+        assertThat(focusEvents).hasSize(1)
+        val event = focusEvents.first()
+        assertThat(event.position).isEqualTo(0)
+        assertThat(event.child).isInstanceOf(ComposeView::class.java)
+    }
+
+    @Test
+    fun testAllViewHoldersAreFocusedOnKeyPress() {
+        // given
+        val events = 10
+
+        // when
+        repeat(events) {
+            KeyEvents.pressDown()
+            waitForIdleScroll()
+        }
+
+        // then
+        var focusEvents: List<DpadFocusEvent> = emptyList()
+        composeTestRule.activityRule.scenario.onActivity { activity ->
+            focusEvents = activity.getFocusEvents()
+        }
+
+        assertThat(focusEvents).hasSize(events + 1)
+        assertThat(focusEvents.map { it.position }).isEqualTo(List(events + 1) { it })
     }
 
     private fun waitForIdleScroll() {

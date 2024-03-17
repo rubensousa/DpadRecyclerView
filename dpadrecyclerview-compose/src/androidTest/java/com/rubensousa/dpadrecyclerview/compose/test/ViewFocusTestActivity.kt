@@ -27,12 +27,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
 import com.rubensousa.dpadrecyclerview.compose.TestComposable
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 
 class ViewFocusTestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: DpadRecyclerView
+    private val focusEvents = arrayListOf<DpadFocusEvent>()
     private val clicks = ArrayList<Int>()
     private val disposals = ArrayList<Int>()
 
@@ -40,6 +43,11 @@ class ViewFocusTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.compose_test)
         recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+            override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
+                focusEvents.add(DpadFocusEvent(parent, child, parent.layoutPosition))
+            }
+        })
         recyclerView.adapter = Adapter(
             items = List(100) { it },
             onDispose = { item ->
@@ -48,6 +56,8 @@ class ViewFocusTestActivity : AppCompatActivity() {
         )
         recyclerView.requestFocus()
     }
+
+    fun getFocusEvents(): List<DpadFocusEvent> = focusEvents.toList()
 
     fun requestFocus() {
         recyclerView.requestFocus()

@@ -43,17 +43,17 @@ class ComposeFocusTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.compose_test)
         recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+            override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
+                focusEvents.add(DpadFocusEvent(parent, child, parent.layoutPosition))
+            }
+        })
         recyclerView.adapter = Adapter(
             items = List(100) { it },
             onDispose = { item ->
                 disposals.add(item)
             }
         )
-        recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
-            override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
-                focusEvents.add(DpadFocusEvent(parent, child, parent.layoutPosition))
-            }
-        })
         recyclerView.requestFocus()
     }
 
@@ -72,6 +72,8 @@ class ComposeFocusTestActivity : AppCompatActivity() {
     fun getDisposals(): List<Int> {
         return disposals
     }
+
+    fun getFocusEvents(): List<DpadFocusEvent> = focusEvents.toList()
 
     fun removeAdapter() {
         recyclerView.adapter = null

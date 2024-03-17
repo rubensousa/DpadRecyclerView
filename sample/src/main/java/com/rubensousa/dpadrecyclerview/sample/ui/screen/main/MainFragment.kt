@@ -56,7 +56,7 @@ class MainFragment : Fragment(R.layout.screen_main) {
                 parent: RecyclerView.ViewHolder,
                 child: View,
             ) {
-                Timber.i("Feature list focused: ${parent.layoutPosition}")
+                Timber.i("Feature list focused: ${parent.layoutPosition}, view: $child")
             }
         })
 
