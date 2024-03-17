@@ -101,16 +101,26 @@ internal class PivotSelector(
             return
         }
         val currentRecyclerView = recyclerView ?: return
-        // Do not notify listeners for views that are not a direct child of this RecyclerView
-        // This will happen when a parent RecyclerView
-        // finds a focusable inside a nested RecyclerView
+        /**
+         * Do not notify listeners for views that are not a direct child of this RecyclerView
+         * This will happen when a parent RecyclerView
+         * finds a focusable inside a nested RecyclerView
+         */
         if (findParentRecyclerView(view) !== currentRecyclerView) {
             return
         }
-        // If the view didn't receive focus directly,
-        // skip the callback since focus was handled by a nested RecyclerView
+
+        /**
+         * If the view didn't receive focus directly,
+         * we need to verify if the focused view is actually part of this RecyclerView.
+         */
         if (view.hasFocus() && !view.isFocused) {
-            return
+            val focusedView = view.findFocus()
+            if (focusedView != null
+                && findParentRecyclerView(focusedView) !== currentRecyclerView
+            ) {
+                return
+            }
         }
         val focusedViewHolder = currentRecyclerView.findContainingViewHolder(view) ?: return
         focusListeners.forEach { listener ->

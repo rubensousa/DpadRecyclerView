@@ -21,10 +21,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadViewHolder
 
 /**
- * A basic ViewHolder that forwards [Content] to [composable]
+ * A basic ViewHolder that forwards [content] to a [ComposeView]
  * and handles focus and clicks inside the View system.
  *
  * Focus is kept inside the internal [ComposeView] to ensure that it behaves correctly
@@ -42,8 +41,8 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
  *
  * ```kotlin
  * override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DpadComposeViewHolder<Int> {
- *     return DpadComposeViewHolder(parent) { item, isFocused, isSelected ->
- *          ItemComposable(item, isFocused, isSelected)
+ *     return DpadComposeViewHolder(parent) { item, isFocused ->
+ *          ItemComposable(item, isFocused)
  *     }
  * }
  * ```
@@ -61,12 +60,11 @@ class DpadComposeViewHolder<T>(
     onLongClick: ((item: T) -> Boolean)? = null,
     isFocusable: Boolean = true,
     compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
-    private val composable: DpadComposable<T>,
-) : RecyclerView.ViewHolder(DpadComposeView(parent.context)), DpadViewHolder {
+    private val content: @Composable (item: T, isFocused: Boolean) -> Unit
+) : RecyclerView.ViewHolder(DpadComposeView(parent.context)) {
 
     private val focusState = mutableStateOf(false)
     private val itemState = mutableStateOf<T?>(null)
-    private val selectionState = mutableStateOf(false)
 
     init {
         val composeView = itemView as DpadComposeView
@@ -81,7 +79,7 @@ class DpadComposeViewHolder<T>(
             setViewCompositionStrategy(compositionStrategy)
             setContent {
                 itemState.value?.let { item ->
-                    composable(item, focusState.value, selectionState.value)
+                    content(item, focusState.value)
                 }
             }
         }
@@ -98,19 +96,9 @@ class DpadComposeViewHolder<T>(
         }
     }
 
-    override fun onViewHolderSelected() {
-        selectionState.value = true
-    }
-
-    override fun onViewHolderDeselected() {
-        selectionState.value = false
-    }
-
     fun setItemState(item: T?) {
         itemState.value = item
     }
 
     fun getItem(): T? = itemState.value
 }
-
-typealias DpadComposable<T> = @Composable (T, Boolean, Boolean) -> Unit

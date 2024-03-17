@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Rúben Sousa
+ * Copyright 2024 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.compose
+package com.rubensousa.dpadrecyclerview.compose.test
 
 import android.os.Bundle
 import android.view.View
@@ -27,10 +27,15 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
+import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
+import com.rubensousa.dpadrecyclerview.compose.TestComposable
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 
-class ComposeFocusTestActivity : AppCompatActivity() {
+class ViewFocusTestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: DpadRecyclerView
+    private val focusEvents = arrayListOf<DpadFocusEvent>()
     private val clicks = ArrayList<Int>()
     private val disposals = ArrayList<Int>()
 
@@ -38,6 +43,11 @@ class ComposeFocusTestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.compose_test)
         recyclerView = findViewById(R.id.recyclerView)
+        recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+            override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
+                focusEvents.add(DpadFocusEvent(parent, child, parent.layoutPosition))
+            }
+        })
         recyclerView.adapter = Adapter(
             items = List(100) { it },
             onDispose = { item ->
@@ -46,6 +56,8 @@ class ComposeFocusTestActivity : AppCompatActivity() {
         )
         recyclerView.requestFocus()
     }
+
+    fun getFocusEvents(): List<DpadFocusEvent> = focusEvents.toList()
 
     fun requestFocus() {
         recyclerView.requestFocus()
@@ -80,35 +92,35 @@ class ComposeFocusTestActivity : AppCompatActivity() {
     inner class Adapter(
         private val items: List<Int>,
         private val onDispose: (item: Int) -> Unit,
-    ) : RecyclerView.Adapter<DpadComposeFocusViewHolder<Int>>() {
+    ) : RecyclerView.Adapter<DpadComposeViewHolder<Int>>() {
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): DpadComposeFocusViewHolder<Int> {
-            return DpadComposeFocusViewHolder(
+        ): DpadComposeViewHolder<Int> {
+            return DpadComposeViewHolder(
                 parent = parent,
-                content = { item, isSelected ->
-                    TestComposableFocus(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp),
-                        item = item,
-                        isSelected = isSelected,
-                        onClick = {
-                            clicks.add(item)
-                        },
-                        onDispose = {
-                            onDispose(item)
-                        }
-                    )
+                onClick = {
+                    clicks.add(it)
                 },
-            )
+                isFocusable = true
+            ) { item, isFocused ->
+                TestComposable(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    item = item,
+                    isFocused = isFocused,
+                    onDispose = {
+                        onDispose(item)
+                    }
+                )
+            }
         }
 
         override fun getItemCount(): Int = items.size
 
-        override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
+        override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
             holder.setItemState(items[position])
         }
 
