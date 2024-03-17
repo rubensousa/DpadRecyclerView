@@ -254,7 +254,7 @@ public abstract interface class com/rubensousa/dpadrecyclerview/OnChildLaidOutLi
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/OnViewFocusedListener {
-	public abstract fun onViewFocused (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;Landroid/view/View;I)V
+	public abstract fun onViewFocused (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;Landroid/view/View;)V
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener {
