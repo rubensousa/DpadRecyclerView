@@ -1,0 +1,5 @@
+<resources>
+    <color name="dpadrecyclerview_black">#FF000000</color>
+    <color name="dpadrecyclerview_white">#FFFFFFFF</color>
+    <color name="dpadrecyclerview_transparent">#00000000</color>
+</resources>

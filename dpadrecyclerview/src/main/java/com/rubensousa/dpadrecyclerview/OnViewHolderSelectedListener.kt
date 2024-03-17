@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 /**
- * Interface for receiving a notification when a ViewHolder has been selected.
+ * Callback for receiving a notification when a ViewHolder has been selected.
  * There are two methods:
  *
  *  * [onViewHolderSelected] is called when the ViewHolder has been selected
