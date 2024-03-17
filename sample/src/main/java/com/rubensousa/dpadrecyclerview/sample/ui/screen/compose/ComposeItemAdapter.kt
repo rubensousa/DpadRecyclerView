@@ -37,7 +37,7 @@ class ComposeItemAdapter(
         parent: ViewGroup,
         viewType: Int
     ): DpadComposeFocusViewHolder<Int> {
-        return DpadComposeFocusViewHolder(parent) { item, isSelected ->
+        return DpadComposeFocusViewHolder(parent) { item ->
             ItemComposable(
                 modifier = Modifier
                     .width(dimensionResource(id = R.dimen.list_item_width))

@@ -19,9 +19,9 @@ package com.rubensousa.dpadrecyclerview.compose
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.DpadViewHolder
 
 /**
  * Similar to [DpadComposeViewHolder], but sends the focus down to composables
@@ -46,34 +46,24 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 class DpadComposeFocusViewHolder<T>(
     parent: ViewGroup,
     compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
-    private val content: @Composable (item: T, isSelected: Boolean) -> Unit
-) : RecyclerView.ViewHolder(DpadComposeView(parent.context)), DpadViewHolder {
+    private val content: @Composable (item: T) -> Unit
+) : RecyclerView.ViewHolder(ComposeView(parent.context)) {
 
     private val itemState = mutableStateOf<T?>(null)
-    private val selectionState = mutableStateOf(false)
 
     init {
-        val composeView = itemView as DpadComposeView
+        val composeView = itemView as ComposeView
         composeView.apply {
-            setFocusConfiguration(
-                isFocusable = true,
-                dispatchFocusToComposable = true
-            )
+            isFocusable = true
+            isFocusableInTouchMode = true
+            descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
             setViewCompositionStrategy(compositionStrategy)
             setContent {
                 itemState.value?.let { item ->
-                    content(item, selectionState.value)
+                    content(item)
                 }
             }
         }
-    }
-
-    override fun onViewHolderSelected() {
-        selectionState.value = true
-    }
-
-    override fun onViewHolderDeselected() {
-        selectionState.value = false
     }
 
     fun setItemState(item: T?) {
