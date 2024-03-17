@@ -28,6 +28,39 @@ Check the official website for more information and recipes: https://rubensousa.
 
 ## New Features compared to Leanback's `BaseGridView`
 
+### Easier Compose Integration
+
+Documentation: https://rubensousa.github.io/DpadRecyclerView/compose/
+
+```kotlin
+class ComposeItemAdapter(
+    private val onItemClick: (Int) -> Unit
+) : ListAdapter<Int, DpadComposeFocusViewHolder<Int>>(Item.DIFF_CALLBACK) {
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): DpadComposeFocusViewHolder<Int> {
+        return DpadComposeFocusViewHolder(parent) { item ->
+            ItemComposable(
+                item = item,
+                onClick = {
+                    onItemClick(item)
+                }
+            )
+        }
+    }
+
+    override fun onBindViewHolder(
+        holder: DpadComposeFocusViewHolder<Int>, 
+        position: Int
+    ) {
+        holder.setItemState(getItem(position))
+    }
+    
+}
+```
+
 ### Layout
 
 - Supports grids with different span sizes
