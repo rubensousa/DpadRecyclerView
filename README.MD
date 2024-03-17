@@ -17,7 +17,7 @@ Add the following dependency to your app's `build.gradle`:
 ```groovy
 implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview:$latestVersion"
 
-// Optional: If you want to use Compose together with DpadRecyclerView
+// Recommended: To use Compose together with DpadRecyclerView
 implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-compose:$latestVersion"
 
 // Optional: Espresso test helpers for your instrumented tests:
@@ -27,6 +27,20 @@ androidTestImplementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 Check the official website for more information and recipes: https://rubensousa.github.io/DpadRecyclerView
 
 ## New Features compared to Leanback's `BaseGridView`
+
+### Layout
+
+- Supports grids with different span sizes
+- Supports infinite/endless scrolling
+- Supports reverse layout
+- XML attributes for easier configuration
+
+### Scrolling and focus
+
+- Supports changing the alignment configuration smoothly
+- Supports limiting the number of pending alignments
+- Supports non smooth scroll changes
+- Supports continuous and circular grid focus
 
 ### Easier Compose Integration
 
@@ -61,20 +75,6 @@ class ComposeItemAdapter(
 }
 ```
 
-### Layout
-
-- Supports grids with different span sizes
-- Supports infinite/endless scrolling
-- Supports reverse layout
-- XML attributes for easier configuration
-
-### Scrolling and focus
-
-- Supports changing the alignment configuration smoothly
-- Supports limiting the number of pending alignments
-- Supports non smooth scroll changes
-- Supports continuous and circular grid focus
-
 ## Sample app
 
 Nested lists:
@@ -90,7 +90,7 @@ Grid with different span sizes:
 
 ## License
 
-    Copyright 2023 Rúben Sousa
+    Copyright 2024 Rúben Sousa
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
