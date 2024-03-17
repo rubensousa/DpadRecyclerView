@@ -64,8 +64,8 @@ dependencies {
 
     // Test dependencies
     debugImplementation libs.androidx.test.compose.ui.manifest
-    debugImplementation libs.androidx.compose.ui.tooling
-    debugImplementation libs.androidx.compose.material3
+    androidTestImplementation libs.androidx.compose.ui.tooling
+    androidTestImplementation libs.androidx.compose.material3
     androidTestImplementation project(':dpadrecyclerview-testing')
     androidTestImplementation project(':dpadrecyclerview-test-fixtures')
     androidTestImplementation libs.androidx.test.compose.ui.junit4

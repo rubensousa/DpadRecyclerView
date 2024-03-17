@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Rúben Sousa
+ * Copyright 2024 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ fun TestComposable(
             },
             text = item.toString(),
             style = MaterialTheme.typography.headlineLarge,
-            color = if(isFocused) {
+            color = if (isFocused) {
                 Color.Black
             } else {
                 Color.White

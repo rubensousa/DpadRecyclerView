@@ -28,6 +28,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
+import com.rubensousa.dpadrecyclerview.compose.test.ViewFocusTestActivity
 import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
@@ -131,10 +132,8 @@ class DpadComposeViewHolderTest {
 
     @Test
     fun testCompositionIsClearedWhenViewHolderIsRecycled() {
-        repeat(10) {
-            KeyEvents.pressDown()
-            waitForIdleScroll()
-        }
+        KeyEvents.pressDown(times = 10)
+        waitForIdleScroll()
 
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
 

@@ -30,6 +30,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
+import com.rubensousa.dpadrecyclerview.compose.test.ComposeFocusTestActivity
 import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
@@ -49,9 +50,12 @@ class DpadComposeFocusViewHolderTest {
     val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()
 
     @Test
-    fun testComposeItemsReceiveFocus() {
+    fun testFirstItemHasFocus() {
         assertFocus(item = 0, isFocused = true)
+    }
 
+    @Test
+    fun testNextItemReceivesFocus() {
         KeyEvents.pressDown()
         waitForIdleScroll()
 
@@ -71,7 +75,8 @@ class DpadComposeFocusViewHolderTest {
             activity.requestFocus()
         }
 
-        assertFocus(item = 0, isFocused = true) }
+        assertFocus(item = 0, isFocused = true)
+    }
 
     @Test
     fun testClicksAreDispatched() {
@@ -106,11 +111,12 @@ class DpadComposeFocusViewHolderTest {
     @Test
     fun testCompositionIsNotClearedWhenDetachingFromWindow() {
         composeTestRule.activityRule.scenario.onActivity { activity ->
-            activity.getRecyclerView().setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
-                    return 1080
-                }
-            })
+            activity.getRecyclerView()
+                .setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
+                    override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
+                        return 1080
+                    }
+                })
         }
         repeat(3) {
             KeyEvents.pressDown()
@@ -123,10 +129,8 @@ class DpadComposeFocusViewHolderTest {
 
     @Test
     fun testCompositionIsClearedWhenViewHolderIsRecycled() {
-        repeat(10) {
-            KeyEvents.pressDown()
-            waitForIdleScroll()
-        }
+        KeyEvents.pressDown(times = 10)
+        waitForIdleScroll()
 
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
 
