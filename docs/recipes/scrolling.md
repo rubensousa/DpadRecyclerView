@@ -70,6 +70,12 @@ The code above translates to this behavior:
 
 In the right scenario, there's just one next focusable view since the focused view still isn't aligned to the keyline.
 
+## Disabling layout during scrolling events
 
+If you want to postpone layout changes until the scroll state is idle, use this:
+
+```kotlin
+recyclerView.setLayoutWhileScrollingEnabled(false)
+```
 
 

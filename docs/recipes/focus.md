@@ -1,5 +1,22 @@
 # Focus Recipes
 
+## Observing child focus
+
+Use this to react to a child getting focus:
+
+```kotlin linenums="1"
+recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+    override fun onViewFocused(
+        parent: RecyclerView.ViewHolder,
+        child: View,
+    ) {
+        // Child is now focused
+    }
+})
+```
+!!! note
+    If you set this in a vertical RecyclerView that contains multiple horizontal RecyclerViews, the parent will also receive this callback
+
 ## Disabling focus changes
 
 You might want to temporarily disable focus changes and prevent other views from being selected

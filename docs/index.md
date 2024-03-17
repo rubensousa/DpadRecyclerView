@@ -23,17 +23,9 @@ Motivation for this library is available in my [blog](https://rubensousa.com/202
 - Non smooth scroll changes
 - Continuous and circular grid focus
 
-
-### Upcoming features
-
-- [Looping adapter contents](https://github.com/rubensousa/DpadRecyclerView/issues/20)
-- [State saving/restoring helper](https://github.com/rubensousa/DpadRecyclerView/issues/45)
-- [Drag and drop helper](https://github.com/rubensousa/DpadRecyclerView/issues/12)
-
-
 ## License
 
-    Copyright 2023 Rúben Sousa
+    Copyright 2024 Rúben Sousa
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

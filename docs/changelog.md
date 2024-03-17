@@ -1,5 +1,22 @@
 # Changelog
 
+## Version 1.3.0
+
+### 1.3.0-alpha01
+
+2024-03-17
+
+#### New Features
+
+- Added `DpadComposeFocusViewHolder` that allows sending the focus state down to Composables ([#193](https://github.com/rubensousa/DpadRecyclerView/issues/193))
+- Added `Modifier.dpadClickable` for playing the click sound after clicking on a Composable. Fix for: ([/b/268268856](https://issuetracker.google.com/issues/268268856))
+- Allow skipping layout requests during scroll with `setLayoutWhileScrollingEnabled(false)` ([#196](https://github.com/rubensousa/DpadRecyclerView/issues/196))
+- New `addOnViewFocusedListener` to observe focus changes independently from selection changes. ([#197](https://github.com/rubensousa/DpadRecyclerView/issues/197))
+
+#### API Changes
+
+- `DpadAbstractComposeViewHolder` is now removed. Replace it with either `DpadComposeFocusViewHolder` or `DpadComposeViewHolder`.
+
 ## Version 1.2.0
 
 ### 1.2.0
@@ -7,6 +24,14 @@
 2024-03-13
 
 - No changes since 1.2.0-rc01
+
+#### Important changes since 1.1.0
+
+- Added new `RecyclerViewCompositionStrategy.DisposeOnRecycled` for compose interop
+  to re-use compositions when views are detached and attached from the window again.
+- Added new `setSelectedSubPosition` that allows passing a callback for the target alignment ([#43](https://github.com/rubensousa/DpadRecyclerView/issues/43))
+- Added support for scrollbars
+- Added `DpadScroller` for scrolling without any alignment. Typical use case is for long text displays (terms & conditions and consent pages).
 
 ### 1.2.0-rc01
 
