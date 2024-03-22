@@ -2,6 +2,14 @@
 
 ## Version 1.3.0
 
+### 1.3.0-alpha02
+
+2024-03-23
+
+#### Bug fixes
+
+- Fixed grids not aligning to the keyline for the last row in some cases. ([#203](https://github.com/rubensousa/DpadRecyclerView/issues/203))
+
 ### 1.3.0-alpha01
 
 2024-03-17
