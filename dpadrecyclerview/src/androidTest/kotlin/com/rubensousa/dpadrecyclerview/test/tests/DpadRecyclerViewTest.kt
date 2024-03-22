@@ -196,19 +196,19 @@ abstract class DpadRecyclerViewTest {
         return bounds
     }
 
-    protected fun assertChildBounds(
-        childIndex: Int,
-        bounds: ViewBounds,
-        fromStart: Boolean = true
-    ) {
+    protected fun getChildrenBounds(position: Int): ViewBounds {
+        var bounds: ViewBounds? = null
         onRecyclerView("Assert child bounds") { recyclerView ->
-            val layoutManager = recyclerView.layoutManager!!
-            val view = getChildAt(layoutManager, childIndex, fromStart)
-            assertThat(view.left).isEqualTo(bounds.left)
-            assertThat(view.top).isEqualTo(bounds.top)
-            assertThat(view.right).isEqualTo(bounds.right)
-            assertThat(view.bottom).isEqualTo(bounds.bottom)
+            val viewHolder = recyclerView.findViewHolderForLayoutPosition(position)!!
+            val view = viewHolder.itemView
+            bounds = ViewBounds(
+                left = view.left,
+                top = view.top,
+                right = view.right,
+                bottom = view.bottom
+            )
         }
+        return requireNotNull(bounds) { "View at $position not found" }
     }
 
     protected fun assertChildDecorations(
