@@ -316,6 +316,7 @@ internal class LayoutAlignment(
     }
 
     private fun getAnchor(view: View): Int {
+        updateChildAlignments(view)
         return if (isVertical) {
             getVerticalAnchor(view)
         } else {
