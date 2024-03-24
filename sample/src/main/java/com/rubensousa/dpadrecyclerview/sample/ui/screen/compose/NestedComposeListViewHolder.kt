@@ -40,6 +40,9 @@ class NestedComposeListViewHolder(
 
     init {
         recyclerView.setRecycledViewPool(viewPool)
+        // Compose animations trigger a full layout-pass,
+        // so disable layout changes while scrolling
+        recyclerView.setLayoutWhileScrollingEnabled(false)
         recyclerView.addItemDecoration(
             DpadLinearSpacingDecoration.create(
                 itemSpacing = itemView.resources.getDimensionPixelOffset(

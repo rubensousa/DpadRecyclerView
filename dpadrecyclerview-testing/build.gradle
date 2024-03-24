@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id 'org.jetbrains.dokka'
 }
 
 apply from: "$rootProject.projectDir/gradle/publish.gradle"
@@ -15,6 +16,7 @@ android {
         targetSdk versions.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
+        testInstrumentationRunnerArguments additionalTestOutputDir: 'storage/emulated/0/recordings/com.rubensousa.dpadrecyclerview.testing.test'
         testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
         multiDexEnabled true
     }

@@ -17,17 +17,20 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.MainAdapterListFeatureBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ItemModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ListAnimator
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import com.rubensousa.dpadrecyclerview.state.DpadScrollState
+import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
+import timber.log.Timber
 
 class FeatureListAdapter(
     private val scrollState: DpadScrollState,
@@ -86,6 +89,14 @@ class FeatureListAdapter(
                 )
             )
             recyclerView.setRecycledViewPool(recycledViewPool)
+            recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+                override fun onViewFocused(
+                    parent: RecyclerView.ViewHolder,
+                    child: View,
+                ) {
+                    Timber.i("Feature focused: ${parent.layoutPosition}, view: $child")
+                }
+            })
             recyclerView.setRecycleChildrenOnDetach(true)
             recyclerView.adapter = adapter
         }

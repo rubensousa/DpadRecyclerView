@@ -2,23 +2,110 @@
 
 The `dpadrecyclerview-compose` module contains the following:
 
-- `DpadAbstractComposeViewHolder`: ViewHolder that exposes a `Content` function to render a Composable
-- `DpadComposeViewHolder`: simple implementation of `DpadAbstractComposeViewHolder` that forwards a lambda to the `Content` function and handles clicks
+- `DpadComposeFocusViewHolder`: ViewHolder that exposes a function to render a Composable and sends the focus directly to Composables.
+- `DpadComposeViewHolder`:  ViewHolder that exposes a function to render a Composable but keeps the focus state in the View system
+- `RecyclerViewCompositionStrategy.DisposeOnRecycled`: a custom `ViewCompositionStrategy` that only disposes compositions when ViewHolders are recycled
 
-You can use these to easily render composables in your `RecyclerView`.
+## Compose ViewHolder
 
-The focus is kept in the `itemView` and not actually sent to the Composables inside due to these issues:
+### Receive focus inside Composables
 
-1. Focus is not sent correctly from Views to Composables: [b/268248352](https://issuetracker.google.com/issues/268248352)
-2. Clicking on a focused Composable does not trigger the standard audio feedback: [b/268268856](https://issuetracker.google.com/issues/268268856)
+Use `DpadComposeFocusViewHolder` to let your Composables receive the focus state.
 
-!!! note
-    If you plan to use compose animations, check the performance during fast scrolling and consider
-    throttling key events using the APIs explained [here](recipes/scrolling.md#limiting-number-of-pending-alignments)
+```kotlin linenums="1"
+class ComposeItemAdapter(
+    private val onItemClick: (Int) -> Unit
+) : ListAdapter<Int, DpadComposeFocusViewHolder<Int>>(Item.DIFF_CALLBACK) {
 
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): DpadComposeFocusViewHolder<Int> {
+        return DpadComposeFocusViewHolder(parent) { item ->
+            ItemComposable(
+                item = item,
+                onClick = {
+                    onItemClick(item)
+                }
+            )
+        }
+    }
 
-## DpadComposeViewHolder
-Example: `ItemComposable` that should render a text and different colors based on the focus state
+    override fun onBindViewHolder(
+        holder: DpadComposeFocusViewHolder<Int>, 
+        position: Int
+    ) {
+        holder.setItemState(getItem(position))
+    }
+    
+}
+```
+
+Then use the standard focus APIs to react to focus changes:
+
+```kotlin linenums="1", hl_lines="13-16"
+@Composable
+fun ItemComposable(
+    item: Int, 
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    val backgroundColor = if (isFocused) Color.White else Color.Black
+    val textColor = if (isFocused) Color.Black else Color.White
+    Box(
+        modifier = modifier
+            .background(backgroundColor)
+            .onFocusChanged { focusState ->
+                isFocused = focusState.hasFocus
+            }
+            .focusTarget()
+            .dpadClickable {
+                onClick()
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = item.toString(),
+            color = textColor,
+            fontSize = 35.sp
+        )
+    }
+}
+```
+
+### Keep focus inside the view system
+
+If you want to keep the focus inside the View system, use `DpadComposeViewHolder` instead:
+
+```kotlin linenums="1"
+class ComposeItemAdapter(
+    private val onItemClick: (Int) -> Unit
+) : ListAdapter<Int, DpadComposeViewHolder<Int>>(Item.DIFF_CALLBACK) {
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): DpadComposeViewHolder<Int> {
+        return DpadComposeViewHolder(
+            parent,
+            onClick = onItemClick
+        ) { item, isFocused ->
+            ItemComposable(item, isFocused)
+        }
+    }
+
+    override fun onBindViewHolder(
+        holder: DpadComposeViewHolder<Int>, 
+        position: Int
+    ) {
+        holder.setItemState(getItem(position))
+    }
+    
+}
+```
+
+In this case, you receive the focus state as an input that you can pass to your Composables:
 
 ```kotlin linenums="1"
 @Composable
@@ -38,100 +125,16 @@ fun ItemComposable(item: Int, isFocused: Boolean) {
 }
 ```
 
-```kotlin linenums="1"
-class ComposeItemAdapter(
-    private val onItemClick: (Int) -> Unit
-) : ListAdapter<Int, DpadComposeViewHolder<Int>>(Item.DIFF_CALLBACK) {
+## Handle clicks with sound
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): DpadComposeViewHolder<Int> {
-        return DpadComposeViewHolder(
-            parent,
-            onClick = onItemClick
-        ) { item, isFocused, isSelected ->
-            ItemComposable(item, isFocused)
-        }
-    }
+Use `Modifier.dpadClickable` instead of `Modifier.clickable` because of this issue: 
+[/b/268268856](https://issuetracker.google.com/issues/268268856)
 
-    override fun onBindViewHolder(
-        holder: DpadComposeViewHolder<Int>, 
-        position: Int
-    ) {
-        holder.setItemState(getItem(position))
-    }
-    
-}
-```
+## Performance optimizations
 
-New compositions will be triggered whenever the following happens:
+- If you plan to use compose animations, check the performance during fast scrolling and consider throttling key events using the APIs explained [here](recipes/scrolling.md#limiting-number-of-pending-alignments)
+- Consider using `dpadRecyclerView.setLayoutWhileScrollingEnabled(false)` to discard layout requests during scroll events.
+This will skip unnecessary layout requests triggered by some compose animations.
 
-- New item is bound in `onBindViewHolder`
-- Focus state changes
-- Selection state changes
-
-## Dpad AbstractComposeViewHolder
-
-Extending from this class directly gives you more flexibility for customizations:
-
-```kotlin linenums="1"
-class ComposeItemAdapter(
-    private val onItemClick: (Int) -> Unit
-) : ListAdapter<Int, ComposeItemViewHolder>(Item.DIFF_CALLBACK) {
-
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ComposeItemViewHolder {
-        return ComposeItemViewHolder(parent, onItemClick)
-    }
-
-    override fun onBindViewHolder(
-        holder: ComposeItemViewHolder, 
-        position: Int
-    ) {
-        holder.setItemState(getItem(position))
-    }
-    
-    override fun onViewRecycled(holder: ComposeItemViewHolder) {
-        holder.onRecycled()
-    }
-}
-```
-
-```kotlin linenums="1"
-class ComposeItemViewHolder(
-    parent: ViewGroup,
-    onClick: (Int) -> Unit
-) : DpadAbstractComposeViewHolder<Int>(parent) {
-
-    private val itemAnimator = ItemAnimator(itemView)
-
-    init {
-        itemView.setOnClickListener {
-            getItem()?.let(onItemClick)
-        }
-    }
-
-    @Composable
-    override fun Content(item: Int, isFocused: Boolean, isSelected: Boolean) {
-        ItemComposable(item, isFocused)
-    }
-
-    override fun onFocusChanged(hasFocus: Boolean) {
-        if (hasFocus) {
-            itemAnimator.startFocusGainAnimation()
-        } else {
-            itemAnimator.startFocusLossAnimation()
-        }
-    }
-    
-    fun onRecycled() {
-        itemAnimator.cancel()
-    }
-
-}
-```
 
 Check the sample on [Github](https://github.com/rubensousa/DpadRecyclerView/) for more examples that include simple animations.

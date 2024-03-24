@@ -17,11 +17,15 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.util.Log
+import android.view.View
+import android.view.ViewParent
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 import kotlin.math.max
@@ -55,10 +59,12 @@ internal class PivotSelector(
     private var recyclerView: RecyclerView? = null
     private var isSelectionUpdatePending = false
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
+    private val focusListeners = ArrayList<OnViewFocusedListener>()
     private val requestLayoutRunnable = Runnable {
         layoutManager.requestLayout()
     }
     private var selectedViewHolder: DpadViewHolder? = null
+    private var pendingChildFocus: View? = null
 
     fun update(newPosition: Int, newSubPosition: Int = 0): Boolean {
         val previousPosition = position
@@ -86,6 +92,94 @@ internal class PivotSelector(
         }
         positionOffset = 0
         return consumed
+    }
+
+    fun focus(view: View) {
+        view.requestFocus()
+        // Exit early if there's no one listening for focus events
+        if (focusListeners.isEmpty()) {
+            return
+        }
+        val currentRecyclerView = recyclerView ?: return
+        /**
+         * Do not notify listeners for views that are not a direct child of this RecyclerView
+         * This will happen when a parent RecyclerView
+         * finds a focusable inside a nested RecyclerView
+         */
+        if (findParentRecyclerView(view) !== currentRecyclerView) {
+            return
+        }
+
+        /**
+         * If the view didn't receive focus directly,
+         * we need to verify if the focused view is actually part of this RecyclerView.
+         */
+        if (view.hasFocus() && !view.isFocused) {
+            val focusedView = view.findFocus()
+            if (focusedView != null
+                && findParentRecyclerView(focusedView) !== currentRecyclerView
+            ) {
+                return
+            }
+        }
+        val focusedViewHolder = currentRecyclerView.findContainingViewHolder(view) ?: return
+        focusListeners.forEach { listener ->
+            listener.onViewFocused(
+                parent = focusedViewHolder,
+                child = view,
+            )
+        }
+        // Now signal the event to any parent RecyclerView, if it exists
+        val parentRecyclerView = findParentRecyclerView(currentRecyclerView)
+        if (parentRecyclerView is DpadRecyclerView) {
+            parentRecyclerView.onNestedChildFocused(view)
+        }
+    }
+
+    fun notifyNestedChildFocus(view: View) {
+        pendingChildFocus = null
+        val parentViewHolder = recyclerView?.findViewHolderForLayoutPosition(position) ?: return
+        if (!isViewAChildOf(view, parentViewHolder)) {
+            pendingChildFocus = view
+            return
+        }
+        focusListeners.forEach { listener ->
+            listener.onViewFocused(
+                parent = parentViewHolder,
+                child = view
+            )
+        }
+    }
+
+    fun onChildFocused(focusedView: View?) {
+        pendingChildFocus?.let { view ->
+            if (view === focusedView) {
+                notifyNestedChildFocus(view)
+            }
+        }
+        pendingChildFocus = null
+    }
+
+    private fun isViewAChildOf(view: View, viewHolder: ViewHolder): Boolean {
+        var parent: ViewParent? = view.parent
+        while (parent != null) {
+            if (parent === viewHolder.itemView) {
+                return true
+            }
+            parent = parent.parent
+        }
+        return false
+    }
+
+    private fun findParentRecyclerView(view: View): RecyclerView? {
+        var parent: ViewParent? = view.parent
+        while (parent != null) {
+            if (parent is RecyclerView) {
+                return parent
+            }
+            parent = parent.parent
+        }
+        return null
     }
 
     private fun applyPositionOffset(itemCount: Int) {
@@ -334,6 +428,18 @@ internal class PivotSelector(
 
     fun clearOnViewHolderSelectedListeners() {
         selectionListeners.clear()
+    }
+
+    fun addOnViewHolderFocusedListener(listener: OnViewFocusedListener) {
+        focusListeners.add(listener)
+    }
+
+    fun removeOnViewHolderFocusedListener(listener: OnViewFocusedListener) {
+        focusListeners.remove(listener)
+    }
+
+    fun clearOnViewHolderFocusedListeners() {
+        focusListeners.clear()
     }
 
     fun setRecyclerView(recyclerView: RecyclerView?) {

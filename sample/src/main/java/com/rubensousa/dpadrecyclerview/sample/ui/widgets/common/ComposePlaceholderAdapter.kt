@@ -44,12 +44,11 @@ class ComposePlaceholderAdapter(
         viewType: Int
     ): DpadComposeViewHolder<Boolean> {
         return DpadComposeViewHolder(
-            parent,
-            composable = { _, _, _ ->
-                composable()
-            },
+            parent = parent,
             isFocusable = false
-        )
+        ) { _, _ ->
+            composable()
+        }
     }
 
     override fun onBindViewHolder(holder: DpadComposeViewHolder<Boolean>, position: Int) {

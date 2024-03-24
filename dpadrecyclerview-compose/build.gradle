@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    id 'org.jetbrains.dokka'
 }
 
 apply from: "$rootProject.projectDir/gradle/publish.gradle"
@@ -15,6 +16,7 @@ android {
         targetSdk versions.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
+        testInstrumentationRunnerArguments additionalTestOutputDir: 'storage/emulated/0/recordings/com.rubensousa.dpadrecyclerview.compose.test'
         testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
     }
 
@@ -57,14 +59,14 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.recyclerview
     implementation libs.androidx.customview.poolingcontainer
+    implementation libs.androidx.compose.foundation
     implementation libs.androidx.compose.ui
+    implementation libs.androidx.compose.ui.tooling.preview
 
     // Test dependencies
     debugImplementation libs.androidx.test.compose.ui.manifest
-    debugImplementation libs.androidx.compose.ui.tooling
-    debugImplementation libs.androidx.compose.ui.tooling.preview
-    debugImplementation libs.androidx.compose.material3
-    debugImplementation libs.androidx.customview
+    androidTestImplementation libs.androidx.compose.ui.tooling
+    androidTestImplementation libs.androidx.compose.material3
     androidTestImplementation project(':dpadrecyclerview-testing')
     androidTestImplementation project(':dpadrecyclerview-test-fixtures')
     androidTestImplementation libs.androidx.test.compose.ui.junit4

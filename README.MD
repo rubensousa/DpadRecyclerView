@@ -17,7 +17,7 @@ Add the following dependency to your app's `build.gradle`:
 ```groovy
 implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview:$latestVersion"
 
-// Optional: If you want to use Compose together with DpadRecyclerView
+// Recommended: To use Compose together with DpadRecyclerView
 implementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-compose:$latestVersion"
 
 // Optional: Espresso test helpers for your instrumented tests:
@@ -42,6 +42,39 @@ Check the official website for more information and recipes: https://rubensousa.
 - Supports non smooth scroll changes
 - Supports continuous and circular grid focus
 
+### Easier Compose Integration
+
+Documentation: https://rubensousa.github.io/DpadRecyclerView/compose/
+
+```kotlin
+class ComposeItemAdapter(
+    private val onItemClick: (Int) -> Unit
+) : ListAdapter<Int, DpadComposeFocusViewHolder<Int>>(Item.DIFF_CALLBACK) {
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): DpadComposeFocusViewHolder<Int> {
+        return DpadComposeFocusViewHolder(parent) { item ->
+            ItemComposable(
+                item = item,
+                onClick = {
+                    onItemClick(item)
+                }
+            )
+        }
+    }
+
+    override fun onBindViewHolder(
+        holder: DpadComposeFocusViewHolder<Int>, 
+        position: Int
+    ) {
+        holder.setItemState(getItem(position))
+    }
+    
+}
+```
+
 ## Sample app
 
 Nested lists:
@@ -57,7 +90,7 @@ Grid with different span sizes:
 
 ## License
 
-    Copyright 2023 Rúben Sousa
+    Copyright 2024 Rúben Sousa
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

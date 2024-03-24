@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Rúben Sousa
+ * Copyright 2023 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.rubensousa.dpadrecyclerview.compose
 
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsDisplayed
@@ -28,7 +30,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
-import com.rubensousa.dpadrecyclerview.compose.test.ViewFocusTestActivity
+import com.rubensousa.dpadrecyclerview.compose.test.ComposeFocusTestActivity
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -39,7 +41,7 @@ import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
-class DpadComposeViewHolderTest {
+class DpadComposeFocusViewHolderTest {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
@@ -48,12 +50,15 @@ class DpadComposeViewHolderTest {
     val screenRecorderRule = ScreenRecorderRule()
 
     @get:Rule
-    val composeTestRule = createAndroidComposeRule<ViewFocusTestActivity>()
+    val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()
 
     @Test
-    fun testComposeItemsReceiveFocus() {
+    fun testFirstItemHasFocus() {
         assertFocus(item = 0, isFocused = true)
+    }
 
+    @Test
+    fun testNextItemReceivesFocus() {
         KeyEvents.pressDown()
         waitForIdleScroll()
 
@@ -74,15 +79,6 @@ class DpadComposeViewHolderTest {
         }
 
         assertFocus(item = 0, isFocused = true)
-    }
-
-    @Test
-    fun testNextComposeItemsReceiveFocus() {
-        KeyEvents.pressDown()
-        waitForIdleScroll()
-
-        assertFocus(item = 0, isFocused = false)
-        assertFocus(item = 1, isFocused = true)
     }
 
     @Test
@@ -109,8 +105,8 @@ class DpadComposeViewHolderTest {
         }
 
         viewHolders.forEach { viewHolder ->
-            val composeView = viewHolder.itemView as DpadComposeView
-            assertThat(composeView.hasComposition()).isFalse()
+            val composeView = viewHolder.itemView as ComposeView
+            assertThat(composeView.hasComposition).isFalse()
         }
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
     }
@@ -118,11 +114,12 @@ class DpadComposeViewHolderTest {
     @Test
     fun testCompositionIsNotClearedWhenDetachingFromWindow() {
         composeTestRule.activityRule.scenario.onActivity { activity ->
-            activity.getRecyclerView().setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
-                    return 1080
-                }
-            })
+            activity.getRecyclerView()
+                .setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
+                    override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
+                        return 1080
+                    }
+                })
         }
         repeat(3) {
             KeyEvents.pressDown()
@@ -167,7 +164,7 @@ class DpadComposeViewHolderTest {
         assertThat(focusEvents).hasSize(1)
         val event = focusEvents.first()
         assertThat(event.position).isEqualTo(0)
-        assertThat(event.child).isInstanceOf(DpadComposeView::class.java)
+        assertThat(event.child).isInstanceOf(ComposeView::class.java)
     }
 
     @Test

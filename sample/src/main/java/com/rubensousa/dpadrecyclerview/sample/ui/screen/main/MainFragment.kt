@@ -20,11 +20,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenMainBinding
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
+import timber.log.Timber
 
 class MainFragment : Fragment(R.layout.screen_main) {
 
@@ -51,6 +54,15 @@ class MainFragment : Fragment(R.layout.screen_main) {
                 itemSpacing = resources.getDimensionPixelOffset(R.dimen.vertical_item_spacing)
             )
         )
+        recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+            override fun onViewFocused(
+                parent: RecyclerView.ViewHolder,
+                child: View,
+            ) {
+                Timber.i("Feature list focused: ${parent.layoutPosition}, view: $child")
+            }
+        })
+
         viewModel.getFeatures().observe(viewLifecycleOwner) { features ->
             adapter.submitList(features)
         }

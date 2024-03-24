@@ -13,6 +13,7 @@ plugins {
     alias libs.plugins.kotlin.android apply false
     alias libs.plugins.kotlin.kover apply false
     alias libs.plugins.androidx.navigation.safeargs apply false
+    id 'org.jetbrains.dokka' version '1.9.20'
     id 'org.jetbrains.kotlinx.binary-compatibility-validator' version "0.14.0"
 }
 

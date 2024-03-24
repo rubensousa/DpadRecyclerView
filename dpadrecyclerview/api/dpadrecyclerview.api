@@ -45,9 +45,11 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;I)V
 	public synthetic fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
+	public final fun addOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
 	public final fun addOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public final fun addRecyclerListener (Landroidx/recyclerview/widget/RecyclerView$RecyclerListener;)V
 	public final fun clearOnLayoutCompletedListeners ()V
+	public final fun clearOnViewFocusedListeners ()V
 	public final fun clearOnViewHolderSelectedListeners ()V
 	protected fun dispatchDraw (Landroid/graphics/Canvas;)V
 	protected final fun dispatchGenericFocusedEvent (Landroid/view/MotionEvent;)Z
@@ -97,9 +99,11 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public fun onScrollStateChanged (I)V
 	protected fun onSizeChanged (IIII)V
 	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
+	public final fun removeOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
 	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public final fun removeView (Landroid/view/View;)V
 	public final fun removeViewAt (I)V
+	public final fun requestLayout ()V
 	public final fun setAlignments (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public final fun setChildAlignment (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public static synthetic fun setChildAlignment$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;ZILjava/lang/Object;)V
@@ -120,6 +124,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setItemPrefetchEnabled (Z)V
 	public final fun setLayoutEnabled (Z)V
 	public final fun setLayoutManager (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)V
+	public final fun setLayoutWhileScrollingEnabled (Z)V
 	public final fun setLoopDirection (Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;)V
 	public final fun setMaxEdgeFadingLength (I)V
 	public final fun setMaxEdgeFadingOffset (I)V
@@ -246,6 +251,10 @@ public final class com/rubensousa/dpadrecyclerview/FocusableDirection : java/lan
 
 public abstract interface class com/rubensousa/dpadrecyclerview/OnChildLaidOutListener {
 	public abstract fun onChildLaidOut (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/OnViewFocusedListener {
+	public abstract fun onViewFocused (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;Landroid/view/View;)V
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener {
@@ -389,11 +398,13 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParam
 public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutManager : androidx/recyclerview/widget/RecyclerView$LayoutManager {
 	public fun <init> (Landroidx/recyclerview/widget/RecyclerView$LayoutManager$Properties;)V
 	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
+	public final fun addOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
 	public final fun addOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public fun canScrollHorizontally ()Z
 	public fun canScrollVertically ()Z
 	public fun checkLayoutParams (Landroidx/recyclerview/widget/RecyclerView$LayoutParams;)Z
 	public final fun clearOnLayoutCompletedListeners ()V
+	public final fun clearOnViewFocusedListeners ()V
 	public final fun clearOnViewHolderSelectedListeners ()V
 	public fun collectAdjacentPrefetchPositions (IILandroidx/recyclerview/widget/RecyclerView$State;Landroidx/recyclerview/widget/RecyclerView$LayoutManager$LayoutPrefetchRegistry;)V
 	public fun collectInitialPrefetchPositions (ILandroidx/recyclerview/widget/RecyclerView$LayoutManager$LayoutPrefetchRegistry;)V
@@ -446,6 +457,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public fun onSaveInstanceState ()Landroid/os/Parcelable;
 	public fun performAccessibilityAction (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;ILandroid/os/Bundle;)Z
 	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
+	public final fun removeOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
 	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public fun requestChildRectangleOnScreen (Landroidx/recyclerview/widget/RecyclerView;Landroid/view/View;Landroid/graphics/Rect;Z)Z
 	public fun scrollHorizontallyBy (ILandroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)I

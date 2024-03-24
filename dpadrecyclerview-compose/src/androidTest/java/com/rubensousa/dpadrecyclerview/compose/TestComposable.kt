@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Rúben Sousa
+ * Copyright 2024 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,23 @@
 package com.rubensousa.dpadrecyclerview.compose
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsPropertyKey
 import androidx.compose.ui.semantics.semantics
@@ -31,7 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 
 object TestComposable {
     val focusedKey = SemanticsPropertyKey<Boolean>("Focused")
-    val selectedKey = SemanticsPropertyKey<Boolean>("Selected")
 }
 
 @Composable
@@ -39,13 +48,10 @@ fun TestComposable(
     modifier: Modifier = Modifier,
     item: Int,
     isFocused: Boolean,
-    isSelected: Boolean,
     onDispose: () -> Unit = {},
 ) {
     val backgroundColor = if (isFocused) {
         Color.White
-    } else if (isSelected) {
-        Color.Blue
     } else {
         Color.Black
     }
@@ -57,11 +63,55 @@ fun TestComposable(
         Text(
             modifier = Modifier.semantics {
                 set(TestComposable.focusedKey, isFocused)
-                set(TestComposable.selectedKey, isSelected)
             },
             text = item.toString(),
             style = MaterialTheme.typography.headlineLarge,
-            color = if(isFocused) {
+            color = if (isFocused) {
+                Color.Black
+            } else {
+                Color.White
+            }
+        )
+    }
+    DisposableEffect(key1 = item) {
+        onDispose {
+            onDispose()
+        }
+    }
+}
+
+@Composable
+fun TestComposableFocus(
+    modifier: Modifier = Modifier,
+    item: Int,
+    onClick: () -> Unit,
+    onDispose: () -> Unit = {},
+) {
+    var isFocused by remember { mutableStateOf(false) }
+    val backgroundColor = if (isFocused) {
+        Color.White
+    } else {
+        Color.Black
+    }
+    Box(
+        modifier = modifier
+            .onFocusChanged { focusState ->
+                isFocused = focusState.isFocused
+            }
+            .focusTarget()
+            .background(backgroundColor)
+            .clickable {
+                onClick()
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            modifier = Modifier.semantics {
+                set(TestComposable.focusedKey, isFocused)
+            },
+            text = item.toString(),
+            style = MaterialTheme.typography.headlineLarge,
+            color = if (isFocused) {
                 Color.Black
             } else {
                 Color.White
@@ -78,17 +128,22 @@ fun TestComposable(
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 fun TestComposablePreviewNormal() {
-    TestComposable(item = 0, isFocused = false, isSelected = false)
+    TestComposableFocus(
+        item = 0,
+        onClick = {}
+    )
 }
 
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 fun TestComposablePreviewFocused() {
-    TestComposable(item = 0, isFocused = true, isSelected = false)
-}
-
-@Preview(widthDp = 300, heightDp = 300)
-@Composable
-fun TestComposablePreviewSelected() {
-    TestComposable(item = 0, isFocused = false, isSelected = true)
+    val focusRequester = remember { FocusRequester() }
+    TestComposableFocus(
+        item = 0,
+        modifier = Modifier.focusRequester(focusRequester),
+        onClick = {}
+    )
+    SideEffect {
+        focusRequester.requestFocus()
+    }
 }

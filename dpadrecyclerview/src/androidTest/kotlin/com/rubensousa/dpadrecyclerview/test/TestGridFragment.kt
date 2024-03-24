@@ -22,15 +22,17 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnChildLaidOutListener
+import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
 import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
 
 open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
-    OnViewHolderSelectedListener, OnChildLaidOutListener {
+    OnViewHolderSelectedListener, OnChildLaidOutListener, OnViewFocusedListener {
 
     companion object {
 
@@ -61,6 +63,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     private val tasks = ArrayList<DpadSelectionEvent>()
     private val alignedEvents = ArrayList<DpadSelectionEvent>()
     private val layoutEvents = ArrayList<RecyclerView.ViewHolder>()
+    private val focusEvents = ArrayList<DpadFocusEvent>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,6 +75,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
             recyclerView.setRecycledViewPool(viewPool)
         }
         recyclerView.addOnViewHolderSelectedListener(this)
+        recyclerView.addOnViewFocusedListener(this)
         recyclerView.setOnChildLaidOutListener(this)
 
         recyclerView.apply {
@@ -101,6 +105,10 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
 
     fun requestFocus() {
         getDpadRecyclerView()?.requestFocus()
+    }
+
+    fun clearFocus() {
+        view?.findViewById<View>(R.id.focusPlaceholderView)?.requestFocus()
     }
 
     open fun createAdapter(
@@ -191,6 +199,12 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
 
     fun getLayoutEvents(): List<RecyclerView.ViewHolder> = layoutEvents
 
+    fun getFocusEvents() = focusEvents.toList()
+
+    override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
+        focusEvents.add(DpadFocusEvent(parent, child, parent.layoutPosition))
+    }
+
     override fun onChildLaidOut(parent: RecyclerView, child: RecyclerView.ViewHolder) {
         layoutEvents.add(child)
     }
@@ -204,5 +218,6 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     }
 
     private fun getDpadRecyclerView(): DpadRecyclerView? = view?.findViewById(R.id.recyclerView)
+
 
 }

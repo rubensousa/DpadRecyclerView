@@ -116,11 +116,11 @@ jobs:
           ram-size: 4096M
           emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
-            ./scripts/install_test_apks.sh
-            ./scripts/run_instrumented_tests.sh dpadrecyclerview
-            ./scripts/run_instrumented_tests.sh dpadrecyclerview-testing
-            ./scripts/run_instrumented_tests.sh dpadrecyclerview-compose
-            ./scripts/run_instrumented_tests.sh sample
+            ./gradlew uninstallAll
+            ./gradlew --build-cache dpadrecyclerview-compose:connectedDebugAndroidTest
+            ./gradlew --build-cache sample:connectedDebugAndroidTest
+            ./gradlew --build-cache dpadrecyclerview-testing:connectedDebugAndroidTest
+            ./gradlew --build-cache dpadrecyclerview:connectedDebugAndroidTest --info
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
