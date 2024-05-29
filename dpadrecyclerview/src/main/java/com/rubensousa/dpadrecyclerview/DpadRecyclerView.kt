@@ -71,7 +71,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
     private var startedTouchScroll = false
-    private var layoutWhileScrollingEnabled = true
+    private var layoutWhileScrollingEnabled = false
     private var hasPendingLayout = false
     private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null

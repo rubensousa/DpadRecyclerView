@@ -66,7 +66,6 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
         // given
         var layoutCompleted = 0
         onRecyclerView("Disable layout during scroll") { recyclerView ->
-            recyclerView.setLayoutWhileScrollingEnabled(false)
             recyclerView.addOnLayoutCompletedListener(
                 object : DpadRecyclerView.OnLayoutCompletedListener {
                     override fun onLayoutCompleted(state: RecyclerView.State) {
@@ -95,7 +94,6 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
         // given
         var layoutCompleted = 0
         onRecyclerView("Disable layout during scroll") { recyclerView ->
-            recyclerView.setLayoutWhileScrollingEnabled(false)
             recyclerView.addOnLayoutCompletedListener(
                 object : DpadRecyclerView.OnLayoutCompletedListener {
                     override fun onLayoutCompleted(state: RecyclerView.State) {
