@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.test
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -71,6 +72,10 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         val layoutConfig = args.getParcelable<TestLayoutConfiguration>(ARG_LAYOUT_CONFIG)!!
         val adapterConfig = args.getParcelable<TestAdapterConfiguration>(ARG_ADAPTER_CONFIG)!!
         val recyclerView = view.findViewById<DpadRecyclerView>(R.id.recyclerView)
+        val placeHolderView = view.findViewById<View>(R.id.focusPlaceholderView)
+        placeHolderView.setOnFocusChangeListener { v, hasFocus ->
+            Log.i(DpadRecyclerView.TAG, "placeholder focus changed: $hasFocus")
+        }
         if (layoutConfig.useCustomViewPool) {
             recyclerView.setRecycledViewPool(viewPool)
         }

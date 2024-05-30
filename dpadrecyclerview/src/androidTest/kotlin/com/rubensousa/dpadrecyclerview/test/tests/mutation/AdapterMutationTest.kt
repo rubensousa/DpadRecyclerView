@@ -27,6 +27,8 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertItemAtPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForAdapterUpdate
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
@@ -263,5 +265,25 @@ class AdapterMutationTest : DpadRecyclerViewTest() {
         }
         Espresso.onIdle()
 
+    }
+
+    @Test
+    fun testRemovalOfLargeInterval() {
+        // given
+        val startList = List(100) { it }
+        mutateAdapter { adapter ->
+            adapter.submitList(startList.toMutableList())
+        }
+        waitForAdapterUpdate()
+
+        // when
+        selectPosition(99, smooth = true)
+        mutateAdapter { adapter ->
+            adapter.submitList(List(25) { 1000 + it }.toMutableList())
+        }
+        waitForAdapterUpdate()
+
+        // then
+        assertFocusAndSelection(0)
     }
 }
