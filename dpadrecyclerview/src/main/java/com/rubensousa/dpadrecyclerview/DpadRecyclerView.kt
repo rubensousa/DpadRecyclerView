@@ -31,7 +31,6 @@ import android.view.animation.Interpolator
 import androidx.annotation.Px
 import androidx.annotation.VisibleForTesting
 import androidx.core.view.ViewCompat
-import androidx.core.view.postDelayed
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -459,7 +458,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
          * while the layout was locked and in that case, we should honor those requests instead
          * of just performing a full layout
          */
-        postDelayed(500L) { requestLayout() }
+        postDelayed({ requestLayout() }, 500L)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
