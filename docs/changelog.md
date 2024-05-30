@@ -4,13 +4,21 @@
 
 ### 1.3.0-alpha03
 
-2024-05-30
+2024-05-31
+
+#### New Features
+
+- Added `DpadStateRegistry` that assists in saving and restoring the scroll state or view state of ViewHolders ([#45](https://github.com/rubensousa/DpadRecyclerView/issues/45))
+
+#### Improvements
+
+- Disable layout passes during scroll events by default. This is an attempt to fix ([#207](https://github.com/rubensousa/DpadRecyclerView/issues/207))
+  To fallback to the previous behavior, please use `setLayoutWhileScrollingEnabled(true)`
 
 #### Bug fixes
 
 - Fixed issue with grid layouts with different spans after item removals. ([#210](https://github.com/rubensousa/DpadRecyclerView/issues/210))
-- Disable layout passes during scroll events by default. This is an attempt to fix ([#206](https://github.com/rubensousa/DpadRecyclerView/issues/206)) and ([#207](https://github.com/rubensousa/DpadRecyclerView/issues/207))
-To fallback to the previous behavior, please use `setLayoutWhileScrollingEnabled(true)`
+- Fixed `DpadRecyclerView` losing focus in some cases when adapter contents are updated during scroll events. ([#206](https://github.com/rubensousa/DpadRecyclerView/issues/206))
 
 ### 1.3.0-alpha02
 
