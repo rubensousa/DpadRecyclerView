@@ -74,6 +74,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     private var hadFocusBeforeLayout = false
     private var recyclerView: RecyclerView? = null
     private var isScrollingFromTouchEvent = false
+    internal var layoutCompletedListener: DpadRecyclerView.OnLayoutCompletedListener? = null
 
     override fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
         return layoutParams is DpadLayoutParams
@@ -128,6 +129,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         scroller.cancelSmoothScroller()
         pivotSelector.onLayoutChildren(state)
         pivotLayout.onLayoutChildren(recycler, state)
+        layoutCompletedListener?.onLayoutCompleted(state)
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {

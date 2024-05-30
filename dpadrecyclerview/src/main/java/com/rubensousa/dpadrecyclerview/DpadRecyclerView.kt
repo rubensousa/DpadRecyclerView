@@ -21,6 +21,7 @@ import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -71,7 +72,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
     private var startedTouchScroll = false
-    private var layoutWhileScrollingEnabled = true
+    private var layoutWhileScrollingEnabled = false
     private var hasPendingLayout = false
     private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
@@ -211,6 +212,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
         pivotLayoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
         pivotLayoutManager?.updateRecyclerView(null)
         if (pivotLayoutManager !== layout) {
+            pivotLayoutManager?.layoutCompletedListener = null
             pivotLayoutManager?.clearOnLayoutCompletedListeners()
             pivotLayoutManager?.clearOnViewHolderSelectedListeners()
         }
@@ -223,18 +225,32 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
         if (layout is PivotLayoutManager) {
             layout.updateRecyclerView(this)
+            layout.layoutCompletedListener = object : OnLayoutCompletedListener {
+                override fun onLayoutCompleted(state: State) {
+                    hasPendingLayout = false
+                }
+            }
             layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             pivotLayoutManager = layout
         }
     }
 
     final override fun requestLayout() {
-        if (layoutWhileScrollingEnabled || scrollState == SCROLL_STATE_IDLE) {
-            hasPendingLayout = false
+        if (isRequestLayoutAllowed()) {
+            if (DEBUG) {
+                Log.i(TAG, "Layout Requested")
+            }
             super.requestLayout()
-            return
+        } else {
+            hasPendingLayout = true
+            if (DEBUG) {
+                Log.i(TAG, "Layout suppressed until scroll is idle")
+            }
         }
-        hasPendingLayout = true
+    }
+
+    private fun isRequestLayoutAllowed(): Boolean {
+        return scrollState == SCROLL_STATE_IDLE || layoutWhileScrollingEnabled
     }
 
     // Overriding to prevent WRAP_CONTENT behavior by replacing it
@@ -431,12 +447,23 @@ open class DpadRecyclerView @JvmOverloads constructor(
             startedTouchScroll = false
             pivotLayoutManager?.setScrollingFromTouchEvent(false)
             if (hasPendingLayout) {
-                hasPendingLayout = false
-                requestLayout()
+                scheduleLayout()
             }
         } else if (startedTouchScroll) {
             pivotLayoutManager?.setScrollingFromTouchEvent(true)
         }
+    }
+
+    private fun scheduleLayout() {
+        if (DEBUG) {
+            Log.i(TAG, "Scheduling pending layout request")
+        }
+        /**
+         * The delay here is intended because users can request selections
+         * while the layout was locked and in that case, we should honor those requests instead
+         * of just performing a full layout
+         */
+        post { requestLayout() }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -1267,15 +1294,13 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
 
     /**
-     * By default, [DpadRecyclerView] allows triggering a layout-pass during scrolling.
-     * However, there might be some cases where someone is interested in disabling this behavior,
-     * for example:
+     * By default, [DpadRecyclerView] skips layout requests during scrolling because of:
      * 1. Compose animations trigger a full unnecessary layout-pass
      * 2. Content jumping around while scrolling is not ideal sometimes
      *
      * @param enabled true if layout requests should be possible while scrolling,
      * or false if they should be postponed until [RecyclerView.SCROLL_STATE_IDLE].
-     * Default is true.
+     * Default is false.
      */
     fun setLayoutWhileScrollingEnabled(enabled: Boolean) {
         layoutWhileScrollingEnabled = enabled
