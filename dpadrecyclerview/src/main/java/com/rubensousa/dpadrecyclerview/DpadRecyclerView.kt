@@ -385,17 +385,15 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     private fun preRemoveView(childHasFocus: Boolean) {
-        isRetainingFocus = (childHasFocus && isFocusable) || hasFocus()
+        isRetainingFocus = childHasFocus && isFocusable
         pivotLayoutManager?.setIsRetainingFocus(isRetainingFocus)
         if (isRetainingFocus) {
-            descendantFocusability = ViewGroup.FOCUS_BEFORE_DESCENDANTS
             requestFocus()
         }
     }
 
     private fun postRemoveView() {
-        descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
-        if (isRetainingFocus && childCount > 0) {
+        if (isRetainingFocus && childCount > 0 && !hasFocus()) {
             requestFocus()
         }
         isRetainingFocus = false
