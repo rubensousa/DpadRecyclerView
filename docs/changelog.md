@@ -2,6 +2,16 @@
 
 ## Version 1.3.0
 
+### 1.3.0-alpha03
+
+2024-05-30
+
+#### Bug fixes
+
+- Fixed issue with grid layouts with different spans after item removals. ([#210](https://github.com/rubensousa/DpadRecyclerView/issues/210))
+- Disable layout passes during scroll events by default. This is an attempt to fix ([#206](https://github.com/rubensousa/DpadRecyclerView/issues/206)) and ([#207](https://github.com/rubensousa/DpadRecyclerView/issues/207))
+To fallback to the previous behavior, please use `setLayoutWhileScrollingEnabled(true)`
+
 ### 1.3.0-alpha02
 
 2024-03-23
