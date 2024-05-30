@@ -424,6 +424,14 @@ internal abstract class StructureEngineer(
              */
             if (layoutResult.consumedSpace > 0) {
                 viewRecycler.recycleByLayoutRequest(recycler, layoutRequest)
+            } else if (viewProvider.hasNext(layoutRequest, state)) {
+                Log.w(
+                    DpadRecyclerView.TAG,
+                    "View at position ${layoutRequest.currentPosition} could not be laid out"
+                )
+                layoutRequest.moveToNextPosition()
+            } else {
+                remainingSpace = 0
             }
 
             layoutResult.reset()

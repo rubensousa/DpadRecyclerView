@@ -126,8 +126,12 @@ internal class LayoutInfo(
         return configuration.spanSizeLookup.getSpanSize(position)
     }
 
-    fun getStartSpanIndex(position: Int): Int {
-        return configuration.spanSizeLookup.getCachedSpanIndex(position, configuration.spanCount)
+    fun getStartSpanIndex(position: Int, fromCache: Boolean = true): Int {
+        return if (fromCache) {
+            configuration.spanSizeLookup.getCachedSpanIndex(position, configuration.spanCount)
+        } else {
+            configuration.spanSizeLookup.getSpanIndex(position, configuration.spanCount)
+        }
     }
 
     fun getEndSpanIndex(position: Int): Int {

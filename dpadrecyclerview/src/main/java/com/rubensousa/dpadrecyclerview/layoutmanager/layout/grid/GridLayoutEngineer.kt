@@ -587,10 +587,10 @@ internal class GridLayoutEngineer(
                 DpadRecyclerView.TAG,
                 "Cannot find post layout position for pre layout position: $position"
             )
-            return layoutInfo.getStartSpanIndex(position)
+            return layoutInfo.getStartSpanIndex(position, fromCache = false)
         }
-        layoutInfo.invalidateSpanCache()
-        return layoutInfo.getStartSpanIndex(adapterPosition)
+        // Do not re-use span index cache since we are in pre-layout
+        return layoutInfo.getStartSpanIndex(adapterPosition, fromCache = false)
     }
 
     private fun getSpanSize(recycler: Recycler, state: State, position: Int): Int {
@@ -609,7 +609,6 @@ internal class GridLayoutEngineer(
             )
             return layoutInfo.getSpanSize(position)
         }
-        layoutInfo.invalidateSpanCache()
         return layoutInfo.getSpanSize(adapterPosition)
     }
 
