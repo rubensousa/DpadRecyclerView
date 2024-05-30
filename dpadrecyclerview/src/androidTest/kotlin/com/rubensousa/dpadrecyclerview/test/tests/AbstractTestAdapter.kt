@@ -140,6 +140,6 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
 
     override fun getItemCount(): Int = items.size
 
-    protected fun getItem(position: Int) = items[position]
+    fun getItem(position: Int) = items[position]
 
 }
