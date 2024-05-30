@@ -452,6 +452,7 @@ internal class PivotSelector(
     fun removeCurrentViewHolderSelection(clearSelection: Boolean) {
         if (clearSelection) {
             position = 0
+            subPosition = 0
             positionOffset = 0
         }
         selectedViewHolder?.onViewHolderDeselected()

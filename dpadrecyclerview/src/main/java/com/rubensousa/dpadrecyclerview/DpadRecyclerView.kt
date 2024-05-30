@@ -436,19 +436,14 @@ open class DpadRecyclerView @JvmOverloads constructor(
         return result
     }
 
-    override fun stopNestedScroll() {
-        super.stopNestedScroll()
-        startedTouchScroll = false
-    }
-
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
         if (state == SCROLL_STATE_IDLE) {
-            startedTouchScroll = false
-            pivotLayoutManager?.setScrollingFromTouchEvent(false)
-            if (hasPendingLayout) {
+            if (hasPendingLayout && !startedTouchScroll) {
                 scheduleLayout()
             }
+            startedTouchScroll = false
+            pivotLayoutManager?.setScrollingFromTouchEvent(false)
         } else if (startedTouchScroll) {
             pivotLayoutManager?.setScrollingFromTouchEvent(true)
         }
@@ -463,7 +458,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
          * while the layout was locked and in that case, we should honor those requests instead
          * of just performing a full layout
          */
-        post { requestLayout() }
+        ViewCompat.postOnAnimation(this) { requestLayout() }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -1323,10 +1318,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private fun removeSelectionForRecycledViewHolders() {
         addRecyclerListener { holder ->
             val position = holder.absoluteAdapterPosition
-            if (holder is DpadViewHolder
-                && position != NO_POSITION
-                && position == getSelectedPosition()
-            ) {
+            if (position != NO_POSITION && position == getSelectedPosition()) {
                 pivotLayoutManager?.removeCurrentViewHolderSelection()
             }
         }
