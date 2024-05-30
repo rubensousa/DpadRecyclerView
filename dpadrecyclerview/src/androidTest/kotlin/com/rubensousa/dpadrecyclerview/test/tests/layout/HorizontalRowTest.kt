@@ -27,6 +27,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForLayout
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutManagerAssertions
@@ -132,6 +133,7 @@ class HorizontalRowTest : DpadRecyclerViewTest() {
                 }
             })
         }
+        waitForLayout()
         row.setExtraLayoutSpace(start = row.getSize())
         assertChildrenPositions()
     }
