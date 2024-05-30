@@ -90,8 +90,7 @@ internal class LayoutConfiguration(properties: Properties) {
     var isFocusSearchDisabled = false
         private set
 
-    var isFocusSearchEnabledDuringAnimations = false
-        private set
+    private var isFocusSearchEnabledDuringAnimations = false
 
     // Number of items to prefetch when first coming on screen with new data
     var initialPrefetchItemCount = 4
@@ -139,6 +138,11 @@ internal class LayoutConfiguration(properties: Properties) {
         setSpanCount(properties.spanCount)
         setOrientation(properties.orientation)
         setReverseLayout(properties.reverseLayout)
+    }
+
+    fun isFocusSearchDisabled(recyclerView: RecyclerView): Boolean {
+        return isFocusSearchDisabled
+                || (!isFocusSearchEnabledDuringAnimations && recyclerView.isAnimating)
     }
 
     fun setRecycleChildrenOnDetach(recycle: Boolean) {

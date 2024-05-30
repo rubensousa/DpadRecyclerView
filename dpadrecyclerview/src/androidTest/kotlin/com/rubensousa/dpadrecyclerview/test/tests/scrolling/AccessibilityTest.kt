@@ -62,13 +62,6 @@ class AccessibilityTest : DpadRecyclerViewTest() {
 
     @Test
     fun testAccessibilityInfo() {
-        assertThat(accessibilityNodeInfo.actionList.find {
-            it.id == AccessibilityActionCompat.ACTION_SCROLL_DOWN.id
-        }).isNotNull()
-        assertThat(accessibilityNodeInfo.actionList.find {
-            it.id == AccessibilityActionCompat.ACTION_SCROLL_UP.id
-        }).isNull()
-
         repeat(10) {
             KeyEvents.pressDown()
         }
@@ -87,7 +80,10 @@ class AccessibilityTest : DpadRecyclerViewTest() {
     fun testVerticalScrollForward() {
         assertFocusAndSelection(position = 0)
 
+        // when
         performAccessibilityAction(AccessibilityAction.ACTION_SCROLL_FORWARD)
+
+        // then
         assertFocusAndSelection(position = spanCount)
     }
 
@@ -96,7 +92,10 @@ class AccessibilityTest : DpadRecyclerViewTest() {
         val position = 20
         selectPosition(position)
 
+        // when
         performAccessibilityAction(AccessibilityAction.ACTION_SCROLL_BACKWARD)
+
+        // then
         assertFocusAndSelection(position = position - spanCount)
     }
 

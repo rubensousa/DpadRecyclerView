@@ -23,8 +23,10 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.helpers.assertIsNotFocused
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -153,6 +155,20 @@ class FocusListenerTest : DpadRecyclerViewTest() {
         val events = getFocusEvents()
         assertThat(events).hasSize(keyPresses + 1)
         assertThat(events.map { it.position }.sorted()).isEqualTo(List(50) { it })
+    }
+
+    @Test
+    fun testRecyclerViewLosesFocusWhenItLosesContent() {
+        // when
+        executeOnFragment { fragment ->
+            fragment.clearAdapter()
+        }
+        waitForCondition("Waiting for 0 children") { recyclerView ->
+            recyclerView.childCount == 0
+        }
+
+        // then
+        assertIsNotFocused()
     }
 
 }

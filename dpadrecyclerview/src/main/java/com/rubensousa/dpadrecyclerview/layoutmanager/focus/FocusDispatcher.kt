@@ -110,7 +110,11 @@ internal class FocusDispatcher(
         }
     }
 
-    fun focusSelectedView() {
+    fun focusSelectedView(recyclerView: RecyclerView?) {
+        val currentRecyclerView = recyclerView ?: return
+        if (!configuration.isFocusSearchDisabled(currentRecyclerView)) {
+            return
+        }
         val view = layoutInfo.findViewByAdapterPosition(pivotSelector.position) ?: return
         if (layoutInfo.isViewFocusable(view) && !view.hasFocus()) {
             pivotSelector.focus(view)
@@ -183,6 +187,7 @@ internal class FocusDispatcher(
                     newFocusedView = focused
                 }
             }
+
             FocusDirection.PREVIOUS_ITEM -> {
                 if (isScrolling || !configuration.focusOutFront) {
                     newFocusedView = focused
@@ -194,11 +199,13 @@ internal class FocusDispatcher(
                     newFocusedView = focused
                 }
             }
+
             FocusDirection.NEXT_COLUMN -> {
                 if (isScrolling || !configuration.focusOutSideBack) {
                     newFocusedView = focused
                 }
             }
+
             FocusDirection.PREVIOUS_COLUMN -> {
                 if (isScrolling || !configuration.focusOutSideFront) {
                     newFocusedView = focused
@@ -213,10 +220,7 @@ internal class FocusDispatcher(
     }
 
     private fun isFocusSearchEnabled(recyclerView: RecyclerView): Boolean {
-        if (configuration.isFocusSearchDisabled) {
-            return false
-        }
-        if (!configuration.isFocusSearchEnabledDuringAnimations && recyclerView.isAnimating) {
+        if (configuration.isFocusSearchDisabled(recyclerView)) {
             return false
         }
         // Check if this RecyclerView is a Nested RecyclerView and delay focus changes
@@ -233,7 +237,10 @@ internal class FocusDispatcher(
         direction: Int,
         focusableMode: Int
     ): Boolean {
-        if (configuration.isFocusSearchDisabled) {
+        if (configuration.isFocusSearchDisabled(recyclerView)) {
+            if (recyclerView.isFocusable) {
+                views.add(recyclerView)
+            }
             return true
         }
         if (recyclerView.hasFocus()) {
@@ -265,24 +272,23 @@ internal class FocusDispatcher(
     /**
      * Request focus to the current pivot if it exists
      */
-    fun onRequestFocusInDescendants(direction: Int, previouslyFocusedRect: Rect?): Boolean {
+    fun onRequestFocusInDescendants(
+        direction: Int,
+        previouslyFocusedRect: Rect?
+    ): Boolean {
         if (configuration.isFocusSearchDisabled) return false
         val view = layout.findViewByPosition(pivotSelector.position) ?: return false
         return view.requestFocus(direction, previouslyFocusedRect)
     }
 
-    fun onRequestChildFocus(
-        recyclerView: RecyclerView,
-        child: View,
-        focused: View?
-    ): Boolean {
+    fun onRequestChildFocus(recyclerView: RecyclerView, child: View, focused: View?) {
         if (!isFocusSearchEnabled(recyclerView)) {
-            return true
+            return
         }
         val childPosition = layoutInfo.getAdapterPositionOf(child)
         // This could be the last view in DISAPPEARING animation, so ignore immediately
         if (childPosition == RecyclerView.NO_POSITION) {
-            return true
+            return
         }
         spanFocusFinder.save(childPosition, configuration.spanSizeLookup)
         val canScrollToView = !scroller.isSelectionInProgress && !layoutInfo.isLayoutInProgress
@@ -292,7 +298,6 @@ internal class FocusDispatcher(
             )
         }
         pivotSelector.onChildFocused(focused)
-        return true
     }
 
     private fun addFocusableChildren(

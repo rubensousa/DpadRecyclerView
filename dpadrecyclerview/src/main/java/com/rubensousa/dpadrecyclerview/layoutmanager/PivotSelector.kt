@@ -45,6 +45,8 @@ internal class PivotSelector(
         const val OFFSET_DISABLED = Int.MIN_VALUE
     }
 
+    var isRetainingFocus = false
+
     var position: Int = RecyclerView.NO_POSITION
         private set
 
@@ -79,7 +81,10 @@ internal class PivotSelector(
 
     fun consumePendingSelectionChanges(state: RecyclerView.State): Boolean {
         var consumed = false
-        if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
+        if (position != RecyclerView.NO_POSITION
+            && positionOffset != OFFSET_DISABLED
+            && positionOffset != 0
+        ) {
             applyPositionOffset(state.itemCount)
             subPosition = 0
             consumed = true
@@ -97,7 +102,7 @@ internal class PivotSelector(
     fun focus(view: View) {
         view.requestFocus()
         // Exit early if there's no one listening for focus events
-        if (focusListeners.isEmpty()) {
+        if (focusListeners.isEmpty() || isRetainingFocus) {
             return
         }
         val currentRecyclerView = recyclerView ?: return
@@ -316,6 +321,7 @@ internal class PivotSelector(
     fun clear() {
         val hadPivot = position != RecyclerView.NO_POSITION
         position = RecyclerView.NO_POSITION
+        subPosition = 0
         positionOffset = 0
         if (hadPivot) {
             dispatchViewHolderSelected()
@@ -449,6 +455,7 @@ internal class PivotSelector(
     fun removeCurrentViewHolderSelection(clearSelection: Boolean) {
         if (clearSelection) {
             position = 0
+            subPosition = 0
             positionOffset = 0
         }
         selectedViewHolder?.onViewHolderDeselected()

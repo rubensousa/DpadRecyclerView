@@ -74,6 +74,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     private var hadFocusBeforeLayout = false
     private var recyclerView: RecyclerView? = null
     private var isScrollingFromTouchEvent = false
+    internal var layoutCompletedListener: DpadRecyclerView.OnLayoutCompletedListener? = null
 
     override fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
         return layoutParams is DpadLayoutParams
@@ -128,12 +129,13 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         scroller.cancelSmoothScroller()
         pivotSelector.onLayoutChildren(state)
         pivotLayout.onLayoutChildren(recycler, state)
+        layoutCompletedListener?.onLayoutCompleted(state)
     }
 
     override fun onLayoutCompleted(state: RecyclerView.State) {
         pivotLayout.onLayoutCompleted(state)
         if (hadFocusBeforeLayout) {
-            focusDispatcher.focusSelectedView()
+            focusDispatcher.focusSelectedView(recyclerView)
         }
         pivotSelector.onLayoutCompleted()
         hadFocusBeforeLayout = false
@@ -313,7 +315,9 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     fun onRequestFocusInDescendants(
         direction: Int,
         previouslyFocusedRect: Rect?
-    ): Boolean = focusDispatcher.onRequestFocusInDescendants(direction, previouslyFocusedRect)
+    ): Boolean {
+        return focusDispatcher.onRequestFocusInDescendants(direction, previouslyFocusedRect)
+    }
 
     override fun onRequestChildFocus(
         parent: RecyclerView,
@@ -321,7 +325,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
         child: View,
         focused: View?
     ): Boolean {
-        return focusDispatcher.onRequestChildFocus(parent, child, focused)
+        focusDispatcher.onRequestChildFocus(parent, child, focused)
+        return true
     }
 
     // Disabled since only this LayoutManager knows how to position views
@@ -422,6 +427,10 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     internal fun removeCurrentViewHolderSelection() {
         pivotSelector.removeCurrentViewHolderSelection(clearSelection = isScrollingFromTouchEvent)
+    }
+
+    internal fun setIsRetainingFocus(isRetainingFocus: Boolean) {
+        pivotSelector.isRetainingFocus = isRetainingFocus
     }
 
     fun setChildrenDrawingOrderEnabled(enabled: Boolean) {

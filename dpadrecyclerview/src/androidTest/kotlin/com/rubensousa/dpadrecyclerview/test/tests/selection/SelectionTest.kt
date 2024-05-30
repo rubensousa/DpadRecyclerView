@@ -29,7 +29,6 @@ import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderAlignmentCountA
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertIsFocused
-import com.rubensousa.dpadrecyclerview.test.helpers.assertIsNotFocused
 import com.rubensousa.dpadrecyclerview.test.helpers.assertSelectedPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertViewHolderSelected
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
@@ -102,7 +101,6 @@ class SelectionTest : DpadRecyclerViewTest() {
         waitForCondition("Waiting for 0 children") { recyclerView ->
             recyclerView.childCount == 0
         }
-        assertIsNotFocused()
         assertSelectedPosition(RecyclerView.NO_POSITION)
 
         assertThat(getSelectionEvents()).isEqualTo(

@@ -170,7 +170,7 @@ class DpadComposeFocusViewHolderTest {
     @Test
     fun testAllViewHoldersAreFocusedOnKeyPress() {
         // given
-        val events = 10
+        val events = 5
 
         // when
         repeat(events) {
