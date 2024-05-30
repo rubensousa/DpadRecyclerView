@@ -237,15 +237,9 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun requestLayout() {
         if (isRequestLayoutAllowed()) {
-            if (DEBUG) {
-                Log.i(TAG, "Layout Requested")
-            }
             super.requestLayout()
         } else {
             hasPendingLayout = true
-            if (DEBUG) {
-                Log.i(TAG, "Layout suppressed until scroll is idle")
-            }
         }
     }
 
@@ -379,22 +373,33 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     final override fun removeView(view: View) {
-        isRetainingFocus = view.hasFocus() && isFocusable
-        if (isRetainingFocus) {
-            requestFocus()
-        }
+        preRemoveView(childHasFocus = view.hasFocus())
         super.removeView(view)
-        isRetainingFocus = false
+        postRemoveView()
     }
 
     final override fun removeViewAt(index: Int) {
-        val childHasFocus = getChildAt(index)?.hasFocus() ?: false
-        isRetainingFocus = childHasFocus && isFocusable
+        preRemoveView(childHasFocus = getChildAt(index)?.hasFocus() ?: false)
+        super.removeViewAt(index)
+        postRemoveView()
+    }
+
+    private fun preRemoveView(childHasFocus: Boolean) {
+        isRetainingFocus = (childHasFocus && isFocusable) || hasFocus()
+        pivotLayoutManager?.setIsRetainingFocus(isRetainingFocus)
         if (isRetainingFocus) {
+            descendantFocusability = ViewGroup.FOCUS_BEFORE_DESCENDANTS
             requestFocus()
         }
-        super.removeViewAt(index)
+    }
+
+    private fun postRemoveView() {
+        descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+        if (isRetainingFocus && childCount > 0) {
+            requestFocus()
+        }
         isRetainingFocus = false
+        pivotLayoutManager?.setIsRetainingFocus(false)
     }
 
     final override fun setChildDrawingOrderCallback(
