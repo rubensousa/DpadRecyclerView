@@ -212,6 +212,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
         pivotLayoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
         pivotLayoutManager?.updateRecyclerView(null)
         if (pivotLayoutManager !== layout) {
+            pivotLayoutManager?.layoutCompletedListener = null
             pivotLayoutManager?.clearOnLayoutCompletedListeners()
             pivotLayoutManager?.clearOnViewHolderSelectedListeners()
         }
@@ -224,6 +225,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
         if (layout is PivotLayoutManager) {
             layout.updateRecyclerView(this)
+            layout.layoutCompletedListener = object : OnLayoutCompletedListener {
+                override fun onLayoutCompleted(state: State) {
+                    hasPendingLayout = false
+                }
+            }
             layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
             pivotLayoutManager = layout
         }
@@ -231,7 +237,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun requestLayout() {
         if (isRequestLayoutAllowed()) {
-            hasPendingLayout = false
             if (DEBUG) {
                 Log.i(TAG, "Layout Requested")
             }
@@ -458,7 +463,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
          * while the layout was locked and in that case, we should honor those requests instead
          * of just performing a full layout
          */
-        postDelayed({ requestLayout() }, 500L)
+        post { requestLayout() }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
