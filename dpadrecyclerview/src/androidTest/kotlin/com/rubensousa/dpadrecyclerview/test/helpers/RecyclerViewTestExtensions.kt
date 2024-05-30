@@ -186,22 +186,6 @@ fun waitForIdleScrollState(id: Int = R.id.recyclerView) {
     Espresso.onView(withId(id)).perform(DpadRecyclerViewActions.waitForIdleScroll())
 }
 
-fun waitForLayout() {
-    var completedLayout = false
-    onRecyclerView("Add listener") { recyclerView ->
-        recyclerView.addOnLayoutCompletedListener(object :
-            DpadRecyclerView.OnLayoutCompletedListener {
-            override fun onLayoutCompleted(state: RecyclerView.State) {
-                completedLayout = true
-            }
-        })
-    }
-    waitForCondition("Waiting for layout") { recyclerView ->
-        !recyclerView.isLayoutRequested && completedLayout
-    }
-}
-
-
 fun waitForAdapterUpdate(id: Int = R.id.recyclerView) {
     Espresso.onView(withId(id)).perform(DpadRecyclerViewActions.waitForAdapterUpdate())
 }
