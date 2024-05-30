@@ -258,24 +258,24 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     }
 
     override fun onItemsAdded(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        configuration.spanSizeLookup.invalidateCache()
+        layoutInfo.invalidateSpanCache()
         pivotLayout.onItemsAdded(positionStart, itemCount)
         pivotSelector.onItemsAdded(positionStart, itemCount)
     }
 
     override fun onItemsChanged(recyclerView: RecyclerView) {
-        configuration.spanSizeLookup.invalidateCache()
+        layoutInfo.invalidateSpanCache()
         pivotSelector.onItemsChanged()
     }
 
     override fun onItemsRemoved(recyclerView: RecyclerView, positionStart: Int, itemCount: Int) {
-        configuration.spanSizeLookup.invalidateCache()
+        layoutInfo.invalidateSpanCache()
         pivotLayout.onItemsRemoved(positionStart, itemCount)
         pivotSelector.onItemsRemoved(positionStart, itemCount)
     }
 
     override fun onItemsMoved(recyclerView: RecyclerView, from: Int, to: Int, itemCount: Int) {
-        configuration.spanSizeLookup.invalidateCache()
+        layoutInfo.invalidateSpanCache()
         pivotLayout.onItemsMoved(from, to, itemCount)
         pivotSelector.onItemsMoved(from, to, itemCount)
     }

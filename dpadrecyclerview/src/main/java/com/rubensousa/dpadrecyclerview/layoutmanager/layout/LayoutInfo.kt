@@ -134,6 +134,10 @@ internal class LayoutInfo(
         return getStartSpanIndex(position) + configuration.spanSizeLookup.getSpanSize(position) - 1
     }
 
+    fun invalidateSpanCache() {
+        configuration.spanSizeLookup.invalidateCache()
+    }
+
     fun getSpanGroupIndex(position: Int): Int {
         return configuration.spanSizeLookup.getCachedSpanGroupIndex(
             position,

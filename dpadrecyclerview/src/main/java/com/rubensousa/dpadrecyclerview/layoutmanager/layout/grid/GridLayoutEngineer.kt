@@ -589,6 +589,7 @@ internal class GridLayoutEngineer(
             )
             return layoutInfo.getStartSpanIndex(position)
         }
+        layoutInfo.invalidateSpanCache()
         return layoutInfo.getStartSpanIndex(adapterPosition)
     }
 
@@ -608,6 +609,7 @@ internal class GridLayoutEngineer(
             )
             return layoutInfo.getSpanSize(position)
         }
+        layoutInfo.invalidateSpanCache()
         return layoutInfo.getSpanSize(adapterPosition)
     }
 
