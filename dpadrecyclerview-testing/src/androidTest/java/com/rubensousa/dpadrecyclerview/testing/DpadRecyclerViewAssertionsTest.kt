@@ -43,16 +43,28 @@ class DpadRecyclerViewAssertionsTest : RecyclerViewTest() {
         launchSubPositionFragment()
 
         performActions(
-            DpadRecyclerViewActions.selectPosition(position = 1),
+            DpadRecyclerViewActions.selectPosition(position = 3),
             DpadRecyclerViewActions.waitForIdleScroll()
         )
-        assert(DpadRecyclerViewAssertions.isSelected(position = 1))
+        assert(DpadRecyclerViewAssertions.isSelected(position = 3))
 
         performActions(
-            DpadRecyclerViewActions.selectPosition(position = 2, subPosition = 1, smooth = false),
+            DpadRecyclerViewActions.selectPosition(position = 3, subPosition = 1, smooth = false),
             DpadRecyclerViewActions.waitForIdleScroll()
         )
-        assert(DpadRecyclerViewAssertions.isSelected(position = 2, subPosition = 1))
+        assert(DpadRecyclerViewAssertions.isSelected(position = 3, subPosition = 1))
+
+        performActions(
+            DpadRecyclerViewActions.selectPosition(position = 3, subPosition = 2),
+            DpadRecyclerViewActions.waitForIdleScroll()
+        )
+        assert(DpadRecyclerViewAssertions.isSelected(position = 3, subPosition = 2))
+
+        performActions(
+            DpadRecyclerViewActions.selectPosition(position = 6, subPosition = 1),
+            DpadRecyclerViewActions.waitForIdleScroll()
+        )
+        assert(DpadRecyclerViewAssertions.isSelected(position = 6, subPosition = 1))
     }
 
 }
