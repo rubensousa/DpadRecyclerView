@@ -237,9 +237,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun requestLayout() {
         if (isRequestLayoutAllowed()) {
-            if (DEBUG) {
-                Log.i(TAG, "Layout Requested")
-            }
             super.requestLayout()
         } else {
             hasPendingLayout = true
