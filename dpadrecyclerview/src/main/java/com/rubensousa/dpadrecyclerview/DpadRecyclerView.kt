@@ -1294,15 +1294,13 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
 
     /**
-     * By default, [DpadRecyclerView] allows triggering a layout-pass during scrolling.
-     * However, there might be some cases where someone is interested in disabling this behavior,
-     * for example:
+     * By default, [DpadRecyclerView] skips layout requests during scrolling because of:
      * 1. Compose animations trigger a full unnecessary layout-pass
      * 2. Content jumping around while scrolling is not ideal sometimes
      *
      * @param enabled true if layout requests should be possible while scrolling,
      * or false if they should be postponed until [RecyclerView.SCROLL_STATE_IDLE].
-     * Default is true.
+     * Default is false.
      */
     fun setLayoutWhileScrollingEnabled(enabled: Boolean) {
         layoutWhileScrollingEnabled = enabled
