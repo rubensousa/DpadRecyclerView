@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.test.tests.layout
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -25,6 +26,7 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -84,6 +86,9 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
             }
         }
         waitForIdleScrollState()
+        waitForCondition("Wait for layout complete") { recyclerView ->
+            !recyclerView.isLayoutRequested
+        }
 
         // then
         assertThat(layoutCompleted).isEqualTo(1)
@@ -112,6 +117,10 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
             }
         }
         waitForIdleScrollState()
+        Espresso.onIdle()
+        waitForCondition("Wait for layout complete") { recyclerView ->
+            !recyclerView.isLayoutRequested
+        }
 
         // then
         assertThat(layoutCompleted).isEqualTo(1)
