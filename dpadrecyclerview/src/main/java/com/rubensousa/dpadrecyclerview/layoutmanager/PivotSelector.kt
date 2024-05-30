@@ -79,7 +79,10 @@ internal class PivotSelector(
 
     fun consumePendingSelectionChanges(state: RecyclerView.State): Boolean {
         var consumed = false
-        if (position != RecyclerView.NO_POSITION && positionOffset != OFFSET_DISABLED) {
+        if (position != RecyclerView.NO_POSITION
+            && positionOffset != OFFSET_DISABLED
+            && positionOffset != 0
+        ) {
             applyPositionOffset(state.itemCount)
             subPosition = 0
             consumed = true
