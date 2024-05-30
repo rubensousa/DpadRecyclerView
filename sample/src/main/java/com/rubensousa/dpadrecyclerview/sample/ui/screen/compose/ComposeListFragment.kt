@@ -41,14 +41,14 @@ import com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ListViewModel
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ComposePlaceholderAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
+import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 
 
 class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
 
     private val viewModel by viewModels<ListViewModel>()
-    private val stateHolder = DpadStateHolder()
+    private val stateRegistry = DpadStateRegistry(this)
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +74,7 @@ class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
                 }
             }
         )
-        val itemAdapter = NestedComposeListAdapter(stateHolder)
+        val itemAdapter = NestedComposeListAdapter(stateRegistry.getScrollState())
         val concatAdapter = ConcatAdapter(
             ConcatAdapter.Config.Builder()
                 .setIsolateViewTypes(false)

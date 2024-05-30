@@ -25,6 +25,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
+import com.rubensousa.dpadrecyclerview.state.DpadScrollState
+import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 
@@ -34,6 +36,7 @@ class TestNestedListFragment : Fragment(R.layout.dpadrecyclerview_test_container
         itemLayoutId = R.layout.dpadrecyclerview_item_horizontal,
         numberOfItems = 200
     )
+    private val stateRegistry = DpadStateRegistry(this)
     private val parentFocusEvents = arrayListOf<DpadFocusEvent>()
     private val childFocusEvents = arrayListOf<DpadFocusEvent>()
     private val parentFocusListener = object : OnViewFocusedListener {
@@ -52,7 +55,11 @@ class TestNestedListFragment : Fragment(R.layout.dpadrecyclerview_test_container
             childFocusEvents.add(DpadFocusEvent(parent, child, parent.layoutPosition))
         }
     }
-    private val nestedAdapter = NestedAdapter(configuration, childFocusListener)
+    private val nestedAdapter = NestedAdapter(
+        configuration = configuration,
+        onViewFocusedListener = childFocusListener,
+        scrollState = stateRegistry.getScrollState()
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -70,7 +77,8 @@ class TestNestedListFragment : Fragment(R.layout.dpadrecyclerview_test_container
 
     class NestedAdapter(
         private val configuration: TestAdapterConfiguration,
-        private val onViewFocusedListener: OnViewFocusedListener
+        private val onViewFocusedListener: OnViewFocusedListener,
+        private val scrollState: DpadScrollState,
     ) : AbstractTestAdapter<ListViewHolder>(configuration) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
@@ -78,16 +86,29 @@ class TestNestedListFragment : Fragment(R.layout.dpadrecyclerview_test_container
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.dpadrecyclerview_nested_list, parent, false),
                 configuration,
-                onViewFocusedListener
+                onViewFocusedListener,
             )
         }
 
         override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
             holder.bind(position)
+            scrollState.restore(
+                recyclerView = holder.recyclerView,
+                key = position.toString(),
+                adapter = holder.adapter
+            )
+        }
+
+        override fun onViewRecycled(holder: ListViewHolder) {
+            super.onViewRecycled(holder)
+            scrollState.save(
+                recyclerView = holder.recyclerView,
+                key = holder.absoluteAdapterPosition.toString(),
+                detachAdapter = true
+            )
         }
 
     }
-
 
     class ListViewHolder(
         val view: View,
@@ -95,23 +116,24 @@ class TestNestedListFragment : Fragment(R.layout.dpadrecyclerview_test_container
         onViewFocusedListener: OnViewFocusedListener,
     ) : RecyclerView.ViewHolder(view) {
 
-        private val adapter = TestAdapter(
+         val adapter = TestAdapter(
             adapterConfiguration = configuration,
             onViewHolderSelected = { position -> },
             onViewHolderDeselected = { position -> }
         )
         private val textView = view.findViewById<TextView>(R.id.textView)
-        private val recyclerView = view.findViewById<DpadRecyclerView>(R.id.nestedRecyclerView)
+
+        val recyclerView = view.findViewById<DpadRecyclerView>(R.id.nestedRecyclerView)
 
         init {
-            recyclerView.adapter = adapter
             recyclerView.addOnViewFocusedListener(onViewFocusedListener)
         }
 
         fun bind(position: Int) {
+            recyclerView.tag = position
             textView.text = "List $position"
+            textView.freezesText = true
         }
-
     }
 
 }

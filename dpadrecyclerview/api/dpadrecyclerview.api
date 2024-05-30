@@ -562,3 +562,26 @@ public abstract interface class com/rubensousa/dpadrecyclerview/spacing/DpadSpac
 	public abstract fun shouldApplySpacing (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;I)Z
 }
 
+public final class com/rubensousa/dpadrecyclerview/state/DpadScrollState {
+	public final fun clear ()V
+	public final fun clear (Ljava/lang/String;)V
+	public final fun restore (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Ljava/lang/String;Landroidx/recyclerview/widget/RecyclerView$Adapter;)V
+	public final fun save (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Ljava/lang/String;Z)V
+	public static synthetic fun save$default (Lcom/rubensousa/dpadrecyclerview/state/DpadScrollState;Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Ljava/lang/String;ZILjava/lang/Object;)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/state/DpadStateRegistry {
+	public fun <init> (Landroidx/savedstate/SavedStateRegistryOwner;)V
+	public final fun getScrollState ()Lcom/rubensousa/dpadrecyclerview/state/DpadScrollState;
+	public final fun getViewHolderState ()Lcom/rubensousa/dpadrecyclerview/state/DpadViewHolderState;
+	public final fun setSaveInstanceStateEnabled (Z)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/state/DpadViewHolderState {
+	public final fun clear ()V
+	public final fun clear (Ljava/lang/String;)V
+	public final fun restoreState (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;Ljava/lang/String;Z)V
+	public static synthetic fun restoreState$default (Lcom/rubensousa/dpadrecyclerview/state/DpadViewHolderState;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;Ljava/lang/String;ZILjava/lang/Object;)V
+	public final fun saveState (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;Ljava/lang/String;)V
+}
+

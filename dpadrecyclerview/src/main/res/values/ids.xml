@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="dpadrecyclerview_state_key" type="id" />
+    <item name="dpadrecyclerview_scroll_state_key" type="id" />
 </resources>

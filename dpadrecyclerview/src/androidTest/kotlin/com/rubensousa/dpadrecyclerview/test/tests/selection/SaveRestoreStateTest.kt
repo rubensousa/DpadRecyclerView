@@ -16,44 +16,40 @@
 
 package com.rubensousa.dpadrecyclerview.test.tests.selection
 
-import androidx.recyclerview.widget.RecyclerView
+import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import com.google.common.truth.Truth.assertThat
-import com.rubensousa.dpadrecyclerview.ChildAlignment
-import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
-import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.TestNestedListFragment
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.assertOnRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
-import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
+import com.rubensousa.dpadrecyclerview.testing.R
+import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
+import org.hamcrest.Matchers
+import org.hamcrest.Matchers.allOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class SaveRestoreStateTest : DpadRecyclerViewTest() {
+class SaveRestoreStateTest {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
 
-    override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
-        return TestLayoutConfiguration(
-            spans = 1,
-            orientation = RecyclerView.VERTICAL,
-            parentAlignment = ParentAlignment(
-                edge = Edge.MIN_MAX
-            ),
-            childAlignment = ChildAlignment(offset = 0)
-        )
-    }
+    private lateinit var fragmentScenario: FragmentScenario<TestNestedListFragment>
 
     @Before
     fun setup() {
-        launchFragment()
+        fragmentScenario = launchFragment()
     }
 
     @Test
@@ -61,13 +57,61 @@ class SaveRestoreStateTest : DpadRecyclerViewTest() {
         KeyEvents.pressDown(times = 5)
         assertFocusPosition(5)
 
-        recreateFragment()
+        fragmentScenario.recreate()
 
         val recyclerViewBounds = getRecyclerViewBounds()
         val viewBounds = getItemViewBounds(position = 5)
         assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.centerY())
         assertOnRecyclerView(ViewAssertions.matches(ViewMatchers.hasFocus()))
         assertFocusPosition(5)
+    }
+
+    @Test
+    fun testSelectionStateAcrossNestedListsIsSaved() {
+        // given
+        KeyEvents.pressRight(times = 5)
+
+        // when
+        KeyEvents.pressDown(times = 25)
+        KeyEvents.pressUp(times = 25)
+
+        // then
+        Espresso.onView(
+            allOf(
+                withId(com.rubensousa.dpadrecyclerview.test.R.id.nestedRecyclerView),
+                withTagValue(Matchers.`is`(0))
+            )
+        ).check(DpadRecyclerViewAssertions.isSelected(position = 5))
+    }
+
+    @Test
+    fun testSelectionStateAcrossNestedListsSurvivesConfigurationChanges() {
+        // given
+        KeyEvents.pressRight(times = 5)
+        KeyEvents.pressDown(times = 25)
+        KeyEvents.pressUp(times = 25)
+
+        // when
+        fragmentScenario.recreate()
+
+        // then
+        Espresso.onView(
+            allOf(
+                withId(com.rubensousa.dpadrecyclerview.test.R.id.nestedRecyclerView),
+                withTagValue(Matchers.`is`(0))
+            )
+        ).check(DpadRecyclerViewAssertions.isSelected(position = 5))
+    }
+
+    private fun launchFragment(): FragmentScenario<TestNestedListFragment> {
+        return launchFragmentInContainer<TestNestedListFragment>(
+            themeResId = R.style.DpadRecyclerViewTestTheme
+        ).also {
+            fragmentScenario = it
+            waitForCondition("Waiting for layout pass") { recyclerView ->
+                !recyclerView.isLayoutRequested
+            }
+        }
     }
 
 }

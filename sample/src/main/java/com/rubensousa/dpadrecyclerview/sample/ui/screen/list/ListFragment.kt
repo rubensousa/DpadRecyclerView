@@ -31,13 +31,13 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.PlaceholderAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.list.DpadStateHolder
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import com.rubensousa.dpadrecyclerview.spacing.DpadSpacingLookup
+import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 
 class ListFragment : Fragment(R.layout.screen_recyclerview) {
 
-    private val stateHolder = DpadStateHolder()
+    private val stateRegistry = DpadStateRegistry(this)
     private var selectedPosition: Int = RecyclerView.NO_POSITION
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
     private val viewModel by viewModels<ListViewModel>()
@@ -53,7 +53,8 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
         setupRecyclerView(binding.recyclerView)
         val placeholderAdapter = PlaceholderAdapter()
         val itemAdapter = HorizontalListAdapter(
-            stateHolder, HorizontalListConfig(
+            scrollState = stateRegistry.getScrollState(),
+            config = HorizontalListConfig(
                 isScrollSpeedLimited = args.slowScroll,
                 reverseLayout = args.reverseLayout,
                 itemLayoutId = if (args.showOverlay) {
