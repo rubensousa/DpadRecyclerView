@@ -36,7 +36,7 @@ class ScrollToActionsTest : RecyclerViewTest() {
     fun testScrollDownToItem() {
         launchVerticalFragment()
 
-        val position = 15
+        val position = 5
         performActions(
             DpadRecyclerViewActions.scrollTo<RecyclerView.ViewHolder>(
                 hasDescendant(withText(position.toString()))
@@ -51,14 +51,17 @@ class ScrollToActionsTest : RecyclerViewTest() {
     fun testScrollUpToItem() {
         launchVerticalFragment()
 
-        performActions(DpadRecyclerViewActions.selectPosition(15, smooth = false))
+        performActions(
+            DpadRecyclerViewActions.scrollTo<RecyclerView.ViewHolder>(
+                hasDescendant(withText("5"))
+            )
+        )
 
         val position = 0
         performActions(
-            DpadRecyclerViewActions.waitForIdleScroll(),
             DpadRecyclerViewActions.scrollTo<RecyclerView.ViewHolder>(
                 hasDescendant(withText(position.toString()))
-            )
+            ),
         )
 
         assert(DpadRecyclerViewAssertions.isSelected(position))

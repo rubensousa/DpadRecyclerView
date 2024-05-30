@@ -21,6 +21,7 @@ import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -30,6 +31,7 @@ import android.view.animation.Interpolator
 import androidx.annotation.Px
 import androidx.annotation.VisibleForTesting
 import androidx.core.view.ViewCompat
+import androidx.core.view.postDelayed
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -229,12 +231,22 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     final override fun requestLayout() {
-        if (layoutWhileScrollingEnabled || scrollState == SCROLL_STATE_IDLE) {
+        if (isRequestLayoutAllowed()) {
             hasPendingLayout = false
+            if (DEBUG) {
+                Log.i(TAG, "Layout Requested")
+            }
             super.requestLayout()
-            return
+        } else {
+            hasPendingLayout = true
+            if (DEBUG) {
+                Log.i(TAG, "Layout suppressed until scroll is idle")
+            }
         }
-        hasPendingLayout = true
+    }
+
+    private fun isRequestLayoutAllowed(): Boolean {
+        return scrollState == SCROLL_STATE_IDLE || layoutWhileScrollingEnabled
     }
 
     // Overriding to prevent WRAP_CONTENT behavior by replacing it
@@ -431,12 +443,23 @@ open class DpadRecyclerView @JvmOverloads constructor(
             startedTouchScroll = false
             pivotLayoutManager?.setScrollingFromTouchEvent(false)
             if (hasPendingLayout) {
-                hasPendingLayout = false
-                requestLayout()
+                scheduleLayout()
             }
         } else if (startedTouchScroll) {
             pivotLayoutManager?.setScrollingFromTouchEvent(true)
         }
+    }
+
+    private fun scheduleLayout() {
+        if (DEBUG) {
+            Log.i(TAG, "Scheduling pending layout request")
+        }
+        /**
+         * The delay here is intended because users can request selections
+         * while the layout was locked and in that case, we should honor those requests instead
+         * of just performing a full layout
+         */
+        postDelayed(500L) { requestLayout() }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
