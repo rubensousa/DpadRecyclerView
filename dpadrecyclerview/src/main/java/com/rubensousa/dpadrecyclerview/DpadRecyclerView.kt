@@ -130,10 +130,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
         val layout = PivotLayoutManager(properties)
         layout.setFocusOutAllowed(
             throughFront = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutFront, true
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutFront, false
             ),
             throughBack = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutBack, true
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutBack, false
             )
         )
         layout.setFocusOutSideAllowed(
@@ -240,9 +240,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
             super.requestLayout()
         } else {
             hasPendingLayout = true
-            if (DEBUG) {
-                Log.i(TAG, "Layout suppressed until scroll is idle")
-            }
         }
     }
 
@@ -376,22 +373,31 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     final override fun removeView(view: View) {
-        isRetainingFocus = view.hasFocus() && isFocusable
-        if (isRetainingFocus) {
-            requestFocus()
-        }
+        preRemoveView(childHasFocus = view.hasFocus())
         super.removeView(view)
-        isRetainingFocus = false
+        postRemoveView()
     }
 
     final override fun removeViewAt(index: Int) {
-        val childHasFocus = getChildAt(index)?.hasFocus() ?: false
+        preRemoveView(childHasFocus = getChildAt(index)?.hasFocus() ?: false)
+        super.removeViewAt(index)
+        postRemoveView()
+    }
+
+    private fun preRemoveView(childHasFocus: Boolean) {
         isRetainingFocus = childHasFocus && isFocusable
+        pivotLayoutManager?.setIsRetainingFocus(isRetainingFocus)
         if (isRetainingFocus) {
             requestFocus()
         }
-        super.removeViewAt(index)
+    }
+
+    private fun postRemoveView() {
+        if (isRetainingFocus && childCount > 0 && !hasFocus()) {
+            requestFocus()
+        }
         isRetainingFocus = false
+        pivotLayoutManager?.setIsRetainingFocus(false)
     }
 
     final override fun setChildDrawingOrderCallback(
@@ -433,19 +439,14 @@ open class DpadRecyclerView @JvmOverloads constructor(
         return result
     }
 
-    override fun stopNestedScroll() {
-        super.stopNestedScroll()
-        startedTouchScroll = false
-    }
-
     override fun onScrollStateChanged(state: Int) {
         super.onScrollStateChanged(state)
         if (state == SCROLL_STATE_IDLE) {
-            startedTouchScroll = false
-            pivotLayoutManager?.setScrollingFromTouchEvent(false)
-            if (hasPendingLayout) {
+            if (hasPendingLayout && !startedTouchScroll) {
                 scheduleLayout()
             }
+            startedTouchScroll = false
+            pivotLayoutManager?.setScrollingFromTouchEvent(false)
         } else if (startedTouchScroll) {
             pivotLayoutManager?.setScrollingFromTouchEvent(true)
         }
@@ -460,7 +461,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
          * while the layout was locked and in that case, we should honor those requests instead
          * of just performing a full layout
          */
-        post { requestLayout() }
+        ViewCompat.postOnAnimation(this) { requestLayout() }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -1320,10 +1321,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private fun removeSelectionForRecycledViewHolders() {
         addRecyclerListener { holder ->
             val position = holder.absoluteAdapterPosition
-            if (holder is DpadViewHolder
-                && position != NO_POSITION
-                && position == getSelectedPosition()
-            ) {
+            if (position != NO_POSITION && position == getSelectedPosition()) {
                 pivotLayoutManager?.removeCurrentViewHolderSelection()
             }
         }
