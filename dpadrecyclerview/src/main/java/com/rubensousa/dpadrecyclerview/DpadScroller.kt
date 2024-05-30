@@ -44,6 +44,7 @@ class DpadScroller(
         detach()
         this.recyclerView = recyclerView
         recyclerView.descendantFocusability = ViewGroup.FOCUS_BLOCK_DESCENDANTS
+        recyclerView.setLayoutWhileScrollingEnabled(true)
         recyclerView.setOnKeyInterceptListener(keyListener)
     }
 
