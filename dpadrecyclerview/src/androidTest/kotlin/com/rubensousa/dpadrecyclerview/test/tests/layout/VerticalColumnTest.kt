@@ -27,7 +27,6 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
-import com.rubensousa.dpadrecyclerview.test.helpers.waitForLayout
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.ColumnLayout
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
@@ -158,7 +157,6 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
                 }
             })
         }
-        waitForLayout()
         column.setExtraLayoutSpace(start = column.getSize())
         assertChildrenPositions(column)
     }
