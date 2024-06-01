@@ -338,7 +338,7 @@ internal class LayoutAlignment(
      * Return the scroll delta required to make the view selected and aligned.
      * If the returned value is 0, there is no need to scroll.
      */
-    private fun calculateScrollToTarget(view: View): Int {
+    fun calculateScrollToTarget(view: View): Int {
         return parentAlignmentCalculator.calculateScrollOffset(getAnchor(view), parentAlignment)
     }
 

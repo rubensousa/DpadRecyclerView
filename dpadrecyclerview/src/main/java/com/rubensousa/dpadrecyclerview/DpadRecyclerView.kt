@@ -318,7 +318,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
         return super.dispatchTouchEvent(event)
     }
 
-    final override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+    final override fun dispatchKeyEvent(event: KeyEvent?): Boolean {
+        if (event == null) {
+            return false
+        }
         if (keyInterceptListener?.onInterceptKeyEvent(event) == true) {
             return true
         }
@@ -1303,6 +1306,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun setLayoutWhileScrollingEnabled(enabled: Boolean) {
         layoutWhileScrollingEnabled = enabled
     }
+
+    internal fun isScrollingFromTouch() = startedTouchScroll
 
     @VisibleForTesting
     internal fun detachFromWindow() {

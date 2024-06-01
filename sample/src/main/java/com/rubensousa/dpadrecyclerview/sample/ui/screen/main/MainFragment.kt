@@ -21,6 +21,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadSelectionSnapHelper
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
@@ -47,6 +48,7 @@ class MainFragment : Fragment(R.layout.screen_main) {
             scrollState = stateRegistry.getScrollState(),
             recycledViewPool = UnboundViewPool()
         )
+        DpadSelectionSnapHelper().attachToRecyclerView(recyclerView)
         recyclerView.adapter = adapter
         recyclerView.requestFocus()
         recyclerView.addItemDecoration(
