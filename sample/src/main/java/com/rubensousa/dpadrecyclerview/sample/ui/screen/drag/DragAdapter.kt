@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Rúben Sousa
+ * Copyright 2024 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +14,32 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.screen.compose
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.drag
 
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.width
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
-import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemComposable
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
+import kotlinx.coroutines.flow.StateFlow
 
-
-class ComposeItemAdapter(
-    private val onItemClick: (Int) -> Unit = {}
+class DragAdapter(
+    private val draggableState: StateFlow<Int?>,
+    private val onDragStart: (viewHolder: RecyclerView.ViewHolder) -> Unit
 ) : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): DpadComposeFocusViewHolder<Int> {
-        return DpadComposeFocusViewHolder(parent) { item, _ ->
-            ItemComposable(
-                modifier = Modifier
-                    .width(dimensionResource(id = R.dimen.list_item_width))
-                    .aspectRatio(3 / 4f),
+        return DpadComposeFocusViewHolder(parent) { item, viewHolder ->
+            DraggableItem(
                 item = item,
+                isDragging = draggableState.collectAsStateWithLifecycle().value == item,
                 onClick = {
-                    onItemClick(item)
+                    onDragStart(viewHolder)
                 }
             )
         }

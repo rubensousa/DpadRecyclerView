@@ -80,6 +80,11 @@
             android:id="@+id/open_short_list"
             app:destination="@id/short_list_fragment" />
 
+        <action
+            android:id="@+id/open_drag_drop"
+            app:destination="@id/drag_drop_fragment" />
+
+
     </fragment>
 
     <fragment
@@ -193,5 +198,9 @@
     <fragment
         android:id="@+id/short_list_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ShortListFragment" />
+
+    <fragment
+        android:id="@+id/drag_drop_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.drag.DragAndDropFragment" />
 
 </navigation>

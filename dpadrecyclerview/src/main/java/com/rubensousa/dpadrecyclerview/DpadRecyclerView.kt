@@ -340,7 +340,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun focusSearch(direction: Int): View? {
         val currentLayout = pivotLayoutManager
-        if (isFocused && currentLayout != null) {
+        if (currentLayout != null) {
             val view = currentLayout.findViewByPosition(currentLayout.getSelectedPosition())
             return if (view != null) {
                 focusSearch(view, direction)
