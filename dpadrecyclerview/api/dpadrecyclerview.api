@@ -202,6 +202,13 @@ public abstract interface class com/rubensousa/dpadrecyclerview/DpadScroller$Scr
 	public abstract fun calculateScrollDistance (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Landroid/view/KeyEvent;)I
 }
 
+public final class com/rubensousa/dpadrecyclerview/DpadSelectionSnapHelper : androidx/recyclerview/widget/LinearSnapHelper {
+	public fun <init> ()V
+	public fun attachToRecyclerView (Landroidx/recyclerview/widget/RecyclerView;)V
+	public fun calculateDistanceToFinalSnap (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;Landroid/view/View;)[I
+	public fun findSnapView (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)Landroid/view/View;
+}
+
 public abstract class com/rubensousa/dpadrecyclerview/DpadSpanSizeLookup {
 	public fun <init> ()V
 	public static final fun findFirstKeyLessThan$dpadrecyclerview_release (Landroid/util/SparseIntArray;I)I
@@ -394,7 +401,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParam
 public final class com/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParams$Companion {
 }
 
-public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutManager : androidx/recyclerview/widget/RecyclerView$LayoutManager {
+public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutManager : androidx/recyclerview/widget/RecyclerView$LayoutManager, androidx/recyclerview/widget/RecyclerView$SmoothScroller$ScrollVectorProvider {
 	public fun <init> (Landroidx/recyclerview/widget/RecyclerView$LayoutManager$Properties;)V
 	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun addOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
@@ -410,6 +417,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public fun computeHorizontalScrollExtent (Landroidx/recyclerview/widget/RecyclerView$State;)I
 	public fun computeHorizontalScrollOffset (Landroidx/recyclerview/widget/RecyclerView$State;)I
 	public fun computeHorizontalScrollRange (Landroidx/recyclerview/widget/RecyclerView$State;)I
+	public fun computeScrollVectorForPosition (I)Landroid/graphics/PointF;
 	public fun computeVerticalScrollExtent (Landroidx/recyclerview/widget/RecyclerView$State;)I
 	public fun computeVerticalScrollOffset (Landroidx/recyclerview/widget/RecyclerView$State;)I
 	public fun computeVerticalScrollRange (Landroidx/recyclerview/widget/RecyclerView$State;)I
@@ -437,6 +445,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public fun isAutoMeasureEnabled ()Z
 	public final fun isFocusSearchDisabled ()Z
 	public final fun isLayoutEnabled ()Z
+	public fun isLayoutReversed ()Z
 	public fun onAdapterChanged (Landroidx/recyclerview/widget/RecyclerView$Adapter;Landroidx/recyclerview/widget/RecyclerView$Adapter;)V
 	public fun onAddFocusables (Landroidx/recyclerview/widget/RecyclerView;Ljava/util/ArrayList;II)Z
 	public fun onAttachedToWindow (Landroidx/recyclerview/widget/RecyclerView;)V

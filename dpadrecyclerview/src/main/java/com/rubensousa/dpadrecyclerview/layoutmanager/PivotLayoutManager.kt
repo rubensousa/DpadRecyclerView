@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager
 
 import android.content.Context
+import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.Parcelable
@@ -49,7 +50,8 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  *
  * It behaves similarly to `GridLayoutManager` with the main difference being how focus is handled.
  */
-class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() {
+class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
+    RecyclerView.SmoothScroller.ScrollVectorProvider {
 
     private var layoutDirection: Int = View.LAYOUT_DIRECTION_LTR
     private val configuration = LayoutConfiguration(properties)
@@ -118,6 +120,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
     override fun canScrollHorizontally(): Boolean = configuration.isHorizontal()
 
     override fun canScrollVertically(): Boolean = configuration.isVertical()
+
+    override fun isLayoutReversed(): Boolean = configuration.reverseLayout
 
     override fun isAutoMeasureEnabled(): Boolean = true
 
@@ -196,6 +200,24 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     override fun computeVerticalScrollRange(state: RecyclerView.State): Int {
         return computeScrollRange(state)
+    }
+
+    override fun computeScrollVectorForPosition(targetPosition: Int): PointF? {
+        if (childCount == 0) {
+            return null
+        }
+        val firstChild = layoutInfo.getChildAt(0) ?: return null
+        val firstChildPos = getPosition(firstChild)
+        val direction = if (targetPosition < firstChildPos != isLayoutReversed) {
+            -1
+        } else {
+            1
+        }
+        return if (isHorizontal()) {
+            PointF(direction.toFloat(), 0f)
+        } else {
+            PointF(0f, direction.toFloat())
+        }
     }
 
     private fun computeScrollOffset(state: RecyclerView.State): Int {
@@ -420,6 +442,24 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     internal fun getConfig() = configuration
 
+    internal fun isHorizontal() = configuration.isHorizontal()
+
+    internal fun getScrollOffset(view: View): Int {
+        return layoutAlignment.calculateScrollToTarget(view)
+    }
+
+    internal fun notifyNestedChildFocus(view: View) {
+        pivotSelector.notifyNestedChildFocus(view)
+    }
+
+    internal fun select(view: View) {
+        val position = layoutInfo.getAdapterPositionOf(view)
+        if (position == RecyclerView.NO_POSITION) {
+            return
+        }
+        selectPosition(position = position, subPosition = 0, smooth = true)
+    }
+
     internal fun setScrollingFromTouchEvent(isTouching: Boolean) {
         configuration.setKeepLayoutAnchor(isTouching)
         isScrollingFromTouchEvent = isTouching
@@ -610,10 +650,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager() 
 
     fun clearOnViewFocusedListeners() {
         pivotSelector.clearOnViewHolderFocusedListeners()
-    }
-
-    internal fun notifyNestedChildFocus(view: View) {
-        pivotSelector.notifyNestedChildFocus(view)
     }
 
     fun selectPosition(position: Int, subPosition: Int, smooth: Boolean) {

@@ -19,12 +19,17 @@ package com.rubensousa.dpadrecyclerview.test.tests.touch
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadSelectionSnapHelper
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
+import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.swipeVerticallyBy
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.ColumnLayout
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
@@ -85,4 +90,60 @@ class VerticalTouchScrollTest : DpadRecyclerViewTest() {
         assertChildrenPositions(column)
     }
 
+    @Test
+    fun testSwipeDownSnapsToNextItem() {
+        // given
+        val startPosition = 10
+        selectPosition(position = startPosition)
+        val startItemBounds = getItemViewBounds(position = startPosition)
+        applySnapHelper()
+
+        // when
+        swipeVerticallyBy(-startItemBounds.height() / 2)
+        waitForIdleScrollState()
+
+        // then
+        assertFocusAndSelection(startPosition + 1)
+        assertThat(getItemViewBounds(position = startPosition + 1)).isEqualTo(startItemBounds)
+    }
+
+    @Test
+    fun testSwipeUpSnapsToPreviousItem() {
+        // given
+        val startPosition = 10
+        selectPosition(position = startPosition)
+        val startItemBounds = getItemViewBounds(position = startPosition)
+        applySnapHelper()
+
+        // when
+        swipeVerticallyBy(startItemBounds.height() / 2)
+        waitForIdleScrollState()
+
+        // then
+        assertFocusAndSelection(startPosition - 1)
+        assertThat(getItemViewBounds(position = startPosition - 1)).isEqualTo(startItemBounds)
+    }
+
+    @Test
+    fun testLongSwipeSnapsToKeyline() {
+        // given
+        val startPosition = 10
+        selectPosition(position = startPosition)
+        val startItemBounds = getItemViewBounds(position = startPosition)
+        applySnapHelper()
+
+        // when
+        swipeVerticallyBy(-getRecyclerViewBounds().height() / 2)
+        waitForIdleScrollState()
+
+        // then
+        assertFocusAndSelection(16)
+        assertThat(getItemViewBounds(16)).isEqualTo(startItemBounds)
+    }
+
+    private fun applySnapHelper() {
+        onRecyclerView("Apply SnapHelper") {
+            DpadSelectionSnapHelper().attachToRecyclerView(it)
+        }
+    }
 }
