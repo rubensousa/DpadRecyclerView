@@ -30,6 +30,26 @@ public final class com/rubensousa/dpadrecyclerview/ChildAlignment$CREATOR : andr
 	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
+public final class com/rubensousa/dpadrecyclerview/DpadDragHelper {
+	public fun <init> (Lcom/rubensousa/dpadrecyclerview/DpadDragHelper$DragCallback;Ljava/util/Set;)V
+	public synthetic fun <init> (Lcom/rubensousa/dpadrecyclerview/DpadDragHelper$DragCallback;Ljava/util/Set;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun attachRecyclerView (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;)V
+	public final fun detachFromRecyclerView ()V
+	public final fun startDrag (I)Z
+	public final fun stopDrag ()V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadDragHelper$DragCallback {
+	public abstract fun move (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)Z
+	public abstract fun onDragStarted (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
+	public abstract fun onDragStopped ()V
+}
+
+public final class com/rubensousa/dpadrecyclerview/DpadDragHelper$DragCallback$DefaultImpls {
+	public static fun onDragStarted (Lcom/rubensousa/dpadrecyclerview/DpadDragHelper$DragCallback;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
+	public static fun onDragStopped (Lcom/rubensousa/dpadrecyclerview/DpadDragHelper$DragCallback;)V
+}
+
 public final class com/rubensousa/dpadrecyclerview/DpadLoopDirection : java/lang/Enum {
 	public static final field MAX Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
 	public static final field MIN_MAX Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
@@ -401,7 +421,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParam
 public final class com/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParams$Companion {
 }
 
-public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutManager : androidx/recyclerview/widget/RecyclerView$LayoutManager, androidx/recyclerview/widget/RecyclerView$SmoothScroller$ScrollVectorProvider {
+public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutManager : androidx/recyclerview/widget/RecyclerView$LayoutManager, androidx/recyclerview/widget/ItemTouchHelper$ViewDropHandler, androidx/recyclerview/widget/RecyclerView$SmoothScroller$ScrollVectorProvider {
 	public fun <init> (Landroidx/recyclerview/widget/RecyclerView$LayoutManager$Properties;)V
 	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun addOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
@@ -464,6 +484,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public fun onRestoreInstanceState (Landroid/os/Parcelable;)V
 	public fun onSaveInstanceState ()Landroid/os/Parcelable;
 	public fun performAccessibilityAction (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;ILandroid/os/Bundle;)Z
+	public fun prepareForDrop (Landroid/view/View;Landroid/view/View;II)V
 	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun removeOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
 	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V

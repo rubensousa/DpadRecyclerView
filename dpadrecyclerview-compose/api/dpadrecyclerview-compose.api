@@ -4,16 +4,16 @@ public final class com/rubensousa/dpadrecyclerview/compose/DpadComposeExtensions
 
 public final class com/rubensousa/dpadrecyclerview/compose/DpadComposeFocusViewHolder : androidx/recyclerview/widget/RecyclerView$ViewHolder {
 	public static final field $stable I
-	public fun <init> (Landroid/view/ViewGroup;Landroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function3;)V
-	public synthetic fun <init> (Landroid/view/ViewGroup;Landroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function3;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/view/ViewGroup;Landroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function4;)V
+	public synthetic fun <init> (Landroid/view/ViewGroup;Landroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function4;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getItem ()Ljava/lang/Object;
 	public final fun setItemState (Ljava/lang/Object;)V
 }
 
 public final class com/rubensousa/dpadrecyclerview/compose/DpadComposeViewHolder : androidx/recyclerview/widget/RecyclerView$ViewHolder {
 	public static final field $stable I
-	public fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function4;)V
-	public synthetic fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function4;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function5;)V
+	public synthetic fun <init> (Landroid/view/ViewGroup;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;ZLandroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function5;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getItem ()Ljava/lang/Object;
 	public final fun setItemState (Ljava/lang/Object;)V
 }
