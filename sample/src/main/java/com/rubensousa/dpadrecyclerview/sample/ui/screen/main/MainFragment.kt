@@ -21,6 +21,7 @@ import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.DpadSelectionSnapHelper
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
@@ -48,7 +49,11 @@ class MainFragment : Fragment(R.layout.screen_main) {
             scrollState = stateRegistry.getScrollState(),
             recycledViewPool = UnboundViewPool()
         )
-        DpadSelectionSnapHelper().attachToRecyclerView(recyclerView)
+        // Include this for debug builds if you want to use touch events on the emulator
+        // or if you need to support touch events on the device (automotive or mobile)
+        if (BuildConfig.DEBUG) {
+            DpadSelectionSnapHelper().attachToRecyclerView(recyclerView)
+        }
         recyclerView.adapter = adapter
         recyclerView.requestFocus()
         recyclerView.addItemDecoration(
