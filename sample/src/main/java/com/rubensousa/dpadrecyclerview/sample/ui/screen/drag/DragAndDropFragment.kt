@@ -68,7 +68,12 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupRecyclerView()
+        setDragButtonContent()
+        dragAdapter.submitList(List(20) { it }.toMutableList())
+    }
 
+    private fun setupRecyclerView() {
         binding.recyclerView.apply {
             adapter = dragAdapter
             dragHelper.attachRecyclerView(this)
@@ -84,11 +89,10 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
                     perpendicularEdgeSpacing = dpToPx(48.dp)
                 )
             )
-            dragHelper.attachRecyclerView(this)
         }
-        dragAdapter.submitList(List(20) { it }.toMutableList())
+    }
 
-        binding.dragButton.requestFocus()
+    private fun setDragButtonContent() {
         binding.dragButton.setContent {
             val focusRequester = remember { FocusRequester() }
             DragButtonItem(
@@ -108,7 +112,7 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
     }
 
     private fun startDrag() {
-        dragHelper.startDrag(position = 0)
+        dragHelper.startDrag(position = binding.recyclerView.getSelectedPosition())
     }
 
     private fun stopDrag() {
