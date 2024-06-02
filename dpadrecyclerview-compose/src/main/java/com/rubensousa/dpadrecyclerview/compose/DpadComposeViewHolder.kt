@@ -60,16 +60,14 @@ class DpadComposeViewHolder<T>(
     onLongClick: ((item: T) -> Boolean)? = null,
     isFocusable: Boolean = true,
     compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
-    private val content: @Composable (
-        item: T, isFocused: Boolean, viewHolder: RecyclerView.ViewHolder
-    ) -> Unit
+    private val content: @Composable (item: T, isFocused: Boolean) -> Unit = { _, _ -> }
 ) : RecyclerView.ViewHolder(DpadComposeView(parent.context)) {
 
     private val focusState = mutableStateOf(false)
     private val itemState = mutableStateOf<T?>(null)
+    private val composeView = itemView as DpadComposeView
 
     init {
-        val composeView = itemView as DpadComposeView
         composeView.apply {
             setFocusConfiguration(
                 isFocusable = isFocusable,
@@ -81,7 +79,7 @@ class DpadComposeViewHolder<T>(
             setViewCompositionStrategy(compositionStrategy)
             setContent {
                 itemState.value?.let { item ->
-                    content(item, focusState.value, this@DpadComposeViewHolder)
+                    content(item, focusState.value)
                 }
             }
         }
@@ -94,6 +92,14 @@ class DpadComposeViewHolder<T>(
             itemView.setOnLongClickListener {
                 val value = getItem() ?: return@setOnLongClickListener false
                 onLongClick(value)
+            }
+        }
+    }
+
+    fun setContent(content: @Composable (item: T) -> Unit) {
+        composeView.setContent {
+            itemState.value?.let { item ->
+                content(item)
             }
         }
     }
