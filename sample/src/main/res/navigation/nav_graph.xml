@@ -84,6 +84,9 @@
             android:id="@+id/open_drag_drop"
             app:destination="@id/drag_drop_fragment" />
 
+        <action
+            android:id="@+id/open_drag_drop_grid"
+            app:destination="@id/drag_drop_grid_fragment" />
 
     </fragment>
 
@@ -202,5 +205,9 @@
     <fragment
         android:id="@+id/drag_drop_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.drag.DragAndDropFragment" />
+
+    <fragment
+        android:id="@+id/drag_drop_grid_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.drag.DragAndDropGridFragment" />
 
 </navigation>

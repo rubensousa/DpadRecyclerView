@@ -19,18 +19,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
 
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/dragButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recyclerView" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:dpadRecyclerViewFocusOutBack="true"
+        app:dpadRecyclerViewFocusOutFront="true"
+        app:dpadRecyclerViewFocusOutSideBack="true"
+        app:dpadRecyclerViewFocusOutSideFront="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        app:spanCount="5" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

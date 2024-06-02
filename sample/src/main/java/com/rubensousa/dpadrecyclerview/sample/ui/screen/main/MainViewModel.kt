@@ -93,12 +93,16 @@ class MainViewModel : ViewModel() {
             title = "Grids",
             destinations = listOf(
                 ScreenDestination(
-                    direction = MainFragmentDirections.openGrid(),
-                    title = "Default"
-                ),
-                ScreenDestination(
                     direction = MainFragmentDirections.openGrid(evenSpans = false),
                     title = "Different span sizes"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openGrid(),
+                    title = "Default span size"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openDragDropGrid(),
+                    title = "Drag and drop"
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openGrid(reverseLayout = true),

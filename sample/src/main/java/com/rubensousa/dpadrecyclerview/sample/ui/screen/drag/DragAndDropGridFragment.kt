@@ -31,10 +31,10 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenDragDropBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
+import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
+class DragAndDropGridFragment : Fragment(R.layout.screen_drag_drop_grid) {
 
     private val binding by viewBinding(ScreenDragDropBinding::bind)
     private val dragState = MutableStateFlow<Int?>(null)
@@ -42,7 +42,8 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
         dragState = dragState,
         onDragStart = { viewHolder ->
             startDrag(viewHolder)
-        }
+        },
+        gridLayout = true
     )
     private val dragHelper = DpadDragHelper(object : DpadDragHelper.DragCallback {
 
@@ -51,14 +52,14 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
             target: RecyclerView.ViewHolder
         ): Boolean {
             dragAdapter.move(
-                from = src.bindingAdapterPosition,
-                to = target.bindingAdapterPosition
+                from = src.absoluteAdapterPosition,
+                to = target.absoluteAdapterPosition
             )
             return true
         }
 
         override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
-            dragState.value = dragAdapter.getItem(viewHolder.bindingAdapterPosition)
+            dragState.value = dragAdapter.getItem(viewHolder.absoluteAdapterPosition)
         }
 
         override fun onDragStopped() {
@@ -82,12 +83,10 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
                 // For faster moves
                 moveDuration = 100
             }
-            setOrientation(RecyclerView.HORIZONTAL)
             addItemDecoration(
-                DpadLinearSpacingDecoration.create(
+                DpadGridSpacingDecoration.create(
                     itemSpacing = dpToPx(16.dp),
                     edgeSpacing = dpToPx(48.dp),
-                    perpendicularEdgeSpacing = dpToPx(48.dp)
                 )
             )
         }

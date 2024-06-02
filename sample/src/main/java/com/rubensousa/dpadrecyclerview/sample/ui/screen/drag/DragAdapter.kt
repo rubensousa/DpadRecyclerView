@@ -26,23 +26,36 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
 import kotlinx.coroutines.flow.StateFlow
 
 class DragAdapter(
-    private val draggableState: StateFlow<Int?>,
-    private val onDragStart: (viewHolder: RecyclerView.ViewHolder) -> Unit
+    private val dragState: StateFlow<Int?>,
+    private val onDragStart: (viewHolder: RecyclerView.ViewHolder) -> Unit,
+    private val gridLayout: Boolean = false
 ) : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): DpadComposeFocusViewHolder<Int> {
-        return DpadComposeFocusViewHolder(parent) { item, viewHolder ->
-            DraggableItem(
-                item = item,
-                isDragging = draggableState.collectAsStateWithLifecycle().value == item,
-                onClick = {
-                    onDragStart(viewHolder)
-                }
-            )
+        val viewHolder = DpadComposeFocusViewHolder<Int>(parent)
+        viewHolder.setContent { item ->
+            if (gridLayout) {
+                DraggableGridItem(
+                    item = item,
+                    isDragging = dragState.collectAsStateWithLifecycle().value == item,
+                    onClick = {
+                        onDragStart(viewHolder)
+                    }
+                )
+            } else {
+                DraggableItem(
+                    item = item,
+                    isDragging = dragState.collectAsStateWithLifecycle().value == item,
+                    onClick = {
+                        onDragStart(viewHolder)
+                    }
+                )
+            }
         }
+        return viewHolder
     }
 
     override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {

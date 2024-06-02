@@ -32,7 +32,7 @@ class ComposeGridAdapter : MutableListAdapter<Int, DpadComposeFocusViewHolder<In
         parent: ViewGroup,
         viewType: Int
     ): DpadComposeFocusViewHolder<Int> {
-        return DpadComposeFocusViewHolder(parent) { item, viewHolder ->
+        return DpadComposeFocusViewHolder(parent) { item ->
             GridItemComposable(
                 item = item,
                 onClick = {

@@ -31,7 +31,6 @@ class DpadDragHelper(
 
     private var currentRecyclerView: DpadRecyclerView? = null
     private var isDragging: Boolean = false
-    private var selectedViewHolder: RecyclerView.ViewHolder? = null
     private var previousKeyInterceptListener: DpadRecyclerView.OnKeyInterceptListener? = null
     private var keyInterceptListener = object : DpadRecyclerView.OnKeyInterceptListener {
         override fun onInterceptKeyEvent(event: KeyEvent): Boolean {
@@ -103,7 +102,6 @@ class DpadDragHelper(
         viewHolder: RecyclerView.ViewHolder
     ) {
         isDragging = true
-        selectedViewHolder = viewHolder
         previousKeyInterceptListener = recyclerView.getOnKeyInterceptListener()
         recyclerView.setOnKeyInterceptListener(keyInterceptListener)
         recyclerView.isFocusable = true
@@ -125,7 +123,6 @@ class DpadDragHelper(
                 recyclerView.setOnKeyInterceptListener(listener)
             }
         }
-        selectedViewHolder = null
         isDragging = false
         callback.onDragStopped()
         currentRecyclerView?.requestLayout()
@@ -136,10 +133,16 @@ class DpadDragHelper(
         val direction = getFocusDirection(event) ?: return false
         val view = recyclerView.focusSearch(direction) ?: return false
         val viewHolder = recyclerView.findContainingViewHolder(view) ?: return false
-        selectedViewHolder?.let { srcViewHolder ->
-            return callback.move(src = srcViewHolder, target = viewHolder)
+        val selectedViewHolder = recyclerView.findViewHolderForAdapterPosition(
+            recyclerView.getSelectedPosition()
+        ) ?: return false
+
+        if (selectedViewHolder.absoluteAdapterPosition == RecyclerView.NO_POSITION
+            || viewHolder.absoluteAdapterPosition == RecyclerView.NO_POSITION
+        ) {
+            return false
         }
-        return false
+        return callback.move(src = selectedViewHolder, target = viewHolder)
     }
 
     private fun getFocusDirection(event: KeyEvent): Int? {

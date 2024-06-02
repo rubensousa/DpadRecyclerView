@@ -46,13 +46,13 @@ import androidx.recyclerview.widget.RecyclerView
 class DpadComposeFocusViewHolder<T>(
     parent: ViewGroup,
     compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
-    private val content: @Composable (item: T, viewHolder: RecyclerView.ViewHolder) -> Unit
+    private val content: @Composable (item: T) -> Unit = {}
 ) : RecyclerView.ViewHolder(ComposeView(parent.context)) {
 
     private val itemState = mutableStateOf<T?>(null)
+    private val composeView = itemView as ComposeView
 
     init {
-        val composeView = itemView as ComposeView
         composeView.apply {
             isFocusable = true
             isFocusableInTouchMode = true
@@ -60,8 +60,16 @@ class DpadComposeFocusViewHolder<T>(
             setViewCompositionStrategy(compositionStrategy)
             setContent {
                 itemState.value?.let { item ->
-                    content(item, this@DpadComposeFocusViewHolder)
+                    content(item)
                 }
+            }
+        }
+    }
+
+    fun setContent(content: @Composable (item: T) -> Unit) {
+        composeView.setContent {
+            itemState.value?.let { item ->
+                content(item)
             }
         }
     }
