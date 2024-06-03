@@ -80,6 +80,10 @@
             android:id="@+id/open_short_list"
             app:destination="@id/short_list_fragment" />
 
+        <action
+            android:id="@+id/open_span_header"
+            app:destination="@id/span_header_fragment" />
+
     </fragment>
 
     <fragment
@@ -194,4 +198,7 @@
         android:id="@+id/short_list_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ShortListFragment" />
 
+    <fragment
+        android:id="@+id/span_header_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridSpanHeaderFragment" />
 </navigation>
