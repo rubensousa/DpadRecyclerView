@@ -378,7 +378,7 @@ internal class LayoutInfo(
     }
 
     fun isViewFocusable(view: View): Boolean {
-        return view.visibility == View.VISIBLE && view.hasFocusable()
+        return view.visibility == View.VISIBLE && (view.isFocusable || view.hasFocusable())
     }
 
     fun didViewHolderStateChange(
