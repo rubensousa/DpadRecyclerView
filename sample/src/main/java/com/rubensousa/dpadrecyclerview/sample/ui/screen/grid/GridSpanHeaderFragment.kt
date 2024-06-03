@@ -47,16 +47,6 @@ class GridSpanHeaderFragment : Fragment(R.layout.screen_recyclerview) {
         super.onViewCreated(view, savedInstanceState)
         val gridAdapter = SpanGridAdapter()
 
-        gridAdapter.submitList(
-            mutableListOf(
-                -1,
-                1, 2, 3, 4,
-                -2,
-                4, 5, 6, 7,
-                -3,
-                8, 9, 10, 11
-            )
-        )
         binding.recyclerView.apply {
             adapter = gridAdapter
             addItemDecoration(
@@ -76,8 +66,20 @@ class GridSpanHeaderFragment : Fragment(R.layout.screen_recyclerview) {
                     }
                 }
             })
+
+            val list = mutableListOf<Int>()
+            val headers = 50
+            repeat(headers) {
+                list.add(-1)
+                repeat(getSpanCount()) {
+                    list.add(list.size)
+                }
+            }
+            gridAdapter.submitList(list)
+
             requestFocus()
         }
+
     }
 
     class SpanGridAdapter : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(
