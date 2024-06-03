@@ -4,9 +4,10 @@ public final class com/rubensousa/dpadrecyclerview/compose/DpadComposeExtensions
 
 public final class com/rubensousa/dpadrecyclerview/compose/DpadComposeFocusViewHolder : androidx/recyclerview/widget/RecyclerView$ViewHolder {
 	public static final field $stable I
-	public fun <init> (Landroid/view/ViewGroup;Landroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function3;)V
-	public synthetic fun <init> (Landroid/view/ViewGroup;Landroidx/compose/ui/platform/ViewCompositionStrategy;Lkotlin/jvm/functions/Function3;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Landroid/view/ViewGroup;Landroidx/compose/ui/platform/ViewCompositionStrategy;ZLkotlin/jvm/functions/Function3;)V
+	public synthetic fun <init> (Landroid/view/ViewGroup;Landroidx/compose/ui/platform/ViewCompositionStrategy;ZLkotlin/jvm/functions/Function3;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun getItem ()Ljava/lang/Object;
+	public final fun setFocusable (Z)V
 	public final fun setItemState (Ljava/lang/Object;)V
 }
 

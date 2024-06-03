@@ -103,7 +103,10 @@ class GridSpanHeaderFragment : Fragment(R.layout.screen_recyclerview) {
                 }
 
                 else -> {
-                    DpadComposeFocusViewHolder<Int>(parent) { _ ->
+                    DpadComposeFocusViewHolder(
+                        parent,
+                        isFocusable = false
+                    ) { _ ->
                         Text(
                             modifier = Modifier.padding(
                                 horizontal = 48.dp,
@@ -113,8 +116,6 @@ class GridSpanHeaderFragment : Fragment(R.layout.screen_recyclerview) {
                             color = Color.White,
                             style = MaterialTheme.typography.titleLarge,
                         )
-                    }.also {
-                        it.setFocusable(false)
                     }
                 }
             }
