@@ -18,8 +18,6 @@ package com.rubensousa.dpadrecyclerview
 
 import android.util.DisplayMetrics
 import android.view.View
-import android.view.ViewGroup
-import androidx.core.view.forEach
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -79,25 +77,12 @@ class DpadSelectionSnapHelper : LinearSnapHelper() {
         for (i in 0 until layoutManager.childCount) {
             val child = layoutManager.getChildAt(i) ?: continue
             val offset = abs(layoutManager.getScrollOffset(child))
-            if (offset < nearestOffset && hasFocusableChild(child)) {
+            if (offset < nearestOffset && child.hasFocusable()) {
                 nearestOffset = offset
                 nearestView = child
             }
         }
         return nearestView
-    }
-
-    private fun hasFocusableChild(view: View): Boolean {
-        if (view.isFocusable || view.isFocusableInTouchMode) {
-            return true
-        }
-        val viewGroup = view as? ViewGroup ?: return false
-        viewGroup.forEach { child ->
-            if (hasFocusableChild(child)) {
-                return true
-            }
-        }
-        return false
     }
 
     override fun createScroller(

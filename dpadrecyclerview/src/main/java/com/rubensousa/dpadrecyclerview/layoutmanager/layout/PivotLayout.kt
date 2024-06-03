@@ -51,6 +51,7 @@ internal class PivotLayout(
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
     private val itemChanges = ItemChanges()
     private var anchor: Int? = null
+    private var initialSelectionPending = false
 
     fun updateStructure() {
         structureEngineer = createStructureEngineer()
@@ -66,6 +67,21 @@ internal class PivotLayout(
     }
 
     fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
+        if (state.itemCount == 0) {
+            // Clear the selected position if there are no more items
+            if (pivotSelector.position != RecyclerView.NO_POSITION) {
+                pivotSelector.setSelectionUpdatePending()
+            }
+            pivotSelector.reset()
+        } else if (pivotSelector.position >= state.itemCount) {
+            pivotSelector.update(newPosition = state.itemCount - 1)
+            pivotSelector.setSelectionUpdatePending()
+        } else if (pivotSelector.position == RecyclerView.NO_POSITION && state.itemCount > 0) {
+            // Make sure the pivot is set to the first focusable position whenever we have items
+            initialSelectionPending = true
+            pivotSelector.setSelectionUpdatePending()
+        }
+
         if (DpadRecyclerView.DEBUG) {
             Log.i(TAG, "OnLayoutChildren: ${state.asString()}")
         }
@@ -170,6 +186,50 @@ internal class PivotLayout(
         }
     }
 
+    fun onLayoutCompleted(state: RecyclerView.State) {
+        if (initialSelectionPending) {
+            initialSelectionPending = false
+            updateInitialSelection()
+        }
+        itemChanges.reset()
+        layoutInfo.onLayoutCompleted()
+        layoutCompleteListeners.forEach { listener ->
+            listener.onLayoutCompleted(state)
+        }
+    }
+
+    /**
+     * We need to confirm that the initial selection makes sense.
+     * It can happen that position 0 points to a non focusable position
+     */
+    private fun updateInitialSelection() {
+        val view = findFirstFocusableView() ?: return
+        val adapterPosition = layoutInfo.getAdapterPositionOf(view)
+        if (adapterPosition == RecyclerView.NO_POSITION) {
+            return
+        }
+        if (pivotSelector.position != adapterPosition) {
+            pivotSelector.update(adapterPosition)
+            scroller.scrollToSelectedPosition(smooth = false)
+        }
+    }
+
+    private fun findFirstFocusableView(): View? {
+        val childCount = layoutInfo.getChildCount()
+        for (i in 0 until childCount) {
+            val actualIndex = if (layoutInfo.shouldReverseLayout()) {
+                childCount - 1 - i
+            } else {
+                i
+            }
+            val child = layoutInfo.getChildAt(actualIndex)
+            if (child != null && child.hasFocusable()) {
+                return child
+            }
+        }
+        return null
+    }
+
     fun reset() {
         structureEngineer.clear()
     }
@@ -188,14 +248,6 @@ internal class PivotLayout(
         itemChanges.moveFromPosition = from
         itemChanges.moveToPosition = to
         itemChanges.moveItemCount = itemCount
-    }
-
-    fun onLayoutCompleted(state: RecyclerView.State) {
-        itemChanges.reset()
-        layoutInfo.onLayoutCompleted()
-        layoutCompleteListeners.forEach { listener ->
-            listener.onLayoutCompleted(state)
-        }
     }
 
     fun setOnChildLaidOutListener(listener: OnChildLaidOutListener?) {
