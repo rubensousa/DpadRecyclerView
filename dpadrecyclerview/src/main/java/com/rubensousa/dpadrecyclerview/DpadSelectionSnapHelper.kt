@@ -46,6 +46,7 @@ class DpadSelectionSnapHelper : LinearSnapHelper() {
             currentRecyclerView = recyclerView
             return
         }
+        currentRecyclerView = null
         if (recyclerView != null) {
             throw IllegalArgumentException("Only DpadRecyclerView can be used with DpadSnapHelper")
         }
