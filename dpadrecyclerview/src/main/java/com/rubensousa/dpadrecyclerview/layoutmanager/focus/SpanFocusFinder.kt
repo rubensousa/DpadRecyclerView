@@ -167,15 +167,34 @@ internal class SpanFocusFinder(private val configuration: LayoutConfiguration) {
         reverseLayout: Boolean
     ): Int {
         var currentPos = position
-        var currentSpan = spanIndex
+        var currentSpan = getSpanEnd(
+            lookup = lookup,
+            position = currentPos,
+            spanIndex = spanIndex,
+            spanDir = spanDir
+        )
         val startSpanIndex = if (!reverseLayout) 0 else spanCount - 1
 
         // First step: move to edge of current span group
-        while (!isPositionOutOfBounds(currentPos + posDir, edgePosition, forward)
-            && fitsNextInCurrentSpanGroup(lookup, currentSpan, currentPos, spanDir, posDir)
+        while (!isPositionOutOfBounds(
+                position = currentPos + posDir,
+                edgePosition = edgePosition,
+                forward = forward
+            )
+            && fitsInCurrentSpanGroup(
+                lookup = lookup,
+                currentSpanEnd = currentSpan + spanDir,
+                position = currentPos + posDir,
+                spanDir = spanDir
+            )
         ) {
+            currentSpan = getSpanEnd(
+                lookup = lookup,
+                position = currentPos,
+                spanIndex = currentSpan + spanDir,
+                spanDir = spanDir
+            )
             currentPos += posDir
-            currentSpan = getNextSpanEnd(lookup, currentSpan, currentPos, spanDir, posDir)
         }
 
         // Move to next span group
@@ -203,26 +222,28 @@ internal class SpanFocusFinder(private val configuration: LayoutConfiguration) {
         return currentPos
     }
 
-    private fun fitsNextInCurrentSpanGroup(
+    private fun fitsInCurrentSpanGroup(
         lookup: DpadSpanSizeLookup,
-        spanIndex: Int,
-        currentPos: Int,
+        currentSpanEnd: Int,
+        position: Int,
         spanDir: Int,
-        posDir: Int
     ): Boolean {
-        val nextSpanEnd = getNextSpanEnd(lookup, spanIndex, currentPos, spanDir, posDir)
-        return nextSpanEnd >= 0 && nextSpanEnd <= spanCount - 1
+        val nextSpan = getSpanEnd(
+            lookup = lookup,
+            position = position,
+            spanIndex = currentSpanEnd,
+            spanDir = spanDir
+        )
+        return nextSpan >= 0 && nextSpan <= spanCount - 1
     }
 
-    private fun getNextSpanEnd(
-        spanSizeLookup: DpadSpanSizeLookup,
+    private fun getSpanEnd(
+        lookup: DpadSpanSizeLookup,
+        position: Int,
         spanIndex: Int,
-        currentPos: Int,
-        spanDir: Int,
-        posDir: Int
+        spanDir: Int
     ): Int {
-        val currentSpanEnd = spanIndex + (spanSizeLookup.getSpanSize(currentPos) - 1) * spanDir
-        return currentSpanEnd + spanSizeLookup.getSpanSize(currentPos + posDir) * spanDir
+        return spanIndex + (lookup.getSpanSize(position) - 1) * spanDir
     }
 
     private fun isPositionOutOfBounds(position: Int, edgePosition: Int, forward: Boolean): Boolean {
