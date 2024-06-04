@@ -2,6 +2,20 @@
 
 ## Version 1.3.0
 
+### 1.3.0-alpha04
+
+2024-06-04
+
+#### New Features
+
+- Added `isFocusable` to `DpadComposeFocusViewHolder` to allow disabling focus for some items.
+
+#### Bug fixes
+
+- Fixed initial selection being always at position 0, even when that view is not focusable.
+- Fixed some rows not receiving focus in grids using `DpadSpanSizeLookup`. ([#217](https://github.com/rubensousa/DpadRecyclerView/issues/217))
+- Fixed fast scrolling not working correctly in some grids using `DpadSpanSizeLookup`. ([#218](https://github.com/rubensousa/DpadRecyclerView/issues/218))
+
 ### 1.3.0-alpha03
 
 2024-05-31
