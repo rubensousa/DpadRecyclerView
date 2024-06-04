@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Rúben Sousa
+ * Copyright 2024 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +14,34 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
+package com.rubensousa.dpadrecyclerview.test.helpers
 
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Collections
 import java.util.concurrent.Executors
 
-abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
-    private val itemCallback: ItemCallback<T>
-) : RecyclerView.Adapter<VH>() {
+abstract class TestAdapter<VH : RecyclerView.ViewHolder>: RecyclerView.Adapter<VH>() {
 
     companion object {
         private val BACKGROUND_EXECUTOR = Executors.newFixedThreadPool(4)
         private val MAIN_THREAD_HANDLER = Handler(Looper.getMainLooper())
     }
 
-    private var items: MutableList<T> = Collections.emptyList()
+    private var items: MutableList<Int> = Collections.emptyList()
     private var currentVersion = 0
 
     @SuppressLint("NotifyDataSetChanged")
-    fun replaceList(items: MutableList<T>) {
+    fun replaceList(items: MutableList<Int>) {
         this.items = items
         currentVersion++
         notifyDataSetChanged()
     }
 
-    fun submitList(newList: MutableList<T>, commitCallback: Runnable? = null) {
+    fun submitList(newList: MutableList<Int>, commitCallback: Runnable? = null) {
         val version = ++currentVersion
         if (items === newList) {
             commitCallback?.run()
@@ -76,8 +73,8 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
     }
 
     private fun calculateDiff(
-        oldList: List<T>,
-        newList: List<T>
+        oldList: List<Int>,
+        newList: List<Int>
     ): DiffUtil.DiffResult {
         return DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int = oldList.size
@@ -86,10 +83,7 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
             override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
                 val oldItem = oldList[oldItemPosition]
                 val newItem = newList[newItemPosition]
-                if (oldItem != null && newItem != null) {
-                    return itemCallback.areItemsTheSame(oldItem, newItem)
-                }
-                return oldItem == null && newItem == null
+                return oldItem == newItem
             }
 
             override fun areContentsTheSame(
@@ -98,19 +92,13 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
             ): Boolean {
                 val oldItem = oldList[oldItemPosition]
                 val newItem = newList[newItemPosition]
-                if (oldItem != null && newItem != null) {
-                    return itemCallback.areContentsTheSame(oldItem, newItem)
-                }
-                if (oldItem == null && newItem == null) {
-                    return true
-                }
-                throw AssertionError()
+                return oldItem == newItem
             }
         })
     }
 
     private fun latchList(
-        newList: MutableList<T>,
+        newList: MutableList<Int>,
         result: DiffUtil.DiffResult,
         commitCallback: Runnable?
     ) {
@@ -134,7 +122,7 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
         notifyItemMoved(from, to)
     }
 
-    fun addAt(index: Int, item: T) {
+    fun addAt(index: Int, item: Int) {
         currentVersion++
         items.add(index, item)
         notifyItemInserted(index)
