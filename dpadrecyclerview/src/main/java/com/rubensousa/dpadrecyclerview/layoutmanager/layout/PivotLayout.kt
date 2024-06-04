@@ -215,16 +215,10 @@ internal class PivotLayout(
     }
 
     private fun findFirstFocusableView(): View? {
-        val childCount = layoutInfo.getChildCount()
-        for (i in 0 until childCount) {
-            val actualIndex = if (layoutInfo.shouldReverseLayout()) {
-                childCount - 1 - i
-            } else {
-                i
-            }
-            val child = layoutInfo.getChildAt(actualIndex)
-            if (child != null && child.hasFocusable()) {
-                return child
+        for (i in 0 until layoutManager.itemCount) {
+            val view = layoutInfo.findViewByAdapterPosition(i)
+            if (view != null && layoutInfo.isViewFocusable(view)) {
+                return view
             }
         }
         return null
