@@ -107,7 +107,9 @@ internal class SpanFocusFinder(private val configuration: LayoutConfiguration) {
         }
 
         // Now search until we find the cached span index or we go outside the edge
-        while (!isPositionOutOfBounds(currentPosition, edgePosition, forward)) {
+        while (!isPositionOutOfBounds(currentPosition, edgePosition, forward)
+            && currentPosition != focusedPosition
+        ) {
             if (isPositionAtCachedSpan(currentPosition, spanSizeLookup, reverseLayout)) {
                 return currentPosition
             }
@@ -183,7 +185,7 @@ internal class SpanFocusFinder(private val configuration: LayoutConfiguration) {
             )
             && fitsInCurrentSpanGroup(
                 lookup = lookup,
-                currentSpanEnd = currentSpan + spanDir,
+                spanIndex = currentSpan + spanDir,
                 position = currentPos + posDir,
                 spanDir = spanDir
             )
@@ -224,14 +226,14 @@ internal class SpanFocusFinder(private val configuration: LayoutConfiguration) {
 
     private fun fitsInCurrentSpanGroup(
         lookup: DpadSpanSizeLookup,
-        currentSpanEnd: Int,
+        spanIndex: Int,
         position: Int,
         spanDir: Int,
     ): Boolean {
         val nextSpan = getSpanEnd(
             lookup = lookup,
             position = position,
-            spanIndex = currentSpanEnd,
+            spanIndex = spanIndex,
             spanDir = spanDir
         )
         return nextSpan >= 0 && nextSpan <= spanCount - 1
