@@ -71,7 +71,7 @@ class GridSpanHeaderFragment : Fragment(R.layout.screen_recyclerview) {
             val headers = 25
             repeat(headers) {
                 list.add(-1)
-                repeat(getSpanCount()) {
+                repeat(getSpanCount() * 2 - 1) {
                     list.add(list.size)
                 }
             }
