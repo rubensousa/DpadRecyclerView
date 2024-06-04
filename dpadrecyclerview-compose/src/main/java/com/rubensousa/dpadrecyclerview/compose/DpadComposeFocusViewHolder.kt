@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.compose
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 
@@ -47,10 +48,10 @@ class DpadComposeFocusViewHolder<T>(
     compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
     isFocusable: Boolean = true,
     private val content: @Composable (item: T) -> Unit
-) : RecyclerView.ViewHolder(DpadComposeView(parent.context)) {
+) : RecyclerView.ViewHolder(ComposeView(parent.context)) {
 
     private val itemState = mutableStateOf<T?>(null)
-    private val composeView = itemView as DpadComposeView
+    private val composeView = itemView as ComposeView
 
     init {
         composeView.apply {
