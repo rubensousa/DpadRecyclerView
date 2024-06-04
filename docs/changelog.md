@@ -8,7 +8,8 @@
 
 #### New Features
 
-- Added `isFocusable` to `DpadComposeFocusViewHolder` to allow disabling focus for some items.
+- Added `DpadSelectionSnapHelper` to improve selection on touch events. ([#215](https://github.com/rubensousa/DpadRecyclerView/pull/215/files))
+- Added `isFocusable` to `DpadComposeFocusViewHolder` to allow disabling focus for some items. 
 
 #### Bug fixes
 
