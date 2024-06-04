@@ -79,6 +79,11 @@ internal class PivotSelector(
         return position != previousPosition || subPosition != previousSubPosition
     }
 
+    fun reset() {
+        position = RecyclerView.NO_POSITION
+        positionOffset = 0
+    }
+
     fun consumePendingSelectionChanges(state: RecyclerView.State): Boolean {
         var consumed = false
         if (position != RecyclerView.NO_POSITION
@@ -209,20 +214,7 @@ internal class PivotSelector(
     }
 
     fun onLayoutChildren(state: RecyclerView.State) {
-        // Clear the selected position if there are no more items
-        if (state.itemCount == 0) {
-            isSelectionUpdatePending = position != RecyclerView.NO_POSITION
-            position = RecyclerView.NO_POSITION
-            subPosition = 0
-        } else if (position >= state.itemCount) {
-            position = state.itemCount - 1
-            subPosition = 0
-        } else if (position == RecyclerView.NO_POSITION && state.itemCount > 0) {
-            // Make sure the pivot is set to 0 by default whenever we have items
-            position = 0
-            positionOffset = 0
-            setSelectionUpdatePending()
-        }
+
     }
 
     fun onLayoutCompleted() {

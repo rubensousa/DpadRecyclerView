@@ -97,6 +97,10 @@ class MainViewModel : ViewModel() {
                     title = "Different span sizes"
                 ),
                 ScreenDestination(
+                    direction = MainFragmentDirections.openSpanHeader(),
+                    title = "Span Headers"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openGrid(reverseLayout = true),
                     title = "Reversed"
                 ),
