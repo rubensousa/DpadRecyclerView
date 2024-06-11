@@ -128,20 +128,21 @@ open class DpadRecyclerView @JvmOverloads constructor(
     ): PivotLayoutManager {
         val properties = LayoutManager.getProperties(context, attrs, 0, 0)
         val layout = PivotLayoutManager(properties)
+        val config = layout.getConfig()
         layout.setFocusOutAllowed(
             throughFront = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutFront, false
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutFront, config.focusOutFront
             ),
             throughBack = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutBack, false
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutBack, config.focusOutBack
             )
         )
         layout.setFocusOutSideAllowed(
             throughFront = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideFront, true
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideFront, config.focusOutSideFront
             ),
             throughBack = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideBack, true
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideBack, config.focusOutSideBack
             )
         )
         layout.setFocusableDirection(
