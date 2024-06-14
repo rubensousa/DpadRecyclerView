@@ -440,19 +440,23 @@ internal class FocusDispatcher(
             return false
         }
         val edgePosition = layout.getPosition(edgeView)
-        val nextPosition = spanFocusFinder.findNextSpanPosition(
-            focusedPosition,
-            spanSizeLookup = configuration.spanSizeLookup,
-            forward = movement == FocusDirection.NEXT_ITEM,
-            edgePosition = edgePosition,
-            reverseLayout = layoutInfo.shouldReverseLayout()
-        )
-        if (nextPosition == RecyclerView.NO_POSITION) {
-            return false
-        }
-        val newView = layout.findViewByPosition(nextPosition) ?: return false
-        newView.addFocusables(views, direction, focusableMode)
-        return true
+        var nextPosition: Int = focusedPosition
+        do {
+            nextPosition = spanFocusFinder.findNextSpanPosition(
+                focusedPosition = nextPosition,
+                spanSizeLookup = configuration.spanSizeLookup,
+                forward = movement == FocusDirection.NEXT_ITEM,
+                edgePosition = edgePosition,
+                reverseLayout = layoutInfo.shouldReverseLayout()
+            )
+            val nextView = layout.findViewByPosition(nextPosition) ?: return false
+            if (nextView.hasFocusable()) {
+                nextView.addFocusables(views, direction, focusableMode)
+                return true
+            }
+        } while (nextPosition != RecyclerView.NO_POSITION)
+        return false
+
     }
 
     class AddFocusableChildrenRequest(private val layoutInfo: LayoutInfo) {

@@ -207,6 +207,10 @@ fun waitForCondition(
         .perform(DpadViewActions.waitForCondition(description, condition))
 }
 
+fun waitForLayout() {
+    waitForCondition("Waiting for layout") { recyclerView -> !recyclerView.isLayoutRequested }
+}
+
 fun onRecyclerView(
     description: String,
     id: Int = R.id.recyclerView,

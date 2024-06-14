@@ -105,6 +105,10 @@ class MainViewModel : ViewModel() {
                     title = "Drag and drop"
                 ),
                 ScreenDestination(
+                    direction = MainFragmentDirections.openSpanHeader(),
+                    title = "Span Headers"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openGrid(reverseLayout = true),
                     title = "Reversed"
                 ),
