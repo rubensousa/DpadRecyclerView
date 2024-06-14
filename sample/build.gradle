@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.androidx.navigation.safeargs)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -37,13 +38,7 @@ android {
     }
     buildFeatures {
         viewBinding true
-        compose true
     }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
-    }
-
 }
 
 dependencies {
