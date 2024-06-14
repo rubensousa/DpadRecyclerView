@@ -20,6 +20,15 @@
     android:layout_height="match_parent"
     android:clipChildren="false">
 
+    <View
+        android:id="@+id/placeholderView"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@drawable/list_item_background"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.rubensousa.dpadrecyclerview.DpadRecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
@@ -36,6 +45,5 @@
         app:layout_constraintDimensionRatio="@string/list_item_aspect_ratio"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
