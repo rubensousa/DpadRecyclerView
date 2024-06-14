@@ -45,34 +45,23 @@ class DragAndDropGridFragment : Fragment(R.layout.screen_drag_drop_grid) {
         },
         gridLayout = true
     )
-    private val dragHelper = DpadDragHelper(object : DpadDragHelper.DragCallback {
-
-        override fun move(
-            src: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            dragAdapter.move(
-                from = src.absoluteAdapterPosition,
-                to = target.absoluteAdapterPosition
-            )
-            return true
+    private val dragHelper = DpadDragHelper(
+        adapter = dragAdapter,
+        callback = object : DpadDragHelper.DragCallback {
+            override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
+                dragState.value = dragAdapter.getItem(viewHolder.bindingAdapterPosition)
+            }
+            override fun onDragStopped() {
+                dragState.value = null
+            }
         }
-
-        override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
-            dragState.value = dragAdapter.getItem(viewHolder.absoluteAdapterPosition)
-        }
-
-        override fun onDragStopped() {
-            dragState.value = null
-        }
-
-    })
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setDragButtonContent()
-        dragAdapter.submitList(List(20) { it }.toMutableList())
+        dragAdapter.submitList(List(15) { it }.toMutableList())
     }
 
     private fun setupRecyclerView() {

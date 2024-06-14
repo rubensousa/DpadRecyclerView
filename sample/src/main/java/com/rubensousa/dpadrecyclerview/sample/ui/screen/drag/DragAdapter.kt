@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.drag
 import android.view.ViewGroup
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadDragHelper
 import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
@@ -29,7 +30,10 @@ class DragAdapter(
     private val dragState: StateFlow<Int?>,
     private val onDragStart: (viewHolder: RecyclerView.ViewHolder) -> Unit,
     private val gridLayout: Boolean = false
-) : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK) {
+) : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK),
+    DpadDragHelper.DragAdapter<Int> {
+
+    override fun getMutableItems(): MutableList<Int> = items
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -64,8 +68,22 @@ class DragAdapter(
         holder.itemView.contentDescription = item.toString()
     }
 
+
     override fun getItemViewType(position: Int): Int {
         return ListTypes.ITEM
+    }
+
+    override fun toString(): String {
+        val builder = StringBuilder()
+        builder.append("[")
+        for (i in 0 until itemCount) {
+            builder.append(getItem(i))
+            if (i < itemCount - 1) {
+                builder.append(", ")
+            }
+        }
+        builder.append("]")
+        return builder.toString()
     }
 
 }

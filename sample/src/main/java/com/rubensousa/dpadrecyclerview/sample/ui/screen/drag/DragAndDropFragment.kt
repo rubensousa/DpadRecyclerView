@@ -44,28 +44,17 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
             startDrag(viewHolder)
         }
     )
-    private val dragHelper = DpadDragHelper(object : DpadDragHelper.DragCallback {
-
-        override fun move(
-            src: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            dragAdapter.move(
-                from = src.bindingAdapterPosition,
-                to = target.bindingAdapterPosition
-            )
-            return true
+    private val dragHelper = DpadDragHelper(
+        adapter = dragAdapter,
+        callback = object : DpadDragHelper.DragCallback {
+            override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
+                dragState.value = dragAdapter.getItem(viewHolder.bindingAdapterPosition)
+            }
+            override fun onDragStopped() {
+                dragState.value = null
+            }
         }
-
-        override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
-            dragState.value = dragAdapter.getItem(viewHolder.bindingAdapterPosition)
-        }
-
-        override fun onDragStopped() {
-            dragState.value = null
-        }
-
-    })
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

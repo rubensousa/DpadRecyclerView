@@ -19,8 +19,16 @@ package com.rubensousa.dpadrecyclerview
 import android.view.KeyEvent
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Collections
 
-class DpadDragHelper(
+/**
+ * A helper class for re-ordering the contents of a [DpadRecyclerView].
+ *
+ * To use this, your adapter needs to implement [DpadDragHelper.DragAdapter]
+ * and expose the mutable collection via [DpadDragHelper.DragAdapter.getMutableItems].
+ */
+class DpadDragHelper<T>(
+    private val adapter: DragAdapter<T>,
     private val callback: DragCallback,
     private val cancelKeyCodes: Set<Int> = setOf(
         KeyEvent.KEYCODE_DPAD_CENTER,
@@ -48,6 +56,10 @@ class DpadDragHelper(
         }
     }
 
+    /**
+     * Attaches the [DpadRecyclerView] that will be dragged.
+     * This is required before calling [startDrag]
+     */
     fun attachRecyclerView(recyclerView: DpadRecyclerView) {
         if (currentRecyclerView === recyclerView) {
             return
@@ -56,10 +68,14 @@ class DpadDragHelper(
         currentRecyclerView = recyclerView
     }
 
+    /**
+     * Detaches the previously attached [DpadRecyclerView] and stops dragging
+     */
     fun detachFromRecyclerView() {
         stopDrag()
         currentRecyclerView = null
     }
+
 
     /**
      * Starts the dragging action for the ViewHolder at [position].
@@ -125,24 +141,39 @@ class DpadDragHelper(
         }
         isDragging = false
         callback.onDragStopped()
-        currentRecyclerView?.requestLayout()
     }
 
     private fun onKeyEvent(event: KeyEvent): Boolean {
         val recyclerView = currentRecyclerView ?: return false
         val direction = getFocusDirection(event) ?: return false
         val view = recyclerView.focusSearch(direction) ?: return false
-        val viewHolder = recyclerView.findContainingViewHolder(view) ?: return false
+        val targetViewHolder = recyclerView.findContainingViewHolder(view) ?: return false
         val selectedViewHolder = recyclerView.findViewHolderForAdapterPosition(
             recyclerView.getSelectedPosition()
         ) ?: return false
 
         if (selectedViewHolder.absoluteAdapterPosition == RecyclerView.NO_POSITION
-            || viewHolder.absoluteAdapterPosition == RecyclerView.NO_POSITION
+            || targetViewHolder.absoluteAdapterPosition == RecyclerView.NO_POSITION
         ) {
             return false
         }
-        return callback.move(src = selectedViewHolder, target = viewHolder)
+        val currentAdapter = recyclerView.adapter ?: return false
+        if (recyclerView.getSpanCount() == 1) {
+            moveLinear(
+                adapter = currentAdapter,
+                items = adapter.getMutableItems(),
+                srcIndex = selectedViewHolder.bindingAdapterPosition,
+                targetIndex = targetViewHolder.bindingAdapterPosition
+            )
+        } else {
+            moveGrid(
+                adapter = currentAdapter,
+                items = adapter.getMutableItems(),
+                srcIndex = selectedViewHolder.bindingAdapterPosition,
+                targetIndex = targetViewHolder.bindingAdapterPosition
+            )
+        }
+        return true
     }
 
     private fun getFocusDirection(event: KeyEvent): Int? {
@@ -155,28 +186,64 @@ class DpadDragHelper(
         }
     }
 
-    interface DragCallback {
+    /**
+     * A linear move just swaps positions
+     */
+    private fun moveLinear(
+        adapter: RecyclerView.Adapter<*>,
+        items: MutableList<T>,
+        srcIndex: Int,
+        targetIndex: Int
+    ) {
+        Collections.swap(items, srcIndex, targetIndex)
+        adapter.notifyItemMoved(srcIndex, targetIndex)
+    }
 
+    /**
+     * A grid move needs to remove the element at the given position
+     * and insert it in the new position, otherwise order is not kept
+     */
+    private fun moveGrid(
+        adapter: RecyclerView.Adapter<*>,
+        items: MutableList<T>,
+        srcIndex: Int,
+        targetIndex: Int
+    ) {
+        val item = items.removeAt(srcIndex)
+        items.add(targetIndex, item)
+        adapter.notifyItemMoved(srcIndex, targetIndex)
         /**
-         * @return true if [src] should be moved to [target]'s position,
-         * false to keep the original positions
+         * Now notify the range that was affected
+         * If src < target -> notify all indexes from src until target
+         * If src > target -> notify all indexes from target until src
          */
-        fun move(
-            src: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean
+        if (srcIndex < targetIndex) {
+            adapter.notifyItemRangeChanged(srcIndex, targetIndex - srcIndex)
+        } else {
+            adapter.notifyItemRangeChanged(targetIndex, srcIndex - targetIndex)
+        }
+    }
+
+    interface DragAdapter<T> {
+        /**
+         * @return the mutable collection of items backing the adapter
+         */
+        fun getMutableItems(): MutableList<T>
+    }
+
+    interface DragCallback {
 
         /**
          * Indicates that the dragging action has started. [DpadRecyclerView] will receive focus
          *
          * @param viewHolder the view holder that is being dragged
          */
-        fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {}
+        fun onDragStarted(viewHolder: RecyclerView.ViewHolder)
 
         /**
          * Indicates that the dragging action has stopped
          */
-        fun onDragStopped() {}
+        fun onDragStopped()
     }
 
 }
