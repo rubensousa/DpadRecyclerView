@@ -113,7 +113,7 @@ class FocusDirectionTest {
                 isVertical = true,
                 reverseLayout = false
             )
-        ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
+        ).isEqualTo(FocusDirection.PREVIOUS_ROW)
 
         assertThat(
             FocusDirection.from(
@@ -121,7 +121,7 @@ class FocusDirectionTest {
                 isVertical = true,
                 reverseLayout = true
             )
-        ).isEqualTo(FocusDirection.NEXT_ITEM)
+        ).isEqualTo(FocusDirection.NEXT_ROW)
 
         assertThat(
             FocusDirection.from(
@@ -129,7 +129,7 @@ class FocusDirectionTest {
                 isVertical = true,
                 reverseLayout = false
             )
-        ).isEqualTo(FocusDirection.NEXT_ITEM)
+        ).isEqualTo(FocusDirection.NEXT_ROW)
 
         assertThat(
             FocusDirection.from(
@@ -137,7 +137,7 @@ class FocusDirectionTest {
                 isVertical = true,
                 reverseLayout = true
             )
-        ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
+        ).isEqualTo(FocusDirection.PREVIOUS_ROW)
 
         assertThat(
             FocusDirection.from(
@@ -196,7 +196,7 @@ class FocusDirectionTest {
                 isVertical = false,
                 reverseLayout = false
             )
-        ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
+        ).isEqualTo(FocusDirection.PREVIOUS_ROW)
 
         assertThat(
             FocusDirection.from(
@@ -204,7 +204,7 @@ class FocusDirectionTest {
                 isVertical = false,
                 reverseLayout = false
             )
-        ).isEqualTo(FocusDirection.NEXT_ITEM)
+        ).isEqualTo(FocusDirection.NEXT_ROW)
 
         assertThat(
             FocusDirection.from(
@@ -212,7 +212,7 @@ class FocusDirectionTest {
                 isVertical = false,
                 reverseLayout = true
             )
-        ).isEqualTo(FocusDirection.NEXT_ITEM)
+        ).isEqualTo(FocusDirection.NEXT_ROW)
 
         assertThat(
             FocusDirection.from(
@@ -220,7 +220,7 @@ class FocusDirectionTest {
                 isVertical = false,
                 reverseLayout = true
             )
-        ).isEqualTo(FocusDirection.PREVIOUS_ITEM)
+        ).isEqualTo(FocusDirection.PREVIOUS_ROW)
     }
 
     @Test
@@ -236,22 +236,22 @@ class FocusDirectionTest {
             )
         ).isEqualTo(0)
         assertThat(
-            FocusDirection.NEXT_ITEM.getScrollSign(
+            FocusDirection.NEXT_ROW.getScrollSign(
                 reverseLayout = false
             )
         ).isEqualTo(1)
         assertThat(
-            FocusDirection.NEXT_ITEM.getScrollSign(
+            FocusDirection.NEXT_ROW.getScrollSign(
                 reverseLayout = true
             )
         ).isEqualTo(-1)
         assertThat(
-            FocusDirection.PREVIOUS_ITEM.getScrollSign(
+            FocusDirection.PREVIOUS_ROW.getScrollSign(
                 reverseLayout = false
             )
         ).isEqualTo(-1)
         assertThat(
-            FocusDirection.PREVIOUS_ITEM.getScrollSign(
+            FocusDirection.PREVIOUS_ROW.getScrollSign(
                 reverseLayout = true
             )
         ).isEqualTo(1)
