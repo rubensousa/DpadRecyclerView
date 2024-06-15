@@ -76,4 +76,27 @@ class TestAdapter(
 
     }
 
+    fun assertContents(predicate: (index: Int) -> Int) {
+        for (i in 0 until itemCount) {
+            val item = getItem(i)
+            val expectedItem = predicate(i)
+            if (expectedItem != item) {
+                throw AssertionError("Expected item $expectedItem at position $i but got $item instead. Adapter contents: ${getAdapterContentString()}")
+            }
+        }
+    }
+
+    private fun getAdapterContentString(): String {
+        val builder = StringBuilder()
+        builder.append("[")
+        for (i in 0 until itemCount) {
+            builder.append(getItem(i))
+            if (i < itemCount - 1) {
+                builder.append(", ")
+            }
+        }
+        builder.append("]")
+        return builder.toString()
+    }
+
 }

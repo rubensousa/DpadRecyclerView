@@ -21,13 +21,14 @@ import android.os.Looper
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.DiffResult
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadDragHelper
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import java.util.Collections
 import java.util.concurrent.Executors
 
 abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
     adapterConfiguration: TestAdapterConfiguration
-) : RecyclerView.Adapter<VH>() {
+) : RecyclerView.Adapter<VH>(), DpadDragHelper.DragAdapter<Int> {
 
     companion object {
         private val EMPTY_LIST = ArrayList<Int>(0)
@@ -42,6 +43,8 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
     private var items = MutableList(adapterConfiguration.numberOfItems) { it }
     private var currentVersion = 0
     private var id = items.size
+
+    override fun getMutableItems(): MutableList<Int> = items
 
     fun submitList(newList: MutableList<Int>, commitCallback: Runnable? = null) {
         val version = ++currentVersion
