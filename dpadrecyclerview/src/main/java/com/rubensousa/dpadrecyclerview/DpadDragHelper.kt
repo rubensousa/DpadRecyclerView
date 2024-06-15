@@ -37,8 +37,13 @@ class DpadDragHelper<T>(
     )
 ) {
 
+    /**
+     * True if the attached [DpadRecyclerView] is currently in drag mode, false otherwise
+     */
+    var isDragging: Boolean = false
+        private set
+
     private var currentRecyclerView: DpadRecyclerView? = null
-    private var isDragging: Boolean = false
     private var previousKeyInterceptListener: DpadRecyclerView.OnKeyInterceptListener? = null
     private var keyInterceptListener = object : DpadRecyclerView.OnKeyInterceptListener {
         override fun onInterceptKeyEvent(event: KeyEvent): Boolean {
@@ -60,7 +65,7 @@ class DpadDragHelper<T>(
      * Attaches the [DpadRecyclerView] that will be dragged.
      * This is required before calling [startDrag]
      */
-    fun attachRecyclerView(recyclerView: DpadRecyclerView) {
+    fun attachToRecyclerView(recyclerView: DpadRecyclerView) {
         if (currentRecyclerView === recyclerView) {
             return
         }

@@ -66,7 +66,7 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
     private fun setupRecyclerView() {
         binding.recyclerView.apply {
             adapter = dragAdapter
-            dragHelper.attachRecyclerView(this)
+            dragHelper.attachToRecyclerView(this)
             itemAnimator = DefaultItemAnimator().apply {
                 // For faster moves
                 moveDuration = 100

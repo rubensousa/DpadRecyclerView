@@ -33,8 +33,9 @@ public final class com/rubensousa/dpadrecyclerview/ChildAlignment$CREATOR : andr
 public final class com/rubensousa/dpadrecyclerview/DpadDragHelper {
 	public fun <init> (Lcom/rubensousa/dpadrecyclerview/DpadDragHelper$DragAdapter;Lcom/rubensousa/dpadrecyclerview/DpadDragHelper$DragCallback;Ljava/util/Set;)V
 	public synthetic fun <init> (Lcom/rubensousa/dpadrecyclerview/DpadDragHelper$DragAdapter;Lcom/rubensousa/dpadrecyclerview/DpadDragHelper$DragCallback;Ljava/util/Set;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
-	public final fun attachRecyclerView (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;)V
+	public final fun attachToRecyclerView (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;)V
 	public final fun detachFromRecyclerView ()V
+	public final fun isDragging ()Z
 	public final fun startDrag (I)Z
 	public final fun stopDrag ()V
 }
