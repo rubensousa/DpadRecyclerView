@@ -45,7 +45,7 @@ internal class LayoutConfiguration(properties: Properties) {
      * For horizontal orientation, this means navigating out from the start of the first view
      * For vertical orientation, this means navigation out from the top of the first view
      */
-    var focusOutFront = false
+    var focusOutFront = true
         private set
 
     /**
@@ -54,7 +54,7 @@ internal class LayoutConfiguration(properties: Properties) {
      * For horizontal orientation, this means navigating out from the end of the last view
      * For vertical orientation, this means navigation out from the bottom of the last view
      */
-    var focusOutBack = false
+    var focusOutBack = true
         private set
 
     /**
