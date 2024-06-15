@@ -19,8 +19,8 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 import android.view.View
 
 internal enum class FocusDirection {
-    PREVIOUS_ITEM,
-    NEXT_ITEM,
+    PREVIOUS_ROW,
+    NEXT_ROW,
     PREVIOUS_COLUMN,
     NEXT_COLUMN;
 
@@ -28,7 +28,7 @@ internal enum class FocusDirection {
         if (this == NEXT_COLUMN || this == PREVIOUS_COLUMN) {
             return 0
         }
-        return if (this == NEXT_ITEM != reverseLayout) {
+        return if (this == NEXT_ROW != reverseLayout) {
             1
         } else {
             -1
@@ -60,8 +60,8 @@ internal enum class FocusDirection {
             val absoluteDirection = getAbsoluteDirection(direction, isVertical, isVertical)
             return if (isVertical) {
                 when (absoluteDirection) {
-                    View.FOCUS_UP -> if (reverseLayout) NEXT_ITEM else PREVIOUS_ITEM
-                    View.FOCUS_DOWN -> if (reverseLayout) PREVIOUS_ITEM else NEXT_ITEM
+                    View.FOCUS_UP -> if (reverseLayout) NEXT_ROW else PREVIOUS_ROW
+                    View.FOCUS_DOWN -> if (reverseLayout) PREVIOUS_ROW else NEXT_ROW
                     View.FOCUS_LEFT -> {
                         if (reverseLayout) NEXT_COLUMN else PREVIOUS_COLUMN
                     }
@@ -73,10 +73,10 @@ internal enum class FocusDirection {
             } else {
                 when (absoluteDirection) {
                     View.FOCUS_LEFT -> {
-                        if (reverseLayout) NEXT_ITEM else PREVIOUS_ITEM
+                        if (reverseLayout) NEXT_ROW else PREVIOUS_ROW
                     }
                     View.FOCUS_RIGHT -> {
-                        if (reverseLayout) PREVIOUS_ITEM else NEXT_ITEM
+                        if (reverseLayout) PREVIOUS_ROW else NEXT_ROW
                     }
                     View.FOCUS_UP -> if (reverseLayout) NEXT_COLUMN else PREVIOUS_COLUMN
                     View.FOCUS_DOWN -> if (reverseLayout) PREVIOUS_COLUMN else NEXT_COLUMN

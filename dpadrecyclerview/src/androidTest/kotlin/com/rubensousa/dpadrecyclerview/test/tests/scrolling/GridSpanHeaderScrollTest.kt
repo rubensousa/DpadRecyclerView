@@ -217,6 +217,30 @@ class GridSpanHeaderScrollTest {
         assertFocusAndSelection(defaultGrid.size - spanCount)
     }
 
+    @Test
+    fun testFocusDoesNotMoveForIncompleteRow() {
+        // given
+        val spanCount = 4
+        setContent(
+            items = listOf(
+                -1,
+                1,
+                -2,
+                3, 4, 5,
+                -3,
+                6, 7, 8, 9
+            ),
+            spanCount = spanCount
+        )
+        assertFocusAndSelection(position = 1)
+
+        // when
+        KeyEvents.pressRight(times = spanCount)
+
+        // then
+        assertFocusAndSelection(position = 1)
+    }
+
     private fun setContent(items: List<Int>, spanCount: Int) {
         onRecyclerView("Set content") { recyclerView ->
             recyclerView.setSpanCount(spanCount)
