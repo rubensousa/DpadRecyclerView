@@ -35,14 +35,10 @@ import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadViewActions
-import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
 class DpadComposeViewHolderTest {
-
-    @get:Rule
-    val idleTimeoutRule = DisableIdleTimeoutRule()
 
     @get:Rule
     val screenRecorderRule = ScreenRecorderRule()
