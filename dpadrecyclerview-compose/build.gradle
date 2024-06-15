@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     id 'org.jetbrains.dokka'
 }
 
@@ -22,14 +23,11 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled true
+            enableUnitTestCoverage true
+            enableAndroidTestCoverage true
         }
         release {
         }
-    }
-
-    buildFeatures {
-        compose true
     }
 
     compileOptions {
@@ -39,10 +37,6 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.androidx.compose.compiler.get()
     }
 
     publishing {

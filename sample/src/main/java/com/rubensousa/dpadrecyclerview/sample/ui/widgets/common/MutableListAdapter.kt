@@ -34,7 +34,7 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
         private val MAIN_THREAD_HANDLER = Handler(Looper.getMainLooper())
     }
 
-    private var items: MutableList<T> = Collections.emptyList()
+    protected var items: MutableList<T> = Collections.emptyList()
     private var currentVersion = 0
 
     @SuppressLint("NotifyDataSetChanged")
@@ -126,12 +126,6 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
             notifyItemRemoved(index)
         }
 
-    }
-
-    fun move(from: Int, to: Int) {
-        currentVersion++
-        Collections.swap(items, from, to)
-        notifyItemMoved(from, to)
     }
 
     fun addAt(index: Int, item: T) {

@@ -81,6 +81,14 @@
             app:destination="@id/short_list_fragment" />
 
         <action
+            android:id="@+id/open_drag_drop"
+            app:destination="@id/drag_drop_fragment" />
+
+        <action
+            android:id="@+id/open_drag_drop_grid"
+            app:destination="@id/drag_drop_grid_fragment" />
+
+        <action
             android:id="@+id/open_span_header"
             app:destination="@id/span_header_fragment" />
 
@@ -197,6 +205,14 @@
     <fragment
         android:id="@+id/short_list_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ShortListFragment" />
+
+    <fragment
+        android:id="@+id/drag_drop_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.drag.DragAndDropFragment" />
+
+    <fragment
+        android:id="@+id/drag_drop_grid_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.drag.DragAndDropGridFragment" />
 
     <fragment
         android:id="@+id/span_header_fragment"

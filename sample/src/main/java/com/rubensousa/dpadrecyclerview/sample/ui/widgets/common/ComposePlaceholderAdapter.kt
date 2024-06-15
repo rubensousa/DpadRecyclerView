@@ -46,7 +46,7 @@ class ComposePlaceholderAdapter(
         return DpadComposeViewHolder(
             parent = parent,
             isFocusable = false
-        ) { _, _ ->
+        ) { _, _, ->
             composable()
         }
     }

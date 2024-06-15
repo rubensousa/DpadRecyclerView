@@ -25,6 +25,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadLoopDirection
@@ -51,7 +52,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
  * It behaves similarly to `GridLayoutManager` with the main difference being how focus is handled.
  */
 class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
-    RecyclerView.SmoothScroller.ScrollVectorProvider {
+    ItemTouchHelper.ViewDropHandler, RecyclerView.SmoothScroller.ScrollVectorProvider {
 
     private var layoutDirection: Int = View.LAYOUT_DIRECTION_LTR
     private val configuration = LayoutConfiguration(properties)
@@ -126,6 +127,13 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun isAutoMeasureEnabled(): Boolean = true
 
     override fun supportsPredictiveItemAnimations(): Boolean = !layoutInfo.isLoopingAllowed
+
+    override fun prepareForDrop(view: View, target: View, x: Int, y: Int) {
+        val targetPos = getPosition(target)
+        if (targetPos != RecyclerView.NO_POSITION) {
+            scroller.scrollToPosition(targetPos, 0)
+        }
+    }
 
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         // If we have focus, save it temporarily since the views will change and we might lose it

@@ -54,12 +54,16 @@ class MainViewModel : ViewModel() {
                     title = "Nested"
                 ),
                 ScreenDestination(
-                    direction = MainFragmentDirections.openShortList(),
-                    title = "Short list"
+                    direction = MainFragmentDirections.openDragDrop(),
+                    title = "Drag and drop"
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openList(enableLooping = true),
-                    title = "Infinite lists"
+                    title = "Infinite lists (loop)"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openShortList(),
+                    title = "Short list"
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openFadingEdge(),
@@ -89,12 +93,16 @@ class MainViewModel : ViewModel() {
             title = "Grids",
             destinations = listOf(
                 ScreenDestination(
-                    direction = MainFragmentDirections.openGrid(),
-                    title = "Default"
-                ),
-                ScreenDestination(
                     direction = MainFragmentDirections.openGrid(evenSpans = false),
                     title = "Different span sizes"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openGrid(),
+                    title = "Default span size"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openDragDropGrid(),
+                    title = "Drag and drop"
                 ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openSpanHeader(),

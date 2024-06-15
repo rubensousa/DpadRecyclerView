@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.test
+package com.rubensousa.dpadrecyclerview.test.tests.drag
 
 import android.os.Bundle
 import android.view.View
@@ -22,15 +22,19 @@ import androidx.fragment.app.Fragment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.testing.R
 
-class RecyclerViewFragment : Fragment(R.layout.dpadrecyclerview_test_container) {
+class DragHelperTestFragment : Fragment(R.layout.dpadrecyclerview_test_container) {
+
+    var recyclerView: DpadRecyclerView? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getRecyclerView().requestFocus()
+        recyclerView = view.findViewById(R.id.recyclerView)
+        recyclerView?.requestFocus()
     }
 
-    fun getRecyclerView(): DpadRecyclerView {
-        return requireView().findViewById(R.id.recyclerView)
+    override fun onDestroyView() {
+        super.onDestroyView()
+        recyclerView = null
     }
 
 }
