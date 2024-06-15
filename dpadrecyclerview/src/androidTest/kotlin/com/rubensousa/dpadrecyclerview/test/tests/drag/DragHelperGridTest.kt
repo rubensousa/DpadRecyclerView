@@ -160,13 +160,12 @@ class DragHelperGridTest {
         KeyEvents.pressUp(times = 1)
 
         // then
-        assertFocusAndSelection(position = bottomColumnPosition)
+        assertFocusAndSelection(position = topColumnPosition)
         testAdapter.assertContents { index ->
             when {
                 index < topColumnPosition -> index
                 index == topColumnPosition -> bottomColumnPosition
-                index < bottomColumnPosition -> index - 1
-                index == bottomColumnPosition -> topColumnPosition
+                index <= bottomColumnPosition -> index - 1
                 else -> index
             }
         }
