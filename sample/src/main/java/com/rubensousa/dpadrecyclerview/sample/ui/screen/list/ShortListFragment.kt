@@ -8,6 +8,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.MainAdapterItemFeatureBinding
@@ -30,6 +31,7 @@ class ShortListFragment : Fragment(R.layout.screen_recyclerview) {
                     fraction = 0.5f
                 )
             )
+            setFocusableDirection(FocusableDirection.CIRCULAR)
             addItemDecoration(
                 DpadLinearSpacingDecoration.create(
                     itemSpacing = dpToPx(16.dp),
@@ -37,7 +39,7 @@ class ShortListFragment : Fragment(R.layout.screen_recyclerview) {
                 )
             )
             adapter = Adapter(
-                items = List(5) { i ->
+                items = List(4) { i ->
                     "Item $i"
                 }
             )

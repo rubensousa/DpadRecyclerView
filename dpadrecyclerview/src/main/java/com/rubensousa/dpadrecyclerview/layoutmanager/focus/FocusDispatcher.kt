@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
@@ -121,7 +122,11 @@ internal class FocusDispatcher(
         }
     }
 
-    fun onInterceptFocusSearch(recyclerView: RecyclerView?, focused: View, direction: Int): View? {
+    fun onInterceptFocusSearch(
+        recyclerView: DpadRecyclerView?,
+        focused: View,
+        direction: Int
+    ): View? {
         val currentRecyclerView = recyclerView ?: return focused
 
         if (!isFocusSearchEnabled(currentRecyclerView)) {
@@ -142,8 +147,10 @@ internal class FocusDispatcher(
         }
 
         var newFocusedView: View? = focusInterceptor.findFocus(
-            recyclerView, focused,
-            pivotSelector.position, direction
+            recyclerView = recyclerView,
+            focusedView = focused,
+            position = pivotSelector.position,
+            direction = direction
         )
 
         // If we found the view using our interceptor, return it immediately
@@ -431,7 +438,11 @@ internal class FocusDispatcher(
         if (movement == FocusDirection.NEXT_COLUMN || movement == FocusDirection.PREVIOUS_COLUMN) {
             return focusNextSpanColumn(
                 focusedPosition = focusedPosition,
-                next = movement == FocusDirection.NEXT_COLUMN,
+                next = if (!layoutInfo.shouldReverseLayout()) {
+                    movement == FocusDirection.NEXT_COLUMN
+                } else {
+                    movement == FocusDirection.PREVIOUS_COLUMN
+                },
                 views = views,
                 direction = direction,
                 focusableMode = focusableMode
@@ -474,11 +485,7 @@ internal class FocusDispatcher(
         direction: Int,
         focusableMode: Int
     ): Boolean {
-        val positionIncrement = if (next xor layoutInfo.shouldReverseLayout()) {
-            1
-        } else {
-            -1
-        }
+        val positionIncrement = layoutInfo.getPositionIncrement(next)
         val nextPosition = focusedPosition + positionIncrement
         if (nextPosition < 0 || nextPosition >= layout.itemCount) {
             return false

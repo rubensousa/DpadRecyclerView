@@ -257,4 +257,17 @@ class FocusDirectionTest {
         ).isEqualTo(1)
     }
 
+    @Test
+    fun testPrimaryAndSecondaryDirections() {
+        assertThat(FocusDirection.NEXT_ROW.isPrimary()).isTrue()
+        assertThat(FocusDirection.PREVIOUS_ROW.isPrimary()).isTrue()
+        assertThat(FocusDirection.NEXT_COLUMN.isPrimary()).isFalse()
+        assertThat(FocusDirection.PREVIOUS_COLUMN.isPrimary()).isFalse()
+
+        assertThat(FocusDirection.NEXT_ROW.isSecondary()).isFalse()
+        assertThat(FocusDirection.PREVIOUS_ROW.isSecondary()).isFalse()
+        assertThat(FocusDirection.NEXT_COLUMN.isSecondary()).isTrue()
+        assertThat(FocusDirection.PREVIOUS_COLUMN.isSecondary()).isTrue()
+    }
+
 }

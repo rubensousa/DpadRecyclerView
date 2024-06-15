@@ -17,20 +17,19 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
 /**
  * Implementation for [FocusableDirection.CIRCULAR]
- * TODO: Add tests
  */
 internal class CircularFocusInterceptor(
     private val layoutInfo: LayoutInfo
 ) : FocusInterceptor {
 
     override fun findFocus(
-        recyclerView: RecyclerView,
+        recyclerView: DpadRecyclerView,
         focusedView: View,
         position: Int,
         direction: Int
@@ -40,10 +39,55 @@ internal class CircularFocusInterceptor(
             reverseLayout = layoutInfo.shouldReverseLayout(),
             direction = direction
         ) ?: return null
-        return findFocus(position, focusDirection)
+        return if (recyclerView.getSpanCount() == 1) {
+            findLinearFocus(position, focusDirection)
+        } else {
+            findGridFocus(position, focusDirection)
+        }
     }
 
-    private fun findFocus(position: Int, direction: FocusDirection): View? {
+    private fun findLinearFocus(position: Int, direction: FocusDirection): View? {
+        // We only support the main direction or if the layout is not looping
+        if (direction.isSecondary() || layoutInfo.isLoopingAllowed) {
+            return null
+        }
+        // We only allow circular focus for linear layouts if all the positions are displayed
+        if (!layoutInfo.hasCreatedFirstItem() || !layoutInfo.hasCreatedLastItem()) {
+            return null
+        }
+        val positionIncrement = layoutInfo.getPositionIncrement(
+            goingForward = direction == FocusDirection.NEXT_ROW
+                    || direction == FocusDirection.NEXT_COLUMN
+        )
+        val nextPosition = position + positionIncrement
+        return findNextFocusableView(
+            fromPosition = when (nextPosition) {
+                layoutInfo.getItemCount() -> 0
+                -1 -> layoutInfo.getItemCount() - 1
+                else -> nextPosition
+            },
+            limitPosition = position,
+            positionIncrement = positionIncrement
+        )
+    }
+
+    private fun findNextFocusableView(
+        fromPosition: Int,
+        limitPosition: Int,
+        positionIncrement: Int
+    ): View? {
+        var currentPosition = fromPosition
+        while (currentPosition != limitPosition) {
+            val view = layoutInfo.findViewByPosition(currentPosition)
+            if (view != null && layoutInfo.isViewFocusable(view)) {
+                return view
+            }
+            currentPosition += positionIncrement
+        }
+        return null
+    }
+
+    private fun findGridFocus(position: Int, direction: FocusDirection): View? {
         if (direction != FocusDirection.PREVIOUS_COLUMN && direction != FocusDirection.NEXT_COLUMN) {
             return null
         }
