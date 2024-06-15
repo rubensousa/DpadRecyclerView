@@ -18,7 +18,7 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
 import android.view.FocusFinder
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
@@ -33,7 +33,7 @@ internal class DefaultFocusInterceptor(
 ) : FocusInterceptor {
 
     override fun findFocus(
-        recyclerView: RecyclerView,
+        recyclerView: DpadRecyclerView,
         focusedView: View,
         position: Int,
         direction: Int

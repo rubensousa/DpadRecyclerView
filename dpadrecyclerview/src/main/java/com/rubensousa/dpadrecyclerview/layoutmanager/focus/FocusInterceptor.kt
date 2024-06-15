@@ -17,7 +17,7 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 
 internal interface FocusInterceptor {
 
@@ -29,7 +29,7 @@ internal interface FocusInterceptor {
      * [View.FOCUS_DOWN], [View.FOCUS_FORWARD], [View.FOCUS_BACKWARD]
      */
     fun findFocus(
-        recyclerView: RecyclerView,
+        recyclerView: DpadRecyclerView,
         focusedView: View,
         position: Int,
         direction: Int

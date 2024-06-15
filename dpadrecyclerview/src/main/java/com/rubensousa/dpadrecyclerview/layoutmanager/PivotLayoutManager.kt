@@ -75,7 +75,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         this, configuration, layoutInfo, pivotSelector, scroller
     )
     private var hadFocusBeforeLayout = false
-    private var recyclerView: RecyclerView? = null
+    private var recyclerView: DpadRecyclerView? = null
     private var isScrollingFromTouchEvent = false
     internal var layoutCompletedListener: DpadRecyclerView.OnLayoutCompletedListener? = null
 

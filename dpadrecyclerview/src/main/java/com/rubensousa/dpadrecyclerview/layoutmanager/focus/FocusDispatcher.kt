@@ -22,6 +22,7 @@ import android.view.ViewGroup
 import android.view.ViewParent
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
@@ -121,7 +122,7 @@ internal class FocusDispatcher(
         }
     }
 
-    fun onInterceptFocusSearch(recyclerView: RecyclerView?, focused: View, direction: Int): View? {
+    fun onInterceptFocusSearch(recyclerView: DpadRecyclerView?, focused: View, direction: Int): View? {
         val currentRecyclerView = recyclerView ?: return focused
 
         if (!isFocusSearchEnabled(currentRecyclerView)) {
@@ -142,8 +143,10 @@ internal class FocusDispatcher(
         }
 
         var newFocusedView: View? = focusInterceptor.findFocus(
-            recyclerView, focused,
-            pivotSelector.position, direction
+            recyclerView = recyclerView,
+            focusedView = focused,
+            position = pivotSelector.position,
+            direction = direction
         )
 
         // If we found the view using our interceptor, return it immediately

@@ -24,6 +24,14 @@ internal enum class FocusDirection {
     PREVIOUS_COLUMN,
     NEXT_COLUMN;
 
+    fun isPrimary(): Boolean {
+        return this == PREVIOUS_ROW || this == NEXT_ROW
+    }
+
+    fun isSecondary(): Boolean {
+        return this == PREVIOUS_COLUMN || this == NEXT_COLUMN
+    }
+
     fun getScrollSign(reverseLayout: Boolean): Int {
         if (this == NEXT_COLUMN || this == PREVIOUS_COLUMN) {
             return 0
@@ -65,9 +73,11 @@ internal enum class FocusDirection {
                     View.FOCUS_LEFT -> {
                         if (reverseLayout) NEXT_COLUMN else PREVIOUS_COLUMN
                     }
+
                     View.FOCUS_RIGHT -> {
                         if (reverseLayout) PREVIOUS_COLUMN else NEXT_COLUMN
                     }
+
                     else -> null
                 }
             } else {
@@ -75,9 +85,11 @@ internal enum class FocusDirection {
                     View.FOCUS_LEFT -> {
                         if (reverseLayout) NEXT_ROW else PREVIOUS_ROW
                     }
+
                     View.FOCUS_RIGHT -> {
                         if (reverseLayout) PREVIOUS_ROW else NEXT_ROW
                     }
+
                     View.FOCUS_UP -> if (reverseLayout) NEXT_COLUMN else PREVIOUS_COLUMN
                     View.FOCUS_DOWN -> if (reverseLayout) PREVIOUS_COLUMN else NEXT_COLUMN
                     else -> null

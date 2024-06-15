@@ -354,6 +354,8 @@ internal class LayoutInfo(
 
     fun getChildCount() = layout.childCount
 
+    fun getItemCount() = layout.itemCount
+
     fun getChildAt(index: Int) = layout.getChildAt(index)
 
     /**
@@ -379,6 +381,10 @@ internal class LayoutInfo(
 
     fun isViewFocusable(view: View): Boolean {
         return view.visibility == View.VISIBLE && (view.isFocusable || view.hasFocusable())
+    }
+
+    fun getPositionIncrement(goingForward: Boolean): Int {
+        return if (goingForward xor shouldReverseLayout()) 1 else -1
     }
 
     fun didViewHolderStateChange(

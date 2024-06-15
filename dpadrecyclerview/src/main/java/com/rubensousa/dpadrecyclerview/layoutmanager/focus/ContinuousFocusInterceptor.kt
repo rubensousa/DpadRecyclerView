@@ -17,20 +17,19 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.focus
 
 import android.view.View
-import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.FocusableDirection
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.LayoutInfo
 
 /**
  * Implementation for [FocusableDirection.CONTINUOUS]
- * TODO: Add tests
  */
 internal class ContinuousFocusInterceptor(
     private val layoutInfo: LayoutInfo,
 ) : FocusInterceptor {
 
     override fun findFocus(
-        recyclerView: RecyclerView,
+        recyclerView: DpadRecyclerView,
         focusedView: View,
         position: Int,
         direction: Int
