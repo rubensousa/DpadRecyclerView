@@ -60,11 +60,12 @@ nav:
   - 'Testing': testing.md
   - 'XML attributes': xml.md
   - 'Recipes':
+      - 'Alignment': recipes/alignment.md
       - 'Layout': recipes/layout.md
       - 'Spacing': recipes/spacing.md
-      - 'Alignment': recipes/alignment.md
       - 'Focus': recipes/focus.md
       - 'Scrolling': recipes/scrolling.md
+      - 'Scrollbars': recipes/scrollbars.md
       - 'Drag and drop': recipes/dragdrop.md
   - 'Changelog': changelog.md
   - 'API': api/

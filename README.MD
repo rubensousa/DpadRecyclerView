@@ -25,6 +25,7 @@ Why should you use this library?
 | Prefetching upcoming items       | ✅                | ❌        | ✅          |
 | Reverse layout                   | ✅                | ❌        | ✅          |
 | Testing library                  | ✅                | ❌        | ✅          |
+| Scrollbars                       | ✅                | ❌        | ❌          |
 | Drag and Drop                    | ✅                | ❌        | ❌          |
 | Infinite layout with loop        | ✅                | ❌        | ❌          |
 | Smooth alignment changes         | ✅                | ❌        | ❌          |
