@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.drag
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -73,7 +73,7 @@ fun DragButtonItem(
             .onFocusChanged { focusState ->
                 isFocused = focusState.hasFocus
             }
-            .focusTarget()
+            .focusable()
             .dpadClickable {
                 if (isDragging) {
                     onStopDragClick()
