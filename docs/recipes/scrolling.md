@@ -70,12 +70,23 @@ The code above translates to this behavior:
 
 In the right scenario, there's just one next focusable view since the focused view still isn't aligned to the keyline.
 
-## Disabling layout during scrolling events
+## Enabling layout during scrolling events
 
-If you want to postpone layout changes until the scroll state is idle, use this:
+If you want to enable layout changes while `DpadRecyclerView` is still scrolling, use:
 
 ```kotlin
-recyclerView.setLayoutWhileScrollingEnabled(false)
+recyclerView.setLayoutWhileScrollingEnabled(true)
 ```
 
+## Long text scrolling
 
+In some cases, you might need to show pages with text that should be scrollable (e.g terms & conditions).
+
+For this use case, you can use `DpadScroller`:
+
+```kotlin
+val scroller = DpadScroller()
+scroller.attach(dpadRecyclerView)
+``` 
+
+`DpadScroller` will scroll the page for you on key event presses without any alignment so that the user can read the entire content

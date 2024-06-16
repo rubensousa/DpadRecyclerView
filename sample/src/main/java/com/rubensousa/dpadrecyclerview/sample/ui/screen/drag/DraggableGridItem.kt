@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.drag
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -76,7 +76,7 @@ fun DraggableGridItem(
             .onFocusChanged { focusState ->
                 isFocused = focusState.hasFocus
             }
-            .focusTarget()
+            .focusable()
             .dpadClickable {
                 onClick()
             },

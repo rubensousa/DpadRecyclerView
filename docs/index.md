@@ -1,27 +1,44 @@
 # DpadRecyclerView
 
-A RecyclerView built for Android TV as a replacement for [Leanback's](https://developer.android.com/jetpack/androidx/releases/leanback) BaseGridView.
+A RecyclerView built for Android TV as a replacement
+for [Leanback's](https://developer.android.com/jetpack/androidx/releases/leanback) BaseGridView.
 
 Proceed to [Getting started](getting_started.md) to start adding `DpadRecyclerView`
 to your application.
 
-Motivation for this library is available in my [blog](https://rubensousa.com/2022/11/08/dpadrecyclerview/) in case you're interested.
+Why should you use this library?
 
-## New Features compared to Leanback's `BaseGridView`
+1. Leanback hasn't received any significant update for years
+2. Compose support for TV is still in its early stages
+3. RecyclerView is stable and works well with Compose
+4. You need to maintain an existing TV app and wish to introduce Compose in an incremental way
+5. Contains useful Espresso testing helpers for your TV UI tests
+6. More feature complete:
 
-### Layout
+| Feature                           | DpadRecyclerView | Leanback | Compose TV |
+|-----------------------------------|------------------|----------|------------|
+| Custom scrolling speeds           | ✅                | ✅        | ❌          |
+| Edge alignment preference         | ✅                | ✅        | ❌          |
+| Sub position selections           | ✅                | ✅        | ❌          |
+| Fading edges                      | ✅                | ✅        | ❌          |
+| Alignment listener                | ✅                | ✅        | ❌          |
+| Grids with uneven span sizes      | ✅                | ❌        | ✅          |
+| Extra layout space                | ✅                | ❌        | ✅          |
+| Prefetching upcoming items        | ✅                | ❌        | ✅          |
+| Reverse layout                    | ✅                | ❌        | ✅          |
+| Testing library                   | ✅                | ❌        | ✅          |
+| Drag and Drop                     | ✅                | ❌        | ❌          |
+| Infinite layout with loop         | ✅                | ❌        | ❌          |
+| Smooth alignment changes          | ✅                | ❌        | ❌          |
+| Discrete scrolling for text pages | ✅                | ❌        | ❌          |
+| Child focus observer              | ✅                | ❌        | ❌          |
+| Circular and continuous focus     | ✅                | ❌        | ❌          |
+| Throttling scroll events          | ✅                | ❌        | ❌          |
+| Scrolling without animation       | ✅                | ❌        | ❌          |
+| Scrolling in secondary directory  | ❌                | ✅        | ❌          |
 
-- Grids with different span sizes
-- Infinite loop
-- Reverse layout
-- XML attributes for easier configuration
 
-### Scrolling and focus
-
-- Changing the alignment configuration smoothly
-- Limiting the number of pending alignments
-- Non smooth scroll changes
-- Continuous and circular grid focus
+Background story for this library is available in my [blog](https://rubensousa.com/2022/11/08/dpadrecyclerview/) in case you're interested.
 
 ## License
 

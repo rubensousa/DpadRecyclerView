@@ -59,7 +59,7 @@ fun ItemComposable(
             .onFocusChanged { focusState ->
                 isFocused = focusState.hasFocus
             }
-            .focusTarget()
+            .focusable()
             .dpadClickable {
                 onClick()
             },
