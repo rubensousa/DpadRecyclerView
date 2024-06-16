@@ -2,6 +2,25 @@
 
 ## Version 1.3.0
 
+### 1.3.0-beta01
+
+2024-06-17
+
+#### Dependency updates
+
+- Updated library to Kotlin 2.0
+- Updated Compose ui libraries to `1.7.0-beta03`
+
+#### New Features
+
+- Added `DpadDragHelper` for drag and drop support ([#216](https://github.com/rubensousa/DpadRecyclerView/pull/216)). Documentation available [here](recipes/dragdrop.md).
+- Now `recyclerView.setFocusableDirection(FocusableDirection.CIRCULAR)` can also be used in linear layouts that don't fill the entire space. ([#225](https://github.com/rubensousa/DpadRecyclerView/pull/225)
+
+#### Improvements
+
+- Now `focusOutFront` and `focusOutBack` are enabled by default due to feedback from library users ([#223](https://github.com/rubensousa/DpadRecyclerView/pull/223))
+- Improved focus behavior for grids with uneven spans that have incomplete rows ([#224](https://github.com/rubensousa/DpadRecyclerView/pull/224))
+
 ### 1.3.0-alpha04
 
 2024-06-04

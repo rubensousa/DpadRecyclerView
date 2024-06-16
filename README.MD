@@ -1,12 +1,44 @@
 # DpadRecyclerView
 
-A RecyclerView built for Android TV as a replacement for Leanback's BaseGridView.
+A RecyclerView built for Android TV as a replacement for [Leanback's](https://developer.android.com/jetpack/androidx/releases/leanback) BaseGridView.
 
 See the project website for more information: https://rubensousa.github.io/DpadRecyclerView
 
-Motivation for this library: https://rubensousa.com/2022/11/08/dpadrecyclerview/
+Why should you use this library?
 
-Check the sample app for a complete example of integration of this library:
+1. Leanback hasn't received any significant update for years
+2. Compose support for TV is still in its early stages
+3. RecyclerView is stable and works well with Compose
+4. You need to maintain an existing TV app and wish to introduce Compose in an incremental way
+5. Contains useful Espresso testing helpers for your TV UI tests
+6. More feature complete:
+
+| Feature                          | DpadRecyclerView | Leanback | Compose TV |
+|----------------------------------|------------------|----------|------------|
+| Custom scrolling speeds          | ✅                | ✅        | ❌          |
+| Edge alignment preference        | ✅                | ✅        | ❌          |
+| Sub position selections          | ✅                | ✅        | ❌          |
+| Fading edges                     | ✅                | ✅        | ❌          |
+| Alignment listener               | ✅                | ✅        | ❌          |
+| Grids with uneven span sizes     | ✅                | ❌        | ✅          |
+| Extra layout space               | ✅                | ❌        | ✅          |
+| Prefetching upcoming items       | ✅                | ❌        | ✅          |
+| Reverse layout                   | ✅                | ❌        | ✅          |
+| Testing library                  | ✅                | ❌        | ✅          |
+| Drag and Drop                    | ✅                | ❌        | ❌          |
+| Infinite layout with loop        | ✅                | ❌        | ❌          |
+| Smooth alignment changes         | ✅                | ❌        | ❌          |
+| Child focus observer             | ✅                | ❌        | ❌          |
+| Circular and continuous focus    | ✅                | ❌        | ❌          |
+| Throttling scroll events         | ✅                | ❌        | ❌          |
+| Scrolling without animation      | ✅                | ❌        | ❌          |
+| Scrolling in secondary directory | ❌                | ✅        | ❌          |
+
+
+Background story for this library is available in my [blog](https://rubensousa.com/2022/11/08/dpadrecyclerview/) in case you're interested.
+
+Check the sample app for a complete example of integration of this library
+
 
 ![sample](https://github.com/rubensousa/DpadRecyclerView/blob/master/assets/sample_cover.png?raw=true)
 
@@ -26,23 +58,7 @@ androidTestImplementation "com.rubensousa.dpadrecyclerview:dpadrecyclerview-test
 
 Check the official website for more information and recipes: https://rubensousa.github.io/DpadRecyclerView
 
-## New Features compared to Leanback's `BaseGridView`
-
-### Layout
-
-- Supports grids with different span sizes
-- Supports infinite/endless scrolling
-- Supports reverse layout
-- XML attributes for easier configuration
-
-### Scrolling and focus
-
-- Supports changing the alignment configuration smoothly
-- Supports limiting the number of pending alignments
-- Supports non smooth scroll changes
-- Supports continuous and circular grid focus
-
-### Easier Compose Integration
+## Easier Compose Integration
 
 Documentation: https://rubensousa.github.io/DpadRecyclerView/compose/
 
