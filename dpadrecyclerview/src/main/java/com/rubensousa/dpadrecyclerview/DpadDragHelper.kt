@@ -96,7 +96,7 @@ class DpadDragHelper<T>(
         }
         val recyclerView = currentRecyclerView
             ?: throw IllegalStateException(
-                "RecyclerView not attached. Please use attachRecyclerView before calling startDrag"
+                "RecyclerView not attached. Please use attachToRecyclerView before calling startDrag"
             )
         val adapter = recyclerView.adapter ?: return false
         if (position < 0 || position >= adapter.itemCount) {
