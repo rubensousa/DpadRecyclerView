@@ -139,10 +139,12 @@ open class DpadRecyclerView @JvmOverloads constructor(
         )
         layout.setFocusOutSideAllowed(
             throughFront = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideFront, config.focusOutSideFront
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideFront,
+                config.focusOutSideFront
             ),
             throughBack = typedArray.getBoolean(
-                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideBack, config.focusOutSideBack
+                R.styleable.DpadRecyclerView_dpadRecyclerViewFocusOutSideBack,
+                config.focusOutSideBack
             )
         )
         layout.setFocusableDirection(
@@ -848,7 +850,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @see [setReverseLayout]
      */
     fun isLayoutReversed(): Boolean {
-        return requireLayout().getConfig().reverseLayout
+        return requireLayout().isLayoutReversed
     }
 
     /**
