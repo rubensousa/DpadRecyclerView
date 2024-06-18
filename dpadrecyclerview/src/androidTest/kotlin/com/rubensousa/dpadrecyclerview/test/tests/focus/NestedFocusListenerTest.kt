@@ -19,6 +19,9 @@ package com.rubensousa.dpadrecyclerview.test.tests.focus
 import androidx.core.view.get
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withTagValue
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.test.TestNestedListFragment
@@ -29,7 +32,10 @@ import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
+import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
+import org.hamcrest.Matchers
+import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -125,6 +131,27 @@ class NestedFocusListenerTest {
             assertThat(event.parent).isEqualTo(parentViewHolder)
             assertThat(event.child).isEqualTo(firstChildViewHolder.itemView)
         }
+    }
+
+    @Test
+    fun testParentRecyclerViewStillReceivesFocusIfChildHasNoListener() {
+        // given
+        val focusEvents = 6
+        Espresso.onView(
+            allOf(
+                withId(com.rubensousa.dpadrecyclerview.test.R.id.nestedRecyclerView),
+                withTagValue(Matchers.`is`(0))
+            )
+        ).perform(DpadRecyclerViewActions.execute("Clear listener") { recyclerView ->
+            recyclerView.clearOnViewFocusedListeners()
+        })
+
+        // when
+        KeyEvents.pressRight(times = focusEvents - 1)
+        waitForIdleScrollState()
+
+        // then
+        assertThat(getParentFocusEvents()).hasSize(focusEvents)
     }
 
     private fun getChildFocusEvents(): List<DpadFocusEvent> {
