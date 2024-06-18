@@ -49,7 +49,7 @@ jobs:
       matrix:
         arch: [ x86 ]
         target: [ android-tv ]
-        api-level: [22, 25, 27, 28, 29, 30, 31]
+        api-level: [27]
         profile: [tv_1080p]
     steps:
       - name: checkout
