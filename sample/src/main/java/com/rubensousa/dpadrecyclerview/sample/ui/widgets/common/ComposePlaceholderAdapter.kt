@@ -55,6 +55,10 @@ class ComposePlaceholderAdapter(
         holder.setItemState(true)
     }
 
+    override fun onViewRecycled(holder: DpadComposeViewHolder<Boolean>) {
+        holder.setItemState(null)
+    }
+
     fun show(enabled: Boolean) {
         if (enabled == show) {
             return

@@ -37,6 +37,7 @@ import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadViewActions
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -47,6 +48,11 @@ class DpadComposeFocusViewHolderTest {
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()
+
+    @Before
+    fun setup() {
+        composeTestRule.waitForIdle()
+    }
 
     @Test
     fun testFirstItemHasFocus() {
@@ -109,6 +115,7 @@ class DpadComposeFocusViewHolderTest {
 
     @Test
     fun testCompositionIsNotClearedWhenDetachingFromWindow() {
+        // given
         composeTestRule.activityRule.scenario.onActivity { activity ->
             activity.getRecyclerView()
                 .setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
@@ -117,19 +124,24 @@ class DpadComposeFocusViewHolderTest {
                     }
                 })
         }
+
+        // when
         repeat(3) {
             KeyEvents.pressDown()
             waitForIdleScroll()
         }
 
+        // then
         composeTestRule.onNodeWithText("0").assertExists()
         composeTestRule.onNodeWithText("0").assertIsNotDisplayed()
     }
 
     @Test
     fun testCompositionIsClearedWhenViewHolderIsRecycled() {
-        KeyEvents.pressDown(times = 10)
-        waitForIdleScroll()
+        repeat(times = 10) {
+            KeyEvents.pressDown()
+            waitForIdleScroll()
+        }
 
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
 

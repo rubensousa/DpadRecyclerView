@@ -131,8 +131,10 @@ class DpadComposeViewHolderTest {
 
     @Test
     fun testCompositionIsClearedWhenViewHolderIsRecycled() {
-        KeyEvents.pressDown(times = 10)
-        waitForIdleScroll()
+        repeat(times = 10) {
+            KeyEvents.pressDown()
+            waitForIdleScroll()
+        }
 
         composeTestRule.onNodeWithText("0").assertDoesNotExist()
 
