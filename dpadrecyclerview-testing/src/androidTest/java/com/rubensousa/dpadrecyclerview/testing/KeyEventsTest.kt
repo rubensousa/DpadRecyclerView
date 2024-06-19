@@ -33,11 +33,14 @@ class KeyEventsTest : RecyclerViewTest() {
         launchGridFragment()
         Espresso.onIdle()
 
-        KeyEvents.pressRight(times = 10)
-        assert(DpadRecyclerViewAssertions.isFocused(position = 10))
-
+        KeyEvents.pressRight(times = 8)
         performActions(DpadRecyclerViewActions.waitForIdleScroll())
-        KeyEvents.pressLeft(times = 10)
+
+        assert(DpadRecyclerViewAssertions.isFocused(position = 8))
+
+        KeyEvents.pressLeft(times = 8)
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }
 
@@ -47,10 +50,13 @@ class KeyEventsTest : RecyclerViewTest() {
         Espresso.onIdle()
 
         KeyEvents.pressDown(times = 5)
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
         assert(DpadRecyclerViewAssertions.isFocused(position = 5 * 5))
 
-        performActions(DpadRecyclerViewActions.waitForIdleScroll())
         KeyEvents.pressUp(times = 5)
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }
 }
