@@ -185,6 +185,7 @@ class DragHelperGridTest {
         // when
         repeat(numberOfItems / spanCount) {
             KeyEvents.pressDown()
+            waitForIdleScrollState()
         }
         repeat(spanCount) {
             KeyEvents.pressRight()
