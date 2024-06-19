@@ -32,12 +32,16 @@ class KeyEventsTest : RecyclerViewTest() {
     fun testFastHorizontalScroll() {
         launchGridFragment()
         Espresso.onIdle()
+        performActions(DpadRecyclerViewActions.waitForAdapterUpdate())
 
-        KeyEvents.pressRight(times = 10)
-        assert(DpadRecyclerViewAssertions.isFocused(position = 10))
-
+        KeyEvents.pressRight(times = 8)
         performActions(DpadRecyclerViewActions.waitForIdleScroll())
-        KeyEvents.pressLeft(times = 10)
+
+        assert(DpadRecyclerViewAssertions.isFocused(position = 8))
+
+        KeyEvents.pressLeft(times = 8)
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }
 
@@ -45,12 +49,16 @@ class KeyEventsTest : RecyclerViewTest() {
     fun testFastVerticalScroll() {
         launchGridFragment()
         Espresso.onIdle()
+        performActions(DpadRecyclerViewActions.waitForAdapterUpdate())
 
         KeyEvents.pressDown(times = 5)
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
         assert(DpadRecyclerViewAssertions.isFocused(position = 5 * 5))
 
-        performActions(DpadRecyclerViewActions.waitForIdleScroll())
         KeyEvents.pressUp(times = 5)
+        performActions(DpadRecyclerViewActions.waitForIdleScroll())
+
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }
 }

@@ -92,7 +92,15 @@
             android:id="@+id/open_span_header"
             app:destination="@id/span_header_fragment" />
 
+        <action
+            android:id="@+id/open_vertical_list"
+            app:destination="@id/vertical_list_fragment" />
+
     </fragment>
+
+    <fragment
+        android:id="@+id/vertical_list_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.list.VerticalListFragment" />
 
     <fragment
         android:id="@+id/standard_grid_fragment"

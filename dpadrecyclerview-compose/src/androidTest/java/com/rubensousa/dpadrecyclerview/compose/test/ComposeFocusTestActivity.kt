@@ -98,29 +98,30 @@ class ComposeFocusTestActivity : AppCompatActivity() {
             parent: ViewGroup,
             viewType: Int
         ): DpadComposeFocusViewHolder<Int> {
-            return DpadComposeFocusViewHolder(
-                parent = parent,
-                content = { item ->
-                    TestComposableFocus(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(150.dp),
-                        item = item,
-                        onClick = {
-                            clicks.add(item)
-                        },
-                        onDispose = {
-                            onDispose(item)
-                        }
-                    )
-                },
-            )
+            return DpadComposeFocusViewHolder(parent) { item ->
+                TestComposableFocus(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    item = item,
+                    onClick = {
+                        clicks.add(item)
+                    },
+                    onDispose = {
+                        onDispose(item)
+                    }
+                )
+            }
         }
 
         override fun getItemCount(): Int = items.size
 
         override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
             holder.setItemState(items[position])
+        }
+
+        override fun onViewRecycled(holder: DpadComposeFocusViewHolder<Int>) {
+            holder.setItemState(null)
         }
 
     }

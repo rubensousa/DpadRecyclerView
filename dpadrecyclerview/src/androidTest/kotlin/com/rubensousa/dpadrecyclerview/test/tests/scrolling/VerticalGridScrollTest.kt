@@ -294,13 +294,13 @@ class VerticalGridScrollTest : DpadRecyclerViewTest() {
 
         // Scroll down until last uneven child is visible
         repeat(5) {
-            KeyEvents.pressDown(delay = 500L)
+            KeyEvents.pressDown()
+            waitForIdleScrollState()
         }
 
-        waitForIdleScrollState()
-
         repeat(5) {
-            KeyEvents.pressUp(delay = 500L)
+            KeyEvents.pressUp()
+            waitForIdleScrollState()
         }
 
         assertThat(getChildrenBounds()).isEqualTo(childPositions)

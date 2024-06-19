@@ -41,6 +41,8 @@ internal class DpadComposeView @JvmOverloads constructor(
     init {
         addView(composeView)
         clipChildren = false
+        composeView.isFocusable = false
+        composeView.isFocusableInTouchMode = false
         super.setOnFocusChangeListener(internalFocusListener)
     }
 
@@ -53,8 +55,6 @@ internal class DpadComposeView @JvmOverloads constructor(
         dispatchFocusToComposable: Boolean
     ) {
         if (dispatchFocusToComposable) {
-            composeView.isFocusable = isFocusable
-            composeView.isFocusableInTouchMode = isFocusable
             composeView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
             this.isFocusable = false
             this.isFocusableInTouchMode = false
