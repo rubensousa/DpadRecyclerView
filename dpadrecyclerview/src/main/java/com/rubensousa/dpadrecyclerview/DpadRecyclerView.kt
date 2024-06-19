@@ -399,7 +399,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     private fun postRemoveView() {
-        if (isRetainingFocus && childCount > 0 && !hasFocus()) {
+        if (isRetainingFocus && !hasFocus()) {
             requestFocus()
         }
         isRetainingFocus = false

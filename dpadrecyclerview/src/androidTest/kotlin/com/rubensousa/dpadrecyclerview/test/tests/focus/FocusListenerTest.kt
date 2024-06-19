@@ -23,7 +23,7 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.assertIsNotFocused
+import com.rubensousa.dpadrecyclerview.test.helpers.assertIsFocused
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
@@ -158,7 +158,7 @@ class FocusListenerTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testRecyclerViewLosesFocusWhenItLosesContent() {
+    fun testRecyclerViewKeepsFocusWhenItLosesContent() {
         // when
         executeOnFragment { fragment ->
             fragment.clearAdapter()
@@ -168,7 +168,7 @@ class FocusListenerTest : DpadRecyclerViewTest() {
         }
 
         // then
-        assertIsNotFocused()
+        assertIsFocused()
     }
 
 }
