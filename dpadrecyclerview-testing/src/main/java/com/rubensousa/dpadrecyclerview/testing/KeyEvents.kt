@@ -32,8 +32,10 @@ object KeyEvents {
     fun pressKey(key: Int, times: Int = 1, delay: Long = DEFAULT_KEY_PRESS_DELAY) {
         repeat(times) {
             device.pressKeyCode(key)
-            val actualDelay = max(25L, delay)
-            SystemClock.sleep(actualDelay)
+            if (times > 1) {
+                val actualDelay = max(25L, delay)
+                SystemClock.sleep(actualDelay)
+            }
         }
     }
 
