@@ -98,8 +98,10 @@ class LoopingLayoutTest : DpadRecyclerViewTest() {
     fun testLayoutScrollsBackwardsToStartPosition() {
         launchFragment(getDefaultAdapterConfiguration().copy(numberOfItems = 10))
 
-        KeyEvents.pressLeft(times = 10)
-        waitForIdleScrollState()
+        repeat(10) {
+            KeyEvents.pressLeft()
+            waitForIdleScrollState()
+        }
 
         val currentBounds = getItemViewBounds(position = 0)
         assertFocusAndSelection(position = 0)
@@ -110,8 +112,10 @@ class LoopingLayoutTest : DpadRecyclerViewTest() {
     fun testLayoutScrollsForwardsToStartPosition() {
         launchFragment(getDefaultAdapterConfiguration().copy(numberOfItems = 10))
 
-        KeyEvents.pressRight(times = 10)
-        waitForIdleScrollState()
+        repeat(10) {
+            KeyEvents.pressRight()
+            waitForIdleScrollState()
+        }
 
         val currentBounds = getItemViewBounds(position = 0)
         assertFocusAndSelection(position = 0)
@@ -144,14 +148,20 @@ class LoopingLayoutTest : DpadRecyclerViewTest() {
         }
 
         // Scroll forwards to begin the loop
-        KeyEvents.pressRight(times = 10)
+        repeat(10) {
+            KeyEvents.pressRight()
+            waitForIdleScrollState()
+        }
 
         assertFocusAndSelection(position = 0)
         assertThat(getItemViewBounds(position = 0).centerX())
             .isEqualTo(getRecyclerViewBounds().centerX())
 
         // Scroll backwards and validate start loop doesn't exist
-        KeyEvents.pressLeft(times = 15)
+        repeat(15) {
+            KeyEvents.pressLeft()
+            waitForIdleScrollState()
+        }
         assertFocusAndSelection(position = 0)
         assertThat(getChildrenBounds()).isEqualTo(startChildrenBounds)
     }
