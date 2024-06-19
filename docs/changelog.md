@@ -2,6 +2,15 @@
 
 ## Version 1.3.0
 
+### 1.3.0-beta02
+
+2024-06-20
+
+#### Bug fixes
+
+- Fixed `OnViewFocusedListener` not working correctly for a parent RecyclerView when a nested RecyclerView doesn't have a listener registered ([#229](https://github.com/rubensousa/DpadRecyclerView/pull/229))
+- Fixed `DpadRecyclerView` losing focus when adapter is cleared ([#232](https://github.com/rubensousa/DpadRecyclerView/pull/232))
+
 ### 1.3.0-beta01
 
 2024-06-17
