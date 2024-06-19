@@ -139,7 +139,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         // If we have focus, save it temporarily since the views will change and we might lose it
         hadFocusBeforeLayout = hasFocus()
         scroller.cancelSmoothScroller()
-        pivotSelector.onLayoutChildren(state)
         pivotLayout.onLayoutChildren(recycler, state)
         layoutCompletedListener?.onLayoutCompleted(state)
     }

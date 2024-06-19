@@ -120,7 +120,7 @@ jobs:
             ./gradlew --build-cache dpadrecyclerview-compose:connectedDebugAndroidTest
             ./gradlew --build-cache sample:connectedDebugAndroidTest
             ./gradlew --build-cache dpadrecyclerview-testing:connectedDebugAndroidTest
-            ./gradlew --build-cache dpadrecyclerview:connectedDebugAndroidTest --info
+            ./gradlew --build-cache dpadrecyclerview:connectedDebugAndroidTest
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
