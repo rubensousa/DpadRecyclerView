@@ -32,7 +32,6 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.compose.test.ComposeFocusTestActivity
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
-import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
@@ -42,9 +41,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class DpadComposeFocusViewHolderTest {
-
-    @get:Rule
-    val screenRecorderRule = ScreenRecorderRule()
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()
