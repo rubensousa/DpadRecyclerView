@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.testing
 
+import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
@@ -32,7 +33,7 @@ object KeyEvents {
         repeat(times) {
             device.pressKeyCode(key)
             val actualDelay = max(25L, delay)
-            device.waitForIdle(actualDelay)
+            SystemClock.sleep(actualDelay)
         }
     }
 
