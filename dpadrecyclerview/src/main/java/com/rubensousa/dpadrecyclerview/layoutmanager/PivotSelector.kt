@@ -106,8 +106,8 @@ internal class PivotSelector(
 
     fun focus(view: View) {
         view.requestFocus()
-        // Exit early if there's no one listening for focus events
-        if (focusListeners.isEmpty() || isRetainingFocus) {
+        // Do not notify listeners if we are retaining focus
+        if (isRetainingFocus) {
             return
         }
         val currentRecyclerView = recyclerView ?: return
@@ -211,10 +211,6 @@ internal class PivotSelector(
             return RecyclerView.NO_POSITION
         }
         return max(0, min(itemCount - 1, position))
-    }
-
-    fun onLayoutChildren(state: RecyclerView.State) {
-
     }
 
     fun onLayoutCompleted() {
