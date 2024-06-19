@@ -28,13 +28,13 @@ import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.Before
 import org.junit.Test
 
 class DragHelperGridTest {
-
 
     private lateinit var fragmentScenario: FragmentScenario<RecyclerViewFragment>
     private lateinit var dragHelper: DpadDragHelper<Int>
@@ -94,7 +94,10 @@ class DragHelperGridTest {
         startDragging(position = 0)
 
         // when
-        KeyEvents.pressRight(times = spanCount)
+        repeat(spanCount) {
+            KeyEvents.pressRight()
+            waitForIdleScrollState()
+        }
 
         // then
         assertFocusAndSelection(position = endRowPosition)
@@ -114,7 +117,10 @@ class DragHelperGridTest {
         startDragging(position = endRowPosition)
 
         // when
-        KeyEvents.pressLeft(times = spanCount)
+        repeat(spanCount) {
+            KeyEvents.pressLeft()
+            waitForIdleScrollState()
+        }
 
         // then
         assertFocusAndSelection(position = 0)
@@ -135,7 +141,7 @@ class DragHelperGridTest {
         startDragging(position = topColumnPosition)
 
         // when
-        KeyEvents.pressDown(times = 1)
+        KeyEvents.pressDown()
 
         // then
         assertFocusAndSelection(position = bottomColumnPosition)
@@ -157,7 +163,7 @@ class DragHelperGridTest {
         startDragging(position = bottomColumnPosition)
 
         // when
-        KeyEvents.pressUp(times = 1)
+        KeyEvents.pressUp()
 
         // then
         assertFocusAndSelection(position = topColumnPosition)
@@ -177,8 +183,13 @@ class DragHelperGridTest {
         startDragging(position = 0)
 
         // when
-        KeyEvents.pressDown(times = numberOfItems / spanCount)
-        KeyEvents.pressRight(times = spanCount)
+        repeat(numberOfItems / spanCount) {
+            KeyEvents.pressDown()
+        }
+        repeat(spanCount) {
+            KeyEvents.pressRight()
+            waitForIdleScrollState()
+        }
 
         // then
         assertFocusAndSelection(position = numberOfItems - 1)
@@ -196,8 +207,14 @@ class DragHelperGridTest {
         startDragging(position = numberOfItems - 1)
 
         // when
-        KeyEvents.pressUp(times = numberOfItems / spanCount)
-        KeyEvents.pressLeft(times = spanCount)
+        repeat(numberOfItems / spanCount) {
+            KeyEvents.pressUp()
+            waitForIdleScrollState()
+        }
+        repeat(spanCount) {
+            KeyEvents.pressLeft()
+            waitForIdleScrollState()
+        }
 
         // then
         assertFocusAndSelection(position = 0)
@@ -212,12 +229,6 @@ class DragHelperGridTest {
     private fun startDragging(position: Int) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             dragHelper.startDrag(position)
-        }
-    }
-
-    private fun stopDragging() {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            dragHelper.stopDrag()
         }
     }
 

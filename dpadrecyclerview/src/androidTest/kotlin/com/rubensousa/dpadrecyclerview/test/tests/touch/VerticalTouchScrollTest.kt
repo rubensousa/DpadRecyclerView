@@ -81,6 +81,7 @@ class VerticalTouchScrollTest : DpadRecyclerViewTest() {
         val verticalScrollOffset = firstItemBounds.height() / 2
 
         swipeVerticallyBy(-verticalScrollOffset)
+        waitForIdleScrollState()
 
         val newFirstItemBounds = getItemViewBounds(position = 0)
         assertThat(newFirstItemBounds.top).isLessThan(firstItemBounds.top)
