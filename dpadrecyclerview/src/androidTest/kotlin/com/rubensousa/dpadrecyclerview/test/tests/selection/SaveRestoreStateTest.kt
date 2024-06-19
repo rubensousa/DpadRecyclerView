@@ -30,6 +30,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertOnRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
@@ -56,6 +57,7 @@ class SaveRestoreStateTest {
     fun testSelectionStateIsSavedAndRestored() {
         KeyEvents.pressDown(times = 5)
         assertFocusPosition(5)
+        waitForIdleScrollState()
 
         fragmentScenario.recreate()
 

@@ -116,7 +116,7 @@ class TestNestedListFragment : Fragment(R.layout.dpadrecyclerview_test_container
         onViewFocusedListener: OnViewFocusedListener,
     ) : RecyclerView.ViewHolder(view) {
 
-         val adapter = TestAdapter(
+        val adapter = TestAdapter(
             adapterConfiguration = configuration,
             onViewHolderSelected = { position -> },
             onViewHolderDeselected = { position -> }
