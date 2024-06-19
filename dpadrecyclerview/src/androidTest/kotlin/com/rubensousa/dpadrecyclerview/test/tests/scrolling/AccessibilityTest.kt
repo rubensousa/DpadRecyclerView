@@ -64,8 +64,8 @@ class AccessibilityTest : DpadRecyclerViewTest() {
     fun testAccessibilityInfo() {
         repeat(10) {
             KeyEvents.pressDown()
+            waitForIdleScrollState()
         }
-        waitForIdleScrollState()
         initializeAccessibility()
 
         assertThat(accessibilityNodeInfo.actionList.find {
