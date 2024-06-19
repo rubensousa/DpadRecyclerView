@@ -71,8 +71,6 @@ class DpadComposeFocusViewHolder<T>(
 
     fun setFocusable(focusable: Boolean) {
         composeView.apply {
-            isFocusable = focusable
-            isFocusableInTouchMode = focusable
             descendantFocusability = if (focusable) {
                 ViewGroup.FOCUS_AFTER_DESCENDANTS
             } else {

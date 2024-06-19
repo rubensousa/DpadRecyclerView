@@ -20,6 +20,7 @@ import android.os.SystemClock
 import android.view.KeyEvent
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import kotlin.math.max
 
 object KeyEvents {
 
@@ -31,8 +32,9 @@ object KeyEvents {
     fun pressKey(key: Int, times: Int = 1, delay: Long = DEFAULT_KEY_PRESS_DELAY) {
         repeat(times) {
             device.pressKeyCode(key)
-            if (delay > 0) {
-                SystemClock.sleep(delay)
+            if (times > 1) {
+                val actualDelay = max(25L, delay)
+                SystemClock.sleep(actualDelay)
             }
         }
     }

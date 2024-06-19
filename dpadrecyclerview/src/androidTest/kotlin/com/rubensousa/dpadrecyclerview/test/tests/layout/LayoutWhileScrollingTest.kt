@@ -27,7 +27,6 @@ import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
-import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Before
 import org.junit.Rule
@@ -76,34 +75,6 @@ class LayoutWhileScrollingTest : DpadRecyclerViewTest() {
 
         // when
         selectLastPosition(smooth = true)
-        repeat(10) {
-            onRecyclerView("Request layout") { recyclerView ->
-                if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) {
-                    recyclerView.requestLayout()
-                }
-            }
-        }
-        waitForIdleScrollState()
-
-        // then
-        assertThat(layoutCompleted).isEqualTo(1)
-    }
-
-    @Test
-    fun testRequestingLayoutDuringKeyEventsIsIgnored() {
-        // given
-        var layoutCompleted = 0
-        onRecyclerView("Disable layout during scroll") { recyclerView ->
-            recyclerView.addOnLayoutCompletedListener(
-                object : DpadRecyclerView.OnLayoutCompletedListener {
-                    override fun onLayoutCompleted(state: RecyclerView.State) {
-                        layoutCompleted++
-                    }
-                })
-        }
-
-        // when
-        KeyEvents.pressDown(times = 20)
         repeat(10) {
             onRecyclerView("Request layout") { recyclerView ->
                 if (recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE) {

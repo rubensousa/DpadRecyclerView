@@ -47,7 +47,7 @@ class ShortListFragment : Fragment(R.layout.screen_recyclerview) {
         }
     }
 
-    internal class Adapter(
+    private class Adapter(
         private val items: List<String>,
     ) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 

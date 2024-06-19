@@ -62,6 +62,10 @@ class MainViewModel : ViewModel() {
                     title = "Infinite lists (loop)"
                 ),
                 ScreenDestination(
+                    direction = MainFragmentDirections.openVerticalList(),
+                    title = "Vertical list"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openShortList(),
                     title = "Short list"
                 ),

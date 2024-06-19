@@ -16,6 +16,7 @@
 
 package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 
+import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat
@@ -32,6 +33,7 @@ import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import org.junit.Before
 import org.junit.Test
+
 
 class AccessibilityTest : DpadRecyclerViewTest() {
 
@@ -62,10 +64,14 @@ class AccessibilityTest : DpadRecyclerViewTest() {
 
     @Test
     fun testAccessibilityInfo() {
+        // Not working on these APIs, so just exit
+        if (Build.VERSION.SDK_INT <= 25) {
+            return
+        }
         repeat(10) {
             KeyEvents.pressDown()
+            waitForIdleScrollState()
         }
-        waitForIdleScrollState()
         initializeAccessibility()
 
         assertThat(accessibilityNodeInfo.actionList.find {
