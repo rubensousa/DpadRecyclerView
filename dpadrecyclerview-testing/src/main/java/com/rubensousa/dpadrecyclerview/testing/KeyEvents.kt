@@ -16,10 +16,18 @@
 
 package com.rubensousa.dpadrecyclerview.testing
 
-import android.os.SystemClock
 import android.view.KeyEvent
+import android.view.View
+import androidx.test.espresso.Espresso
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.isRoot
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers.allOf
+import kotlin.math.max
 
 object KeyEvents {
 
@@ -31,9 +39,9 @@ object KeyEvents {
     fun pressKey(key: Int, times: Int = 1, delay: Long = DEFAULT_KEY_PRESS_DELAY) {
         repeat(times) {
             device.pressKeyCode(key)
-            if (delay > 0) {
-                SystemClock.sleep(delay)
-            }
+            val actualDelay = max(25L, delay)
+            Espresso.onView(isRoot()).noActivity()
+                .perform(LoopMainThreadAction(actualDelay))
         }
     }
 
@@ -65,6 +73,24 @@ object KeyEvents {
     @JvmStatic
     fun pressRight(times: Int = 1, delay: Long = DEFAULT_KEY_PRESS_DELAY) {
         pressKey(KeyEvent.KEYCODE_DPAD_RIGHT, times, delay)
+    }
+
+    private class LoopMainThreadAction(
+        private val delayMs: Long
+    ) : ViewAction {
+
+        override fun getConstraints(): Matcher<View> {
+            return allOf(isAssignableFrom(View::class.java))
+        }
+
+        override fun getDescription(): String {
+            return "Delaying main thread for $delayMs"
+        }
+
+        override fun perform(uiController: UiController, view: View) {
+            uiController.loopMainThreadForAtLeast(delayMs)
+        }
+
     }
 
 }
