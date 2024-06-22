@@ -69,7 +69,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = height,
             startViewAnchor = verticalViewHeight / 2,
             endViewAnchor = verticalViewHeight / 2,
-            alignment = centerParentAlignment
+            startAlignment = centerParentAlignment,
+            endAlignment = centerParentAlignment
         )
 
         // Any child before the keyline should align to the start edge
@@ -89,7 +90,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = height,
             startViewAnchor = 0,
             endViewAnchor = height - verticalViewHeight / 2,
-            alignment = centerParentAlignment
+            startAlignment = centerParentAlignment,
+            endAlignment = centerParentAlignment
         )
 
         val viewCenter =
@@ -146,7 +148,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = height + verticalViewHeight,
             startViewAnchor = verticalViewHeight / 2,
             endViewAnchor = height + verticalViewHeight / 2,
-            alignment = centerParentAlignment
+            startAlignment = centerParentAlignment,
+            endAlignment =  centerParentAlignment
         )
         assertThat(
             alignmentCalculator.calculateScrollOffset(
@@ -166,7 +169,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = height / 2 + verticalViewHeight / 2,
             startViewAnchor = verticalViewHeight / 2,
             endViewAnchor = verticalViewHeight / 2,
-            alignment = centerParentAlignment
+            startAlignment = centerParentAlignment,
+            endAlignment =  centerParentAlignment
         )
 
         assertThat(
@@ -186,7 +190,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = height / 2 + verticalViewHeight / 2,
             startViewAnchor = verticalViewHeight / 2,
             endViewAnchor = verticalViewHeight / 2,
-            alignment = centerParentAlignment
+            startAlignment = centerParentAlignment,
+            endAlignment =  centerParentAlignment
         )
 
         assertThat(alignmentCalculator.endScrollLimit)
@@ -214,7 +219,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = verticalViewHeight,
             startViewAnchor = verticalViewHeight,
             endViewAnchor = verticalViewHeight,
-            alignment = alignment
+            startAlignment = alignment,
+            endAlignment = alignment
         )
 
         assertThat(alignmentCalculator.startScrollLimit).isEqualTo(
@@ -243,7 +249,8 @@ class ParentAlignmentCalculatorTest {
             startViewAnchor = verticalCenterKeyline,
             endEdge = verticalCenterKeyline + verticalViewHeight / 2,
             endViewAnchor = verticalCenterKeyline,
-            alignment = alignment
+            startAlignment = alignment,
+            endAlignment = alignment
         )
 
         val distanceToStart = verticalCenterKeyline - verticalViewHeight / 2
@@ -271,7 +278,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = verticalCenterKeyline + verticalViewHeight,
             startViewAnchor = verticalViewHeight / 2,
             endViewAnchor = verticalCenterKeyline + verticalViewHeight / 2,
-            alignment = alignment
+            startAlignment = alignment,
+            endAlignment = alignment
         )
 
         assertThat(
@@ -296,7 +304,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = verticalCenterKeyline + verticalViewHeight / 2,
             startViewAnchor = verticalCenterKeyline,
             endViewAnchor = verticalCenterKeyline,
-            alignment = alignment
+            startAlignment = alignment,
+            endAlignment = alignment
         )
         assertThat(
             alignmentCalculator.calculateScrollOffset(
@@ -320,7 +329,8 @@ class ParentAlignmentCalculatorTest {
             startViewAnchor = verticalCenterKeyline,
             endEdge = verticalCenterKeyline + verticalViewHeight / 2,
             endViewAnchor = verticalCenterKeyline,
-            alignment = alignment
+            startAlignment = alignment,
+            endAlignment = alignment
         )
 
         val distanceToKeyline = 0
@@ -348,7 +358,8 @@ class ParentAlignmentCalculatorTest {
             endEdge = horizontalViewWidth * 3,
             startViewAnchor = 0,
             endViewAnchor = horizontalViewWidth * 2,
-            alignment = alignment
+            startAlignment = alignment,
+            endAlignment = alignment
         )
 
         assertThat(alignmentCalculator.endScrollLimit).isEqualTo(horizontalViewWidth * 3 - width)
@@ -371,7 +382,8 @@ class ParentAlignmentCalculatorTest {
             startViewAnchor = keyline - verticalViewHeight / 2,
             endEdge = keyline,
             endViewAnchor = keyline - verticalViewHeight / 2,
-            alignment = alignment
+            startAlignment = alignment,
+            endAlignment = alignment
         )
 
         assertThat(alignmentCalculator.startScrollLimit).isEqualTo(-verticalViewHeight / 2)

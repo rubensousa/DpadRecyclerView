@@ -521,7 +521,7 @@ internal abstract class StructureEngineer(
             remainingScroll = 0
         }
 
-        val parentAlignment = layoutAlignment.getParentAlignment()
+        val parentAlignment = layoutAlignment.getParentAlignment(pivotView)
         if (parentAlignment.edge != ParentAlignment.Edge.NONE
             && alignToEdge(parentAlignment, recycler, state, remainingScroll)
         ) {

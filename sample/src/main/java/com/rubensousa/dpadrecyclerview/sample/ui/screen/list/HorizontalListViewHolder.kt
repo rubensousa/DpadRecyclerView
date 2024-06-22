@@ -18,9 +18,12 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.list
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.AlignmentLookup
+import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
+import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.HorizontalAdapterListBinding
@@ -61,6 +64,30 @@ class HorizontalListViewHolder(
                 )
             )
         )
+        val firstParentAlignment = ParentAlignment(
+            edge = ParentAlignment.Edge.NONE,
+            fraction = 0.2f
+        )
+        val firstChildAlignment = ChildAlignment(
+            fraction = 0f
+        )
+        recyclerView.setAlignmentLookup(object : AlignmentLookup {
+            override fun getParentAlignment(viewHolder: RecyclerView.ViewHolder): ParentAlignment? {
+                return if (viewHolder.layoutPosition == 0) {
+                    firstParentAlignment
+                } else {
+                    null
+                }
+            }
+
+            override fun getChildAlignment(viewHolder: RecyclerView.ViewHolder): ChildAlignment? {
+                return if (viewHolder.layoutPosition == 0) {
+                    firstChildAlignment
+                } else {
+                    null
+                }
+            }
+        })
         recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
             override fun onViewFocused(
                 parent: RecyclerView.ViewHolder,

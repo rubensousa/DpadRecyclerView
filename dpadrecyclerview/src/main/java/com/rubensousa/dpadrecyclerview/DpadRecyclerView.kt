@@ -905,6 +905,17 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Set a custom alignment configuration for each ViewHolder. Check [AlignmentLookup].
+     * This is only supported in linear layouts
+     *
+     * @param lookup custom alignment configuration specific to some ViewHolders
+     * @param smooth true if the layout should be smooth scrolled to the new position
+     */
+    fun setAlignmentLookup(lookup: AlignmentLookup?, smooth: Boolean = false) {
+        requireLayout().setAlignmentLookup(lookup, smooth)
+    }
+
+    /**
      * Enable or disable smooth scrolling to new focused position. By default, this is set to true.
      * When set to false, RecyclerView will scroll immediately to the focused view
      * without any animation.
