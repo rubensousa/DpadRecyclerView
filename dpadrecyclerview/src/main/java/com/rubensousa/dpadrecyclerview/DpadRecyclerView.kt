@@ -72,7 +72,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
     private var startedTouchScroll = false
-    private var layoutWhileScrollingEnabled = false
+    private var layoutWhileScrollingEnabled = true
     private var hasPendingLayout = false
     private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
@@ -1304,7 +1304,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      *
      * @param enabled true if layout requests should be possible while scrolling,
      * or false if they should be postponed until [RecyclerView.SCROLL_STATE_IDLE].
-     * Default is false.
+     * Default is true.
      */
     fun setLayoutWhileScrollingEnabled(enabled: Boolean) {
         layoutWhileScrollingEnabled = enabled
