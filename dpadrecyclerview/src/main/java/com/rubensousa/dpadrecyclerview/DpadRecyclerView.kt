@@ -1311,8 +1311,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
         layoutWhileScrollingEnabled = enabled
     }
 
-    internal fun isScrollingFromTouch() = startedTouchScroll
-
     @VisibleForTesting
     internal fun detachFromWindow() {
         onDetachedFromWindow()
