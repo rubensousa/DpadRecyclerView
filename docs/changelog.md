@@ -2,6 +2,12 @@
 
 ## Version 1.3.0
 
+### 1.3.0-rc01
+
+2024-07-08
+
+- Reverted default of `setLayoutWhileScrollingEnabled()` back to false.
+
 ### 1.3.0-beta02
 
 2024-06-20

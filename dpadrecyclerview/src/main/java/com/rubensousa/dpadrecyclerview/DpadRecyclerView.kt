@@ -72,7 +72,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
     private var startedTouchScroll = false
-    private var layoutWhileScrollingEnabled = false
+    private var layoutWhileScrollingEnabled = true
     private var hasPendingLayout = false
     private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
@@ -1298,19 +1298,18 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
 
     /**
-     * By default, [DpadRecyclerView] skips layout requests during scrolling because of:
+     * By default, [DpadRecyclerView] does not skip layout requests during scrolling,
+     * but you might want to do this because of the following:
      * 1. Compose animations trigger a full unnecessary layout-pass
      * 2. Content jumping around while scrolling is not ideal sometimes
      *
      * @param enabled true if layout requests should be possible while scrolling,
      * or false if they should be postponed until [RecyclerView.SCROLL_STATE_IDLE].
-     * Default is false.
+     * Default is true.
      */
     fun setLayoutWhileScrollingEnabled(enabled: Boolean) {
         layoutWhileScrollingEnabled = enabled
     }
-
-    internal fun isScrollingFromTouch() = startedTouchScroll
 
     @VisibleForTesting
     internal fun detachFromWindow() {
