@@ -6,7 +6,7 @@
 
 2024-07-08
 
-- Reverted default of `setLayoutWhileScrollingEnabled()` back to false.
+- Reverted default of `setLayoutWhileScrollingEnabled()` back to true.
 
 ### 1.3.0-beta02
 
