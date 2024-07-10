@@ -52,6 +52,7 @@ internal open class BaseSmoothScroller(
         layoutInfo.getRecyclerView()?.apply {
             postOnAnimation {
                 stopScroll()
+                requestLayout()
             }
         }
     }
