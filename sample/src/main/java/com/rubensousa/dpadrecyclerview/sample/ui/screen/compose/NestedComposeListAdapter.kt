@@ -59,6 +59,10 @@ class NestedComposeListAdapter(
         holder.item?.let {
             scrollState.save(holder.getRecyclerView(), it.diffId)
         }
+    }
+
+    override fun onViewDetachedFromWindow(holder: NestedComposeListViewHolder) {
+        super.onViewDetachedFromWindow(holder)
         holder.cancelAnimations()
     }
 

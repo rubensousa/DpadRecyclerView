@@ -80,4 +80,8 @@ class HorizontalListAdapter(
         holder.recycle()
     }
 
+    override fun onViewDetachedFromWindow(holder: HorizontalListViewHolder) {
+        holder.cancelAnimations()
+    }
+
 }
