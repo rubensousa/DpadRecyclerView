@@ -253,6 +253,7 @@ class VerticalGridScrollTest : DpadRecyclerViewTest() {
     fun testMultipleFastDifferentSpanFocusChanges() {
         launchFragment()
         onRecyclerView("Change span size lookup") { recyclerView ->
+            recyclerView.setSmoothScrollMaxPendingMoves(25)
             recyclerView.setSpanSizeLookup(object : DpadSpanSizeLookup() {
                 override fun getSpanSize(position: Int): Int {
                     return if (position == 0 || position.rem(spanCount + 1) == 0) {
