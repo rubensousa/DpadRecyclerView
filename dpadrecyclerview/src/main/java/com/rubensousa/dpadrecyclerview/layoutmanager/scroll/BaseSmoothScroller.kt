@@ -51,6 +51,9 @@ internal open class BaseSmoothScroller(
         isCanceled = true
         layoutInfo.getRecyclerView()?.apply {
             postOnAnimation {
+                if (layoutInfo.isScrolling) {
+                    requestLayout()
+                }
                 stopScroll()
             }
         }
