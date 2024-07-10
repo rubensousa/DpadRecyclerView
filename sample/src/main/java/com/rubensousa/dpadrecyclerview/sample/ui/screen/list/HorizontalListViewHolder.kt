@@ -82,6 +82,10 @@ class HorizontalListViewHolder(
         animator.startDeselectionAnimation()
     }
 
+    fun cancelAnimations() {
+        animator.cancel()
+    }
+
     override fun getSubPositionAlignments(): List<SubPositionAlignment> {
         return alignments
     }
