@@ -49,6 +49,11 @@ internal open class BaseSmoothScroller(
 
     fun cancel() {
         isCanceled = true
+        layoutInfo.getRecyclerView()?.apply {
+            postOnAnimation {
+                stopScroll()
+            }
+        }
     }
 
     fun isCanceled(): Boolean = isCanceled
