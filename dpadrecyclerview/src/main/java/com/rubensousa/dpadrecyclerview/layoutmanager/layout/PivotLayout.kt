@@ -231,40 +231,17 @@ internal class PivotLayout(
     fun onItemsAdded(positionStart: Int, itemCount: Int) {
         itemChanges.insertionPosition = positionStart
         itemChanges.insertionItemCount = itemCount
-        onItemsChanged()
     }
 
     fun onItemsRemoved(positionStart: Int, itemCount: Int) {
         itemChanges.removalPosition = positionStart
         itemChanges.removalItemCount = itemCount
-        onItemsChanged()
     }
 
     fun onItemsMoved(from: Int, to: Int, itemCount: Int) {
         itemChanges.moveFromPosition = from
         itemChanges.moveToPosition = to
         itemChanges.moveItemCount = itemCount
-        onItemsChanged()
-    }
-
-    private fun onItemsChanged() {
-        if (!layoutInfo.isScrolling) {
-            return
-        }
-        val firstPos = layoutInfo.findFirstAddedPosition()
-        val lastPos = layoutInfo.findLastAddedPosition()
-        val changesOutOfBounds = if (!layoutInfo.shouldReverseLayout()) {
-            itemChanges.isOutOfBounds(firstPos, lastPos)
-        } else {
-            itemChanges.isOutOfBounds(lastPos, firstPos)
-        }
-        if (changesOutOfBounds) {
-            return
-        }
-        layoutInfo.getRecyclerView()?.apply {
-            stopScroll()
-            requestLayout()
-        }
     }
 
     fun setOnChildLaidOutListener(listener: OnChildLaidOutListener?) {

@@ -2,6 +2,14 @@
 
 ## Version 1.3.0
 
+### 1.3.0-rc02
+
+2024-07-11
+
+#### Bug fixes
+
+- Fixed `DpadRecyclerView` not immediately stopping the search for the pivot in some scenarios ([#238](https://github.com/rubensousa/DpadRecyclerView/pull/238))
+
 ### 1.3.0-rc01
 
 2024-07-08
