@@ -126,7 +126,6 @@ class LinearLayoutEngineerVerticalTest {
         engineer.onLayoutStarted(recyclerViewStateMock.get())
         engineer.layoutChildren(
             pivotPosition,
-            itemChanges,
             recyclerMock.get(),
             recyclerViewStateMock.get()
         )
