@@ -40,7 +40,7 @@ internal class FocusDispatcher(
     private val scroller: LayoutScroller,
     private val layoutInfo: LayoutInfo,
     private val pivotSelector: PivotSelector,
-    private val spanFocusFinder: SpanFocusFinder
+    private val spanFocusFinder: SpanFocusFinder,
 ) {
 
     private val addFocusableChildrenRequest = AddFocusableChildrenRequest(layoutInfo)
@@ -103,7 +103,9 @@ internal class FocusDispatcher(
             val view = layout.findViewByPosition(index) ?: break
             if (layoutInfo.isViewFocusable(view)) {
                 if (!view.hasFocus()) {
-                    pivotSelector.focus(view)
+                    view.postOnAnimation {
+                        pivotSelector.focus(view)
+                    }
                 }
                 break
             }
@@ -124,7 +126,7 @@ internal class FocusDispatcher(
     fun onInterceptFocusSearch(
         recyclerView: DpadRecyclerView?,
         focused: View,
-        direction: Int
+        direction: Int,
     ): View? {
         val currentRecyclerView = recyclerView ?: return focused
 
@@ -241,7 +243,7 @@ internal class FocusDispatcher(
         recyclerView: RecyclerView,
         views: ArrayList<View>,
         direction: Int,
-        focusableMode: Int
+        focusableMode: Int,
     ): Boolean {
         if (configuration.isFocusSearchDisabled(recyclerView)) {
             if (recyclerView.isFocusable) {
@@ -280,7 +282,7 @@ internal class FocusDispatcher(
      */
     fun onRequestFocusInDescendants(
         direction: Int,
-        previouslyFocusedRect: Rect?
+        previouslyFocusedRect: Rect?,
     ): Boolean {
         if (configuration.isFocusSearchDisabled) return false
         val view = layout.findViewByPosition(pivotSelector.position) ?: return false
@@ -310,7 +312,7 @@ internal class FocusDispatcher(
         recyclerView: RecyclerView,
         views: ArrayList<View>,
         direction: Int,
-        focusableMode: Int
+        focusableMode: Int,
     ) {
         if (layout.childCount == 0) {
             // No need to continue since there's no children
@@ -378,7 +380,7 @@ internal class FocusDispatcher(
         request: AddFocusableChildrenRequest,
         views: ArrayList<View>,
         direction: Int,
-        focusableMode: Int
+        focusableMode: Int,
     ) {
         var index = request.start
         val increment = request.increment
@@ -428,7 +430,7 @@ internal class FocusDispatcher(
         movement: FocusDirection,
         views: ArrayList<View>,
         direction: Int,
-        focusableMode: Int
+        focusableMode: Int,
     ): Boolean {
         if (configuration.spanCount == 1 || focusedPosition == RecyclerView.NO_POSITION) {
             return false
@@ -482,7 +484,7 @@ internal class FocusDispatcher(
         next: Boolean,
         views: ArrayList<View>,
         direction: Int,
-        focusableMode: Int
+        focusableMode: Int,
     ): Boolean {
         val positionIncrement = layoutInfo.getPositionIncrement(next)
         val nextPosition = focusedPosition + positionIncrement
@@ -530,7 +532,7 @@ internal class FocusDispatcher(
             focusedChild: View?,
             focusedChildIndex: Int,
             focusedAdapterPosition: Int,
-            focusDirection: FocusDirection
+            focusDirection: FocusDirection,
         ) {
             this.focused = focusedChild
             this.focusedAdapterPosition = focusedAdapterPosition
