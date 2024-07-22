@@ -111,9 +111,8 @@ internal class FocusDispatcher(
         }
     }
 
-    fun focusSelectedView(recyclerView: RecyclerView?) {
-        val currentRecyclerView = recyclerView ?: return
-        if (!configuration.isFocusSearchDisabled(currentRecyclerView)) {
+    fun focusSelectedView() {
+        if (configuration.isFocusSearchDisabled) {
             return
         }
         val view = layoutInfo.findViewByAdapterPosition(pivotSelector.position) ?: return
