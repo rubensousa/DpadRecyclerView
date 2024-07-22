@@ -75,6 +75,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         this, configuration, layoutInfo, pivotSelector, scroller
     )
     private var hadFocusBeforeLayout = false
+    private var wasSmoothScrollingBeforeLayout = false
     private var recyclerView: DpadRecyclerView? = null
     private var isScrollingFromTouchEvent = false
     internal var layoutCompletedListener: DpadRecyclerView.OnLayoutCompletedListener? = null
@@ -85,7 +86,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun generateLayoutParams(
         context: Context,
-        attrs: AttributeSet
+        attrs: AttributeSet,
     ): RecyclerView.LayoutParams {
         return DpadLayoutParams(context, attrs)
     }
@@ -138,7 +139,8 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         // If we have focus, save it temporarily since the views will change and we might lose it
         hadFocusBeforeLayout = hasFocus()
-        scroller.cancelSmoothScroller()
+        wasSmoothScrollingBeforeLayout =
+            layoutInfo.isScrollingToTarget || scroller.isSearchingPivot()
         pivotLayout.onLayoutChildren(recycler, state)
         layoutCompletedListener?.onLayoutCompleted(state)
     }
@@ -146,24 +148,29 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun onLayoutCompleted(state: RecyclerView.State) {
         pivotLayout.onLayoutCompleted(state)
         if (hadFocusBeforeLayout) {
-            focusDispatcher.focusSelectedView(recyclerView)
+            focusDispatcher.focusSelectedView()
+        }
+        if (wasSmoothScrollingBeforeLayout) {
+            scroller.cancelSmoothScroller()
+            postOnAnimation { requestLayout() }
         }
         pivotSelector.onLayoutCompleted()
         hadFocusBeforeLayout = false
+        wasSmoothScrollingBeforeLayout = false
     }
 
     override fun collectAdjacentPrefetchPositions(
         dx: Int,
         dy: Int,
         state: RecyclerView.State,
-        layoutPrefetchRegistry: LayoutPrefetchRegistry
+        layoutPrefetchRegistry: LayoutPrefetchRegistry,
     ) {
         prefetchCollector.collectAdjacentPrefetchPositions(dx, dy, state, layoutPrefetchRegistry)
     }
 
     override fun collectInitialPrefetchPositions(
         adapterItemCount: Int,
-        layoutPrefetchRegistry: LayoutPrefetchRegistry
+        layoutPrefetchRegistry: LayoutPrefetchRegistry,
     ) {
         prefetchCollector.collectInitialPrefetchPositions(
             adapterItemCount = adapterItemCount,
@@ -176,13 +183,13 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun scrollHorizontallyBy(
         dx: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Int = pivotLayout.scrollHorizontallyBy(dx, recycler, state)
 
     override fun scrollVerticallyBy(
         dy: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Int = pivotLayout.scrollVerticallyBy(dy, recycler, state)
 
     override fun computeHorizontalScrollOffset(state: RecyclerView.State): Int {
@@ -277,7 +284,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun smoothScrollToPosition(
         recyclerView: RecyclerView,
         state: RecyclerView.State,
-        position: Int
+        position: Int,
     ) {
         scroller.scrollToPosition(position, subPosition = 0, smooth = true)
     }
@@ -310,7 +317,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun onAdapterChanged(
         oldAdapter: RecyclerView.Adapter<*>?,
-        newAdapter: RecyclerView.Adapter<*>?
+        newAdapter: RecyclerView.Adapter<*>?,
     ) {
         if (oldAdapter != null) {
             pivotLayout.reset()
@@ -333,14 +340,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         recyclerView: RecyclerView,
         views: ArrayList<View>,
         direction: Int,
-        focusableMode: Int
+        focusableMode: Int,
     ): Boolean {
         return focusDispatcher.onAddFocusables(recyclerView, views, direction, focusableMode)
     }
 
     fun onRequestFocusInDescendants(
         direction: Int,
-        previouslyFocusedRect: Rect?
+        previouslyFocusedRect: Rect?,
     ): Boolean {
         return focusDispatcher.onRequestFocusInDescendants(direction, previouslyFocusedRect)
     }
@@ -349,7 +356,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         parent: RecyclerView,
         state: RecyclerView.State,
         child: View,
-        focused: View?
+        focused: View?,
     ): Boolean {
         focusDispatcher.onRequestChildFocus(parent, child, focused)
         return true
@@ -360,7 +367,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         parent: RecyclerView,
         child: View,
         rect: Rect,
-        immediate: Boolean
+        immediate: Boolean,
     ): Boolean = false
 
     override fun onAttachedToWindow(view: RecyclerView) {
@@ -382,14 +389,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     override fun getRowCountForAccessibility(
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Int {
         return accessibilityHelper.getRowCountForAccessibility(state)
     }
 
     override fun getColumnCountForAccessibility(
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Int {
         return accessibilityHelper.getColumnCountForAccessibility(state)
     }
@@ -397,7 +404,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun onInitializeAccessibilityNodeInfo(
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
-        info: AccessibilityNodeInfoCompat
+        info: AccessibilityNodeInfoCompat,
     ) {
         accessibilityHelper.onInitializeAccessibilityNodeInfo(recycler, state, info)
     }
@@ -406,7 +413,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
         host: View,
-        info: AccessibilityNodeInfoCompat
+        info: AccessibilityNodeInfoCompat,
     ) {
         accessibilityHelper.onInitializeAccessibilityNodeInfoForItem(host, info)
     }
@@ -415,7 +422,7 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
         action: Int,
-        args: Bundle?
+        args: Bundle?,
     ): Boolean = accessibilityHelper.performAccessibilityAction(recyclerView, state, action)
 
     override fun onSaveInstanceState(): Parcelable {
@@ -691,13 +698,13 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     }
 
     fun addOnLayoutCompletedListener(
-        listener: DpadRecyclerView.OnLayoutCompletedListener
+        listener: DpadRecyclerView.OnLayoutCompletedListener,
     ) {
         pivotLayout.addOnLayoutCompletedListener(listener)
     }
 
     fun removeOnLayoutCompletedListener(
-        listener: DpadRecyclerView.OnLayoutCompletedListener
+        listener: DpadRecyclerView.OnLayoutCompletedListener,
     ) {
         pivotLayout.removeOnLayoutCompletedListener(listener)
     }

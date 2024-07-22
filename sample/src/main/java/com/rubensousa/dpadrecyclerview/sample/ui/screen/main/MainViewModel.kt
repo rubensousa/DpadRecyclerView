@@ -145,6 +145,10 @@ class MainViewModel : ViewModel() {
             title = "Item animations",
             destinations = listOf(
                 ScreenDestination(
+                    direction = MainFragmentDirections.openPredictiveAnimations(),
+                    title = "Predictive animations"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openItemAnimations(),
                     title = "Random updates"
                 )

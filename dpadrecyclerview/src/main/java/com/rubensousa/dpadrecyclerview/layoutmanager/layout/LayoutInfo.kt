@@ -20,6 +20,7 @@ import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -30,7 +31,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
 internal class LayoutInfo(
     private val layout: LayoutManager,
-    private val configuration: LayoutConfiguration
+    private val configuration: LayoutConfiguration,
 ) {
 
     val orientation: Int
@@ -313,7 +314,7 @@ internal class LayoutInfo(
     private fun findFirstChildWithinParentBounds(
         startIndex: Int,
         endIndex: Int,
-        onlyCompletelyVisible: Boolean
+        onlyCompletelyVisible: Boolean,
     ): Int {
         val increment = if (startIndex < endIndex) 1 else -1
         var currentIndex = startIndex
@@ -392,7 +393,7 @@ internal class LayoutInfo(
         pivotPosition: Int,
         startOldPosition: Int,
         endOldPosition: Int,
-        reverseLayout: Boolean
+        reverseLayout: Boolean,
     ): Boolean {
         val view = viewHolder.itemView
         val layoutParams = view.layoutParams as RecyclerView.LayoutParams
