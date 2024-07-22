@@ -75,7 +75,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         this, configuration, layoutInfo, pivotSelector, scroller
     )
     private var hadFocusBeforeLayout = false
-    private var wasSmoothScrollingBeforeLayout = false
     private var recyclerView: DpadRecyclerView? = null
     private var isScrollingFromTouchEvent = false
     internal var layoutCompletedListener: DpadRecyclerView.OnLayoutCompletedListener? = null
@@ -139,8 +138,6 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         // If we have focus, save it temporarily since the views will change and we might lose it
         hadFocusBeforeLayout = hasFocus()
-        wasSmoothScrollingBeforeLayout =
-            layoutInfo.isScrollingToTarget || scroller.isSearchingPivot()
         pivotLayout.onLayoutChildren(recycler, state)
         layoutCompletedListener?.onLayoutCompleted(state)
     }
@@ -150,13 +147,11 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         if (hadFocusBeforeLayout) {
             focusDispatcher.focusSelectedView()
         }
-        if (wasSmoothScrollingBeforeLayout) {
-            scroller.cancelSmoothScroller()
-            postOnAnimation { requestLayout() }
+        if (layoutInfo.isScrollingToTarget) {
+            scroller.cancelScrollToTarget()
         }
         pivotSelector.onLayoutCompleted()
         hadFocusBeforeLayout = false
-        wasSmoothScrollingBeforeLayout = false
     }
 
     override fun collectAdjacentPrefetchPositions(

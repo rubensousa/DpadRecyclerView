@@ -238,6 +238,12 @@ internal class LayoutScroller(
 
     fun isSearchingPivot() = searchPivotScroller != null
 
+    fun cancelScrollToTarget() {
+        layoutInfo.setIsScrollingToTarget(false)
+        pivotSelectionScroller?.cancel()
+        pivotSelectionScroller = null
+    }
+
     fun cancelSmoothScroller() {
         layoutInfo.setIsScrollingToTarget(false)
         searchPivotScroller?.cancel()
