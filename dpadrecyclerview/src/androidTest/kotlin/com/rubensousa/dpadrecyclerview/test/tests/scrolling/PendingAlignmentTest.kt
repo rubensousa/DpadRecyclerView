@@ -11,6 +11,7 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForLayout
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -109,5 +110,6 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
                 }
             })
         }
+        waitForLayout()
     }
 }
