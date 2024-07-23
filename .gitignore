@@ -10,3 +10,4 @@
 local.properties
 /test_coverage
 /logs
+/.kotlin
