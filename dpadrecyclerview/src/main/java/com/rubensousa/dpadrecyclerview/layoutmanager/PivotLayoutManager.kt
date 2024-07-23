@@ -139,19 +139,19 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         // If we have focus, save it temporarily since the views will change and we might lose it
         hadFocusBeforeLayout = hasFocus()
         pivotLayout.onLayoutChildren(recycler, state)
-        layoutCompletedListener?.onLayoutCompleted(state)
-    }
-
-    override fun onLayoutCompleted(state: RecyclerView.State) {
-        pivotLayout.onLayoutCompleted(state)
         if (hadFocusBeforeLayout) {
             focusDispatcher.focusSelectedView()
         }
         if (layoutInfo.isScrollingToTarget) {
             scroller.cancelScrollToTarget()
         }
-        pivotSelector.onLayoutCompleted()
         hadFocusBeforeLayout = false
+    }
+
+    override fun onLayoutCompleted(state: RecyclerView.State) {
+        layoutCompletedListener?.onLayoutCompleted(state)
+        pivotLayout.onLayoutCompleted(state)
+        pivotSelector.onLayoutCompleted()
     }
 
     override fun collectAdjacentPrefetchPositions(
