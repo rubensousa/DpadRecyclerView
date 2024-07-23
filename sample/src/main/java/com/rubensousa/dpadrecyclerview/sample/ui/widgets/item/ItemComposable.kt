@@ -59,14 +59,6 @@ fun ItemComposable(
     onClick: () -> Unit = {},
 ) {
     var isFocused by remember { mutableStateOf(false) }
-    val scaleState = animateFloatAsState(
-        targetValue = if (isFocused) 1.1f else 1.0f,
-        label = "scale",
-        animationSpec = tween(
-            durationMillis = if (isFocused) 350 else 0,
-            easing = FastOutSlowInEasing
-        )
-    )
     val backgroundColor = if (isFocused) {
         Color.White
     } else {
@@ -79,7 +71,6 @@ fun ItemComposable(
     }
     Box(
         modifier = modifier
-            .scale(scaleState.value)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
             .onFocusChanged { focusState ->

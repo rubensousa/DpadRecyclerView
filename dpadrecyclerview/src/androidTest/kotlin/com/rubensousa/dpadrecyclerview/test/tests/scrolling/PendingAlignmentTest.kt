@@ -11,6 +11,7 @@ import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForLayout
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -28,10 +29,10 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
             spans = 1,
             orientation = RecyclerView.HORIZONTAL,
             parentAlignment = ParentAlignment(
-                edge = ParentAlignment.Edge.MIN_MAX,
-                fraction = 0.0f
+                edge = ParentAlignment.Edge.NONE,
+                fraction = 0.5f
             ),
-            childAlignment = ChildAlignment(offset = 0, fraction = 0.0f)
+            childAlignment = ChildAlignment(offset = 0, fraction = 0.5f)
         )
     }
 
@@ -109,5 +110,6 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
                 }
             })
         }
+        waitForLayout()
     }
 }

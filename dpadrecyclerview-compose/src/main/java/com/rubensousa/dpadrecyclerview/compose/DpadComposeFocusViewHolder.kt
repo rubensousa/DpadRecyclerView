@@ -47,7 +47,7 @@ class DpadComposeFocusViewHolder<T>(
     parent: ViewGroup,
     compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
     isFocusable: Boolean = true,
-    private val content: @Composable (item: T) -> Unit = {}
+    private val content: @Composable (item: T) -> Unit = {},
 ) : RecyclerView.ViewHolder(ComposeView(parent.context)) {
 
     private val itemState = mutableStateOf<T?>(null)
@@ -71,6 +71,10 @@ class DpadComposeFocusViewHolder<T>(
 
     fun setFocusable(focusable: Boolean) {
         composeView.apply {
+            if (!isFocusable) {
+                isFocusable = false
+                isFocusableInTouchMode = false
+            }
             descendantFocusability = if (focusable) {
                 ViewGroup.FOCUS_AFTER_DESCENDANTS
             } else {

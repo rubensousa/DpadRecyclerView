@@ -38,7 +38,7 @@ import kotlin.math.min
  */
 internal class PivotSelector(
     private val layoutManager: LayoutManager,
-    private val layoutInfo: LayoutInfo
+    private val layoutInfo: LayoutInfo,
 ) {
 
     companion object {

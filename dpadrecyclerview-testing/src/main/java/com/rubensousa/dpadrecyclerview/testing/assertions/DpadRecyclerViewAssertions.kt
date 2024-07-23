@@ -41,7 +41,7 @@ object DpadRecyclerViewAssertions {
 
     private class SelectionAssertion(
         private val position: Int,
-        private val subPosition: Int = 0
+        private val subPosition: Int = 0,
     ) : DpadRecyclerViewAssertion() {
 
         override fun check(view: DpadRecyclerView) {
@@ -52,21 +52,12 @@ object DpadRecyclerViewAssertions {
 
     private class FocusAssertion(
         private val focusedPosition: Int,
-        private val focusedSubPosition: Int = 0
+        private val focusedSubPosition: Int = 0,
     ) : DpadRecyclerViewAssertion() {
 
         override fun check(view: DpadRecyclerView) {
-            val focusedView = view.findFocus() ?: throw AssertionFailedError(
-                "DpadRecyclerView didn't have focus: ${HumanReadables.describe(view)}"
-            )
-
-            val viewHolder = view.findContainingViewHolder(focusedView)
-                ?: throw AssertionFailedError(
-                    "ViewHolder not found for position " +
-                            "$focusedPosition and sub position $focusedSubPosition"
-                )
-
-            assertThat(viewHolder.absoluteAdapterPosition).isEqualTo(focusedPosition)
+            val viewHolder = view.findViewHolderForAdapterPosition(focusedPosition)
+                ?: throw AssertionFailedError("ViewHolder not found for position $focusedPosition")
 
             val alignments = getAlignments(viewHolder)
             if (alignments.isEmpty() && focusedSubPosition > 0) {
@@ -75,11 +66,23 @@ object DpadRecyclerViewAssertions {
                             "View: ${HumanReadables.describe(view)}"
                 )
             } else if (alignments.isNotEmpty()) {
+                val focusedView = viewHolder.itemView.findFocus()
+                    ?: throw AssertionFailedError(
+                        "ViewHolder at $focusedPosition didn't have focus: " +
+                                HumanReadables.describe(viewHolder.itemView)
+                    )
                 val alignment = alignments[focusedSubPosition]
                 val expectedView = viewHolder.itemView.findViewById<View>(
                     alignment.getFocusViewId()
                 )
                 assertThat(focusedView).isEqualTo(expectedView)
+            } else {
+                if (!viewHolder.itemView.hasFocus()) {
+                    throw AssertionFailedError(
+                        "ViewHolder at $focusedPosition didn't have focus: " +
+                                HumanReadables.describe(viewHolder.itemView)
+                    )
+                }
             }
         }
 
