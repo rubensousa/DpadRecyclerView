@@ -2,6 +2,15 @@
 
 ## Version 1.3.0
 
+### 1.3.0-rc03
+
+2024-07-23
+
+#### Bug fixes
+
+- Fixed layout inconsistency after some predictive animations ([#240](https://github.com/rubensousa/DpadRecyclerView/pull/240))
+- Fixed rare crash when removing an item due to adapter changes while a scroll action is pending ([#240](https://github.com/rubensousa/DpadRecyclerView/pull/240))
+
 ### 1.3.0-rc02
 
 2024-07-11
