@@ -29,10 +29,10 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
             spans = 1,
             orientation = RecyclerView.HORIZONTAL,
             parentAlignment = ParentAlignment(
-                edge = ParentAlignment.Edge.MIN_MAX,
-                fraction = 0.0f
+                edge = ParentAlignment.Edge.NONE,
+                fraction = 0.5f
             ),
-            childAlignment = ChildAlignment(offset = 0, fraction = 0.0f)
+            childAlignment = ChildAlignment(offset = 0, fraction = 0.5f)
         )
     }
 
