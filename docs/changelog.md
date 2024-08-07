@@ -2,6 +2,20 @@
 
 ## Version 1.3.0
 
+### 1.3.0
+
+2024-08-08
+
+#### Important changes since 1.2.0
+
+- Added `DpadComposeFocusViewHolder` that allows sending the focus state down to Composables
+- Added `Modifier.dpadClickable` for playing the click sound after clicking on a Composable. 
+- Allow skipping layout requests during scroll with `setLayoutWhileScrollingEnabled(false)`
+- New `addOnViewFocusedListener` to observe focus changes independently from selection changes.
+- Added `DpadDragHelper` for drag and drop support. Documentation available [here](recipes/dragdrop.md).
+- Now `recyclerView.setFocusableDirection(FocusableDirection.CIRCULAR)` can also be used in linear layouts that don't fill the entire space.
+- Added `DpadStateRegistry` that assists in saving and restoring the scroll state or view state of ViewHolders
+
 ### 1.3.0-rc03
 
 2024-07-23
