@@ -64,7 +64,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
         internal val DEBUG = BuildConfig.DEBUG
     }
 
-    private var viewHolderTaskExecutor: ViewHolderTaskExecutor? = null
+    // Nullable because setLayoutManager can be called by the parent class before this instantiated
+    private var viewHolderTaskExecutor: ViewHolderTaskExecutor? = ViewHolderTaskExecutor()
     private val focusableChildDrawingCallback = FocusableChildDrawingCallback()
     private val fadingEdge = FadingEdge()
 
