@@ -421,6 +421,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/DpadLayoutParam
 }
 
 public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutManager : androidx/recyclerview/widget/RecyclerView$LayoutManager, androidx/recyclerview/widget/ItemTouchHelper$ViewDropHandler, androidx/recyclerview/widget/RecyclerView$SmoothScroller$ScrollVectorProvider {
+	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;II)V
 	public fun <init> (Landroidx/recyclerview/widget/RecyclerView$LayoutManager$Properties;)V
 	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun addOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
