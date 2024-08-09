@@ -16,9 +16,13 @@
 
 package com.rubensousa.dpadrecyclerview.test.tests
 
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.testing.launchFragment
 import androidx.recyclerview.widget.RecyclerView.LayoutManager.Properties
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
+import com.rubensousa.dpadrecyclerview.test.R
 import org.junit.Test
 
 class PivotLayoutManagerTest {
@@ -40,5 +44,22 @@ class PivotLayoutManagerTest {
         assertThat(config.focusOutSideFront).isTrue()
         assertThat(config.focusOutSideBack).isTrue()
     }
+
+    @Test
+    fun testPivotLayoutManagerFromXML() {
+        // given
+        val fragment = launchFragment<XMLFragment>()
+        var recyclerView: DpadRecyclerView? = null
+
+        // when
+        fragment.onFragment {
+            recyclerView = it.requireView() as DpadRecyclerView
+        }
+
+        // then
+        assertThat(recyclerView).isNotNull()
+    }
+
+    class XMLFragment : Fragment(R.layout.dpadrecyclerview_layout_name)
 
 }

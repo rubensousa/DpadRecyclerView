@@ -79,6 +79,12 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     private var isScrollingFromTouchEvent = false
     internal var layoutCompletedListener: DpadRecyclerView.OnLayoutCompletedListener? = null
 
+    // This is required for XML usage
+    @Suppress("unused", "UNUSED_PARAMETER")
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : this(
+        Properties()
+    )
+
     override fun checkLayoutParams(layoutParams: RecyclerView.LayoutParams?): Boolean {
         return layoutParams is DpadLayoutParams
     }
