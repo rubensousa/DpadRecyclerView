@@ -64,7 +64,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
         internal val DEBUG = BuildConfig.DEBUG
     }
 
-    private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
+    // Nullable because setLayoutManager can be called by the parent class before this instantiated
+    private var viewHolderTaskExecutor: ViewHolderTaskExecutor? = ViewHolderTaskExecutor()
     private val focusableChildDrawingCallback = FocusableChildDrawingCallback()
     private val fadingEdge = FadingEdge()
 
@@ -212,7 +213,9 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun setLayoutManager(layout: LayoutManager?) {
         super.setLayoutManager(layout)
-        pivotLayoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
+        viewHolderTaskExecutor?.let {
+            pivotLayoutManager?.removeOnViewHolderSelectedListener(it)
+        }
         pivotLayoutManager?.updateRecyclerView(null)
         if (pivotLayoutManager !== layout) {
             pivotLayoutManager?.layoutCompletedListener = null
@@ -223,7 +226,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
         if (layout != null && layout !is PivotLayoutManager) {
             throw IllegalArgumentException(
-                "Only PivotLayoutManager is supported, but got $layout"
+                "Only com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager" +
+                        ".PivotLayoutManager is supported, but got $layout"
             )
         }
         if (layout is PivotLayoutManager) {
@@ -233,7 +237,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
                     hasPendingLayout = false
                 }
             }
-            layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
+            viewHolderTaskExecutor?.let { layout.addOnViewHolderSelectedListener(it) }
             pivotLayoutManager = layout
         }
     }
@@ -1022,7 +1026,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedPosition(position: Int, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, task)
+        viewHolderTaskExecutor?.schedule(position, task)
         requireLayout().selectPosition(position, subPosition = 0, smooth = false)
     }
 
@@ -1041,7 +1045,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedPositionSmooth(position: Int, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, task)
+        viewHolderTaskExecutor?.schedule(position, task)
         requireLayout().selectPosition(position, subPosition = 0, smooth = true)
     }
 
@@ -1062,7 +1066,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedSubPosition(position: Int, subPosition: Int, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, subPosition, task)
+        viewHolderTaskExecutor?.schedule(position, subPosition, task)
         requireLayout().selectPosition(position, subPosition, smooth = false)
     }
 
@@ -1099,7 +1103,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedSubPositionSmooth(position: Int, subPosition: Int, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, subPosition, task)
+        viewHolderTaskExecutor?.schedule(position, subPosition, task)
         requireLayout().selectPosition(position, subPosition, smooth = true)
     }
 
