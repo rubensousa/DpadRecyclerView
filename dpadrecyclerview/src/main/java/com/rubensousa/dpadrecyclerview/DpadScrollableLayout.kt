@@ -48,7 +48,11 @@ class DpadScrollableLayout @JvmOverloads constructor(
     var headerHeight = 0
         private set
 
+    var isHeaderVisible = false
+        private set
+
     private var pendingOffset: Int? = null
+    private var headerHeightChanged = false
     private var currentAnimator: ScrollAnimator? = null
 
     // From RecyclerView
@@ -89,7 +93,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
             )
         )
         var childHeight = 0
-        headerHeight = 0
+        var newHeaderHeight = 0
         for (i in 0 until childCount) {
             val view = getChildAt(i)
             if (view != null) {
@@ -97,12 +101,16 @@ class DpadScrollableLayout @JvmOverloads constructor(
                 if (layoutParams.isScrollableView) {
                     childHeight += matchParentHeight
                 } else {
-                    headerHeight += view.measuredHeight
+                    newHeaderHeight += view.measuredHeight
                     childHeight += view.measuredHeight
                 }
             }
         }
         setMeasuredDimension(measuredWidth, childHeight)
+        if (newHeaderHeight != headerHeight) {
+            headerHeight = newHeaderHeight
+            headerHeightChanged = true
+        }
     }
 
     override fun measureChildWithMargins(
@@ -136,13 +144,30 @@ class DpadScrollableLayout @JvmOverloads constructor(
         child.measure(childWidthMeasureSpec, childHeightMeasureSpec)
     }
 
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        super.onLayout(changed, l, t, r, b)
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        // Ensure that the new offset is constrained by the new header height
+        if (headerHeightChanged && oldh != 0) {
+            // If the header was previously visible, ensure that it's correctly aligned
+            if (isHeaderVisible) {
+                val firstChild = getChildAt(0)
+                if (firstChild != null && firstChild.top < 0) {
+                    // Make sure the first child is aligned to the top
+                    offsetTopAndBottom(-firstChild.top)
+                }
+            } else {
+                // If the header was not previously visible, ensure it stays that way
+                offsetTopAndBottom(-(headerHeight - top))
+            }
+        }
         pendingOffset?.let {
             if (height != 0) {
                 offsetTopAndBottom(it)
                 pendingOffset = null
             }
+        }
+        if (oldh == 0 && h != 0) {
+            isHeaderVisible = true
         }
     }
 
@@ -180,7 +205,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
             currentAnimator = animator
             animator.start()
         } else {
-            offsetTopAndBottom(topOffset - top)
+            offsetTo(topOffset - top)
         }
     }
 
@@ -196,7 +221,12 @@ class DpadScrollableLayout @JvmOverloads constructor(
         val currentTop = top
         val nextOffset = initial + (target - initial) * fraction
         val diff = nextOffset - currentTop
-        offsetTopAndBottom(diff.toInt())
+        offsetTo(diff.toInt())
+    }
+
+    private fun offsetTo(offset: Int) {
+        offsetTopAndBottom(offset)
+        isHeaderVisible = top > -headerHeight
     }
 
     private class ScrollAnimator(

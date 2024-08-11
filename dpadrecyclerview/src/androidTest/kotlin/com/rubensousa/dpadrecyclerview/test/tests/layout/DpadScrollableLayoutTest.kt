@@ -19,6 +19,7 @@ package com.rubensousa.dpadrecyclerview.test.tests.layout
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
@@ -210,6 +211,126 @@ class DpadScrollableLayoutTest {
                 screenWidth,
                 -headerOffset + headerHeight * 2 + screenHeight
             )
+        )
+    }
+
+    @Test
+    fun testOffsetIsAdjustedWhenLayoutGetsSmallerWhileHeaderIsNotVisible() {
+        // given
+        val headerHeight = getHeaderHeight()
+        val screenWidth = getWidth()
+        val screenHeight = getHeight()
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.hideHeader(smooth = true)
+        }
+        waitViewAtCoordinates(R.id.header1, top = -headerHeight * 2, bottom = -headerHeight)
+
+        // when
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.removeViewAt(0)
+        }
+
+        // then
+        val header2Bounds = getViewBounds(R.id.header2)
+        val recyclerViewBounds = getViewBounds(R.id.recyclerView)
+        assertThat(header2Bounds).isEqualTo(
+            Rect(0, -headerHeight, screenWidth, 0)
+        )
+        assertThat(recyclerViewBounds).isEqualTo(
+            Rect(0, 0, screenWidth, screenHeight)
+        )
+    }
+
+    @Test
+    fun testOffsetIsAdjustedWhenLayoutGetsSmallerWhileHeaderIsVisible() {
+        // given
+        val headerHeight = getHeaderHeight()
+        val screenWidth = getWidth()
+        val screenHeight = getHeight()
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.scrollHeaderTo(topOffset = -headerHeight / 2)
+        }
+        waitViewAtCoordinates(R.id.header1, top = -headerHeight / 2, bottom = headerHeight / 2)
+
+        // when
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.removeViewAt(0)
+        }
+
+        // then
+        val header2Bounds = getViewBounds(R.id.header2)
+        val recyclerViewBounds = getViewBounds(R.id.recyclerView)
+        assertThat(header2Bounds).isEqualTo(
+            Rect(0, 0, screenWidth, headerHeight)
+        )
+        assertThat(recyclerViewBounds).isEqualTo(
+            Rect(0, headerHeight, screenWidth, screenHeight + headerHeight)
+        )
+    }
+
+    @Test
+    fun testOffsetIsAdjustedWhenLayoutGetsBiggerWhenHeaderIsNotVisible() {
+        // given
+        val headerHeight = getHeaderHeight()
+        val screenWidth = getWidth()
+        val screenHeight = getHeight()
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.hideHeader(smooth = true)
+        }
+        waitViewAtCoordinates(R.id.header1, top = -headerHeight * 2, bottom = -headerHeight)
+
+        // when
+        fragmentScenario.onFragment { fragment ->
+            fragment.header1?.updateLayoutParams<DpadScrollableLayout.LayoutParams> {
+                height *= 2
+            }
+        }
+
+        // then
+        val header1Bounds = getViewBounds(R.id.header1)
+        val header2Bounds = getViewBounds(R.id.header2)
+        val recyclerViewBounds = getViewBounds(R.id.recyclerView)
+        assertThat(header1Bounds).isEqualTo(
+            Rect(0, -headerHeight * 3, screenWidth, -headerHeight)
+        )
+        assertThat(header2Bounds).isEqualTo(
+            Rect(0, -headerHeight, screenWidth, 0)
+        )
+        assertThat(recyclerViewBounds).isEqualTo(
+            Rect(0, 0, screenWidth, screenHeight)
+        )
+    }
+
+    @Test
+    fun testOffsetIsAdjustedWhenLayoutGetsBiggerWhileHeaderIsVisible() {
+        // given
+        val headerHeight = getHeaderHeight()
+        val screenWidth = getWidth()
+        val screenHeight = getHeight()
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.scrollHeaderTo(topOffset = -headerHeight / 2)
+        }
+        waitViewAtCoordinates(R.id.header1, top = -headerHeight / 2, bottom = headerHeight / 2)
+
+        // when
+        fragmentScenario.onFragment { fragment ->
+            fragment.header1?.updateLayoutParams<DpadScrollableLayout.LayoutParams> {
+                height *= 2
+            }
+        }
+
+        // then
+        val header1Bounds = getViewBounds(R.id.header1)
+        val header2Bounds = getViewBounds(R.id.header2)
+        val recyclerViewBounds = getViewBounds(R.id.recyclerView)
+        assertThat(header1Bounds).isEqualTo(
+            Rect(0, 0, screenWidth, headerHeight * 2)
+        )
+        assertThat(header2Bounds).isEqualTo(
+            Rect(0, headerHeight * 2, screenWidth, headerHeight * 3)
+        )
+        assertThat(recyclerViewBounds).isEqualTo(
+            Rect(0, headerHeight * 3, screenWidth, screenHeight + headerHeight * 3)
         )
     }
 
