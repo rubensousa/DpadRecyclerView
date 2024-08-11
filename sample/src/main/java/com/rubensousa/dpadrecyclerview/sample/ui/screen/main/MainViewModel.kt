@@ -135,6 +135,10 @@ class MainViewModel : ViewModel() {
                 ScreenDestination(
                     direction = MainFragmentDirections.openHorizontalLeanback(),
                     title = "Searching for next view"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openScrollableLayout(),
+                    title = "Scrollable layout with header"
                 )
             ),
         )

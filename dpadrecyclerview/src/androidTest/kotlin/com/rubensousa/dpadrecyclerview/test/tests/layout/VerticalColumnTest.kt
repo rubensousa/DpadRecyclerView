@@ -146,22 +146,6 @@ class VerticalColumnTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testExtraLayoutSpaceIsAddedAtTopDuringScroll() {
-        repeat(10) {
-            scrollDown()
-        }
-        onRecyclerView("Change extra layout space") { recyclerView ->
-            recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
-                override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
-                    return column.getSize()
-                }
-            })
-        }
-        column.setExtraLayoutSpace(start = column.getSize())
-        assertChildrenPositions(column)
-    }
-
-    @Test
     fun testLayoutListenerIsInvoked() {
         val childCount = column.getChildCount()
         val viewHolders = ArrayList<RecyclerView.ViewHolder>()

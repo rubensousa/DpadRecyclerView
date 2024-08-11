@@ -39,6 +39,10 @@
             app:destination="@id/leanback_horizontal_fragment" />
 
         <action
+            android:id="@+id/open_scrollable_layout"
+            app:destination="@id/scrollable_layout_fragment" />
+
+        <action
             android:id="@+id/open_standard_grid"
             app:destination="@id/standard_grid_fragment">
 
@@ -233,4 +237,9 @@
     <fragment
         android:id="@+id/span_header_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridSpanHeaderFragment" />
+
+    <fragment
+        android:id="@+id/scrollable_layout_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.layout.ScrollableLayoutFragment" />
+
 </navigation>
