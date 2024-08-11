@@ -38,5 +38,9 @@
         <attr name="android:fadingEdgeLength" />
     </declare-styleable>
 
+    <declare-styleable name="DpadScrollableLayout_Layout">
+        <attr name="dpadScrollableLayoutScrollableView" format="boolean" />
+    </declare-styleable>
+
 
 </resources>
