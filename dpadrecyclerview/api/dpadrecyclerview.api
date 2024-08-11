@@ -208,6 +208,35 @@ public abstract interface class com/rubensousa/dpadrecyclerview/DpadRecyclerView
 	public abstract fun configSmoothScrollByInterpolator (II)Landroid/view/animation/Interpolator;
 }
 
+public final class com/rubensousa/dpadrecyclerview/DpadScrollableLayout : android/widget/LinearLayout {
+	public fun <init> (Landroid/content/Context;)V
+	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
+	public synthetic fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun generateDefaultLayoutParams ()Landroid/view/ViewGroup$LayoutParams;
+	public synthetic fun generateDefaultLayoutParams ()Landroid/widget/LinearLayout$LayoutParams;
+	public synthetic fun generateLayoutParams (Landroid/util/AttributeSet;)Landroid/view/ViewGroup$LayoutParams;
+	public synthetic fun generateLayoutParams (Landroid/util/AttributeSet;)Landroid/widget/LinearLayout$LayoutParams;
+	public fun generateLayoutParams (Landroid/util/AttributeSet;)Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout$LayoutParams;
+	public final fun getHeaderHeight ()I
+	public final fun hideHeader (Z)V
+	public static synthetic fun hideHeader$default (Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout;ZILjava/lang/Object;)V
+	public final fun isHeaderVisible ()Z
+	public final fun scrollHeaderTo (IZ)V
+	public static synthetic fun scrollHeaderTo$default (Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout;IZILjava/lang/Object;)V
+	public final fun setScrollInterpolator (Landroid/view/animation/Interpolator;)V
+	public final fun showHeader (Z)V
+	public static synthetic fun showHeader$default (Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout;ZILjava/lang/Object;)V
+}
+
+public final class com/rubensousa/dpadrecyclerview/DpadScrollableLayout$LayoutParams : android/widget/LinearLayout$LayoutParams {
+	public fun <init> (II)V
+	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
+	public fun <init> (Landroid/view/ViewGroup$LayoutParams;)V
+	public fun <init> (Landroid/view/ViewGroup$MarginLayoutParams;)V
+	public final fun isScrollableView ()Z
+	public final fun setIsScrollableView (Z)V
+}
+
 public final class com/rubensousa/dpadrecyclerview/DpadScroller {
 	public fun <init> ()V
 	public fun <init> (Lcom/rubensousa/dpadrecyclerview/DpadScroller$ScrollDistanceCalculator;)V
