@@ -1,5 +1,19 @@
 # Changelog
 
+## Version 1.4.0
+
+### 1.4.0-alpha01
+
+2024-08-12
+
+#### New features
+
+- `DpadScrollableLayout` for screens that need a scrollable header at the same level as a `DpadRecyclerView` ([#248](https://github.com/rubensousa/DpadRecyclerView/pull/248))
+
+#### Bug fixes
+
+- Fixed crash when the layout manager name is set via XML ([#247](https://github.com/rubensousa/DpadRecyclerView/pull/247))
+
 ## Version 1.3.0
 
 ### 1.3.0
