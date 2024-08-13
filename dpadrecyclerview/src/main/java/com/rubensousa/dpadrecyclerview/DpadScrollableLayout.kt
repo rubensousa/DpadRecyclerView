@@ -16,6 +16,8 @@
 
 package com.rubensousa.dpadrecyclerview
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.TypedArray
@@ -34,6 +36,8 @@ import kotlin.math.min
  *
  * Use it when you need a fixed header at the top of a [DpadRecyclerView] that can scroll away,
  * while supporting recycling at the same time.
+ * Use `app:dpadScrollableLayoutScrollableView=true` in the scrollable view
+ * that should fill the entire parent.
  *
  * Use [scrollHeaderTo] to scroll the layout to a specific top offset.
  *
@@ -51,9 +55,12 @@ class DpadScrollableLayout @JvmOverloads constructor(
     var isHeaderVisible = false
         private set
 
-    private var pendingOffset: Int? = null
+    private var currentOffset = 0
+    private var offsetInProgress: Int? = null
     private var headerHeightChanged = false
     private var currentAnimator: ScrollAnimator? = null
+    private var scrollDurationConfig: ScrollDurationConfig = DefaultScrollDurationConfig()
+    private var lastHeaderHeight = 0
 
     // From RecyclerView
     private var scrollInterpolator = Interpolator { t ->
@@ -108,8 +115,9 @@ class DpadScrollableLayout @JvmOverloads constructor(
         }
         setMeasuredDimension(measuredWidth, childHeight)
         if (newHeaderHeight != headerHeight) {
+            headerHeightChanged = newHeaderHeight != lastHeaderHeight
+            lastHeaderHeight = headerHeight
             headerHeight = newHeaderHeight
-            headerHeightChanged = true
         }
     }
 
@@ -144,35 +152,39 @@ class DpadScrollableLayout @JvmOverloads constructor(
         child.measure(childWidthMeasureSpec, childHeightMeasureSpec)
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        // Ensure that the new offset is constrained by the new header height
-        if (headerHeightChanged && oldh != 0) {
-            // If the header was previously visible, ensure that it's correctly aligned
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        var currentAnchor = if (headerHeightChanged && lastHeaderHeight > 0) {
             if (isHeaderVisible) {
-                val firstChild = getChildAt(0)
-                if (firstChild != null && firstChild.top < 0) {
-                    // Make sure the first child is aligned to the top
-                    offsetTopAndBottom(-firstChild.top)
-                }
+                0
             } else {
-                // If the header was not previously visible, ensure it stays that way
-                offsetTopAndBottom(-(headerHeight - top))
+                -headerHeight
             }
+        } else {
+            currentOffset
         }
-        pendingOffset?.let {
-            if (height != 0) {
-                offsetTopAndBottom(it)
-                pendingOffset = null
+        val numberOfChildren = childCount
+        for (i in 0 until numberOfChildren) {
+            val child = getChildAt(i) ?: continue
+            if (child.visibility == View.GONE) {
+                continue
             }
+            val childWidth = child.measuredWidth
+            val childHeight = child.measuredHeight
+            val layoutParams = child.layoutParams as LayoutParams
+            val childLeft = paddingLeft + layoutParams.leftMargin
+            val childTop = currentAnchor + layoutParams.topMargin
+            child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight)
+            currentAnchor += childHeight + layoutParams.bottomMargin
         }
-        if (oldh == 0 && h != 0) {
-            isHeaderVisible = true
-        }
+        headerHeightChanged = false
     }
 
     fun setScrollInterpolator(interpolator: Interpolator) {
         scrollInterpolator = interpolator
+    }
+
+    fun setScrollDurationConfig(config: ScrollDurationConfig) {
+        scrollDurationConfig = config
     }
 
     fun showHeader(smooth: Boolean = true) {
@@ -185,54 +197,92 @@ class DpadScrollableLayout @JvmOverloads constructor(
 
     fun scrollHeaderTo(topOffset: Int, smooth: Boolean = true) {
         val targetOffset = max(topOffset, -headerHeight)
-        val currentOffset = top
-        if (currentOffset == targetOffset) {
+        // Do nothing if we're already animating or moving the offset to the target passed
+        if (offsetInProgress == targetOffset || currentOffset == targetOffset) {
             return
         }
+        cancelOffsetAnimation()
+        // If we haven't been laid out yet, postpone the offset until we are
         if (height == 0 || !isLaidOut) {
-            pendingOffset = topOffset
             return
         }
-        currentAnimator?.cancel()
         if (smooth) {
-            val animator = ScrollAnimator(
-                scrollInterpolator = scrollInterpolator,
-                scrollDuration = computeScrollDuration(targetOffset - currentOffset),
-                onUpdate = { fraction ->
-                    offset(fraction = fraction, initial = currentOffset, target = targetOffset)
-                }
+            offsetInProgress = targetOffset
+            val animator = createAnimator(
+                targetOffset = targetOffset,
+                currentOffset = currentOffset
             )
             currentAnimator = animator
             animator.start()
         } else {
-            offsetTo(topOffset - top)
+            offsetTo(targetOffset)
         }
     }
 
-    // From RecyclerView
-    private fun computeScrollDuration(dy: Int): Long {
-        val absDy = abs(dy.toDouble()).toInt()
-        val containerSize = height
-        val duration = (((absDy / containerSize) + 1) * 300)
-        return min(duration.toDouble(), 2000.0).toLong()
+    private fun createAnimator(targetOffset: Int, currentOffset: Int): ScrollAnimator {
+        val layoutHeight = if (height - headerHeight > 0) {
+            height - headerHeight
+        } else {
+            height
+        }
+        return ScrollAnimator(
+            scrollInterpolator = scrollInterpolator,
+            scrollDuration = scrollDurationConfig.calculateScrollDuration(
+                layoutHeight = layoutHeight,
+                dy = targetOffset - currentOffset
+            ),
+            onUpdate = { fraction ->
+                offset(fraction = fraction, initial = currentOffset, target = targetOffset)
+            },
+            onEnd = {
+                offsetInProgress = null
+                currentAnimator = null
+            }
+        )
     }
 
     private fun offset(fraction: Float, initial: Int, target: Int) {
-        val currentTop = top
         val nextOffset = initial + (target - initial) * fraction
-        val diff = nextOffset - currentTop
-        offsetTo(diff.toInt())
+        val diff = nextOffset - currentOffset
+        offsetBy(diff.toInt())
     }
 
-    private fun offsetTo(offset: Int) {
-        offsetTopAndBottom(offset)
-        isHeaderVisible = top > -headerHeight
+    private fun offsetTo(targetOffset: Int) {
+        offsetBy(-(currentOffset - targetOffset))
+    }
+
+    private fun offsetBy(dy: Int) {
+        for (i in 0 until childCount) {
+            getChildAt(i)?.offsetTopAndBottom(dy)
+        }
+        currentOffset = getChildAt(0)?.top ?: 0
+        isHeaderVisible = currentOffset > -headerHeight
+    }
+
+    private fun cancelOffsetAnimation() {
+        currentAnimator?.cancel()
+        offsetInProgress = null
+        currentAnimator = null
+    }
+
+    private class DefaultScrollDurationConfig : ScrollDurationConfig {
+        // From RecyclerView to make scrolling as similar as possible
+        override fun calculateScrollDuration(layoutHeight: Int, dy: Int): Int {
+            val absDy = abs(dy.toDouble()).toInt()
+            val duration = (((absDy / layoutHeight) + 1) * 300)
+            return min(duration.toDouble(), 2000.0).toInt()
+        }
+    }
+
+    interface ScrollDurationConfig {
+        fun calculateScrollDuration(layoutHeight: Int, dy: Int): Int
     }
 
     private class ScrollAnimator(
         private val scrollInterpolator: Interpolator,
-        private val scrollDuration: Long,
-        private val onUpdate: (fraction: Float) -> Unit
+        private val scrollDuration: Int,
+        private val onUpdate: (fraction: Float) -> Unit,
+        private val onEnd: () -> Unit,
     ) : ValueAnimator.AnimatorUpdateListener {
 
         private val animator = ValueAnimator()
@@ -240,9 +290,17 @@ class DpadScrollableLayout @JvmOverloads constructor(
 
         init {
             animator.apply {
-                setDuration(scrollDuration)
+                setDuration(scrollDuration.toLong())
                 interpolator = scrollInterpolator
                 addUpdateListener(this@ScrollAnimator)
+                addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator) {
+                        super.onAnimationEnd(animation)
+                        if (!canceled) {
+                            onEnd()
+                        }
+                    }
+                })
                 setFloatValues(0f, 1f)
             }
         }
