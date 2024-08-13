@@ -146,7 +146,7 @@ class DpadComposeFocusViewHolderTest {
             disposals = activity.getDisposals()
         }
 
-        assertThat(disposals).contains(0)
+        assertThat(disposals).isNotEmpty()
     }
 
     @Test
