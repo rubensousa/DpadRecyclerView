@@ -176,6 +176,38 @@ class DpadScrollableLayoutTest {
     }
 
     @Test
+    fun testShowingHeaderWithoutAnimation() {
+        // given
+        val headerHeight = getHeaderHeight()
+        val screenWidth = getWidth()
+        val screenHeight = getHeight()
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.hideHeader(smooth = true)
+        }
+        waitViewAtCoordinates(R.id.header1, top = -headerHeight * 2, bottom = -headerHeight)
+
+        // when
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.showHeader(smooth = false)
+        }
+        waitViewAtCoordinates(R.id.header1, top = 0, bottom = headerHeight)
+
+        // then
+        val header1Bounds = getViewBounds(R.id.header1)
+        val header2Bounds = getViewBounds(R.id.header2)
+        val recyclerViewBounds = getViewBounds(R.id.recyclerView)
+        assertThat(header1Bounds).isEqualTo(
+            Rect(0, 0, screenWidth, headerHeight)
+        )
+        assertThat(header2Bounds).isEqualTo(
+            Rect(0, headerHeight, screenWidth, headerHeight * 2)
+        )
+        assertThat(recyclerViewBounds).isEqualTo(
+            Rect(0, headerHeight * 2, screenWidth, screenHeight + headerHeight * 2)
+        )
+    }
+
+    @Test
     fun testOffsetAnimation() {
         // given
         val headerOffset = getHeaderHeight() / 2
@@ -215,7 +247,7 @@ class DpadScrollableLayoutTest {
     }
 
     @Test
-    fun testOffsetIsAdjustedWhenLayoutGetsSmallerWhileHeaderIsNotVisible() {
+    fun testLayoutStillHidesHeaderWhenItGetsSmallerWhileNotVisible() {
         // given
         val headerHeight = getHeaderHeight()
         val screenWidth = getWidth()
@@ -242,7 +274,7 @@ class DpadScrollableLayoutTest {
     }
 
     @Test
-    fun testOffsetIsAdjustedWhenLayoutGetsSmallerWhileHeaderIsVisible() {
+    fun testLayoutAlignsHeaderToTopWhenItGetsSmallerWhileVisible() {
         // given
         val headerHeight = getHeaderHeight()
         val screenWidth = getWidth()
@@ -269,7 +301,7 @@ class DpadScrollableLayoutTest {
     }
 
     @Test
-    fun testOffsetIsAdjustedWhenLayoutGetsBiggerWhenHeaderIsNotVisible() {
+    fun testLayoutStillHidesHeaderWhenItGetsBiggerWhileNotVisible() {
         // given
         val headerHeight = getHeaderHeight()
         val screenWidth = getWidth()
@@ -334,11 +366,54 @@ class DpadScrollableLayoutTest {
         )
     }
 
-    private fun waitViewAtCoordinates(viewId: Int, top: Int, bottom: Int) {
+    @Test
+    fun testRequestingLayoutDuringOffsetChangesDoesNotBreakLayout() {
+        // given
+        val headerHeight = getHeaderHeight()
+        val screenWidth = getWidth()
+        val screenHeight = getHeight()
+        val scrollDuration = 5000
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.setScrollDurationConfig(
+                object : DpadScrollableLayout.ScrollDurationConfig {
+                    override fun calculateScrollDuration(layoutHeight: Int, dy: Int): Int {
+                        return scrollDuration
+                    }
+                })
+        }
+
+        // when
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.scrollHeaderTo(topOffset = -headerHeight / 2)
+            fragment.scrollableLayout?.requestLayout()
+        }
+        waitViewAtCoordinates(
+            R.id.header1,
+            top = -headerHeight / 2,
+            bottom = headerHeight / 2,
+            timeout = scrollDuration.toLong()
+        )
+
+        // then
+        val header1Bounds = getViewBounds(R.id.header1)
+        val header2Bounds = getViewBounds(R.id.header2)
+        val recyclerViewBounds = getViewBounds(R.id.recyclerView)
+        assertThat(header1Bounds).isEqualTo(
+            Rect(0, -headerHeight / 2, screenWidth, headerHeight / 2)
+        )
+        assertThat(header2Bounds).isEqualTo(
+            Rect(0, headerHeight / 2, screenWidth, headerHeight / 2 + headerHeight)
+        )
+        assertThat(recyclerViewBounds).isEqualTo(
+            Rect(0, headerHeight / 2 + headerHeight, screenWidth, screenHeight + headerHeight / 2 + headerHeight)
+        )
+    }
+
+    private fun waitViewAtCoordinates(viewId: Int, top: Int, bottom: Int, timeout: Long = 4L) {
         Espresso.onView(withId(viewId))
             .perform(
                 DpadViewActions.waitForCondition<View>("Wait for view at: $top and $bottom",
-                    timeout = 4L,
+                    timeout = timeout,
                     timeoutUnit = TimeUnit.SECONDS,
                     condition = { view ->
                         val intArray = IntArray(2)

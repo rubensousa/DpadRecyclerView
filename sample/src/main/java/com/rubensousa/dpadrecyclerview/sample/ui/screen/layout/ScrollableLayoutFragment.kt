@@ -23,10 +23,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenScrollableLayoutBinding
-import com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridItemAdapter
-import com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridItemViewHolder
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.compose.ComposeGridAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.compose.ComposeItemAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
+import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class ScrollableLayoutFragment : Fragment(R.layout.screen_scrollable_layout) {
 
@@ -34,43 +35,40 @@ class ScrollableLayoutFragment : Fragment(R.layout.screen_scrollable_layout) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val itemAdapter = GridItemAdapter(object : GridItemViewHolder.ItemClickListener {
-            override fun onViewHolderClicked() {
-
-            }
-        })
-        itemAdapter.submitList(List(50) { it })
+        val itemAdapter = ComposeGridAdapter()
+        itemAdapter.submitList(MutableList(7 * 10) { it })
         val headerLayout = binding.scrollableLayout
         val recyclerView = binding.recyclerView
         recyclerView.apply {
-            setSpanCount(5)
+            setSpanCount(7)
             addItemDecoration(
                 DpadGridSpacingDecoration.create(
                     itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
                 )
             )
             adapter = itemAdapter
+            requestFocus()
         }
-        binding.header1.requestFocus()
-        binding.header1.setOnFocusChangeListener { v, hasFocus ->
-            if (hasFocus) {
-                headerLayout.showHeader()
-            }
+        binding.horizontalRecyclerView.apply {
+            adapter = ComposeItemAdapter().also { it.submitList(MutableList(10) { it }) }
+            addItemDecoration(
+                DpadLinearSpacingDecoration.create(
+                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
+                )
+            )
         }
-        binding.header2.setOnFocusChangeListener { v, hasFocus ->
+        binding.horizontalRecyclerView.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {
                 headerLayout.showHeader()
             }
         }
         recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
             override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
-                recyclerView.findContainingViewHolder(child)?.let { viewHolder ->
-                    val row =
-                        viewHolder.absoluteAdapterPosition / binding.recyclerView.getSpanCount()
-                    when (row) {
-                        0 -> headerLayout.scrollHeaderTo(-headerLayout.headerHeight / 4)
-                        else -> headerLayout.hideHeader()
-                    }
+                val row = parent.absoluteAdapterPosition / binding.recyclerView.getSpanCount()
+                when (row) {
+                    0 -> headerLayout.showHeader()
+                    1 -> headerLayout.scrollHeaderTo((-headerLayout.headerHeight / 2))
+                    else -> headerLayout.hideHeader()
                 }
             }
         })

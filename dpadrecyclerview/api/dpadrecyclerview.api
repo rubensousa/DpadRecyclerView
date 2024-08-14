@@ -223,6 +223,7 @@ public final class com/rubensousa/dpadrecyclerview/DpadScrollableLayout : androi
 	public final fun isHeaderVisible ()Z
 	public final fun scrollHeaderTo (IZ)V
 	public static synthetic fun scrollHeaderTo$default (Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout;IZILjava/lang/Object;)V
+	public final fun setScrollDurationConfig (Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout$ScrollDurationConfig;)V
 	public final fun setScrollInterpolator (Landroid/view/animation/Interpolator;)V
 	public final fun showHeader (Z)V
 	public static synthetic fun showHeader$default (Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout;ZILjava/lang/Object;)V
@@ -235,6 +236,10 @@ public final class com/rubensousa/dpadrecyclerview/DpadScrollableLayout$LayoutPa
 	public fun <init> (Landroid/view/ViewGroup$MarginLayoutParams;)V
 	public final fun isScrollableView ()Z
 	public final fun setIsScrollableView (Z)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/DpadScrollableLayout$ScrollDurationConfig {
+	public abstract fun calculateScrollDuration (II)I
 }
 
 public final class com/rubensousa/dpadrecyclerview/DpadScroller {

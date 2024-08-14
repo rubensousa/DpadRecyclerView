@@ -22,29 +22,37 @@
     <TextView
         android:id="@+id/header1"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@drawable/list_item_background"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
+        android:layout_height="64dp"
         android:gravity="center"
-        android:text="Header 1"
-        android:textColor="@color/list_item_text" />
-
-    <TextView
-        android:id="@+id/header2"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@drawable/list_item_background"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:gravity="center"
-        android:text="Header 2"
-        android:textColor="@color/list_item_text" />
+        android:text="Header 1" />
 
     <com.rubensousa.dpadrecyclerview.DpadRecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/horizontalRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:dpadScrollableLayoutScrollableView="true" />
+        android:orientation="vertical"
+        app:dpadScrollableLayoutScrollableView="true">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_margin="24dp"
+            android:background="@drawable/list_item_background"
+            android:gravity="center"
+            android:text="List header" />
+
+        <com.rubensousa.dpadrecyclerview.DpadRecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:dpadScrollableLayoutScrollableView="true" />
+
+    </LinearLayout>
+
 
 </com.rubensousa.dpadrecyclerview.DpadScrollableLayout>
