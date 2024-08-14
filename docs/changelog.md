@@ -2,6 +2,15 @@
 
 ## Version 1.4.0
 
+### 1.4.0-alpha03
+
+2024-08-14
+
+#### Bug fixes
+
+- Fix header not being initially shown sometimes with `DpadScrollableLayout` ([#253](https://github.com/rubensousa/DpadRecyclerView/pull/253))
+
+
 ### 1.4.0-alpha02
 
 2024-08-14
