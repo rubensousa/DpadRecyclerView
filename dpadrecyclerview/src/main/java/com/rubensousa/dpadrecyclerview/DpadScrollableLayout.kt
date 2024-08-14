@@ -52,7 +52,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
     var headerHeight = 0
         private set
 
-    var isHeaderVisible = false
+    var isHeaderVisible = true
         private set
 
     private var currentOffset = 0

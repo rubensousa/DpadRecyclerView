@@ -405,8 +405,33 @@ class DpadScrollableLayoutTest {
             Rect(0, headerHeight / 2, screenWidth, headerHeight / 2 + headerHeight)
         )
         assertThat(recyclerViewBounds).isEqualTo(
-            Rect(0, headerHeight / 2 + headerHeight, screenWidth, screenHeight + headerHeight / 2 + headerHeight)
+            Rect(
+                0,
+                headerHeight / 2 + headerHeight,
+                screenWidth,
+                screenHeight + headerHeight / 2 + headerHeight
+            )
         )
+    }
+
+    @Test
+    fun testHeaderIsVisibleByDefault() {
+        // given
+        val headerHeight = getHeaderHeight()
+        val screenWidth = getWidth()
+        var actualVisibility = false
+
+        // when
+        fragmentScenario.onFragment { fragment ->
+            actualVisibility = fragment.scrollableLayout?.isHeaderVisible ?: false
+        }
+
+        // then
+        val header1Bounds = getViewBounds(R.id.header1)
+        assertThat(header1Bounds).isEqualTo(
+            Rect(0, 0, screenWidth, headerHeight)
+        )
+        assertThat(actualVisibility).isTrue()
     }
 
     private fun waitViewAtCoordinates(viewId: Int, top: Int, bottom: Int, timeout: Long = 4L) {
