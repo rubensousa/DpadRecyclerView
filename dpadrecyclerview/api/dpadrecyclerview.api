@@ -220,6 +220,7 @@ public final class com/rubensousa/dpadrecyclerview/DpadScrollableLayout : androi
 	public final fun getHeaderHeight ()I
 	public final fun hideHeader (Z)V
 	public static synthetic fun hideHeader$default (Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout;ZILjava/lang/Object;)V
+	public final fun isHeaderCompletelyVisible ()Z
 	public final fun isHeaderVisible ()Z
 	public final fun scrollHeaderTo (IZ)V
 	public static synthetic fun scrollHeaderTo$default (Lcom/rubensousa/dpadrecyclerview/DpadScrollableLayout;IZILjava/lang/Object;)V
