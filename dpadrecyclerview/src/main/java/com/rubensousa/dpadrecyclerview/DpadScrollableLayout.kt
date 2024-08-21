@@ -46,7 +46,7 @@ import kotlin.math.min
  * To show it back again, use [showHeader]
  */
 class DpadScrollableLayout @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null
+    context: Context, attrs: AttributeSet? = null,
 ) : LinearLayout(context, attrs) {
 
     var headerHeight = 0
@@ -55,10 +55,14 @@ class DpadScrollableLayout @JvmOverloads constructor(
     var isHeaderVisible = true
         private set
 
+    var isHeaderCompletelyVisible = true
+        private set
+
     private var currentOffset = 0
     private var offsetInProgress: Int? = null
     private var currentAnimator: ScrollAnimator? = null
     private var headerHeightChanged = false
+    private var lastHeaderHeight = 0
     private var scrollDurationConfig: ScrollDurationConfig = DefaultScrollDurationConfig()
 
     // From RecyclerView
@@ -114,6 +118,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
         }
         setMeasuredDimension(measuredWidth, childHeight)
         headerHeightChanged = newHeaderHeight != headerHeight
+        lastHeaderHeight = headerHeight
         headerHeight = newHeaderHeight
     }
 
@@ -122,7 +127,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
         parentWidthMeasureSpec: Int,
         widthUsed: Int,
         parentHeightMeasureSpec: Int,
-        heightUsed: Int
+        heightUsed: Int,
     ) {
         val lp = child!!.layoutParams as LayoutParams
         val childWidthMeasureSpec = getChildMeasureSpec(
@@ -149,13 +154,24 @@ class DpadScrollableLayout @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        var currentAnchor = if (currentOffset != -headerHeight && headerHeightChanged) {
-            if (isHeaderVisible) {
+        var currentAnchor = if (headerHeightChanged) {
+            if (isHeaderCompletelyVisible) {
+                // If the header was completely visible before, keep it that way
                 0
+            } else if (isHeaderVisible) {
+                /**
+                 * The header was partially visible, so keep the anchor consistent if possible,
+                 * and limit it to the top of the layout
+                 */
+                val currentHeaderBottom = currentOffset + lastHeaderHeight
+                val newTop = currentHeaderBottom - headerHeight
+                min(0, newTop)
             } else {
+                // The header was completely invisible, so ensure it stays that way
                 -headerHeight
             }
         } else {
+            // The height didn't change, so keep the previous offset
             currentOffset
         }
         val numberOfChildren = childCount
@@ -254,6 +270,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
         }
         currentOffset = getChildAt(0)?.top ?: 0
         isHeaderVisible = currentOffset > -headerHeight
+        isHeaderCompletelyVisible = currentOffset == 0
     }
 
     private fun cancelOffsetAnimation() {
