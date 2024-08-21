@@ -2,6 +2,14 @@
 
 ## Version 1.4.0
 
+### 1.4.0-alpha04
+
+2024-08-21
+
+#### Bug fixes
+
+- Fix header alignment when `DpadScrollableLayout` triggers a new layout ([#254](https://github.com/rubensousa/DpadRecyclerView/pull/254))
+
 ### 1.4.0-alpha03
 
 2024-08-14

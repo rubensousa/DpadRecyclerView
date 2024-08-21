@@ -5,27 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/header1"
+    <LinearLayout
+        android:id="@+id/headerLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dpadrecyclerview_header_size"
-        android:background="@drawable/dpadrecyclerview_item_background"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:gravity="center"
-        android:text="Header 1"
-        android:textColor="@color/dpadrecyclerview_item_text" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/header2"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/dpadrecyclerview_header_size"
-        android:background="@drawable/dpadrecyclerview_item_background"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:gravity="center"
-        android:text="Header 2"
-        android:textColor="@color/dpadrecyclerview_item_text" />
+        <TextView
+            android:id="@+id/header1"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dpadrecyclerview_header_size"
+            android:background="@drawable/dpadrecyclerview_item_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:text="Header 1"
+            android:textColor="@color/dpadrecyclerview_item_text" />
+
+        <TextView
+            android:id="@+id/header2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dpadrecyclerview_header_size"
+            android:background="@drawable/dpadrecyclerview_item_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            android:text="Header 2"
+            android:textColor="@color/dpadrecyclerview_item_text" />
+
+    </LinearLayout>
 
     <com.rubensousa.dpadrecyclerview.DpadRecyclerView
         android:id="@+id/recyclerView"
