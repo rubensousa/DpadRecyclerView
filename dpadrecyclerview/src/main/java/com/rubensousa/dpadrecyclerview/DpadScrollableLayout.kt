@@ -157,6 +157,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
             currentOffset
         }
         val numberOfChildren = childCount
+        currentOffset = currentAnchor
         for (i in 0 until numberOfChildren) {
             val child = getChildAt(i) ?: continue
             if (child.visibility == View.GONE) {
