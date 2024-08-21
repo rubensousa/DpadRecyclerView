@@ -57,10 +57,8 @@ class DpadScrollableLayout @JvmOverloads constructor(
 
     private var currentOffset = 0
     private var offsetInProgress: Int? = null
-    private var headerHeightChanged = false
     private var currentAnimator: ScrollAnimator? = null
     private var scrollDurationConfig: ScrollDurationConfig = DefaultScrollDurationConfig()
-    private var lastHeaderHeight = 0
 
     // From RecyclerView
     private var scrollInterpolator = Interpolator { t ->
@@ -114,11 +112,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
             }
         }
         setMeasuredDimension(measuredWidth, childHeight)
-        if (newHeaderHeight != headerHeight) {
-            headerHeightChanged = newHeaderHeight != lastHeaderHeight
-            lastHeaderHeight = headerHeight
-            headerHeight = newHeaderHeight
-        }
+        headerHeight = newHeaderHeight
     }
 
     override fun measureChildWithMargins(
@@ -153,7 +147,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        var currentAnchor = if (headerHeightChanged && lastHeaderHeight > 0) {
+        var currentAnchor = if (currentOffset != -headerHeight) {
             if (isHeaderVisible) {
                 0
             } else {
@@ -176,7 +170,6 @@ class DpadScrollableLayout @JvmOverloads constructor(
             child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight)
             currentAnchor += childHeight + layoutParams.bottomMargin
         }
-        headerHeightChanged = false
     }
 
     fun setScrollInterpolator(interpolator: Interpolator) {
