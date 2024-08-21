@@ -58,6 +58,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
     private var currentOffset = 0
     private var offsetInProgress: Int? = null
     private var currentAnimator: ScrollAnimator? = null
+    private var headerHeightChanged = false
     private var scrollDurationConfig: ScrollDurationConfig = DefaultScrollDurationConfig()
 
     // From RecyclerView
@@ -112,6 +113,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
             }
         }
         setMeasuredDimension(measuredWidth, childHeight)
+        headerHeightChanged = newHeaderHeight != headerHeight
         headerHeight = newHeaderHeight
     }
 
@@ -147,7 +149,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        var currentAnchor = if (currentOffset != -headerHeight) {
+        var currentAnchor = if (currentOffset != -headerHeight && headerHeightChanged) {
             if (isHeaderVisible) {
                 0
             } else {
@@ -158,6 +160,7 @@ class DpadScrollableLayout @JvmOverloads constructor(
         }
         val numberOfChildren = childCount
         currentOffset = currentAnchor
+        headerHeightChanged = false
         for (i in 0 until numberOfChildren) {
             val child = getChildAt(i) ?: continue
             if (child.visibility == View.GONE) {

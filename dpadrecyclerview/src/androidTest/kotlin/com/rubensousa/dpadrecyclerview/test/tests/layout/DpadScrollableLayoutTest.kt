@@ -367,6 +367,28 @@ class DpadScrollableLayoutTest {
     }
 
     @Test
+    fun testHeaderStaysPartiallyVisibleAfterLayoutRequest() {
+        // given
+        val headerHeight = getHeaderHeight()
+        val screenWidth = getWidth()
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.scrollHeaderTo(topOffset = -headerHeight / 2)
+        }
+        waitViewAtCoordinates(R.id.header1, top = -headerHeight / 2, bottom = headerHeight / 2)
+
+        // when
+        fragmentScenario.onFragment { fragment ->
+            fragment.scrollableLayout?.requestLayout()
+        }
+
+        // then
+        val header1Bounds = getViewBounds(R.id.header1)
+        assertThat(header1Bounds).isEqualTo(
+            Rect(0,  -headerHeight / 2, screenWidth, headerHeight / 2)
+        )
+    }
+
+    @Test
     fun testRequestingLayoutDuringOffsetChangesDoesNotBreakLayout() {
         // given
         val headerHeight = getHeaderHeight()
