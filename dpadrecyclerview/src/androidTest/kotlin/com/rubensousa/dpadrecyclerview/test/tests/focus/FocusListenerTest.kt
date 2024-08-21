@@ -20,6 +20,8 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.OnFocusLostListener
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
@@ -169,6 +171,89 @@ class FocusListenerTest : DpadRecyclerViewTest() {
 
         // then
         assertIsFocused()
+    }
+
+    @Test
+    fun testFocusLostListenerIsInvoked() {
+        // given
+        var events = 0
+        val listener = object : OnFocusLostListener {
+            override fun onFocusLost(recyclerView: DpadRecyclerView) {
+                events++
+            }
+        }
+        onRecyclerView("Set listener") { recyclerView ->
+            recyclerView.addOnFocusLostListener(listener)
+        }
+
+        // when
+        executeOnFragment { fragment -> fragment.clearFocus() }
+
+        // then
+        assertThat(events).isEqualTo(1)
+    }
+
+    @Test
+    fun testFocusLostListenerIsOnlyInvokedOnFocusLosses() {
+        // given
+        var events = 0
+        val listener = object : OnFocusLostListener {
+            override fun onFocusLost(recyclerView: DpadRecyclerView) {
+                events++
+            }
+        }
+        onRecyclerView("Set listener") { recyclerView ->
+            recyclerView.addOnFocusLostListener(listener)
+        }
+        executeOnFragment { fragment -> fragment.clearFocus() }
+
+        // when
+        executeOnFragment { fragment -> fragment.requestFocus() }
+
+        // then
+        assertThat(events).isEqualTo(1)
+    }
+
+    @Test
+    fun testFocusLostListenerIsRemoved() {
+        // given
+        var events = 0
+        val listener = object : OnFocusLostListener {
+            override fun onFocusLost(recyclerView: DpadRecyclerView) {
+                events++
+            }
+        }
+        onRecyclerView("Set listener") { recyclerView ->
+            recyclerView.addOnFocusLostListener(listener)
+            recyclerView.removeOnFocusLostListener(listener)
+        }
+
+        // when
+        executeOnFragment { fragment -> fragment.clearFocus() }
+
+        // then
+        assertThat(events).isEqualTo(0)
+    }
+
+    @Test
+    fun testFocusLostListenerIsRemovedOnClearAll() {
+        // given
+        var events = 0
+        val listener = object : OnFocusLostListener {
+            override fun onFocusLost(recyclerView: DpadRecyclerView) {
+                events++
+            }
+        }
+        onRecyclerView("Set listener") { recyclerView ->
+            recyclerView.addOnFocusLostListener(listener)
+            recyclerView.clearOnFocusLostListeners()
+        }
+
+        // when
+        executeOnFragment { fragment -> fragment.clearFocus() }
+
+        // then
+        assertThat(events).isEqualTo(0)
     }
 
 }
