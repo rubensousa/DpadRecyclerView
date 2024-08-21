@@ -7,6 +7,9 @@ package com.rubensousa.dpadrecyclerview
  */
 interface OnFocusLostListener {
 
+    /**
+     * @param recyclerView the [DpadRecyclerView] that lost focus
+     */
     fun onFocusLost(recyclerView: DpadRecyclerView)
 
 }
