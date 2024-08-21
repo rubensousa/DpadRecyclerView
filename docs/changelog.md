@@ -8,7 +8,7 @@
 
 #### Bug fixes
 
-- Fix header alignment when `DpadScrollableLayout` triggers a new layout ([#254](https://github.com/rubensousa/DpadRecyclerView/pull/254))
+- Fix header alignment when `DpadScrollableLayout` triggers a new layout ([#255](https://github.com/rubensousa/DpadRecyclerView/pull/255))
 
 ### 1.4.0-alpha03
 
