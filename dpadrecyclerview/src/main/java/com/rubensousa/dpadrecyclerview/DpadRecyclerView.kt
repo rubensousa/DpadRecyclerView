@@ -261,9 +261,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        if (focusLossListeners.isNotEmpty()) {
-            unregisterGlobalFocusChangeListener()
-        }
+        unregisterGlobalFocusChangeListener()
     }
 
     final override fun requestLayout() {
@@ -1260,6 +1258,9 @@ open class DpadRecyclerView @JvmOverloads constructor(
      */
     fun clearOnFocusLostListeners() {
         focusLossListeners.clear()
+        if (focusLossListeners.isEmpty()) {
+            unregisterGlobalFocusChangeListener()
+        }
     }
 
     private fun registerGlobalFocusChangeListener() {
