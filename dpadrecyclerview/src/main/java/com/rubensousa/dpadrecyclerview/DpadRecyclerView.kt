@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.GlobalFocusChangeListener
 
 /**
  * A [RecyclerView] that scrolls to items on DPAD key events.
@@ -56,7 +57,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 open class DpadRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.dpadRecyclerViewStyle
+    defStyleAttr: Int = R.attr.dpadRecyclerViewStyle,
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     internal companion object {
@@ -68,6 +69,15 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private var viewHolderTaskExecutor: ViewHolderTaskExecutor? = ViewHolderTaskExecutor()
     private val focusableChildDrawingCallback = FocusableChildDrawingCallback()
     private val fadingEdge = FadingEdge()
+    private val focusLossListeners = mutableListOf<OnFocusLostListener>()
+    private val globalFocusChangeListener by lazy {
+        GlobalFocusChangeListener(this) {
+            focusLossListeners.forEach { listener ->
+                listener.onFocusLost(this)
+            }
+        }
+    }
+    private var registeredGlobalFocusListener = false
 
     private var pivotLayoutManager: PivotLayoutManager? = null
     private var isOverlappingRenderingEnabled = true
@@ -125,7 +135,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private fun createLayoutManager(
         typedArray: TypedArray,
         context: Context,
-        attrs: AttributeSet?
+        attrs: AttributeSet?,
     ): PivotLayoutManager {
         val properties = LayoutManager.getProperties(context, attrs, 0, 0)
         val layout = PivotLayoutManager(properties)
@@ -240,6 +250,18 @@ open class DpadRecyclerView @JvmOverloads constructor(
             viewHolderTaskExecutor?.let { layout.addOnViewHolderSelectedListener(it) }
             pivotLayoutManager = layout
         }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (focusLossListeners.isNotEmpty()) {
+            registerGlobalFocusChangeListener()
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        unregisterGlobalFocusChangeListener()
     }
 
     final override fun requestLayout() {
@@ -361,7 +383,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     final override fun onFocusChanged(
         gainFocus: Boolean,
         direction: Int,
-        previouslyFocusedRect: Rect?
+        previouslyFocusedRect: Rect?,
     ) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
         pivotLayoutManager?.onFocusChanged(gainFocus)
@@ -369,7 +391,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun onRequestFocusInDescendants(
         direction: Int,
-        previouslyFocusedRect: Rect?
+        previouslyFocusedRect: Rect?,
     ): Boolean {
         if (isRetainingFocus) {
             /**
@@ -411,7 +433,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     final override fun setChildDrawingOrderCallback(
-        childDrawingOrderCallback: ChildDrawingOrderCallback?
+        childDrawingOrderCallback: ChildDrawingOrderCallback?,
     ) {
         super.setChildDrawingOrderCallback(childDrawingOrderCallback)
     }
@@ -1207,6 +1229,58 @@ open class DpadRecyclerView @JvmOverloads constructor(
      */
     fun clearOnViewFocusedListeners() {
         requireLayout().clearOnViewFocusedListeners()
+    }
+
+    /**
+     * Registers a callback to be invoked when this RecyclerView loses focus
+     * @param listener The listener to be invoked.
+     */
+    fun addOnFocusLostListener(listener: OnFocusLostListener) {
+        if (focusLossListeners.isEmpty()) {
+            registerGlobalFocusChangeListener()
+        }
+        focusLossListeners.add(listener)
+    }
+
+    /**
+     * Removes a listener added by [addOnFocusLostListener]
+     * @param listener The listener to be removed.
+     */
+    fun removeOnFocusLostListener(listener: OnFocusLostListener) {
+        focusLossListeners.remove(listener)
+        if (focusLossListeners.isEmpty()) {
+            unregisterGlobalFocusChangeListener()
+        }
+    }
+
+    /**
+     * Clears all existing listeners added by [addOnFocusLostListener]
+     */
+    fun clearOnFocusLostListeners() {
+        focusLossListeners.clear()
+        if (focusLossListeners.isEmpty()) {
+            unregisterGlobalFocusChangeListener()
+        }
+    }
+
+    private fun registerGlobalFocusChangeListener() {
+        if (registeredGlobalFocusListener) {
+            return
+        }
+        registeredGlobalFocusListener = true
+        if (viewTreeObserver.isAlive) {
+            viewTreeObserver.addOnGlobalFocusChangeListener(globalFocusChangeListener)
+        }
+    }
+
+    private fun unregisterGlobalFocusChangeListener() {
+        if (!registeredGlobalFocusListener) {
+            return
+        }
+        registeredGlobalFocusListener = false
+        if (viewTreeObserver.isAlive) {
+            viewTreeObserver.removeOnGlobalFocusChangeListener(globalFocusChangeListener)
+        }
     }
 
     /**

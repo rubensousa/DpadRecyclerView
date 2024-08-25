@@ -19,7 +19,9 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.list
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadLoopDirection
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.OnFocusLostListener
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
@@ -67,6 +69,11 @@ class HorizontalListViewHolder(
                 child: View,
             ) {
                 Timber.i("ViewHolder focused: ${parent.layoutPosition}")
+            }
+        })
+        recyclerView.addOnFocusLostListener(object : OnFocusLostListener {
+            override fun onFocusLost(recyclerView: DpadRecyclerView) {
+                Timber.i("Lost focus of: $recyclerView")
             }
         })
         applyConfig(config)

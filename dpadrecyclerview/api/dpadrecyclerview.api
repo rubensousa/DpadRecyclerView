@@ -63,10 +63,12 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;)V
 	public fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;I)V
 	public synthetic fun <init> (Landroid/content/Context;Landroid/util/AttributeSet;IILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun addOnFocusLostListener (Lcom/rubensousa/dpadrecyclerview/OnFocusLostListener;)V
 	public final fun addOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun addOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
 	public final fun addOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
 	public final fun addRecyclerListener (Landroidx/recyclerview/widget/RecyclerView$RecyclerListener;)V
+	public final fun clearOnFocusLostListeners ()V
 	public final fun clearOnLayoutCompletedListeners ()V
 	public final fun clearOnViewFocusedListeners ()V
 	public final fun clearOnViewHolderSelectedListeners ()V
@@ -111,12 +113,15 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun isMaxEdgeFadingEnabled ()Z
 	public final fun isMinEdgeFadingEnabled ()Z
 	public final fun isScrollEnabled ()Z
+	protected fun onAttachedToWindow ()V
+	protected fun onDetachedFromWindow ()V
 	protected final fun onFocusChanged (ZILandroid/graphics/Rect;)V
 	protected final fun onMeasure (II)V
 	protected final fun onRequestFocusInDescendants (ILandroid/graphics/Rect;)Z
 	public final fun onRtlPropertiesChanged (I)V
 	public fun onScrollStateChanged (I)V
 	protected fun onSizeChanged (IIII)V
+	public final fun removeOnFocusLostListener (Lcom/rubensousa/dpadrecyclerview/OnFocusLostListener;)V
 	public final fun removeOnLayoutCompletedListener (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView$OnLayoutCompletedListener;)V
 	public final fun removeOnViewFocusedListener (Lcom/rubensousa/dpadrecyclerview/OnViewFocusedListener;)V
 	public final fun removeOnViewHolderSelectedListener (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;)V
@@ -311,6 +316,10 @@ public final class com/rubensousa/dpadrecyclerview/FocusableDirection : java/lan
 
 public abstract interface class com/rubensousa/dpadrecyclerview/OnChildLaidOutListener {
 	public abstract fun onChildLaidOut (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
+}
+
+public abstract interface class com/rubensousa/dpadrecyclerview/OnFocusLostListener {
+	public abstract fun onFocusLost (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;)V
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/OnViewFocusedListener {
