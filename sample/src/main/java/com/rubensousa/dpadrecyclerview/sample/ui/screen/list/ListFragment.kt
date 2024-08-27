@@ -130,17 +130,14 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
                 )
                 recyclerView.setAlignmentLookup(object : AlignmentLookup {
                     override fun getParentAlignment(viewHolder: RecyclerView.ViewHolder): ParentAlignment? {
-                        return if (viewHolder.layoutPosition <= 1) {
-                            ParentAlignment(
-                                edge = ParentAlignment.Edge.MIN_MAX,
-                                fraction = 0.5f,
-                            )
+                        return if (viewHolder.layoutPosition % 2 == 0) {
+                            ParentAlignment(fraction = 0.5f)
                         } else {
                             null
                         }
                     }
                     override fun getChildAlignment(viewHolder: RecyclerView.ViewHolder): ChildAlignment? {
-                        return if (viewHolder.layoutPosition <= 1) {
+                        return if (viewHolder.layoutPosition % 2 == 0) {
                             ChildAlignment(fraction = 0.5f)
                         } else {
                             null

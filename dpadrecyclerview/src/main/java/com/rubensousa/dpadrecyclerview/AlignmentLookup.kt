@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 
 /**
  * Allows [DpadRecyclerView] to align differently for each ViewHolder.
+ * When this is used, the [ParentAlignment.Edge] preference has no effect
+ * and you're fully responsible to pick an anchor for all ViewHolders
  */
 interface AlignmentLookup {
 

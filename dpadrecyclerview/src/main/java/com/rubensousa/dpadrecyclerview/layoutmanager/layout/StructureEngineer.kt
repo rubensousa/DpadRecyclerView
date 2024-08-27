@@ -33,7 +33,7 @@ import kotlin.math.min
 internal abstract class StructureEngineer(
     protected val layoutManager: RecyclerView.LayoutManager,
     protected val layoutInfo: LayoutInfo,
-    protected val layoutAlignment: LayoutAlignment
+    protected val layoutAlignment: LayoutAlignment,
 ) {
 
     companion object {
@@ -90,7 +90,7 @@ internal abstract class StructureEngineer(
         layoutRequest: LayoutRequest,
         viewProvider: ViewProvider,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): View
 
     /**
@@ -103,7 +103,7 @@ internal abstract class StructureEngineer(
         layoutRequest: LayoutRequest,
         scrapViewProvider: ScrapViewProvider,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     )
 
     /**
@@ -114,7 +114,7 @@ internal abstract class StructureEngineer(
         viewProvider: ViewProvider,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
-        layoutResult: LayoutResult
+        layoutResult: LayoutResult,
     )
 
     /**
@@ -125,7 +125,7 @@ internal abstract class StructureEngineer(
     fun preLayoutChildren(
         pivotPosition: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         recyclerViewProvider.updateRecycler(recycler)
         val childCount = layoutInfo.getChildCount()
@@ -161,7 +161,7 @@ internal abstract class StructureEngineer(
         preLayoutRequest: PreLayoutRequest,
         layoutRequest: LayoutRequest,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         layoutManager.detachAndScrapAttachedViews(recycler)
         val firstView = preLayoutRequest.firstView
@@ -185,7 +185,7 @@ internal abstract class StructureEngineer(
     fun layoutChildren(
         pivotPosition: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         recyclerViewProvider.updateRecycler(recycler)
 
@@ -231,7 +231,7 @@ internal abstract class StructureEngineer(
         layoutRequest: LayoutRequest,
         viewProvider: ViewProvider,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         val firstView = layoutInfo.getChildClosestToStart() ?: return
         layoutRequest.prepend(layoutInfo.getLayoutPositionOf(firstView)) {
@@ -256,7 +256,7 @@ internal abstract class StructureEngineer(
         layoutRequest: LayoutRequest,
         viewProvider: ViewProvider,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Boolean {
         return false
     }
@@ -291,7 +291,7 @@ internal abstract class StructureEngineer(
         offset: Int,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
-        recycleChildren: Boolean
+        recycleChildren: Boolean,
     ): Int {
         if (recycleChildren) {
             recyclerViewProvider.updateRecycler(recycler)
@@ -325,7 +325,7 @@ internal abstract class StructureEngineer(
         layoutRequest: LayoutRequest,
         state: RecyclerView.State,
         scrollOffset: Int,
-        recycleChildren: Boolean
+        recycleChildren: Boolean,
     ) {
         val scrollDistance = abs(scrollOffset)
         layoutRequest.setRecyclingEnabled(recycleChildren)
@@ -460,7 +460,7 @@ internal abstract class StructureEngineer(
     private fun alignPivot(
         pivotView: View,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         var remainingScroll = if (layoutRequest.isVertical) {
             state.remainingScrollVertical
@@ -482,7 +482,8 @@ internal abstract class StructureEngineer(
         }
 
         val parentAlignment = layoutAlignment.getParentAlignment(pivotView)
-        if (parentAlignment.edge != ParentAlignment.Edge.NONE
+        if (layoutAlignment.alignmentLookup == null
+            && parentAlignment.edge != ParentAlignment.Edge.NONE
             && alignToEdge(parentAlignment, recycler, state, remainingScroll)
         ) {
             layoutAlignment.updateScrollLimits()
@@ -509,7 +510,7 @@ internal abstract class StructureEngineer(
         alignment: ParentAlignment,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State,
-        remainingScroll: Int
+        remainingScroll: Int,
     ): Boolean {
         val startView = layoutInfo.getChildClosestToStart() ?: return false
         val endView = layoutInfo.getChildClosestToEnd() ?: return false
@@ -626,7 +627,7 @@ internal abstract class StructureEngineer(
         startView: View,
         remainingScroll: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         val distanceToEndEdge = max(0, layoutInfo.getEndAfterPadding() - endEdge)
         layoutRequest.prepend(layoutInfo.getLayoutPositionOf(startView)) {
@@ -645,7 +646,7 @@ internal abstract class StructureEngineer(
         endView: View,
         remainingScroll: Int,
         recycler: RecyclerView.Recycler,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         val distanceToStart = max(0, startEdge - layoutInfo.getStartAfterPadding())
         layoutRequest.append(layoutInfo.getLayoutPositionOf(endView)) {
@@ -695,7 +696,7 @@ internal abstract class StructureEngineer(
         remainingSpace: Int,
         viewProvider: ViewProvider,
         layoutRequest: LayoutRequest,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ): Boolean {
         return viewProvider.hasNext(layoutRequest, state)
                 && (remainingSpace > 0 || layoutRequest.isInfinite)

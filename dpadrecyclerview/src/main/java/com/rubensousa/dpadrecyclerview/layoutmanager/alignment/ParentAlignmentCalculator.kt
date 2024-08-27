@@ -118,7 +118,8 @@ internal class ParentAlignmentCalculator {
             shouldAlignEndToKeyline(endAlignment) -> {
                 calculateScrollOffsetToKeyline(
                     anchor = endViewAnchor,
-                    keyline = endKeyline)
+                    keyline = endKeyline
+                )
             }
 
             else -> 0
@@ -155,20 +156,36 @@ internal class ParentAlignmentCalculator {
         val alignToEndEdge = shouldAlignViewToEnd(viewAnchor, keyline, alignment)
         if (!reverseLayout) {
             if (alignToStartEdge) {
-                return min(startScrollLimit, calculateScrollOffsetToStartEdge(viewAnchor))
+                return calculateScrollToStartEdge(viewAnchor)
             }
             if (alignToEndEdge) {
-                return max(endScrollLimit, calculateScrollOffsetToEndEdge(viewAnchor))
+                return calculateScrollToEndEdge(viewAnchor)
             }
         } else {
             if (alignToEndEdge) {
-                return max(endScrollLimit, calculateScrollOffsetToEndEdge(viewAnchor))
+                return calculateScrollToEndEdge(viewAnchor)
             }
             if (alignToStartEdge) {
-                return min(startScrollLimit, calculateScrollOffsetToStartEdge(viewAnchor))
+                return calculateScrollToStartEdge(viewAnchor)
             }
         }
         return calculateScrollOffsetToKeyline(viewAnchor, keyline)
+    }
+
+    fun calculateKeylineScrollOffset(
+        viewAnchor: Int,
+        alignment: ParentAlignment,
+    ): Int {
+        val keyline = calculateKeyline(alignment)
+        return calculateScrollOffsetToKeyline(viewAnchor, keyline)
+    }
+
+    private fun calculateScrollToStartEdge(anchor: Int): Int {
+        return min(startScrollLimit, calculateScrollOffsetToStartEdge(anchor))
+    }
+
+    private fun calculateScrollToEndEdge(anchor: Int): Int {
+        return max(endScrollLimit, calculateScrollOffsetToEndEdge(anchor))
     }
 
     fun calculateKeyline(alignment: ParentAlignment): Int {

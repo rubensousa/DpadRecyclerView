@@ -58,10 +58,18 @@ internal class LayoutAlignment(
      * If the returned value is 0, there is no need to scroll.
      */
     fun calculateScrollToTarget(view: View): Int {
-        return parentAlignmentCalculator.calculateScrollOffset(
-            viewAnchor = getAnchor(view),
-            alignment = getParentAlignment(view)
-        )
+        val viewParentAlignment = getParentAlignment(view)
+        return if (alignmentLookup == null) {
+            parentAlignmentCalculator.calculateScrollOffset(
+                viewAnchor = getAnchor(view),
+                alignment = parentAlignment
+            )
+        } else {
+            parentAlignmentCalculator.calculateKeylineScrollOffset(
+                viewAnchor = getAnchor(view),
+                alignment = viewParentAlignment
+            )
+        }
     }
 
     fun getParentAlignment(view: View?): ParentAlignment {
