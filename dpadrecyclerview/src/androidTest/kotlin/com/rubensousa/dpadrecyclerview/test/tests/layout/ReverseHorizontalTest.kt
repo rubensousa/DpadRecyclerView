@@ -21,7 +21,10 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
-import com.rubensousa.dpadrecyclerview.test.helpers.*
+import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.LayoutConfig
 import com.rubensousa.dpadrecyclerview.testfixtures.RowLayout
@@ -103,12 +106,14 @@ class ReverseHorizontalTest : DpadRecyclerViewTest() {
         repeat(5) {
             KeyEvents.pressLeft()
             row.scrollLeft()
+            waitForIdleScrollState()
             assertChildrenPositions(row)
         }
 
         repeat(5) {
             KeyEvents.pressRight()
             row.scrollRight()
+            waitForIdleScrollState()
             assertChildrenPositions(row)
         }
     }

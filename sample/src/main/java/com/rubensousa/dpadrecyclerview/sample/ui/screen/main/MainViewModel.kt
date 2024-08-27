@@ -135,6 +135,10 @@ class MainViewModel : ViewModel() {
                 ScreenDestination(
                     direction = MainFragmentDirections.openHorizontalLeanback(),
                     title = "Searching for next view"
+                ),
+                ScreenDestination(
+                    direction = MainFragmentDirections.openScrollableLayout(),
+                    title = "Scrollable layout with header"
                 )
             ),
         )
@@ -144,6 +148,10 @@ class MainViewModel : ViewModel() {
         return FeatureList(
             title = "Item animations",
             destinations = listOf(
+                ScreenDestination(
+                    direction = MainFragmentDirections.openPredictiveAnimations(),
+                    title = "Predictive animations"
+                ),
                 ScreenDestination(
                     direction = MainFragmentDirections.openItemAnimations(),
                     title = "Random updates"

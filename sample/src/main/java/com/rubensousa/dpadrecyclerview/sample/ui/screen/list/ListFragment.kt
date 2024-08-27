@@ -28,7 +28,6 @@ import com.rubensousa.dpadrecyclerview.AlignmentLookup
 import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
-import com.rubensousa.dpadrecyclerview.DpadSelectionSnapHelper
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.sample.R
@@ -91,11 +90,6 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
         binding.selectionOverlayView.isActivated = true
         binding.recyclerView.apply {
             adapter = concatAdapter
-            // Include this for debug builds if you want to use touch events on the emulator
-            // or if you need to support touch events on the device (automotive or mobile)
-            if (BuildConfig.DEBUG) {
-                DpadSelectionSnapHelper().attachToRecyclerView(this)
-            }
             requestFocus()
         }
     }

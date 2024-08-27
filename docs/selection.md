@@ -35,6 +35,16 @@ view.setOnFocusChangeListener { _, hasFocus ->
 }
 ```
 
+You can also observe focus changes inside `DpadRecyclerView` with the following:
+
+```kotlin linenums="1"
+recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+    override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
+        // Child has focus
+    }
+})
+```
+
 ## Selection changes
 
 You can observe selection changes using the following:

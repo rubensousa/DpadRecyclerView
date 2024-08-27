@@ -184,17 +184,9 @@ internal abstract class StructureEngineer(
 
     fun layoutChildren(
         pivotPosition: Int,
-        itemChanges: ItemChanges,
         recycler: RecyclerView.Recycler,
         state: RecyclerView.State
     ) {
-        if (!isNewLayoutRequired(state, itemChanges)) {
-            if (DpadRecyclerView.DEBUG) {
-                Log.i(TAG, "layout changes are out of bounds, so skip full layout: $itemChanges")
-            }
-            finishLayout()
-            return
-        }
         recyclerViewProvider.updateRecycler(recycler)
 
         // Start by detaching all existing views.
@@ -293,38 +285,6 @@ internal abstract class StructureEngineer(
             layoutRequest.setLayingOutScrap(false)
 
         }
-    }
-
-    /**
-     * We only need to do a full layout in the following scenarios:
-     *
-     * 1. There's a structural change in the adapter
-     * 2. There are no items in the current layout
-     * 3. Pivot is no longer aligned
-     * 4. Item changes affect the current visible window
-     */
-    private fun isNewLayoutRequired(
-        state: RecyclerView.State,
-        itemChanges: ItemChanges
-    ): Boolean {
-        if (state.didStructureChange()
-            || !itemChanges.isValid()
-            || preLayoutRequest.extraLayoutSpace > 0
-            || layoutRequest.loopDirection != DpadLoopDirection.NONE
-        ) {
-            return true
-        }
-        val firstPos = layoutInfo.findFirstAddedPosition()
-        val lastPos = layoutInfo.findLastAddedPosition()
-        if (firstPos == RecyclerView.NO_POSITION || lastPos == RecyclerView.NO_POSITION) {
-            return true
-        }
-        val changesOutOfBounds = if (!layoutRequest.reverseLayout) {
-            itemChanges.isOutOfBounds(firstPos, lastPos)
-        } else {
-            itemChanges.isOutOfBounds(lastPos, firstPos)
-        }
-        return !changesOutOfBounds
     }
 
     fun scrollBy(

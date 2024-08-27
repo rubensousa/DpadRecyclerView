@@ -1,6 +1,82 @@
 # Changelog
 
+## Version 1.4.0
+
+### 1.4.0-alpha04
+
+2024-08-21
+
+#### Bug fixes
+
+- Fix header alignment when `DpadScrollableLayout` triggers a new layout ([#255](https://github.com/rubensousa/DpadRecyclerView/pull/255))
+
+### 1.4.0-alpha03
+
+2024-08-14
+
+#### Bug fixes
+
+- Fix header not being initially shown sometimes with `DpadScrollableLayout` ([#253](https://github.com/rubensousa/DpadRecyclerView/pull/253))
+
+
+### 1.4.0-alpha02
+
+2024-08-14
+
+#### Bug fixes
+
+- Fix issue with header alignment when `DpadScrollableLayout` receives a layout request during scroll ([#251](https://github.com/rubensousa/DpadRecyclerView/pull/251))
+
+### 1.4.0-alpha01
+
+2024-08-12
+
+#### New features
+
+- `DpadScrollableLayout` for screens that need a scrollable header at the same level as a `DpadRecyclerView` ([#248](https://github.com/rubensousa/DpadRecyclerView/pull/248))
+
+#### Bug fixes
+
+- Fixed crash when the layout manager name is set via XML ([#247](https://github.com/rubensousa/DpadRecyclerView/pull/247))
+
 ## Version 1.3.0
+
+### 1.3.0
+
+2024-08-08
+
+#### Important changes since 1.2.0
+
+- Added `DpadComposeFocusViewHolder` that allows sending the focus state down to Composables
+- Added `Modifier.dpadClickable` for playing the click sound after clicking on a Composable. 
+- Allow skipping layout requests during scroll with `setLayoutWhileScrollingEnabled(false)`
+- New `addOnViewFocusedListener` to observe focus changes independently from selection changes.
+- Added `DpadDragHelper` for drag and drop support. Documentation available [here](recipes/dragdrop.md).
+- Now `recyclerView.setFocusableDirection(FocusableDirection.CIRCULAR)` can also be used in linear layouts that don't fill the entire space.
+- Added `DpadStateRegistry` that assists in saving and restoring the scroll state or view state of ViewHolders
+
+### 1.3.0-rc03
+
+2024-07-23
+
+#### Bug fixes
+
+- Fixed layout inconsistency after some predictive animations ([#240](https://github.com/rubensousa/DpadRecyclerView/pull/240))
+- Fixed rare crash when removing an item due to adapter changes while a scroll action is pending ([#240](https://github.com/rubensousa/DpadRecyclerView/pull/240))
+
+### 1.3.0-rc02
+
+2024-07-11
+
+#### Bug fixes
+
+- Fixed `DpadRecyclerView` not immediately stopping the search for the pivot in some scenarios ([#238](https://github.com/rubensousa/DpadRecyclerView/pull/238))
+
+### 1.3.0-rc01
+
+2024-07-08
+
+- Reverted default of `setLayoutWhileScrollingEnabled()` back to true.
 
 ### 1.3.0-beta02
 

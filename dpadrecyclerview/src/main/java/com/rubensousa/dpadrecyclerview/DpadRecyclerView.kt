@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
+import com.rubensousa.dpadrecyclerview.layoutmanager.focus.GlobalFocusChangeListener
 
 /**
  * A [RecyclerView] that scrolls to items on DPAD key events.
@@ -56,7 +57,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 open class DpadRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = R.attr.dpadRecyclerViewStyle
+    defStyleAttr: Int = R.attr.dpadRecyclerViewStyle,
 ) : RecyclerView(context, attrs, defStyleAttr) {
 
     internal companion object {
@@ -64,15 +65,25 @@ open class DpadRecyclerView @JvmOverloads constructor(
         internal val DEBUG = BuildConfig.DEBUG
     }
 
-    private val viewHolderTaskExecutor = ViewHolderTaskExecutor()
+    // Nullable because setLayoutManager can be called by the parent class before this instantiated
+    private var viewHolderTaskExecutor: ViewHolderTaskExecutor? = ViewHolderTaskExecutor()
     private val focusableChildDrawingCallback = FocusableChildDrawingCallback()
     private val fadingEdge = FadingEdge()
+    private val focusLossListeners = mutableListOf<OnFocusLostListener>()
+    private val globalFocusChangeListener by lazy {
+        GlobalFocusChangeListener(this) {
+            focusLossListeners.forEach { listener ->
+                listener.onFocusLost(this)
+            }
+        }
+    }
+    private var registeredGlobalFocusListener = false
 
     private var pivotLayoutManager: PivotLayoutManager? = null
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
     private var startedTouchScroll = false
-    private var layoutWhileScrollingEnabled = false
+    private var layoutWhileScrollingEnabled = true
     private var hasPendingLayout = false
     private var touchInterceptListener: OnTouchInterceptListener? = null
     private var smoothScrollByBehavior: SmoothScrollByBehavior? = null
@@ -124,7 +135,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private fun createLayoutManager(
         typedArray: TypedArray,
         context: Context,
-        attrs: AttributeSet?
+        attrs: AttributeSet?,
     ): PivotLayoutManager {
         val properties = LayoutManager.getProperties(context, attrs, 0, 0)
         val layout = PivotLayoutManager(properties)
@@ -212,7 +223,9 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun setLayoutManager(layout: LayoutManager?) {
         super.setLayoutManager(layout)
-        pivotLayoutManager?.removeOnViewHolderSelectedListener(viewHolderTaskExecutor)
+        viewHolderTaskExecutor?.let {
+            pivotLayoutManager?.removeOnViewHolderSelectedListener(it)
+        }
         pivotLayoutManager?.updateRecyclerView(null)
         if (pivotLayoutManager !== layout) {
             pivotLayoutManager?.layoutCompletedListener = null
@@ -223,7 +236,8 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
         if (layout != null && layout !is PivotLayoutManager) {
             throw IllegalArgumentException(
-                "Only PivotLayoutManager is supported, but got $layout"
+                "Only com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager" +
+                        ".PivotLayoutManager is supported, but got $layout"
             )
         }
         if (layout is PivotLayoutManager) {
@@ -233,9 +247,21 @@ open class DpadRecyclerView @JvmOverloads constructor(
                     hasPendingLayout = false
                 }
             }
-            layout.addOnViewHolderSelectedListener(viewHolderTaskExecutor)
+            viewHolderTaskExecutor?.let { layout.addOnViewHolderSelectedListener(it) }
             pivotLayoutManager = layout
         }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (focusLossListeners.isNotEmpty()) {
+            registerGlobalFocusChangeListener()
+        }
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        unregisterGlobalFocusChangeListener()
     }
 
     final override fun requestLayout() {
@@ -357,7 +383,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     final override fun onFocusChanged(
         gainFocus: Boolean,
         direction: Int,
-        previouslyFocusedRect: Rect?
+        previouslyFocusedRect: Rect?,
     ) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect)
         pivotLayoutManager?.onFocusChanged(gainFocus)
@@ -365,7 +391,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
 
     final override fun onRequestFocusInDescendants(
         direction: Int,
-        previouslyFocusedRect: Rect?
+        previouslyFocusedRect: Rect?,
     ): Boolean {
         if (isRetainingFocus) {
             /**
@@ -407,7 +433,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     final override fun setChildDrawingOrderCallback(
-        childDrawingOrderCallback: ChildDrawingOrderCallback?
+        childDrawingOrderCallback: ChildDrawingOrderCallback?,
     ) {
         super.setChildDrawingOrderCallback(childDrawingOrderCallback)
     }
@@ -1033,7 +1059,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedPosition(position: Int, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, task)
+        viewHolderTaskExecutor?.schedule(position, task)
         requireLayout().selectPosition(position, subPosition = 0, smooth = false)
     }
 
@@ -1052,7 +1078,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedPositionSmooth(position: Int, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, task)
+        viewHolderTaskExecutor?.schedule(position, task)
         requireLayout().selectPosition(position, subPosition = 0, smooth = true)
     }
 
@@ -1073,7 +1099,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedSubPosition(position: Int, subPosition: Int, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, subPosition, task)
+        viewHolderTaskExecutor?.schedule(position, subPosition, task)
         requireLayout().selectPosition(position, subPosition, smooth = false)
     }
 
@@ -1110,7 +1136,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      * @param task     Task to executed on the ViewHolder at the given position
      */
     fun setSelectedSubPositionSmooth(position: Int, subPosition: Int, task: ViewHolderTask) {
-        viewHolderTaskExecutor.schedule(position, subPosition, task)
+        viewHolderTaskExecutor?.schedule(position, subPosition, task)
         requireLayout().selectPosition(position, subPosition, smooth = true)
     }
 
@@ -1217,6 +1243,58 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Registers a callback to be invoked when this RecyclerView loses focus
+     * @param listener The listener to be invoked.
+     */
+    fun addOnFocusLostListener(listener: OnFocusLostListener) {
+        if (focusLossListeners.isEmpty()) {
+            registerGlobalFocusChangeListener()
+        }
+        focusLossListeners.add(listener)
+    }
+
+    /**
+     * Removes a listener added by [addOnFocusLostListener]
+     * @param listener The listener to be removed.
+     */
+    fun removeOnFocusLostListener(listener: OnFocusLostListener) {
+        focusLossListeners.remove(listener)
+        if (focusLossListeners.isEmpty()) {
+            unregisterGlobalFocusChangeListener()
+        }
+    }
+
+    /**
+     * Clears all existing listeners added by [addOnFocusLostListener]
+     */
+    fun clearOnFocusLostListeners() {
+        focusLossListeners.clear()
+        if (focusLossListeners.isEmpty()) {
+            unregisterGlobalFocusChangeListener()
+        }
+    }
+
+    private fun registerGlobalFocusChangeListener() {
+        if (registeredGlobalFocusListener) {
+            return
+        }
+        registeredGlobalFocusListener = true
+        if (viewTreeObserver.isAlive) {
+            viewTreeObserver.addOnGlobalFocusChangeListener(globalFocusChangeListener)
+        }
+    }
+
+    private fun unregisterGlobalFocusChangeListener() {
+        if (!registeredGlobalFocusListener) {
+            return
+        }
+        registeredGlobalFocusListener = false
+        if (viewTreeObserver.isAlive) {
+            viewTreeObserver.removeOnGlobalFocusChangeListener(globalFocusChangeListener)
+        }
+    }
+
+    /**
      * Set a custom behavior for [smoothScrollBy]
      * @param behavior Custom behavior or null for the default behavior.
      */
@@ -1309,19 +1387,18 @@ open class DpadRecyclerView @JvmOverloads constructor(
     fun getOnMotionInterceptListener(): OnMotionInterceptListener? = motionInterceptListener
 
     /**
-     * By default, [DpadRecyclerView] skips layout requests during scrolling because of:
+     * By default, [DpadRecyclerView] does not skip layout requests during scrolling,
+     * but you might want to do this because of the following:
      * 1. Compose animations trigger a full unnecessary layout-pass
      * 2. Content jumping around while scrolling is not ideal sometimes
      *
      * @param enabled true if layout requests should be possible while scrolling,
      * or false if they should be postponed until [RecyclerView.SCROLL_STATE_IDLE].
-     * Default is false.
+     * Default is true.
      */
     fun setLayoutWhileScrollingEnabled(enabled: Boolean) {
         layoutWhileScrollingEnabled = enabled
     }
-
-    internal fun isScrollingFromTouch() = startedTouchScroll
 
     @VisibleForTesting
     internal fun detachFromWindow() {

@@ -39,6 +39,10 @@
             app:destination="@id/leanback_horizontal_fragment" />
 
         <action
+            android:id="@+id/open_scrollable_layout"
+            app:destination="@id/scrollable_layout_fragment" />
+
+        <action
             android:id="@+id/open_standard_grid"
             app:destination="@id/standard_grid_fragment">
 
@@ -71,6 +75,10 @@
         <action
             android:id="@+id/open_item_animations"
             app:destination="@id/item_animations_fragment" />
+
+        <action
+            android:id="@+id/open_predictive_animations"
+            app:destination="@id/predictive_animations_fragment" />
 
         <action
             android:id="@+id/open_text_scrolling"
@@ -207,6 +215,10 @@
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.animation.ItemAnimationsFragment" />
 
     <fragment
+        android:id="@+id/predictive_animations_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.animation.PredictiveAnimationFragment" />
+
+    <fragment
         android:id="@+id/text_scrolling_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.text.TextScrollingFragment" />
 
@@ -225,4 +237,9 @@
     <fragment
         android:id="@+id/span_header_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.grid.GridSpanHeaderFragment" />
+
+    <fragment
+        android:id="@+id/scrollable_layout_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.layout.ScrollableLayoutFragment" />
+
 </navigation>

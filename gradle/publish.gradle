@@ -92,22 +92,6 @@ String getSecretKeyRingFilePath() {
     }
 }
 
-String getSonatypeUsername() {
-    if (hasProperty("ossrhUsername")) {
-        return ossrhUsername
-    } else {
-        return ""
-    }
-}
-
-String getSonatypePassword() {
-    if (hasProperty("ossrhPassword")) {
-        return ossrhPassword
-    } else {
-        return ""
-    }
-}
-
 afterEvaluate { project ->
     publishing {
         publications {
@@ -117,17 +101,6 @@ afterEvaluate { project ->
                 version LIBRARY_VERSION
                 artifactId LIBRARY_ARTIFACT
                 configurePom(pom)
-            }
-        }
-        repositories {
-            maven {
-                name = "sonatype"
-                url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-
-                credentials {
-                    username getSonatypeUsername()
-                    password getSonatypePassword()
-                }
             }
         }
     }

@@ -21,7 +21,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.AlignmentLookup
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadLoopDirection
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
+import com.rubensousa.dpadrecyclerview.OnFocusLostListener
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.SubPositionAlignment
@@ -96,6 +98,11 @@ class HorizontalListViewHolder(
                 Timber.i("ViewHolder focused: ${parent.layoutPosition}")
             }
         })
+        recyclerView.addOnFocusLostListener(object : OnFocusLostListener {
+            override fun onFocusLost(recyclerView: DpadRecyclerView) {
+                Timber.i("Lost focus of: $recyclerView")
+            }
+        })
         applyConfig(config)
     }
 
@@ -107,6 +114,10 @@ class HorizontalListViewHolder(
     override fun onViewHolderDeselected() {
         super.onViewHolderDeselected()
         animator.startDeselectionAnimation()
+    }
+
+    fun cancelAnimations() {
+        animator.cancel()
     }
 
     override fun getSubPositionAlignments(): List<SubPositionAlignment> {

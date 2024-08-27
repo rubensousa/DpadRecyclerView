@@ -49,7 +49,6 @@ internal class PivotLayout(
     private var layoutListener: OnChildLaidOutListener? = null
     private var structureEngineer = createStructureEngineer()
     private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
-    private val itemChanges = ItemChanges()
     private var anchor: Int? = null
     private var initialSelectionPending = false
 
@@ -137,7 +136,7 @@ internal class PivotLayout(
             saveAnchorState()
         }
 
-        structureEngineer.layoutChildren(pivotSelector.position, itemChanges, recycler, state)
+        structureEngineer.layoutChildren(pivotSelector.position, recycler, state)
 
         if (configuration.keepLayoutAnchor) {
             restoreAnchorState(recycler, state)
@@ -191,7 +190,6 @@ internal class PivotLayout(
             initialSelectionPending = false
             updateInitialSelection()
         }
-        itemChanges.reset()
         layoutInfo.onLayoutCompleted()
         layoutCompleteListeners.forEach { listener ->
             listener.onLayoutCompleted(state)
@@ -226,22 +224,6 @@ internal class PivotLayout(
 
     fun reset() {
         structureEngineer.clear()
-    }
-
-    fun onItemsAdded(positionStart: Int, itemCount: Int) {
-        itemChanges.insertionPosition = positionStart
-        itemChanges.insertionItemCount = itemCount
-    }
-
-    fun onItemsRemoved(positionStart: Int, itemCount: Int) {
-        itemChanges.removalPosition = positionStart
-        itemChanges.removalItemCount = itemCount
-    }
-
-    fun onItemsMoved(from: Int, to: Int, itemCount: Int) {
-        itemChanges.moveFromPosition = from
-        itemChanges.moveToPosition = to
-        itemChanges.moveItemCount = itemCount
     }
 
     fun setOnChildLaidOutListener(listener: OnChildLaidOutListener?) {

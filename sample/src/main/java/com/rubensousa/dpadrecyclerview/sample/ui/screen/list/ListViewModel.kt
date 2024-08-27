@@ -37,7 +37,7 @@ class ListViewModel : ViewModel() {
         loadingStateLiveData.postValue(true)
         viewModelScope.launch(Dispatchers.Default) {
             list.addAll(createPage())
-            delay(2000L)
+            delay(3000L)
             listLiveData.postValue(ArrayList(list))
         }.invokeOnCompletion { loadingStateLiveData.postValue(false) }
 
