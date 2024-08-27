@@ -1,3 +1,13 @@
+public abstract interface class com/rubensousa/dpadrecyclerview/AlignmentLookup {
+	public abstract fun getChildAlignment (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
+	public abstract fun getParentAlignment (Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
+}
+
+public final class com/rubensousa/dpadrecyclerview/AlignmentLookup$DefaultImpls {
+	public static fun getChildAlignment (Lcom/rubensousa/dpadrecyclerview/AlignmentLookup;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
+	public static fun getParentAlignment (Lcom/rubensousa/dpadrecyclerview/AlignmentLookup;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)Lcom/rubensousa/dpadrecyclerview/ParentAlignment;
+}
+
 public final class com/rubensousa/dpadrecyclerview/ChildAlignment : android/os/Parcelable, com/rubensousa/dpadrecyclerview/ViewAlignment {
 	public static final field CREATOR Lcom/rubensousa/dpadrecyclerview/ChildAlignment$CREATOR;
 	public fun <init> ()V
@@ -128,6 +138,8 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun removeView (Landroid/view/View;)V
 	public final fun removeViewAt (I)V
 	public final fun requestLayout ()V
+	public final fun setAlignmentLookup (Lcom/rubensousa/dpadrecyclerview/AlignmentLookup;Z)V
+	public static synthetic fun setAlignmentLookup$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/AlignmentLookup;ZILjava/lang/Object;)V
 	public final fun setAlignments (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public final fun setChildAlignment (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public static synthetic fun setChildAlignment$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;ZILjava/lang/Object;)V
@@ -538,6 +550,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public fun scrollVerticallyBy (ILandroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)I
 	public final fun selectPosition (IIZ)V
 	public final fun selectSubPosition (IZ)V
+	public final fun setAlignmentLookup (Lcom/rubensousa/dpadrecyclerview/AlignmentLookup;Z)V
 	public final fun setAlignments (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public final fun setChildAlignment (Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V
 	public final fun setChildrenDrawingOrderEnabled (Z)V
