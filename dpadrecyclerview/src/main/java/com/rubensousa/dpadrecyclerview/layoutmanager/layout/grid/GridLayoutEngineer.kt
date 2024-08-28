@@ -99,8 +99,8 @@ internal class GridLayoutEngineer(
         state: State
     ): View {
         pivotLayoutPosition = pivotPosition
-        layoutRow.reset(layoutAlignment.getParentKeyline())
-        pivotRow.reset(layoutAlignment.getParentKeyline())
+        layoutRow.reset(layoutAlignment.getDefaultParentKeyline())
+        pivotRow.reset(layoutAlignment.getDefaultParentKeyline())
         val pivotView = layoutPivotRow(pivotPosition, layoutRequest, viewProvider, recycler, state)
         pivotRow.copy(layoutRow)
         // Layout from pivot to start
@@ -132,13 +132,13 @@ internal class GridLayoutEngineer(
         if (!layoutRequest.reverseLayout) {
             layoutRequest.append(firstSpanPosition) {
                 setCurrentPosition(firstSpanPosition)
-                setCheckpoint(layoutAlignment.getParentKeyline())
+                setCheckpoint(layoutAlignment.getDefaultParentKeyline())
                 setFillSpace(1)
             }
         } else {
             layoutRequest.prepend(firstSpanPosition) {
                 setCurrentPosition(firstSpanPosition)
-                setCheckpoint(layoutAlignment.getParentKeyline())
+                setCheckpoint(layoutAlignment.getDefaultParentKeyline())
                 setFillSpace(1)
             }
         }

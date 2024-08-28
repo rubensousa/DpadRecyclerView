@@ -24,6 +24,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.AlignmentLookup
+import com.rubensousa.dpadrecyclerview.BuildConfig
+import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -114,6 +117,34 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
                     })
                 }
             )
+            if (args.showHeader) {
+                recyclerView.setAlignments(
+                    parent = ParentAlignment(
+                        edge = ParentAlignment.Edge.NONE,
+                        fraction = 0.35f
+                    ),
+                    child = ChildAlignment(
+                        fraction = 0f
+                    ),
+                    smooth = false
+                )
+                recyclerView.setAlignmentLookup(object : AlignmentLookup {
+                    override fun getParentAlignment(viewHolder: RecyclerView.ViewHolder): ParentAlignment? {
+                        return if (viewHolder.layoutPosition % 2 == 0) {
+                            ParentAlignment(fraction = 0.5f)
+                        } else {
+                            null
+                        }
+                    }
+                    override fun getChildAlignment(viewHolder: RecyclerView.ViewHolder): ChildAlignment? {
+                        return if (viewHolder.layoutPosition % 2 == 0) {
+                            ChildAlignment(fraction = 0.5f)
+                        } else {
+                            null
+                        }
+                    }
+                })
+            }
             if (args.showHeader) {
                 addItemDecoration(
                     DpadLinearSpacingDecoration.create(

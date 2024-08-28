@@ -16,17 +16,92 @@
 
 package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
+
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
+import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import com.rubensousa.dpadrecyclerview.ViewAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 
-internal object ViewAnchorHelper {
+internal class ChildAlignmentCalculator {
 
     private val tmpRect = Rect()
 
-    @JvmStatic
-    fun calculateAnchor(
+    fun updateAlignments(
+        view: View,
+        alignment: ChildAlignment,
+        layoutParams: DpadLayoutParams,
+        isVertical: Boolean,
+        reverseLayout: Boolean
+    ) {
+        val anchor = calculateAnchor(
+            itemView = view,
+            alignmentView = view,
+            alignment, isVertical, reverseLayout
+        )
+        layoutParams.setAlignmentAnchor(anchor)
+    }
+
+    fun updateAlignments(
+        view: View,
+        layoutParams: DpadLayoutParams,
+        alignments: List<SubPositionAlignment>,
+        isVertical: Boolean,
+        reverseLayout: Boolean,
+    ) {
+        // Calculate item alignments for each sub position
+        val subAlignments = getSubPositionAnchors(
+            view, alignments, layoutParams.getSubPositionAnchors(), isVertical, reverseLayout
+        )
+        layoutParams.setSubPositionAnchors(subAlignments)
+    }
+
+    private fun getSubPositionAnchors(
+        itemView: View,
+        alignments: List<SubPositionAlignment>,
+        currentAnchors: IntArray?,
+        isVertical: Boolean,
+        reverseLayout: Boolean
+    ): IntArray? {
+        if (alignments.isEmpty()) {
+            return null
+        }
+        val alignmentCache = if (currentAnchors == null || currentAnchors.size != alignments.size) {
+            IntArray(alignments.size)
+        } else {
+            currentAnchors
+        }
+        alignments.forEachIndexed { index, alignment ->
+            alignmentCache[index] = calculateAnchor(itemView, alignment, isVertical, reverseLayout)
+        }
+        return alignmentCache
+    }
+
+    private fun calculateAnchor(
+        itemView: View,
+        alignment: SubPositionAlignment,
+        isVertical: Boolean,
+        reverseLayout: Boolean
+    ): Int {
+        val alignmentView = getAlignmentView(itemView, alignment)
+        return calculateAnchor(
+            itemView, alignmentView, alignment, isVertical, reverseLayout
+        )
+    }
+
+    private fun getAlignmentView(itemView: View, alignment: SubPositionAlignment): View {
+        if (alignment.alignmentViewId != View.NO_ID) {
+            val alignmentView: View? = itemView.findViewById(alignment.alignmentViewId)
+            if (alignmentView != null) {
+                return alignmentView
+            }
+        }
+        return itemView
+    }
+
+    private fun calculateAnchor(
         itemView: View,
         alignmentView: View,
         alignment: ViewAlignment,
@@ -40,7 +115,6 @@ internal object ViewAnchorHelper {
         }
     }
 
-    @JvmStatic
     private fun getVerticalAnchor(
         itemView: View,
         reverseLayout: Boolean,
@@ -110,7 +184,6 @@ internal object ViewAnchorHelper {
         return anchor
     }
 
-    @JvmStatic
     private fun getHorizontalAnchor(
         itemView: View,
         reverseLayout: Boolean,

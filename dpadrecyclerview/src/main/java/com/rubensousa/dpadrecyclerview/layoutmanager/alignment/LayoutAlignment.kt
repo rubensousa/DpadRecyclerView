@@ -17,7 +17,9 @@
 package com.rubensousa.dpadrecyclerview.layoutmanager.alignment
 
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import com.rubensousa.dpadrecyclerview.AlignmentLookup
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -34,10 +36,12 @@ internal class LayoutAlignment(
         const val TAG = "LayoutAlignment"
     }
 
-    private var parentAlignment = ParentAlignment()
+    var alignmentLookup: AlignmentLookup? = null
+    var childAlignment = ChildAlignment(offset = 0)
+    var parentAlignment = ParentAlignment()
+
     private val parentAlignmentCalculator = ParentAlignmentCalculator()
-    private val childAlignment = ChildScrollAlignment()
-    private val viewHolderAlignment = SubPositionScrollAlignment()
+    private val childAlignmentCalculator = ChildAlignmentCalculator()
 
     // Also saved here so that they're kept for the same layout pass
     private var isVertical: Boolean = true
@@ -49,27 +53,46 @@ internal class LayoutAlignment(
         parentAlignmentCalculator.updateLayoutInfo(layoutManager, isVertical, reverseLayout)
     }
 
-    fun setParentAlignment(alignment: ParentAlignment) {
-        parentAlignment = alignment
+    /**
+     * Return the scroll delta required to make the view selected and aligned.
+     * If the returned value is 0, there is no need to scroll.
+     */
+    fun calculateScrollToTarget(view: View): Int {
+        val viewParentAlignment = getParentAlignment(view)
+        return if (alignmentLookup == null) {
+            parentAlignmentCalculator.calculateScrollOffset(
+                viewAnchor = getAnchor(view),
+                alignment = parentAlignment
+            )
+        } else {
+            parentAlignmentCalculator.calculateKeylineScrollOffset(
+                viewAnchor = getAnchor(view),
+                alignment = viewParentAlignment
+            )
+        }
     }
 
-    fun getParentAlignment(): ParentAlignment = parentAlignment
-
-    fun setChildAlignment(config: ChildAlignment) {
-        childAlignment.setAlignment(config)
+    fun getParentAlignment(view: View?): ParentAlignment {
+        if (alignmentLookup == null || view == null) {
+            return parentAlignment
+        }
+        val viewHolder = layoutInfo.getChildViewHolder(view) ?: return parentAlignment
+        return alignmentLookup?.getParentAlignment(viewHolder) ?: parentAlignment
     }
-
-    fun getChildAlignment() = childAlignment.getAlignment()
 
     fun getChildStart(view: View): Int {
         updateChildAlignments(view)
         val layoutParams = view.layoutParams as DpadLayoutParams
         val anchor = layoutParams.alignmentAnchor
-        return getParentKeyline() - anchor
+        return getParentKeyline(view) - anchor
     }
 
-    fun getParentKeyline(): Int {
+    fun getDefaultParentKeyline(): Int {
         return parentAlignmentCalculator.calculateKeyline(parentAlignment)
+    }
+
+    private fun getParentKeyline(view: View): Int {
+        return parentAlignmentCalculator.calculateKeyline(getParentAlignment(view))
     }
 
     fun getViewAtSubPosition(view: View, subPosition: Int): View? {
@@ -155,6 +178,10 @@ internal class LayoutAlignment(
         return scrollOffset
     }
 
+    private fun getChildAlignment(viewHolder: RecyclerView.ViewHolder): ChildAlignment {
+        return alignmentLookup?.getChildAlignment(viewHolder) ?: childAlignment
+    }
+
     private fun updateChildAlignments(view: View) {
         val layoutParams = view.layoutParams as DpadLayoutParams
         val viewHolder = layoutInfo.getChildViewHolder(view) ?: return
@@ -166,19 +193,20 @@ internal class LayoutAlignment(
         if (alignments.isNullOrEmpty()) {
             // Use the default child alignment strategy
             // if this ViewHolder didn't request a custom alignment strategy
-            childAlignment.updateAlignments(
-                view,
-                layoutParams,
-                isVertical,
-                reverseLayout
+            childAlignmentCalculator.updateAlignments(
+                view = view,
+                alignment = getChildAlignment(viewHolder),
+                layoutParams = layoutParams,
+                isVertical = isVertical,
+                reverseLayout = reverseLayout
             )
         } else {
-            viewHolderAlignment.updateAlignments(
-                view,
-                layoutParams,
-                alignments,
-                isVertical,
-                reverseLayout
+            childAlignmentCalculator.updateAlignments(
+                view = view,
+                layoutParams = layoutParams,
+                alignments = alignments,
+                isVertical = isVertical,
+                reverseLayout = reverseLayout
             )
         }
     }
@@ -186,6 +214,14 @@ internal class LayoutAlignment(
     fun updateScrollLimits() {
         val itemCount = layoutManager.itemCount
         if (itemCount == 0) {
+            return
+        }
+        /**
+         * Client wants to specify the alignments manually,
+         * so we shouldn't impose any scroll limits
+         */
+        if (alignmentLookup != null) {
+            parentAlignmentCalculator.invalidateScrollLimits()
             return
         }
         val endAdapterPos: Int
@@ -216,9 +252,11 @@ internal class LayoutAlignment(
         }
         val endEdge: Int
         var endViewAnchor = 0
+        var endView: View? = null
         if (isEndAvailable) {
             endEdge = getEndEdge(endAdapterPos) ?: Int.MAX_VALUE
             layoutManager.findViewByPosition(endAdapterPos)?.let { maxChild ->
+                endView = maxChild
                 endViewAnchor = getAnchor(maxChild)
                 val layoutParams = maxChild.layoutParams as DpadLayoutParams
                 val multipleAlignments = layoutParams.getSubPositionAnchors()
@@ -231,10 +269,12 @@ internal class LayoutAlignment(
             endViewAnchor = Int.MAX_VALUE
         }
         val startEdge: Int
+        var startView: View? = null
         var startViewAnchor = 0
         if (isStartAvailable) {
             startEdge = getStartEdge(startAdapterPos) ?: Int.MIN_VALUE
             layoutManager.findViewByPosition(startAdapterPos)?.let { minChild ->
+                startView = minChild
                 startViewAnchor = getAnchor(minChild)
             }
         } else {
@@ -247,7 +287,8 @@ internal class LayoutAlignment(
                 endEdge = endEdge,
                 startViewAnchor = startViewAnchor,
                 endViewAnchor = endViewAnchor,
-                alignment = parentAlignment
+                startAlignment = getParentAlignment(startView),
+                endAlignment = getParentAlignment(endView)
             )
             if (layoutInfo.isLoopingAllowed) {
                 // If we're looping, there's no end scroll limit
@@ -262,7 +303,8 @@ internal class LayoutAlignment(
                 endEdge = startEdge,
                 startViewAnchor = endViewAnchor,
                 endViewAnchor = startViewAnchor,
-                alignment = parentAlignment
+                startAlignment = getParentAlignment(endView),
+                endAlignment = getParentAlignment(startView)
             )
             if (layoutInfo.isLoopingAllowed) {
                 parentAlignmentCalculator.invalidateStartLimit()
@@ -332,14 +374,6 @@ internal class LayoutAlignment(
     private fun getVerticalAnchor(view: View): Int {
         val layoutParams = view.layoutParams as DpadLayoutParams
         return view.top + layoutParams.alignmentAnchor
-    }
-
-    /**
-     * Return the scroll delta required to make the view selected and aligned.
-     * If the returned value is 0, there is no need to scroll.
-     */
-    fun calculateScrollToTarget(view: View): Int {
-        return parentAlignmentCalculator.calculateScrollOffset(getAnchor(view), parentAlignment)
     }
 
     private fun calculateAdjustedAlignedScrollDistance(

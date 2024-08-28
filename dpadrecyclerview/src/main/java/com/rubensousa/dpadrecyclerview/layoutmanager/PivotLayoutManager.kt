@@ -27,6 +27,7 @@ import android.view.ViewGroup
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.AlignmentLookup
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadLoopDirection
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
@@ -535,6 +536,9 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
 
     fun setSpanCount(spanCount: Int) {
         if (configuration.spanCount != spanCount) {
+            if (spanCount > 1) {
+                layoutAlignment.alignmentLookup = null
+            }
             configuration.setSpanCount(spanCount)
             spanFocusFinder.clearSpanCache()
             pivotLayout.updateStructure()
@@ -621,24 +625,32 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
     fun isFocusSearchDisabled(): Boolean = configuration.isFocusSearchDisabled
 
     fun setAlignments(parent: ParentAlignment, child: ChildAlignment, smooth: Boolean) {
-        layoutAlignment.setParentAlignment(parent)
-        layoutAlignment.setChildAlignment(child)
+        layoutAlignment.parentAlignment = parent
+        layoutAlignment.childAlignment = child
         scrollToSelectedPositionOrRequestLayout(smooth)
     }
 
     fun setParentAlignment(alignment: ParentAlignment, smooth: Boolean) {
-        layoutAlignment.setParentAlignment(alignment)
+        layoutAlignment.parentAlignment = alignment
         scrollToSelectedPositionOrRequestLayout(smooth)
     }
 
-    fun getParentAlignment(): ParentAlignment = layoutAlignment.getParentAlignment()
+    fun getParentAlignment(): ParentAlignment = layoutAlignment.parentAlignment
 
     fun setChildAlignment(alignment: ChildAlignment, smooth: Boolean) {
-        layoutAlignment.setChildAlignment(alignment)
+        layoutAlignment.childAlignment = alignment
         scrollToSelectedPositionOrRequestLayout(smooth)
     }
 
-    fun getChildAlignment(): ChildAlignment = layoutAlignment.getChildAlignment()
+    fun getChildAlignment(): ChildAlignment = layoutAlignment.childAlignment
+
+    fun setAlignmentLookup(lookup: AlignmentLookup?, smooth: Boolean) {
+        if (lookup === layoutAlignment.alignmentLookup || configuration.spanCount != 1) {
+            return
+        }
+        layoutAlignment.alignmentLookup = lookup
+        scrollToSelectedPositionOrRequestLayout(smooth)
+    }
 
     fun addOnViewHolderSelectedListener(listener: OnViewHolderSelectedListener) {
         pivotSelector.addOnViewHolderSelectedListener(listener)

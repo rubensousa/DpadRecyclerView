@@ -87,31 +87,39 @@ internal class ParentAlignmentCalculator {
         endEdge: Int,
         startViewAnchor: Int,
         endViewAnchor: Int,
-        alignment: ParentAlignment,
+        startAlignment: ParentAlignment,
+        endAlignment: ParentAlignment,
     ) {
         this.startEdge = startEdge
         this.endEdge = endEdge
-        val keyline = calculateKeyline(alignment)
+        val startKeyline = calculateKeyline(startAlignment)
+        val endKeyline = calculateKeyline(endAlignment)
         startScrollLimit = when {
             isStartUnknown -> Int.MIN_VALUE
-            shouldAlignViewToStart(startViewAnchor, keyline, alignment) -> {
+            shouldAlignViewToStart(startViewAnchor, startKeyline, startAlignment) -> {
                 calculateScrollOffsetToStartEdge(startEdge)
             }
 
-            shouldAlignStartToKeyline(alignment) -> {
-                calculateScrollOffsetToKeyline(startViewAnchor, keyline)
+            shouldAlignStartToKeyline(startAlignment) -> {
+                calculateScrollOffsetToKeyline(
+                    anchor = startViewAnchor,
+                    keyline = startKeyline
+                )
             }
 
             else -> 0
         }
         endScrollLimit = when {
             isEndUnknown -> Int.MAX_VALUE
-            shouldAlignViewToEnd(endViewAnchor, keyline, alignment) -> {
+            shouldAlignViewToEnd(endViewAnchor, endKeyline, endAlignment) -> {
                 calculateScrollOffsetToEndEdge(endEdge)
             }
 
-            shouldAlignEndToKeyline(alignment) -> {
-                calculateScrollOffsetToKeyline(endViewAnchor, keyline)
+            shouldAlignEndToKeyline(endAlignment) -> {
+                calculateScrollOffsetToKeyline(
+                    anchor = endViewAnchor,
+                    keyline = endKeyline
+                )
             }
 
             else -> 0
@@ -148,20 +156,36 @@ internal class ParentAlignmentCalculator {
         val alignToEndEdge = shouldAlignViewToEnd(viewAnchor, keyline, alignment)
         if (!reverseLayout) {
             if (alignToStartEdge) {
-                return min(startScrollLimit, calculateScrollOffsetToStartEdge(viewAnchor))
+                return calculateScrollToStartEdge(viewAnchor)
             }
             if (alignToEndEdge) {
-                return max(endScrollLimit, calculateScrollOffsetToEndEdge(viewAnchor))
+                return calculateScrollToEndEdge(viewAnchor)
             }
         } else {
             if (alignToEndEdge) {
-                return max(endScrollLimit, calculateScrollOffsetToEndEdge(viewAnchor))
+                return calculateScrollToEndEdge(viewAnchor)
             }
             if (alignToStartEdge) {
-                return min(startScrollLimit, calculateScrollOffsetToStartEdge(viewAnchor))
+                return calculateScrollToStartEdge(viewAnchor)
             }
         }
         return calculateScrollOffsetToKeyline(viewAnchor, keyline)
+    }
+
+    fun calculateKeylineScrollOffset(
+        viewAnchor: Int,
+        alignment: ParentAlignment,
+    ): Int {
+        val keyline = calculateKeyline(alignment)
+        return calculateScrollOffsetToKeyline(viewAnchor, keyline)
+    }
+
+    private fun calculateScrollToStartEdge(anchor: Int): Int {
+        return min(startScrollLimit, calculateScrollOffsetToStartEdge(anchor))
+    }
+
+    private fun calculateScrollToEndEdge(anchor: Int): Int {
+        return max(endScrollLimit, calculateScrollOffsetToEndEdge(anchor))
     }
 
     fun calculateKeyline(alignment: ParentAlignment): Int {
