@@ -21,7 +21,6 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.AlignmentLookup
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
@@ -44,7 +43,7 @@ class AlignmentLookupTest : DpadRecyclerViewTest() {
             spans = 1,
             orientation = RecyclerView.VERTICAL,
             parentAlignment = ParentAlignment(
-                edge = Edge.MIN_MAX,
+                edge = ParentAlignment.Edge.MIN_MAX,
                 offset = 0,
                 fraction = 0f
             ),
@@ -145,6 +144,46 @@ class AlignmentLookupTest : DpadRecyclerViewTest() {
             KeyEvents.pressDown()
             waitForIdleScrollState()
         }
+    }
+
+    @Test
+    fun testScrollIsStillAppliedAfterFastScrolling() {
+        // given
+        launchFragment()
+        val bottomParentAlignment = ParentAlignment(fraction = 1f)
+        val bottomChildAlignment = ChildAlignment(fraction = 1f)
+        val recyclerViewBounds = getRecyclerViewBounds()
+
+        onRecyclerView("Set alignment") { recyclerView ->
+            recyclerView.setAlignmentLookup(object : AlignmentLookup {
+                override fun getParentAlignment(
+                    viewHolder: RecyclerView.ViewHolder,
+                ): ParentAlignment? {
+                    if (viewHolder.layoutPosition == 0) {
+                        return bottomParentAlignment
+                    }
+                    return null
+                }
+
+                override fun getChildAlignment(viewHolder: RecyclerView.ViewHolder): ChildAlignment? {
+                    if (viewHolder.layoutPosition == 0) {
+                        return bottomChildAlignment
+                    }
+                    return null
+                }
+            })
+        }
+        waitForLayout()
+
+        // when
+        KeyEvents.pressDown(times = 10)
+        waitForIdleScrollState()
+        KeyEvents.pressUp(times = 10)
+        waitForIdleScrollState()
+
+        // then
+        val viewBounds = getItemViewBounds(position = 0)
+        assertThat(viewBounds.bottom).isEqualTo(recyclerViewBounds.bottom)
     }
 
 }

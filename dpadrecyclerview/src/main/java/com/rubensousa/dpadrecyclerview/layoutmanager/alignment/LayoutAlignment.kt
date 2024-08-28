@@ -216,6 +216,14 @@ internal class LayoutAlignment(
         if (itemCount == 0) {
             return
         }
+        /**
+         * Client wants to specify the alignments manually,
+         * so we shouldn't impose any scroll limits
+         */
+        if (alignmentLookup != null) {
+            parentAlignmentCalculator.invalidateScrollLimits()
+            return
+        }
         val endAdapterPos: Int
         val startAdapterPos: Int
         val endLayoutPos: Int
