@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.compose.test
+package com.rubensousa.dpadrecyclerview.compose
 
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,15 +29,15 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
-import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
-import com.rubensousa.dpadrecyclerview.compose.TestComposable
+import com.rubensousa.dpadrecyclerview.compose.test.R
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 
-class ViewFocusTestActivity : AppCompatActivity() {
+class ComposeFocusTestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: DpadRecyclerView
     private val focusEvents = arrayListOf<DpadFocusEvent>()
     private val clicks = ArrayList<Int>()
+    private val longClicks = ArrayList<Int>()
     private val disposals = ArrayList<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,9 +56,12 @@ class ViewFocusTestActivity : AppCompatActivity() {
             }
         )
         recyclerView.requestFocus()
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                clearFocus()
+            }
+        })
     }
-
-    fun getFocusEvents(): List<DpadFocusEvent> = focusEvents.toList()
 
     fun requestFocus() {
         recyclerView.requestFocus()
@@ -71,9 +75,15 @@ class ViewFocusTestActivity : AppCompatActivity() {
         return clicks
     }
 
+    fun getLongClicks(): List<Int> {
+        return clicks
+    }
+
     fun getDisposals(): List<Int> {
         return disposals
     }
+
+    fun getFocusEvents(): List<DpadFocusEvent> = focusEvents.toList()
 
     fun removeAdapter() {
         recyclerView.adapter = null
@@ -92,25 +102,24 @@ class ViewFocusTestActivity : AppCompatActivity() {
     inner class Adapter(
         private val items: List<Int>,
         private val onDispose: (item: Int) -> Unit,
-    ) : RecyclerView.Adapter<DpadComposeViewHolder<Int>>() {
+    ) : RecyclerView.Adapter<DpadComposeFocusViewHolder<Int>>() {
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
-            viewType: Int
-        ): DpadComposeViewHolder<Int> {
-            return DpadComposeViewHolder(
-                parent = parent,
-                onClick = {
-                    clicks.add(it)
-                },
-                isFocusable = true
-            ) { item, isFocused ->
-                TestComposable(
+            viewType: Int,
+        ): DpadComposeFocusViewHolder<Int> {
+            return DpadComposeFocusViewHolder(parent) { item ->
+                TestComposableFocus(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp),
                     item = item,
-                    isFocused = isFocused,
+                    onClick = {
+                        clicks.add(item)
+                    },
+                    onLongClick = {
+                        longClicks.add(item)
+                    },
                     onDispose = {
                         onDispose(item)
                     }
@@ -120,8 +129,12 @@ class ViewFocusTestActivity : AppCompatActivity() {
 
         override fun getItemCount(): Int = items.size
 
-        override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
+        override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
             holder.setItemState(items[position])
+        }
+
+        override fun onViewRecycled(holder: DpadComposeFocusViewHolder<Int>) {
+            holder.setItemState(null)
         }
 
     }

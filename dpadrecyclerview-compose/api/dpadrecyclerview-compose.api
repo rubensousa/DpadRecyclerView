@@ -12,8 +12,8 @@ public final class com/rubensousa/dpadrecyclerview/compose/ComposableSingletons$
 	public final fun getLambda-1$dpadrecyclerview_compose_release ()Lkotlin/jvm/functions/Function4;
 }
 
-public final class com/rubensousa/dpadrecyclerview/compose/DpadComposeExtensionsKt {
-	public static final fun dpadClickable (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;I)Landroidx/compose/ui/Modifier;
+public final class com/rubensousa/dpadrecyclerview/compose/DpadClickableKt {
+	public static final fun dpadClickable (Landroidx/compose/ui/Modifier;ZLandroidx/compose/foundation/interaction/MutableInteractionSource;Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function0;Landroidx/compose/runtime/Composer;II)Landroidx/compose/ui/Modifier;
 }
 
 public final class com/rubensousa/dpadrecyclerview/compose/DpadComposeFocusViewHolder : androidx/recyclerview/widget/RecyclerView$ViewHolder {

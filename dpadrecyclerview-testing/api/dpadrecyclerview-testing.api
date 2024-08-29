@@ -4,6 +4,7 @@ public final class com/rubensousa/dpadrecyclerview/testing/KeyEvents {
 	public static synthetic fun back$default (IJILjava/lang/Object;)V
 	public static final fun click (IJ)V
 	public static synthetic fun click$default (IJILjava/lang/Object;)V
+	public static final fun longClick ()V
 	public static final fun pressDown (IJ)V
 	public static synthetic fun pressDown$default (IJILjava/lang/Object;)V
 	public static final fun pressKey (IIJ)V
@@ -75,6 +76,13 @@ public final class com/rubensousa/dpadrecyclerview/testing/assertions/DpadViewAs
 public final class com/rubensousa/dpadrecyclerview/testing/matchers/DpadRecyclerViewMatchers {
 	public static final field INSTANCE Lcom/rubensousa/dpadrecyclerview/testing/matchers/DpadRecyclerViewMatchers;
 	public final fun withDescendantOfItemViewAt (I)Lorg/hamcrest/Matcher;
+}
+
+public final class com/rubensousa/dpadrecyclerview/testing/matchers/FocusedRootMatcher : org/hamcrest/TypeSafeMatcher {
+	public fun <init> ()V
+	public fun describeTo (Lorg/hamcrest/Description;)V
+	public fun matchesSafely (Landroidx/test/espresso/Root;)Z
+	public synthetic fun matchesSafely (Ljava/lang/Object;)Z
 }
 
 public final class com/rubensousa/dpadrecyclerview/testing/rules/DisableIdleTimeoutRule : org/junit/rules/TestRule {

@@ -30,7 +30,6 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
-import com.rubensousa.dpadrecyclerview.compose.test.ComposeFocusTestActivity
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -77,21 +76,6 @@ class DpadComposeFocusViewHolderTest {
         }
 
         assertFocus(item = 0, isFocused = true)
-    }
-
-    @Test
-    fun testClicksAreDispatched() {
-        // given
-        var clicks: List<Int> = emptyList()
-        composeTestRule.activityRule.scenario.onActivity { activity ->
-            clicks = activity.getClicks()
-        }
-
-        // when
-        KeyEvents.click()
-
-        // then
-        assertThat(clicks).isEqualTo(listOf(0))
     }
 
     @Test
