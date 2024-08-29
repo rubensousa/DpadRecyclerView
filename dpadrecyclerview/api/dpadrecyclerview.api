@@ -138,6 +138,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun removeView (Landroid/view/View;)V
 	public final fun removeViewAt (I)V
 	public final fun requestLayout ()V
+	public fun setAdapter (Landroidx/recyclerview/widget/RecyclerView$Adapter;)V
 	public final fun setAlignmentLookup (Lcom/rubensousa/dpadrecyclerview/AlignmentLookup;Z)V
 	public static synthetic fun setAlignmentLookup$default (Lcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Lcom/rubensousa/dpadrecyclerview/AlignmentLookup;ZILjava/lang/Object;)V
 	public final fun setAlignments (Lcom/rubensousa/dpadrecyclerview/ParentAlignment;Lcom/rubensousa/dpadrecyclerview/ChildAlignment;Z)V

@@ -169,7 +169,7 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
             recyclerView.itemAnimator?.moveDuration = 2500L
         }
         mutateAdapter { adapter ->
-            adapter.addAt(1000, index = 3)
+            adapter.addAt(item = 1000, index = 3)
         }
         waitForCondition("Waiting for animation start") { recyclerView ->
             recyclerView.isAnimating
