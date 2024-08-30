@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.compose.test
+package com.rubensousa.dpadrecyclerview.compose
 
 import android.os.Bundle
 import android.view.View
@@ -28,11 +28,10 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
-import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
-import com.rubensousa.dpadrecyclerview.compose.TestComposableFocus
+import com.rubensousa.dpadrecyclerview.compose.test.R
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 
-class ComposeFocusTestActivity : AppCompatActivity() {
+class ViewFocusTestActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: DpadRecyclerView
     private val focusEvents = arrayListOf<DpadFocusEvent>()
@@ -57,6 +56,8 @@ class ComposeFocusTestActivity : AppCompatActivity() {
         recyclerView.requestFocus()
     }
 
+    fun getFocusEvents(): List<DpadFocusEvent> = focusEvents.toList()
+
     fun requestFocus() {
         recyclerView.requestFocus()
     }
@@ -72,8 +73,6 @@ class ComposeFocusTestActivity : AppCompatActivity() {
     fun getDisposals(): List<Int> {
         return disposals
     }
-
-    fun getFocusEvents(): List<DpadFocusEvent> = focusEvents.toList()
 
     fun removeAdapter() {
         recyclerView.adapter = null
@@ -92,21 +91,25 @@ class ComposeFocusTestActivity : AppCompatActivity() {
     inner class Adapter(
         private val items: List<Int>,
         private val onDispose: (item: Int) -> Unit,
-    ) : RecyclerView.Adapter<DpadComposeFocusViewHolder<Int>>() {
+    ) : RecyclerView.Adapter<DpadComposeViewHolder<Int>>() {
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): DpadComposeFocusViewHolder<Int> {
-            return DpadComposeFocusViewHolder(parent) { item ->
-                TestComposableFocus(
+        ): DpadComposeViewHolder<Int> {
+            return DpadComposeViewHolder(
+                parent = parent,
+                onClick = {
+                    clicks.add(it)
+                },
+                isFocusable = true
+            ) { item, isFocused ->
+                TestComposable(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp),
                     item = item,
-                    onClick = {
-                        clicks.add(item)
-                    },
+                    isFocused = isFocused,
                     onDispose = {
                         onDispose(item)
                     }
@@ -116,12 +119,8 @@ class ComposeFocusTestActivity : AppCompatActivity() {
 
         override fun getItemCount(): Int = items.size
 
-        override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
+        override fun onBindViewHolder(holder: DpadComposeViewHolder<Int>, position: Int) {
             holder.setItemState(items[position])
-        }
-
-        override fun onViewRecycled(holder: DpadComposeFocusViewHolder<Int>) {
-            holder.setItemState(null)
         }
 
     }

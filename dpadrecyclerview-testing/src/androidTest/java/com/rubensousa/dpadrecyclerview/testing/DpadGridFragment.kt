@@ -34,7 +34,16 @@ class DpadGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
     }
 
     private val selectionEvents = ArrayList<DpadSelectionEvent>()
-    private val adapter = DpadTestAdapter()
+    private val clickEvents = ArrayList<Int>()
+    private val longClickEvents = ArrayList<Int>()
+    private val adapter = DpadTestAdapter(
+        onClick = {
+            clickEvents.add(it)
+        },
+        onLongClick = {
+            longClickEvents.add(it)
+        }
+    )
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,13 +64,17 @@ class DpadGridFragment : Fragment(R.layout.dpadrecyclerview_test_container),
         parent: RecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
-        subPosition: Int
+        subPosition: Int,
     ) {
         super.onViewHolderSelected(parent, child, position, subPosition)
         selectionEvents.add(DpadSelectionEvent(position, subPosition))
     }
 
     fun getAdapterSize() = adapter.itemCount
+
+    fun getClickEvents() = clickEvents.toList()
+
+    fun getLongClickEvents() = longClickEvents.toList()
 
     fun insertItem() {
         postAction { adapter.addItem() }

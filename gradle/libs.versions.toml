@@ -1,29 +1,28 @@
 [versions]
-android-gradle-plugin = "8.5.0"
+# From library
+android-gradle-plugin = "8.5.2"
+androidx-collection = "1.4.3"
+androidx-recyclerview = "1.4.0-beta01"
+androidx-poolingcontainer = "1.0.0"
 androidx-appcompat = "1.7.0"
-androidx-collection = "1.4.0"
-androidx-concurrent-futures = "1.2.0"
+androidx-compose-ui = "1.7.0-rc01"
+androidx-test-espresso = '3.6.1'
+androidx-test-uiautomator = '2.3.0'
+# From sample
 androidx-compose-material3 = '1.2.1'
-androidx-compose-ui = "1.7.0-beta03"
 androidx-constraintlayout = "2.1.4"
-androidx-customview = "1.1.0"
-androidx-fragment = "1.7.1"
+androidx-fragment = "1.8.2"
 androidx-interpolator = "1.0.0"
 androidx-leanback = "1.0.0-alpha03"
-androidx-lifecycle = "2.8.1"
+androidx-lifecycle = "2.8.4"
 androidx-navigation = "2.7.7"
-androidx-paging = "3.2.1"
-androidx-poolingcontainer = "1.0.0"
-androidx-recyclerview = "1.4.0-alpha01"
-androidx-test-core = '1.5.0'
-androidx-test-espresso = '3.5.1'
-androidx-test-espressoJunit = '1.1.5'
-androidx-test-espressoTruth = '1.5.0'
-androidx-test-orchestrator = '1.4.2'
-androidx-test-rules = '1.5.0'
-androidx-test-runner = '1.5.2'
+androidx-paging = "3.3.2"
+androidx-test-core = '1.6.1'
+androidx-test-espressoJunit = '1.2.1'
+androidx-test-espressoTruth = '1.6.0'
+androidx-test-rules = '1.6.1'
+androidx-test-runner = '1.6.2'
 androidx-test-services = '1.4.2'
-androidx-test-uiautomator = '2.3.0'
 
 guava = "33.1.0-android"
 timber = "5.0.1"
@@ -53,9 +52,7 @@ androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "androi
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation-android", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "androidx-compose-ui" }
 androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "androidx-compose-ui" }
-androidx-concurrent-futures = { module = "androidx.concurrent:concurrent-futures", version.ref = "androidx-concurrent-futures" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout" }
-androidx-customview = { module = "androidx.customview:customview", version.ref = "androidx-customview" }
 androidx-customview-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version.ref = "androidx-poolingcontainer" }
 androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "androidx-fragment" }
 androidx-fragment-testing = { module = "androidx.fragment:fragment-testing", version.ref = "androidx-fragment" }

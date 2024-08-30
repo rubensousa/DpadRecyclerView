@@ -26,10 +26,14 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.SubPositionAlignment
 import java.util.Collections
 
-class DpadTestAdapter(private val showSubPositions: Boolean = false) :
+class DpadTestAdapter(
+    private val showSubPositions: Boolean = false,
+    private val onClick: (position: Int) -> Unit = {},
+    private val onLongClick: (position: Int) -> Unit = {},
+) :
     RecyclerView.Adapter<DpadTestAdapter.VH>() {
 
-    private var items = ArrayList<Item>()
+    private var items = mutableListOf<Item>()
 
     init {
         repeat(1000) { value ->
@@ -38,7 +42,7 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        return if (showSubPositions) {
+        val viewHolder = if (showSubPositions) {
             SubPositionVH(
                 LayoutInflater.from(parent.context).inflate(
                     R.layout.dpadrecyclerview_test_item_subposition, parent, false
@@ -51,6 +55,14 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
                 )
             )
         }
+        viewHolder.itemView.setOnClickListener {
+            onClick(viewHolder.absoluteAdapterPosition)
+        }
+        viewHolder.itemView.setOnLongClickListener {
+            onLongClick(viewHolder.absoluteAdapterPosition)
+            true
+        }
+        return viewHolder
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
@@ -67,7 +79,7 @@ class DpadTestAdapter(private val showSubPositions: Boolean = false) :
     }
 
     fun removeItem() {
-        items.removeLast()
+        items.removeLastOrNull()
         notifyItemRemoved(items.size)
     }
 

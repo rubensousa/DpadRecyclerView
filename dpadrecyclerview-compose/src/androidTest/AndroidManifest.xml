@@ -28,7 +28,7 @@
 
     <application tools:ignore="MissingTvBanner">
         <activity
-            android:name="com.rubensousa.dpadrecyclerview.compose.test.ComposeFocusTestActivity"
+            android:name="com.rubensousa.dpadrecyclerview.compose.ComposeFocusTestActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="true">
             <intent-filter>
@@ -38,7 +38,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.rubensousa.dpadrecyclerview.compose.test.ViewFocusTestActivity"
+            android:name="com.rubensousa.dpadrecyclerview.compose.ViewFocusTestActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:exported="true">
             <intent-filter>

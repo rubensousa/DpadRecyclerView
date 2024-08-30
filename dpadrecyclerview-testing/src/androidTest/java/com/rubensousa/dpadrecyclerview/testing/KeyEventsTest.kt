@@ -17,6 +17,7 @@
 package com.rubensousa.dpadrecyclerview.testing
 
 import androidx.test.espresso.Espresso
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
@@ -61,4 +62,39 @@ class KeyEventsTest : RecyclerViewTest() {
 
         assert(DpadRecyclerViewAssertions.isFocused(position = 0))
     }
+
+    @Test
+    fun testClick() {
+        // given
+        launchGridFragment()
+        Espresso.onIdle()
+
+        // when
+        KeyEvents.click()
+
+        // then
+        var receivedClicks = listOf<Int>()
+        onGridFragment {
+            receivedClicks = it.getClickEvents()
+        }
+        assertThat(receivedClicks).isEqualTo(listOf(0))
+    }
+
+    @Test
+    fun testLongClick() {
+        // given
+        launchGridFragment()
+        Espresso.onIdle()
+
+        // when
+        KeyEvents.longClick()
+
+        // then
+        var receivedClicks = listOf<Int>()
+        onGridFragment {
+            receivedClicks = it.getLongClickEvents()
+        }
+        assertThat(receivedClicks).isEqualTo(listOf(0))
+    }
+
 }

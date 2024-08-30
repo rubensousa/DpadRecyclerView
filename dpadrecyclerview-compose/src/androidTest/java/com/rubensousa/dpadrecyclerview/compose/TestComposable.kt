@@ -85,6 +85,7 @@ fun TestComposableFocus(
     modifier: Modifier = Modifier,
     item: Int,
     onClick: () -> Unit,
+    onLongClick: () -> Unit,
     onDispose: () -> Unit = {},
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -100,9 +101,14 @@ fun TestComposableFocus(
             }
             .focusable()
             .background(backgroundColor)
-            .clickable {
-                onClick()
-            },
+            .dpadClickable(
+                onLongClick = {
+                    onLongClick()
+                },
+                onClick = {
+                    onClick()
+                }
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -130,7 +136,8 @@ fun TestComposableFocus(
 fun TestComposablePreviewNormal() {
     TestComposableFocus(
         item = 0,
-        onClick = {}
+        onClick = {},
+        onLongClick = {}
     )
 }
 
@@ -141,7 +148,8 @@ fun TestComposablePreviewFocused() {
     TestComposableFocus(
         item = 0,
         modifier = Modifier.focusRequester(focusRequester),
-        onClick = {}
+        onClick = {},
+        onLongClick = {}
     )
     SideEffect {
         focusRequester.requestFocus()
