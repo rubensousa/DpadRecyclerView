@@ -2,6 +2,28 @@
 
 ## Version 1.4.0
 
+### 1.4.0-alpha05
+
+2024-08-30
+
+#### New features
+
+- Added `OnFocusLostListener` to observe focus losses of `DpadRecyclerView` ([#258](https://github.com/rubensousa/DpadRecyclerView/pull/258))
+- Added `dpadRecyclerView.setAlignmentLookup` to customize the alignment for individual positions ([#259](https://github.com/rubensousa/DpadRecyclerView/pull/259))
+
+#### Compose
+
+- Improved `Modifier.dpadClickable` to support long clicks ([#261](https://github.com/rubensousa/DpadRecyclerView/pull/261))
+- Fix `Modifier.dpadClickable` sending FOCUS_ENTER after the click ([#261](https://github.com/rubensousa/DpadRecyclerView/pull/261))
+
+#### Testing
+
+- Added `KeyEvents.longClick` to trigger long clicks from tests ([#261](https://github.com/rubensousa/DpadRecyclerView/pull/261))
+
+#### Bug fixes
+
+- Fix item decorations not being updated whenever the adapter contents change ([#260](https://github.com/rubensousa/DpadRecyclerView/pull/260))
+
 ### 1.4.0-alpha04
 
 2024-08-21
