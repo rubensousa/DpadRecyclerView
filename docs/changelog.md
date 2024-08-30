@@ -6,6 +6,8 @@
 
 2024-08-30
 
+**Note**: This version includes an update to `androidx.recyclerview` 1.4.0-beta01, which requires compile SDK set to 35
+
 #### New features
 
 - Added `OnFocusLostListener` to observe focus losses of `DpadRecyclerView` ([#258](https://github.com/rubensousa/DpadRecyclerView/pull/258))
