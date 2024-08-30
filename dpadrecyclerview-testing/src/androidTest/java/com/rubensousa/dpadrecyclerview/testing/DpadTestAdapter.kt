@@ -79,7 +79,7 @@ class DpadTestAdapter(
     }
 
     fun removeItem() {
-        items.removeLast()
+        items.removeLastOrNull()
         notifyItemRemoved(items.size)
     }
 
