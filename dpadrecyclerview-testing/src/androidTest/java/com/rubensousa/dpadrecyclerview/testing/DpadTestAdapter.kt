@@ -33,7 +33,7 @@ class DpadTestAdapter(
 ) :
     RecyclerView.Adapter<DpadTestAdapter.VH>() {
 
-    private var items = ArrayList<Item>()
+    private var items = mutableListOf<Item>()
 
     init {
         repeat(1000) { value ->
