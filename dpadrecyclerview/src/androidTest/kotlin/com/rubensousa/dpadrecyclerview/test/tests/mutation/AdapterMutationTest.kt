@@ -22,10 +22,13 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
+import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.assertItemAtPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.getRelativeItemViewBounds
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForAdapterUpdate
@@ -286,4 +289,171 @@ class AdapterMutationTest : DpadRecyclerViewTest() {
         // then
         assertFocusAndSelection(0)
     }
+
+    @Test
+    fun testDecorationsAreCorrectAfterRemovingItem() {
+        // given
+        val verticalItemSpacing = 24
+        val verticalEdgeSpacing = 200
+        val perpendicularSpacing = 64
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = verticalItemSpacing,
+            edgeSpacing = verticalEdgeSpacing,
+            perpendicularEdgeSpacing = perpendicularSpacing
+        )
+        onRecyclerView("Setting decoration") { recyclerView ->
+            recyclerView.addItemDecoration(decoration)
+        }
+
+        // when
+        mutateAdapter { adapter ->
+            adapter.removeFrom(2, adapter.itemCount - 2)
+        }
+        waitForAdapterUpdate()
+
+        // then
+        assertChildDecorations(
+            childIndex = 1,
+            insets = ViewBounds(
+                left = perpendicularSpacing,
+                top = 0,
+                right = perpendicularSpacing,
+                bottom = verticalEdgeSpacing
+            ),
+        )
+    }
+
+    @Test
+    fun testDecorationsAreCorrectAfterAddingItem() {
+        // given
+        val verticalItemSpacing = 24
+        val verticalEdgeSpacing = 200
+        val perpendicularSpacing = 64
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = verticalItemSpacing,
+            edgeSpacing = verticalEdgeSpacing,
+            perpendicularEdgeSpacing = perpendicularSpacing
+        )
+        onRecyclerView("Setting decoration") { recyclerView ->
+            recyclerView.addItemDecoration(decoration)
+        }
+        mutateAdapter { adapter ->
+            adapter.setList(mutableListOf(0))
+            adapter.notifyDataSetChanged()
+        }
+        waitForAdapterUpdate()
+
+        // when
+        mutateAdapter { adapter ->
+            adapter.add()
+        }
+        waitForAdapterUpdate()
+
+        // then
+        assertChildDecorations(
+            childIndex = 0,
+            insets = ViewBounds(
+                left = perpendicularSpacing,
+                top = verticalEdgeSpacing,
+                right = perpendicularSpacing,
+                bottom = verticalItemSpacing
+            ),
+        )
+    }
+
+    @Test
+    fun testDecorationsAreCorrectAfterMovingItem() {
+        // given
+        val verticalItemSpacing = 24
+        val verticalEdgeSpacing = 200
+        val perpendicularSpacing = 64
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = verticalItemSpacing,
+            edgeSpacing = verticalEdgeSpacing,
+            perpendicularEdgeSpacing = perpendicularSpacing
+        )
+        onRecyclerView("Setting decoration") { recyclerView ->
+            recyclerView.addItemDecoration(decoration)
+        }
+        mutateAdapter { adapter ->
+            adapter.setList(mutableListOf(0, 1))
+            adapter.notifyDataSetChanged()
+        }
+        waitForAdapterUpdate()
+
+        // when
+        mutateAdapter { adapter ->
+            adapter.move(0, 1)
+        }
+        waitForAdapterUpdate()
+
+        // then
+        assertChildDecorations(
+            childIndex = 0,
+            insets = ViewBounds(
+                left = perpendicularSpacing,
+                top = verticalEdgeSpacing,
+                right = perpendicularSpacing,
+                bottom = verticalItemSpacing
+            ),
+        )
+        assertChildDecorations(
+            childIndex = 1,
+            insets = ViewBounds(
+                left = perpendicularSpacing,
+                top = 0,
+                right = perpendicularSpacing,
+                bottom = verticalEdgeSpacing
+            ),
+        )
+    }
+
+    @Test
+    fun testDecorationsAreCorrectAfterUpdatingItems() {
+        // given
+        val verticalItemSpacing = 24
+        val verticalEdgeSpacing = 200
+        val perpendicularSpacing = 64
+        val decoration = DpadLinearSpacingDecoration.create(
+            itemSpacing = verticalItemSpacing,
+            edgeSpacing = verticalEdgeSpacing,
+            perpendicularEdgeSpacing = perpendicularSpacing
+        )
+        onRecyclerView("Setting decoration") { recyclerView ->
+            recyclerView.addItemDecoration(decoration)
+        }
+        mutateAdapter { adapter ->
+            adapter.setList(mutableListOf(0, 1, 2))
+            adapter.notifyDataSetChanged()
+        }
+        waitForAdapterUpdate()
+
+        // when
+        mutateAdapter { adapter ->
+            adapter.setList(mutableListOf(0, 1))
+            adapter.notifyDataSetChanged()
+        }
+        waitForAdapterUpdate()
+
+        // then
+        assertChildDecorations(
+            childIndex = 0,
+            insets = ViewBounds(
+                left = perpendicularSpacing,
+                top = verticalEdgeSpacing,
+                right = perpendicularSpacing,
+                bottom = verticalItemSpacing
+            ),
+        )
+        assertChildDecorations(
+            childIndex = 1,
+            insets = ViewBounds(
+                left = perpendicularSpacing,
+                top = 0,
+                right = perpendicularSpacing,
+                bottom = verticalEdgeSpacing
+            ),
+        )
+    }
+
 }

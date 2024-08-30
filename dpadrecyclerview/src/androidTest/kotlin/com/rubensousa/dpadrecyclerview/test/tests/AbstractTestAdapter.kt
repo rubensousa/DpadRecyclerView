@@ -27,7 +27,7 @@ import java.util.Collections
 import java.util.concurrent.Executors
 
 abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
-    adapterConfiguration: TestAdapterConfiguration
+    adapterConfiguration: TestAdapterConfiguration,
 ) : RecyclerView.Adapter<VH>(), DpadDragHelper.DragAdapter<Int> {
 
     companion object {
@@ -84,7 +84,7 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
 
     private fun calculateDiff(
         oldList: List<Int>,
-        newList: List<Int>
+        newList: List<Int>,
     ): DiffResult {
         return DiffUtil.calculateDiff(object : DiffUtil.Callback() {
             override fun getOldListSize(): Int = oldList.size
@@ -98,7 +98,7 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
 
             override fun areContentsTheSame(
                 oldItemPosition: Int,
-                newItemPosition: Int
+                newItemPosition: Int,
             ): Boolean {
                 val oldItem = oldList[oldItemPosition]
                 val newItem = newList[newItemPosition]
@@ -110,7 +110,7 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
     private fun latchList(
         newList: MutableList<Int>,
         result: DiffResult,
-        commitCallback: Runnable?
+        commitCallback: Runnable?,
     ) {
         items = newList
         result.dispatchUpdatesTo(this)
@@ -123,13 +123,22 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
         notifyItemRemoved(index)
     }
 
+    fun removeFrom(index: Int, count: Int) {
+        currentVersion++
+        repeat(count) {
+            items.removeAt(index)
+        }
+        notifyItemRangeRemoved(index, count)
+    }
+
+
     fun move(from: Int, to: Int) {
         currentVersion++
         Collections.swap(items, from, to)
         notifyItemMoved(from, to)
     }
 
-    fun addAt(item: Int, index: Int) {
+    fun addAt(index: Int, item: Int) {
         currentVersion++
         items.add(index, item)
         notifyItemInserted(index)

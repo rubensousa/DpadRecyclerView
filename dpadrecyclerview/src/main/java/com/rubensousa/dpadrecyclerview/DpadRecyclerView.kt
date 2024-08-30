@@ -70,6 +70,19 @@ open class DpadRecyclerView @JvmOverloads constructor(
     private val focusableChildDrawingCallback = FocusableChildDrawingCallback()
     private val fadingEdge = FadingEdge()
     private val focusLossListeners = mutableListOf<OnFocusLostListener>()
+    private val adapterObserver = object : AdapterDataObserver() {
+        override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+            invalidateDecorationsSafely()
+        }
+
+        override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+            invalidateDecorationsSafely()
+        }
+
+        override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) {
+            invalidateDecorationsSafely()
+        }
+    }
     private val globalFocusChangeListener by lazy {
         GlobalFocusChangeListener(this) {
             focusLossListeners.forEach { listener ->
@@ -219,6 +232,22 @@ open class DpadRecyclerView @JvmOverloads constructor(
         )
         layout.setAlignments(parentAlignment, childAlignment, smooth = false)
         return layout
+    }
+
+    override fun setAdapter(adapter: Adapter<*>?) {
+        this.adapter?.unregisterAdapterDataObserver(adapterObserver)
+        super.setAdapter(adapter)
+        adapter?.registerAdapterDataObserver(adapterObserver)
+    }
+
+    private fun invalidateDecorationsSafely() {
+        if (isComputingLayout || scrollState != SCROLL_STATE_IDLE) {
+            post {
+                invalidateDecorationsSafely()
+            }
+        } else {
+            invalidateItemDecorations()
+        }
     }
 
     final override fun setLayoutManager(layout: LayoutManager?) {
