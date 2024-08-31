@@ -32,6 +32,10 @@
             <enum name="max" value="1" />
             <enum name="min_max" value="2" />
         </attr>
+        <attr name="dpadRecyclerViewItemSpacing" format="dimension" />
+        <attr name="dpadRecyclerViewItemEdgeSpacing" format="dimension" />
+        <attr name="dpadRecyclerViewItemMinEdgeSpacing" format="dimension" />
+        <attr name="dpadRecyclerViewItemMaxEdgeSpacing" format="dimension" />
         <attr name="android:gravity" />
         <attr name="android:focusable" />
         <attr name="android:focusableInTouchMode" />

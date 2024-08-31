@@ -26,13 +26,13 @@
         android:clipChildren="false"
         android:gravity="center"
         android:orientation="horizontal"
-        app:dpadRecyclerViewChildAlignmentFraction="0"
+        app:dpadRecyclerViewChildAlignmentFraction="0.5"
         app:dpadRecyclerViewFocusOutBack="false"
         app:dpadRecyclerViewFocusOutFront="false"
-        app:dpadRecyclerViewParentAlignmentEdge="max"
-        app:dpadRecyclerViewParentAlignmentFraction="0"
-        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-        app:dpadRecyclerViewParentAlignmentPreferKeylineOverEdge="false" />
+        app:dpadRecyclerViewItemEdgeSpacing="@dimen/list_margin_start"
+        app:dpadRecyclerViewItemSpacing="@dimen/item_spacing"
+        app:dpadRecyclerViewParentAlignmentEdge="min_max"
+        app:dpadRecyclerViewParentAlignmentFraction="0.5" />
 
 
 </LinearLayout>

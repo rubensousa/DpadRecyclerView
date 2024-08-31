@@ -36,6 +36,9 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.focus.GlobalFocusChangeListener
+import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
+import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
+import com.rubensousa.dpadrecyclerview.spacing.DpadSpacingDecoration
 
 /**
  * A [RecyclerView] that scrolls to items on DPAD key events.
@@ -91,7 +94,6 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
     }
     private var registeredGlobalFocusListener = false
-
     private var pivotLayoutManager: PivotLayoutManager? = null
     private var isOverlappingRenderingEnabled = true
     private var isRetainingFocus = false
@@ -121,6 +123,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
         }
 
         layoutManager = createLayoutManager(typedArray, context, attrs)
+        applySpacings(typedArray)
 
         // The LayoutManager will restore focus and scroll automatically when needed
         preserveFocusAfterLayout = false
@@ -172,13 +175,13 @@ open class DpadRecyclerView @JvmOverloads constructor(
             )
         )
         layout.setFocusableDirection(
-            FocusableDirection.values()[typedArray.getInt(
+            FocusableDirection.entries[typedArray.getInt(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewFocusableDirection,
                 FocusableDirection.STANDARD.ordinal
             )]
         )
         layout.setLoopDirection(
-            DpadLoopDirection.values()[typedArray.getInt(
+            DpadLoopDirection.entries[typedArray.getInt(
                 R.styleable.DpadRecyclerView_dpadRecyclerViewLoopDirection,
                 DpadLoopDirection.NONE.ordinal
             )]
@@ -193,7 +196,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
                 typedArray.getInt(R.styleable.DpadRecyclerView_android_gravity, Gravity.NO_GRAVITY)
             )
         }
-        val edge = ParentAlignment.Edge.values()[typedArray.getInt(
+        val edge = ParentAlignment.Edge.entries[typedArray.getInt(
             R.styleable.DpadRecyclerView_dpadRecyclerViewParentAlignmentEdge,
             ParentAlignment.Edge.MIN_MAX.ordinal
         )]
@@ -234,6 +237,30 @@ open class DpadRecyclerView @JvmOverloads constructor(
         return layout
     }
 
+    private fun applySpacings(typedArray: TypedArray) {
+        val spacingAttr = R.styleable.DpadRecyclerView_dpadRecyclerViewItemSpacing
+        if (typedArray.hasValue(spacingAttr)) {
+            val spacing = typedArray.getDimensionPixelSize(spacingAttr, 0)
+            setItemSpacing(spacing)
+        }
+        val edgeSpacingAttr = R.styleable.DpadRecyclerView_dpadRecyclerViewItemEdgeSpacing
+        if (typedArray.hasValue(edgeSpacingAttr)) {
+            val spacing = typedArray.getDimensionPixelSize(edgeSpacingAttr, 0)
+            setItemEdgeSpacing(spacing)
+        } else {
+            val minEdgeSpacingAttr = R.styleable.DpadRecyclerView_dpadRecyclerViewItemMinEdgeSpacing
+            if (typedArray.hasValue(minEdgeSpacingAttr)) {
+                val spacing = typedArray.getDimensionPixelSize(minEdgeSpacingAttr, 0)
+                setItemMinEdgeSpacing(spacing)
+            }
+            val maxEdgeSpacingAttr = R.styleable.DpadRecyclerView_dpadRecyclerViewItemMaxEdgeSpacing
+            if (typedArray.hasValue(maxEdgeSpacingAttr)) {
+                val spacing = typedArray.getDimensionPixelSize(maxEdgeSpacingAttr, 0)
+                setItemMaxEdgeSpacing(spacing)
+            }
+        }
+    }
+
     override fun setAdapter(adapter: Adapter<*>?) {
         this.adapter?.unregisterAdapterDataObserver(adapterObserver)
         super.setAdapter(adapter)
@@ -266,7 +293,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
         if (layout != null && layout !is PivotLayoutManager) {
             throw IllegalArgumentException(
                 "Only com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager" +
-                        ".PivotLayoutManager is supported, but got $layout"
+                        " is supported, but got $layout"
             )
         }
         if (layout is PivotLayoutManager) {
@@ -968,6 +995,140 @@ open class DpadRecyclerView @JvmOverloads constructor(
      */
     fun setAlignmentLookup(lookup: AlignmentLookup?, smooth: Boolean = false) {
         requireLayout().setAlignmentLookup(lookup, smooth)
+    }
+
+    /**
+     * Set the spacing between different items
+     *
+     * @param spacing the spacing between items, in pixels
+     */
+    fun setItemSpacing(@Px spacing: Int) {
+        updateSpacingDecoration { previousDecoration ->
+            when {
+                previousDecoration is DpadGridSpacingDecoration -> {
+                    previousDecoration.withItemSpacing(spacing)
+                }
+
+                previousDecoration is DpadLinearSpacingDecoration -> {
+                    previousDecoration.withItemSpacing(spacing)
+                }
+
+                getSpanCount() == 1 -> {
+                    DpadLinearSpacingDecoration.create(itemSpacing = spacing)
+                }
+
+                else -> {
+                    DpadGridSpacingDecoration.create(itemSpacing = spacing)
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the spacing between the min end and the first item, and the last item and the min edge.
+     * This is equivalent to calling both [setItemMinEdgeSpacing] and [setItemMaxEdgeSpacing]
+     * with the same value.
+     *
+     * @param spacing the spacing between the edges of the layout and the items that border them
+     */
+    fun setItemEdgeSpacing(@Px spacing: Int) {
+        updateSpacingDecoration { previousDecoration ->
+            when {
+                previousDecoration is DpadGridSpacingDecoration -> {
+                    previousDecoration.withEdgeSpacing(spacing)
+                }
+
+                previousDecoration is DpadLinearSpacingDecoration -> {
+                    previousDecoration.withEdgeSpacing(spacing)
+                }
+
+                getSpanCount() == 1 -> {
+                    DpadLinearSpacingDecoration.create(itemSpacing = 0, edgeSpacing = spacing)
+                }
+
+                else -> {
+                    DpadGridSpacingDecoration.create(itemSpacing = 0, edgeSpacing = spacing)
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the spacing between the min edge and the first item
+     *
+     * @param spacing the spacing in pixels
+     */
+    fun setItemMinEdgeSpacing(@Px spacing: Int) {
+        updateSpacingDecoration { previousDecoration ->
+            when {
+                previousDecoration is DpadGridSpacingDecoration -> {
+                    previousDecoration.withMinEdgeSpacing(spacing)
+                }
+
+                previousDecoration is DpadLinearSpacingDecoration -> {
+                    previousDecoration.withMinEdgeSpacing(spacing)
+                }
+
+                getSpanCount() == 1 -> {
+                    DpadLinearSpacingDecoration.create(itemSpacing = 0, minEdgeSpacing = spacing)
+                }
+
+                else -> {
+                    DpadGridSpacingDecoration.create(itemSpacing = 0, minEdgeSpacing = spacing)
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the spacing between the max edge and the last item
+     *
+     * @param spacing the spacing in pixels
+     */
+    fun setItemMaxEdgeSpacing(@Px spacing: Int) {
+        updateSpacingDecoration { previousDecoration ->
+            when {
+                previousDecoration is DpadGridSpacingDecoration -> {
+                    previousDecoration.withMaxEdgeSpacing(spacing)
+                }
+
+                previousDecoration is DpadLinearSpacingDecoration -> {
+                    previousDecoration.withMaxEdgeSpacing(spacing)
+                }
+
+                getSpanCount() == 1 -> {
+                    DpadLinearSpacingDecoration.create(itemSpacing = 0, maxEdgeSpacing = spacing)
+                }
+
+                else -> {
+                    DpadGridSpacingDecoration.create(itemSpacing = 0, maxEdgeSpacing = spacing)
+                }
+            }
+        }
+    }
+
+    /**
+     * @return the current spacing configuration set through one of the following:
+     * [setItemSpacing], [setItemEdgeSpacing], [setItemMinEdgeSpacing], [setItemMaxEdgeSpacing]
+     * or [addItemDecoration]
+     */
+    fun getSpacingDecoration(): DpadSpacingDecoration? {
+        for (i in 0 until itemDecorationCount) {
+            val decoration = getItemDecorationAt(i)
+            if (decoration is DpadSpacingDecoration) {
+                return decoration
+            }
+        }
+        return null
+    }
+
+    private fun updateSpacingDecoration(
+        builder: (previousDecoration: ItemDecoration?) -> ItemDecoration,
+    ) {
+        val previousDecoration = getSpacingDecoration()
+        val newDecoration = builder(previousDecoration)
+        previousDecoration?.let { removeItemDecoration(it) }
+        addItemDecoration(newDecoration)
     }
 
     /**

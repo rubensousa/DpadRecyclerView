@@ -32,7 +32,6 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.HorizontalAdapterAnima
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenFadingEdgesBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class FadingEdgeFragment : Fragment(R.layout.screen_fading_edges) {
 
@@ -113,7 +112,7 @@ class FadingEdgeFragment : Fragment(R.layout.screen_fading_edges) {
         fun bind(configuration: Configuration) {
             binding.textView.text = configuration.title
             binding.recyclerView.apply {
-                addItemDecoration(DpadLinearSpacingDecoration.create(itemSpacing = dpToPx(16.dp)))
+                setItemSpacing(dpToPx(16.dp))
                 enableMinEdgeFading(configuration.minEdgeLength > 0.dp)
                 setMinEdgeFadingLength(dpToPx(configuration.minEdgeLength))
                 setMinEdgeFadingOffset(dpToPx(configuration.minEdgeOffset))

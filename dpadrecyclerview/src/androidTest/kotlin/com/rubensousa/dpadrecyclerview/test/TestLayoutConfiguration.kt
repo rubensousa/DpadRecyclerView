@@ -57,7 +57,7 @@ data class TestLayoutConfiguration(
         useCustomViewPool = parcel.readByte() != 0.toByte(),
         recycleChildrenOnDetach = parcel.readByte() != 0.toByte(),
         focusSearchEnabledDuringAnimations = parcel.readByte() != 0.toByte(),
-        focusableDirection = FocusableDirection.values()[parcel.readInt()]
+        focusableDirection = FocusableDirection.entries[parcel.readInt()]
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {

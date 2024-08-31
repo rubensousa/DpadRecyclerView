@@ -16,7 +16,6 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBind
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ItemAnimator
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class ShortListFragment : Fragment(R.layout.screen_recyclerview) {
 
@@ -32,12 +31,7 @@ class ShortListFragment : Fragment(R.layout.screen_recyclerview) {
                 )
             )
             setFocusableDirection(FocusableDirection.CIRCULAR)
-            addItemDecoration(
-                DpadLinearSpacingDecoration.create(
-                    itemSpacing = dpToPx(16.dp),
-                    perpendicularEdgeSpacing = dpToPx(48.dp)
-                )
-            )
+            setItemSpacing(dpToPx(16.dp))
             adapter = Adapter(
                 items = List(4) { i ->
                     "Item $i"

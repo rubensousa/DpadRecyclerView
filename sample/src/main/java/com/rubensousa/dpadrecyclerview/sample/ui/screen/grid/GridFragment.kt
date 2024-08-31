@@ -85,28 +85,30 @@ class GridFragment : Fragment(R.layout.screen_recyclerview) {
                     parent: RecyclerView,
                     child: RecyclerView.ViewHolder?,
                     position: Int,
-                    subPosition: Int
+                    subPosition: Int,
                 ) {
                     viewModel.loadMore(position, spanCount)
                 }
             })
 
-            addItemDecoration(
-                DpadGridSpacingDecoration.create(
-                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
-                ).also {
-                    if (!args.evenSpans) {
+            if (args.evenSpans) {
+                setItemSpacing(resources.getDimensionPixelOffset(R.dimen.grid_item_spacing))
+            } else {
+                addItemDecoration(
+                    DpadGridSpacingDecoration.create(
+                        itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
+                    ).also {
                         it.setSpacingLookup(object : DpadSpacingLookup {
                             override fun shouldApplySpacing(
                                 viewHolder: RecyclerView.ViewHolder,
-                                itemCount: Int
+                                itemCount: Int,
                             ): Boolean {
                                 return viewHolder.absoluteAdapterPosition > 0
                             }
                         })
                     }
-                }
-            )
+                )
+            }
 
             if (!args.evenSpans) {
                 addItemDecoration(
@@ -117,7 +119,7 @@ class GridFragment : Fragment(R.layout.screen_recyclerview) {
                         it.setSpacingLookup(object : DpadSpacingLookup {
                             override fun shouldApplySpacing(
                                 viewHolder: RecyclerView.ViewHolder,
-                                itemCount: Int
+                                itemCount: Int,
                             ): Boolean {
                                 return viewHolder.absoluteAdapterPosition == 0
                             }

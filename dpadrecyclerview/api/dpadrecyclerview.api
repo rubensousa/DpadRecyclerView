@@ -112,6 +112,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun getSmoothScrollMaxPendingAlignments ()I
 	public final fun getSmoothScrollMaxPendingMoves ()I
 	public final fun getSmoothScrollSpeedFactor ()F
+	public final fun getSpacingDecoration ()Lcom/rubensousa/dpadrecyclerview/spacing/DpadSpacingDecoration;
 	public final fun getSpanCount ()I
 	public final fun getSpanSizeLookup ()Lcom/rubensousa/dpadrecyclerview/DpadSpanSizeLookup;
 	public final fun hasOverlappingRendering ()Z
@@ -158,7 +159,11 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setHasOverlappingRendering (Z)V
 	public final fun setInitialPrefetchItemCount (I)V
 	public final fun setItemAnimator (Landroidx/recyclerview/widget/RecyclerView$ItemAnimator;)V
+	public final fun setItemEdgeSpacing (I)V
+	public final fun setItemMaxEdgeSpacing (I)V
+	public final fun setItemMinEdgeSpacing (I)V
 	public final fun setItemPrefetchEnabled (Z)V
+	public final fun setItemSpacing (I)V
 	public final fun setLayoutEnabled (Z)V
 	public final fun setLayoutManager (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)V
 	public final fun setLayoutWhileScrollingEnabled (Z)V
@@ -617,25 +622,43 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/layout/ViewBoun
 
 public final class com/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration : com/rubensousa/dpadrecyclerview/spacing/DpadSpacingDecoration {
 	public static final field Companion Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion;
-	public synthetic fun <init> (IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (IIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public static final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
+	public static final fun create (IIII)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
+	public fun equals (Ljava/lang/Object;)Z
 	public fun getItemOffsets (Landroid/graphics/Rect;Landroid/view/View;ILcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;)V
+	public final fun getItemSpacing ()I
+	public final fun getMaxEdgeSpacing ()I
+	public final fun getMinEdgeSpacing ()I
+	public final fun getPerpendicularItemSpacing ()I
+	public fun hashCode ()I
 }
 
 public final class com/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion {
 	public final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
+	public final fun create (IIII)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
+	public static synthetic fun create$default (Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion;IIIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
 	public static synthetic fun create$default (Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion;IIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
 }
 
 public final class com/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration : com/rubensousa/dpadrecyclerview/spacing/DpadSpacingDecoration {
 	public static final field Companion Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion;
-	public synthetic fun <init> (IIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public synthetic fun <init> (IIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public static final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
+	public static final fun create (IIII)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
+	public fun equals (Ljava/lang/Object;)Z
 	public fun getItemOffsets (Landroid/graphics/Rect;Landroid/view/View;ILcom/rubensousa/dpadrecyclerview/DpadRecyclerView;Landroidx/recyclerview/widget/RecyclerView$State;)V
+	public final fun getItemSpacing ()I
+	public final fun getMaxEdgeSpacing ()I
+	public final fun getMinEdgeSpacing ()I
+	public final fun getPerpendicularEdgeSpacing ()I
+	public fun hashCode ()I
 }
 
 public final class com/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion {
 	public final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
+	public final fun create (IIII)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
+	public static synthetic fun create$default (Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion;IIIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
 	public static synthetic fun create$default (Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion;IIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
 }
 

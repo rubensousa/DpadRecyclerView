@@ -331,7 +331,7 @@ internal class PivotLayout(
             selectedPosition = parcel.readInt(),
             isLoopingStart = parcel.readByte() == 1.toByte(),
             isLoopingAllowed = parcel.readByte() == 1.toByte(),
-            loopDirection = DpadLoopDirection.values()[parcel.readInt()]
+            loopDirection = DpadLoopDirection.entries[parcel.readInt()]
         )
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {

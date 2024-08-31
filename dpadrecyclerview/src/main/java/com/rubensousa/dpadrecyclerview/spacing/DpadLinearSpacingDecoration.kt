@@ -28,7 +28,10 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
  *
  * @param itemSpacing spacing between items in the layout direction
  *
- * @param edgeSpacing spacing between the start and end edges in the layout orientation.
+ * @param minEdgeSpacing spacing between the start edge and the first item.
+ * Default is [itemSpacing] if not specified.
+ *
+ * @param maxEdgeSpacing spacing between the last item and the end edge
  * Default is [itemSpacing] if not specified.
  *
  * @param perpendicularEdgeSpacing spacing between the edges perpendicular to the layout orientation.
@@ -36,9 +39,10 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
  *
  */
 class DpadLinearSpacingDecoration private constructor(
-    @Px private val itemSpacing: Int,
-    @Px private val edgeSpacing: Int,
-    @Px private val perpendicularEdgeSpacing: Int
+    @Px val itemSpacing: Int,
+    @Px val minEdgeSpacing: Int,
+    @Px val maxEdgeSpacing: Int,
+    @Px val perpendicularEdgeSpacing: Int,
 ) : DpadSpacingDecoration() {
 
     companion object {
@@ -51,7 +55,23 @@ class DpadLinearSpacingDecoration private constructor(
         ): DpadLinearSpacingDecoration {
             return DpadLinearSpacingDecoration(
                 itemSpacing = itemSpacing,
-                edgeSpacing = edgeSpacing,
+                minEdgeSpacing = edgeSpacing,
+                maxEdgeSpacing = edgeSpacing,
+                perpendicularEdgeSpacing = perpendicularEdgeSpacing
+            )
+        }
+
+        @JvmStatic
+        fun create(
+            @Px itemSpacing: Int,
+            @Px minEdgeSpacing: Int = itemSpacing,
+            @Px maxEdgeSpacing: Int = itemSpacing,
+            @Px perpendicularEdgeSpacing: Int = 0,
+        ): DpadLinearSpacingDecoration {
+            return DpadLinearSpacingDecoration(
+                itemSpacing = itemSpacing,
+                minEdgeSpacing = minEdgeSpacing,
+                maxEdgeSpacing = maxEdgeSpacing,
                 perpendicularEdgeSpacing = perpendicularEdgeSpacing
             )
         }
@@ -63,7 +83,7 @@ class DpadLinearSpacingDecoration private constructor(
         view: View,
         layoutPosition: Int,
         parent: DpadRecyclerView,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         val itemCount = state.itemCount
         val reverseLayout = parent.isLayoutReversed()
@@ -85,24 +105,24 @@ class DpadLinearSpacingDecoration private constructor(
         outRect: Rect,
         isAtStartEdge: Boolean,
         isAtEndEdge: Boolean,
-        reverseLayout: Boolean
+        reverseLayout: Boolean,
     ) {
         outRect.left = perpendicularEdgeSpacing
         outRect.right = perpendicularEdgeSpacing
 
         if (isAtStartEdge) {
             if (!reverseLayout) {
-                outRect.top = edgeSpacing
+                outRect.top = minEdgeSpacing
                 outRect.bottom = itemSpacing
             } else {
-                outRect.bottom = edgeSpacing
+                outRect.bottom = minEdgeSpacing
                 outRect.top = itemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {
-                outRect.bottom = edgeSpacing
+                outRect.bottom = maxEdgeSpacing
             } else {
-                outRect.top = edgeSpacing
+                outRect.top = maxEdgeSpacing
             }
         } else if (!reverseLayout) {
             outRect.bottom = itemSpacing
@@ -115,30 +135,82 @@ class DpadLinearSpacingDecoration private constructor(
         outRect: Rect,
         isAtStartEdge: Boolean,
         isAtEndEdge: Boolean,
-        reverseLayout: Boolean
+        reverseLayout: Boolean,
     ) {
         outRect.top = perpendicularEdgeSpacing
         outRect.bottom = perpendicularEdgeSpacing
 
         if (isAtStartEdge) {
             if (!reverseLayout) {
-                outRect.left = edgeSpacing
+                outRect.left = minEdgeSpacing
                 outRect.right = itemSpacing
             } else {
-                outRect.right = edgeSpacing
+                outRect.right = minEdgeSpacing
                 outRect.left = itemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {
-                outRect.right = edgeSpacing
+                outRect.right = maxEdgeSpacing
             } else {
-                outRect.left = edgeSpacing
+                outRect.left = maxEdgeSpacing
             }
         } else if (!reverseLayout) {
             outRect.right = itemSpacing
         } else {
             outRect.left = itemSpacing
         }
+    }
+
+    internal fun withItemSpacing(spacing: Int): DpadLinearSpacingDecoration {
+        return DpadLinearSpacingDecoration(
+            itemSpacing = spacing,
+            minEdgeSpacing = minEdgeSpacing,
+            maxEdgeSpacing = maxEdgeSpacing,
+            perpendicularEdgeSpacing = perpendicularEdgeSpacing
+        )
+    }
+
+    internal fun withMinEdgeSpacing(spacing: Int): DpadLinearSpacingDecoration {
+        return DpadLinearSpacingDecoration(
+            itemSpacing = itemSpacing,
+            minEdgeSpacing = spacing,
+            maxEdgeSpacing = maxEdgeSpacing,
+            perpendicularEdgeSpacing = perpendicularEdgeSpacing
+        )
+    }
+
+    internal fun withEdgeSpacing(spacing: Int): DpadLinearSpacingDecoration {
+        return DpadLinearSpacingDecoration(
+            itemSpacing = itemSpacing,
+            minEdgeSpacing = spacing,
+            maxEdgeSpacing = spacing,
+            perpendicularEdgeSpacing = perpendicularEdgeSpacing
+        )
+    }
+
+    internal fun withMaxEdgeSpacing(spacing: Int): DpadLinearSpacingDecoration {
+        return DpadLinearSpacingDecoration(
+            itemSpacing = itemSpacing,
+            minEdgeSpacing = minEdgeSpacing,
+            maxEdgeSpacing = spacing,
+            perpendicularEdgeSpacing = perpendicularEdgeSpacing
+        )
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other is DpadLinearSpacingDecoration
+                && this.itemSpacing == other.itemSpacing
+                && this.minEdgeSpacing == other.minEdgeSpacing
+                && this.maxEdgeSpacing == other.maxEdgeSpacing
+                && this.perpendicularEdgeSpacing == other.perpendicularEdgeSpacing
+    }
+
+    override fun hashCode(): Int {
+        var result = itemSpacing
+        result = 31 * result + minEdgeSpacing
+        result = 31 * result + maxEdgeSpacing
+        result = 31 * result + perpendicularEdgeSpacing
+        return result
     }
 
 }

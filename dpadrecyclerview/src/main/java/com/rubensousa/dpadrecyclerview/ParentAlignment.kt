@@ -83,7 +83,7 @@ data class ParentAlignment(
     }
 
     constructor(parcel: Parcel) : this(
-        Edge.values()[parcel.readInt()],
+        Edge.entries[parcel.readInt()],
         parcel.readInt(),
         parcel.readFloat(),
         parcel.readByte() != 0.toByte(),
