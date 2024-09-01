@@ -38,7 +38,7 @@ import com.rubensousa.dpadrecyclerview.DpadRecyclerView
  * Default is 0.
  *
  */
-class DpadLinearSpacingDecoration private constructor(
+data class DpadLinearSpacingDecoration(
     @Px val itemSpacing: Int,
     @Px val minEdgeSpacing: Int,
     @Px val maxEdgeSpacing: Int,
@@ -159,58 +159,6 @@ class DpadLinearSpacingDecoration private constructor(
         } else {
             outRect.left = itemSpacing
         }
-    }
-
-    internal fun withItemSpacing(spacing: Int): DpadLinearSpacingDecoration {
-        return DpadLinearSpacingDecoration(
-            itemSpacing = spacing,
-            minEdgeSpacing = minEdgeSpacing,
-            maxEdgeSpacing = maxEdgeSpacing,
-            perpendicularEdgeSpacing = perpendicularEdgeSpacing
-        )
-    }
-
-    internal fun withMinEdgeSpacing(spacing: Int): DpadLinearSpacingDecoration {
-        return DpadLinearSpacingDecoration(
-            itemSpacing = itemSpacing,
-            minEdgeSpacing = spacing,
-            maxEdgeSpacing = maxEdgeSpacing,
-            perpendicularEdgeSpacing = perpendicularEdgeSpacing
-        )
-    }
-
-    internal fun withEdgeSpacing(spacing: Int): DpadLinearSpacingDecoration {
-        return DpadLinearSpacingDecoration(
-            itemSpacing = itemSpacing,
-            minEdgeSpacing = spacing,
-            maxEdgeSpacing = spacing,
-            perpendicularEdgeSpacing = perpendicularEdgeSpacing
-        )
-    }
-
-    internal fun withMaxEdgeSpacing(spacing: Int): DpadLinearSpacingDecoration {
-        return DpadLinearSpacingDecoration(
-            itemSpacing = itemSpacing,
-            minEdgeSpacing = minEdgeSpacing,
-            maxEdgeSpacing = spacing,
-            perpendicularEdgeSpacing = perpendicularEdgeSpacing
-        )
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return other is DpadLinearSpacingDecoration
-                && this.itemSpacing == other.itemSpacing
-                && this.minEdgeSpacing == other.minEdgeSpacing
-                && this.maxEdgeSpacing == other.maxEdgeSpacing
-                && this.perpendicularEdgeSpacing == other.perpendicularEdgeSpacing
-    }
-
-    override fun hashCode(): Int {
-        var result = itemSpacing
-        result = 31 * result + minEdgeSpacing
-        result = 31 * result + maxEdgeSpacing
-        result = 31 * result + perpendicularEdgeSpacing
-        return result
     }
 
 }

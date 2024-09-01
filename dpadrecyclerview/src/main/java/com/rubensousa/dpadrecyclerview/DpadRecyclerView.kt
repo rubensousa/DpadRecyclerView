@@ -1006,19 +1006,27 @@ open class DpadRecyclerView @JvmOverloads constructor(
         updateSpacingDecoration { previousDecoration ->
             when {
                 previousDecoration is DpadGridSpacingDecoration -> {
-                    previousDecoration.withItemSpacing(spacing)
+                    previousDecoration.copy(itemSpacing = spacing)
                 }
 
                 previousDecoration is DpadLinearSpacingDecoration -> {
-                    previousDecoration.withItemSpacing(spacing)
+                    previousDecoration.copy(itemSpacing = spacing)
                 }
 
                 getSpanCount() == 1 -> {
-                    DpadLinearSpacingDecoration.create(itemSpacing = spacing)
+                    DpadLinearSpacingDecoration.create(
+                        itemSpacing = spacing,
+                        minEdgeSpacing = 0,
+                        maxEdgeSpacing = 0
+                    )
                 }
 
                 else -> {
-                    DpadGridSpacingDecoration.create(itemSpacing = spacing)
+                    DpadGridSpacingDecoration.create(
+                        itemSpacing = spacing,
+                        minEdgeSpacing = 0,
+                        maxEdgeSpacing = 0
+                    )
                 }
             }
         }
@@ -1035,11 +1043,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
         updateSpacingDecoration { previousDecoration ->
             when {
                 previousDecoration is DpadGridSpacingDecoration -> {
-                    previousDecoration.withEdgeSpacing(spacing)
+                    previousDecoration.copy(minEdgeSpacing = spacing, maxEdgeSpacing = spacing)
                 }
 
                 previousDecoration is DpadLinearSpacingDecoration -> {
-                    previousDecoration.withEdgeSpacing(spacing)
+                    previousDecoration.copy(minEdgeSpacing = spacing, maxEdgeSpacing = spacing)
                 }
 
                 getSpanCount() == 1 -> {
@@ -1062,11 +1070,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
         updateSpacingDecoration { previousDecoration ->
             when {
                 previousDecoration is DpadGridSpacingDecoration -> {
-                    previousDecoration.withMinEdgeSpacing(spacing)
+                    previousDecoration.copy(minEdgeSpacing = spacing)
                 }
 
                 previousDecoration is DpadLinearSpacingDecoration -> {
-                    previousDecoration.withMinEdgeSpacing(spacing)
+                    previousDecoration.copy(minEdgeSpacing = spacing)
                 }
 
                 getSpanCount() == 1 -> {
@@ -1089,11 +1097,11 @@ open class DpadRecyclerView @JvmOverloads constructor(
         updateSpacingDecoration { previousDecoration ->
             when {
                 previousDecoration is DpadGridSpacingDecoration -> {
-                    previousDecoration.withMaxEdgeSpacing(spacing)
+                    previousDecoration.copy(maxEdgeSpacing = spacing)
                 }
 
                 previousDecoration is DpadLinearSpacingDecoration -> {
-                    previousDecoration.withMaxEdgeSpacing(spacing)
+                    previousDecoration.copy(maxEdgeSpacing = spacing)
                 }
 
                 getSpanCount() == 1 -> {

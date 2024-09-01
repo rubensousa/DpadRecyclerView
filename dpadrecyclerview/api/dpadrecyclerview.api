@@ -622,7 +622,13 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/layout/ViewBoun
 
 public final class com/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration : com/rubensousa/dpadrecyclerview/spacing/DpadSpacingDecoration {
 	public static final field Companion Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion;
-	public synthetic fun <init> (IIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IIII)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun copy (IIII)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
+	public static synthetic fun copy$default (Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;IIIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
 	public static final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
 	public static final fun create (IIII)Lcom/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration;
 	public fun equals (Ljava/lang/Object;)Z
@@ -632,6 +638,7 @@ public final class com/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecora
 	public final fun getMinEdgeSpacing ()I
 	public final fun getPerpendicularItemSpacing ()I
 	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecoration$Companion {
@@ -643,7 +650,13 @@ public final class com/rubensousa/dpadrecyclerview/spacing/DpadGridSpacingDecora
 
 public final class com/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration : com/rubensousa/dpadrecyclerview/spacing/DpadSpacingDecoration {
 	public static final field Companion Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion;
-	public synthetic fun <init> (IIIILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (IIII)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun component3 ()I
+	public final fun component4 ()I
+	public final fun copy (IIII)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
+	public static synthetic fun copy$default (Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;IIIIILjava/lang/Object;)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
 	public static final fun create (III)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
 	public static final fun create (IIII)Lcom/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration;
 	public fun equals (Ljava/lang/Object;)Z
@@ -653,6 +666,7 @@ public final class com/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDeco
 	public final fun getMinEdgeSpacing ()I
 	public final fun getPerpendicularEdgeSpacing ()I
 	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class com/rubensousa/dpadrecyclerview/spacing/DpadLinearSpacingDecoration$Companion {
