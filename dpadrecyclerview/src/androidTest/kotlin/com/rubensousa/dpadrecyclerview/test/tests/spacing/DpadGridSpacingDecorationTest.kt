@@ -430,9 +430,9 @@ class DpadGridSpacingDecorationTest : DpadRecyclerViewTest() {
 
         // when
         onRecyclerView("Set spacing") { recyclerView ->
-            recyclerView.setItemSpacing(itemSpacing)
             recyclerView.setItemMinEdgeSpacing(minEdgeSpacing)
             recyclerView.setItemMaxEdgeSpacing(maxEdgeSpacing)
+            recyclerView.setItemSpacing(itemSpacing)
 
             // then
             assertThat(recyclerView.getSpacingDecoration()).isEqualTo(

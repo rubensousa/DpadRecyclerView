@@ -1006,7 +1006,10 @@ open class DpadRecyclerView @JvmOverloads constructor(
         updateSpacingDecoration { previousDecoration ->
             when {
                 previousDecoration is DpadGridSpacingDecoration -> {
-                    previousDecoration.copy(itemSpacing = spacing)
+                    previousDecoration.copy(
+                        itemSpacing = spacing,
+                        perpendicularItemSpacing = spacing
+                    )
                 }
 
                 previousDecoration is DpadLinearSpacingDecoration -> {
