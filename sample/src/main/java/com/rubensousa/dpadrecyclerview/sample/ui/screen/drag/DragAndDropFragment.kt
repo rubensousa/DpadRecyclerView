@@ -31,7 +31,6 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenDragDropBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
@@ -72,13 +71,8 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
                 moveDuration = 100
             }
             setOrientation(RecyclerView.HORIZONTAL)
-            addItemDecoration(
-                DpadLinearSpacingDecoration.create(
-                    itemSpacing = dpToPx(16.dp),
-                    edgeSpacing = dpToPx(48.dp),
-                    perpendicularEdgeSpacing = dpToPx(48.dp)
-                )
-            )
+            setItemSpacing(dpToPx(16.dp))
+            setItemEdgeSpacing(dpToPx(48.dp))
         }
     }
 

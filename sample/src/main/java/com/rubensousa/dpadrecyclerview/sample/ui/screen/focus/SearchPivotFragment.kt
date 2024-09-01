@@ -30,7 +30,6 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenLeanbackHorizont
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.ItemViewHolder
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class SearchPivotFragment : Fragment(R.layout.screen_leanback_horizontal) {
 
@@ -43,9 +42,7 @@ class SearchPivotFragment : Fragment(R.layout.screen_leanback_horizontal) {
         binding.horizontalGridView.adapter = Adapter()
         RecyclerViewLogger.logChildrenWhenIdle(binding.horizontalGridView)
         RecyclerViewLogger.logChildrenWhenIdle(binding.dpadRecyclerView)
-        binding.dpadRecyclerView.addItemDecoration(
-            DpadLinearSpacingDecoration.create(dpToPx(24.dp))
-        )
+        binding.dpadRecyclerView.setItemSpacing(dpToPx(24.dp))
         binding.dpadRecyclerView.adapter = Adapter()
     }
 

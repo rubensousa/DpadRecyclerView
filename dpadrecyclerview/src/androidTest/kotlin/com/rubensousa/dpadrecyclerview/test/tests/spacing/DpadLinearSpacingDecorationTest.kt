@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.test.tests.spacing
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
@@ -383,9 +384,123 @@ class DpadLinearSpacingDecorationTest : DpadRecyclerViewTest() {
 
     }
 
+    @Test
+    fun testItemSpacingSetter() {
+        // given
+        val spacing = 50
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemSpacing(spacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadLinearSpacingDecoration(
+                    itemSpacing = spacing,
+                    minEdgeSpacing = 0,
+                    maxEdgeSpacing = 0,
+                    perpendicularEdgeSpacing = 0
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testItemEdgeSpacingSetter() {
+        // given
+        val edgeSpacing = 50
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemEdgeSpacing(edgeSpacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadLinearSpacingDecoration(
+                    itemSpacing = 0,
+                    minEdgeSpacing = edgeSpacing,
+                    maxEdgeSpacing = edgeSpacing,
+                    perpendicularEdgeSpacing = 0
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testItemMinEdgeSpacingSetter() {
+        // given
+        val edgeSpacing = 50
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemMinEdgeSpacing(edgeSpacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadLinearSpacingDecoration(
+                    itemSpacing = 0,
+                    minEdgeSpacing = edgeSpacing,
+                    maxEdgeSpacing = 0,
+                    perpendicularEdgeSpacing = 0
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testItemMaxEdgeSpacingSetter() {
+        // given
+        val edgeSpacing = 50
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemMaxEdgeSpacing(edgeSpacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadLinearSpacingDecoration(
+                    itemSpacing = 0,
+                    minEdgeSpacing = 0,
+                    maxEdgeSpacing = edgeSpacing,
+                    perpendicularEdgeSpacing = 0
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testItemSpacingSettersCombineResults() {
+        // given
+        val itemSpacing = 24
+        val minEdgeSpacing = 48
+        val maxEdgeSpacing = 64
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemSpacing(itemSpacing)
+            recyclerView.setItemMinEdgeSpacing(minEdgeSpacing)
+            recyclerView.setItemMaxEdgeSpacing(maxEdgeSpacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadLinearSpacingDecoration(
+                    itemSpacing = itemSpacing,
+                    minEdgeSpacing = minEdgeSpacing,
+                    maxEdgeSpacing = maxEdgeSpacing,
+                    perpendicularEdgeSpacing = 0
+                )
+            )
+        }
+    }
+
     private fun launchFragmentWithVerticalDecoration(
         decoration: DpadLinearSpacingDecoration,
-        reverseLayout: Boolean = false
+        reverseLayout: Boolean = false,
     ) {
         launchFragment(verticalLayoutConfiguration.copy(reverseLayout = reverseLayout))
         onRecyclerView("Set linear space decoration") { recyclerView ->
@@ -396,7 +511,7 @@ class DpadLinearSpacingDecorationTest : DpadRecyclerViewTest() {
 
     private fun launchFragmentWithHorizontalDecoration(
         decoration: DpadLinearSpacingDecoration,
-        reverseLayout: Boolean = false
+        reverseLayout: Boolean = false,
     ) {
         launchFragment(
             horizontalLayoutConfiguration.copy(reverseLayout = reverseLayout),

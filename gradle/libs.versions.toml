@@ -1,6 +1,6 @@
 [versions]
 # From library
-android-gradle-plugin = "8.5.2"
+android-gradle-plugin = "8.6.0"
 androidx-collection = "1.4.3"
 androidx-recyclerview = "1.4.0-beta01"
 androidx-poolingcontainer = "1.0.0"

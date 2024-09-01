@@ -29,12 +29,11 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.MainAdapterListFeature
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ItemModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ListAnimator
 import com.rubensousa.dpadrecyclerview.state.DpadScrollState
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import timber.log.Timber
 
 class FeatureListAdapter(
     private val scrollState: DpadScrollState,
-    private val recycledViewPool: UnboundViewPool
+    private val recycledViewPool: UnboundViewPool,
 ) : ListAdapter<FeatureList, FeatureListAdapter.ViewHolder>(ItemModel.buildDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -65,7 +64,7 @@ class FeatureListAdapter(
 
     class ViewHolder(
         recycledViewPool: UnboundViewPool,
-        private val binding: MainAdapterListFeatureBinding
+        private val binding: MainAdapterListFeatureBinding,
     ) : RecyclerView.ViewHolder(binding.root), DpadViewHolder {
 
         val recyclerView = binding.featureRecyclerView
@@ -78,15 +77,15 @@ class FeatureListAdapter(
 
         init {
             recyclerView.setHasFixedSize(false)
-            recyclerView.addItemDecoration(
-                DpadLinearSpacingDecoration.create(
-                    itemSpacing = itemView.resources.getDimensionPixelOffset(
-                        R.dimen.feature_item_spacing
-                    ),
-                    edgeSpacing = itemView.resources.getDimensionPixelOffset(
-                        R.dimen.feature_edge_spacing
-                    ),
-                )
+            recyclerView.setItemSpacing(
+                itemView.resources.getDimensionPixelOffset(
+                    R.dimen.feature_item_spacing
+                ),
+            )
+            recyclerView.setItemEdgeSpacing(
+                itemView.resources.getDimensionPixelOffset(
+                    R.dimen.feature_edge_spacing
+                ),
             )
             recyclerView.setRecycledViewPool(recycledViewPool)
             recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {

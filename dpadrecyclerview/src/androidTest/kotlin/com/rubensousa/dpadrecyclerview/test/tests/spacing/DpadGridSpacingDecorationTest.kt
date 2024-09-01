@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.test.tests.spacing
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -329,6 +330,120 @@ class DpadGridSpacingDecorationTest : DpadRecyclerViewTest() {
             )
         }
 
+    }
+
+    @Test
+    fun testItemSpacingSetter() {
+        // given
+        val spacing = 50
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemSpacing(spacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadGridSpacingDecoration(
+                    itemSpacing = spacing,
+                    minEdgeSpacing = 0,
+                    maxEdgeSpacing = 0,
+                    perpendicularItemSpacing = spacing
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testItemEdgeSpacingSetter() {
+        // given
+        val edgeSpacing = 50
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemEdgeSpacing(edgeSpacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadGridSpacingDecoration(
+                    itemSpacing = 0,
+                    minEdgeSpacing = edgeSpacing,
+                    maxEdgeSpacing = edgeSpacing,
+                    perpendicularItemSpacing = 0
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testItemMinEdgeSpacingSetter() {
+        // given
+        val edgeSpacing = 50
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemMinEdgeSpacing(edgeSpacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadGridSpacingDecoration(
+                    itemSpacing = 0,
+                    minEdgeSpacing = edgeSpacing,
+                    maxEdgeSpacing = 0,
+                    perpendicularItemSpacing = 0
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testItemMaxEdgeSpacingSetter() {
+        // given
+        val edgeSpacing = 50
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemMaxEdgeSpacing(edgeSpacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadGridSpacingDecoration(
+                    itemSpacing = 0,
+                    minEdgeSpacing = 0,
+                    maxEdgeSpacing = edgeSpacing,
+                    perpendicularItemSpacing = 0
+                )
+            )
+        }
+    }
+
+    @Test
+    fun testItemSpacingSettersCombineResults() {
+        // given
+        val itemSpacing = 24
+        val minEdgeSpacing = 48
+        val maxEdgeSpacing = 64
+        launchFragment()
+
+        // when
+        onRecyclerView("Set spacing") { recyclerView ->
+            recyclerView.setItemMinEdgeSpacing(minEdgeSpacing)
+            recyclerView.setItemMaxEdgeSpacing(maxEdgeSpacing)
+            recyclerView.setItemSpacing(itemSpacing)
+
+            // then
+            assertThat(recyclerView.getSpacingDecoration()).isEqualTo(
+                DpadGridSpacingDecoration(
+                    itemSpacing = itemSpacing,
+                    minEdgeSpacing = minEdgeSpacing,
+                    maxEdgeSpacing = maxEdgeSpacing,
+                    perpendicularItemSpacing = itemSpacing
+                )
+            )
+        }
     }
 
     private fun getStartDecoration(spacing: Int, spanIndex: Int): Int {

@@ -26,8 +26,6 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenScrollableLayout
 import com.rubensousa.dpadrecyclerview.sample.ui.screen.compose.ComposeGridAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.screen.compose.ComposeItemAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
-import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class ScrollableLayoutFragment : Fragment(R.layout.screen_scrollable_layout) {
 
@@ -41,21 +39,14 @@ class ScrollableLayoutFragment : Fragment(R.layout.screen_scrollable_layout) {
         val recyclerView = binding.recyclerView
         recyclerView.apply {
             setSpanCount(7)
-            addItemDecoration(
-                DpadGridSpacingDecoration.create(
-                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
-                )
-            )
+            setItemSpacing(resources.getDimensionPixelOffset(R.dimen.grid_item_spacing))
             adapter = itemAdapter
             requestFocus()
         }
         binding.horizontalRecyclerView.apply {
             adapter = ComposeItemAdapter().also { it.submitList(MutableList(10) { it }) }
-            addItemDecoration(
-                DpadLinearSpacingDecoration.create(
-                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.grid_item_spacing)
-                )
-            )
+            setItemMinEdgeSpacing(resources.getDimensionPixelOffset(R.dimen.grid_item_spacing))
+            setItemSpacing(resources.getDimensionPixelOffset(R.dimen.grid_item_spacing))
         }
         binding.horizontalRecyclerView.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus) {

@@ -24,7 +24,6 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListComposeBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ListAnimator
-import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 
 class NestedComposeListViewHolder(
     private val binding: AdapterListComposeBinding,
@@ -43,13 +42,10 @@ class NestedComposeListViewHolder(
         // Compose animations trigger a full layout-pass,
         // so disable layout changes while scrolling
         recyclerView.setLayoutWhileScrollingEnabled(false)
-        recyclerView.addItemDecoration(
-            DpadLinearSpacingDecoration.create(
-                itemSpacing = itemView.resources.getDimensionPixelOffset(
-                    R.dimen.horizontal_item_spacing
-                ),
-                edgeSpacing = 0
-            )
+        recyclerView.setItemSpacing(
+            itemView.resources.getDimensionPixelOffset(
+                R.dimen.horizontal_item_spacing
+            ),
         )
         recyclerView.adapter = adapter
     }

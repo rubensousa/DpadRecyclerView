@@ -28,16 +28,21 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
  *
  * @param itemSpacing default spacing between items that share a span group.
  *
+ * @param minEdgeSpacing spacing between the start edge and the first row.
+ * Default is [itemSpacing] if not specified.
+ *
+ * @param maxEdgeSpacing spacing between the last row and the end edge
+ * Default is [itemSpacing] if not specified.
+ *
  * @param perpendicularItemSpacing spacing between items across different span groups.
  * Default is [itemSpacing] if not specified.
  *
- * @param edgeSpacing spacing between the start and end edges in the layout orientation.
- * Default is [itemSpacing] if not specified.
  */
-class DpadGridSpacingDecoration private constructor(
-    @Px private val itemSpacing: Int,
-    @Px private val perpendicularItemSpacing: Int,
-    @Px private val edgeSpacing: Int
+data class DpadGridSpacingDecoration(
+    @Px val itemSpacing: Int,
+    @Px val minEdgeSpacing: Int,
+    @Px val maxEdgeSpacing: Int,
+    @Px val perpendicularItemSpacing: Int,
 ) : DpadSpacingDecoration() {
 
     companion object {
@@ -45,13 +50,29 @@ class DpadGridSpacingDecoration private constructor(
         @JvmStatic
         fun create(
             @Px itemSpacing: Int,
-            @Px perpendicularItemSpacing: Int = itemSpacing,
             @Px edgeSpacing: Int = itemSpacing,
+            @Px perpendicularItemSpacing: Int = itemSpacing,
         ): DpadGridSpacingDecoration {
             return DpadGridSpacingDecoration(
                 itemSpacing = itemSpacing,
-                perpendicularItemSpacing = perpendicularItemSpacing,
-                edgeSpacing = edgeSpacing
+                minEdgeSpacing = edgeSpacing,
+                maxEdgeSpacing = edgeSpacing,
+                perpendicularItemSpacing = perpendicularItemSpacing
+            )
+        }
+
+        @JvmStatic
+        fun create(
+            @Px itemSpacing: Int,
+            @Px minEdgeSpacing: Int = itemSpacing,
+            @Px maxEdgeSpacing: Int = itemSpacing,
+            @Px perpendicularItemSpacing: Int = itemSpacing,
+        ): DpadGridSpacingDecoration {
+            return DpadGridSpacingDecoration(
+                itemSpacing = itemSpacing,
+                minEdgeSpacing = minEdgeSpacing,
+                maxEdgeSpacing = maxEdgeSpacing,
+                perpendicularItemSpacing = perpendicularItemSpacing
             )
         }
 
@@ -62,7 +83,7 @@ class DpadGridSpacingDecoration private constructor(
         view: View,
         layoutPosition: Int,
         parent: DpadRecyclerView,
-        state: RecyclerView.State
+        state: RecyclerView.State,
     ) {
         val layoutParams = view.layoutParams as DpadLayoutParams
         val spanIndex = layoutParams.spanIndex
@@ -85,11 +106,23 @@ class DpadGridSpacingDecoration private constructor(
 
         if (parent.getOrientation() == RecyclerView.VERTICAL) {
             applyVertically(
-                outRect, realSpanIndex, spanSize, spanCount, isAtStartEdge, isAtEndEdge, reverseLayout
+                outRect,
+                realSpanIndex,
+                spanSize,
+                spanCount,
+                isAtStartEdge,
+                isAtEndEdge,
+                reverseLayout
             )
         } else {
             applyHorizontally(
-                outRect, realSpanIndex, spanSize, spanCount, isAtStartEdge, isAtEndEdge, reverseLayout
+                outRect,
+                realSpanIndex,
+                spanSize,
+                spanCount,
+                isAtStartEdge,
+                isAtEndEdge,
+                reverseLayout
             )
         }
     }
@@ -101,7 +134,7 @@ class DpadGridSpacingDecoration private constructor(
         spanCount: Int,
         isAtStartEdge: Boolean,
         isAtEndEdge: Boolean,
-        reverseLayout: Boolean
+        reverseLayout: Boolean,
     ) {
         val startSpanSpace = spanCount - spanIndex
         val endSpanSpace = spanIndex + spanSize
@@ -113,17 +146,17 @@ class DpadGridSpacingDecoration private constructor(
 
         if (isAtStartEdge) {
             if (!reverseLayout) {
-                outRect.top = edgeSpacing
+                outRect.top = minEdgeSpacing
                 outRect.bottom = perpendicularItemSpacing
             } else {
-                outRect.bottom = edgeSpacing
+                outRect.bottom = minEdgeSpacing
                 outRect.top = perpendicularItemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {
-                outRect.bottom = edgeSpacing
+                outRect.bottom = maxEdgeSpacing
             } else {
-                outRect.top = edgeSpacing
+                outRect.top = maxEdgeSpacing
             }
         } else if (!reverseLayout) {
             outRect.bottom = perpendicularItemSpacing
@@ -139,7 +172,7 @@ class DpadGridSpacingDecoration private constructor(
         spanCount: Int,
         isAtStartEdge: Boolean,
         isAtEndEdge: Boolean,
-        reverseLayout: Boolean
+        reverseLayout: Boolean,
     ) {
         val startSpanSpace = spanCount - spanIndex
         val endSpanSpace = spanIndex + spanSize
@@ -151,17 +184,17 @@ class DpadGridSpacingDecoration private constructor(
 
         if (isAtStartEdge) {
             if (!reverseLayout) {
-                outRect.left = edgeSpacing
+                outRect.left = minEdgeSpacing
                 outRect.right = perpendicularItemSpacing
             } else {
-                outRect.right = edgeSpacing
+                outRect.right = minEdgeSpacing
                 outRect.left = perpendicularItemSpacing
             }
         } else if (isAtEndEdge) {
             if (!reverseLayout) {
-                outRect.right = edgeSpacing
+                outRect.right = maxEdgeSpacing
             } else {
-                outRect.left = edgeSpacing
+                outRect.left = maxEdgeSpacing
             }
         } else if (!reverseLayout) {
             outRect.right = perpendicularItemSpacing
@@ -169,4 +202,5 @@ class DpadGridSpacingDecoration private constructor(
             outRect.left = perpendicularItemSpacing
         }
     }
+
 }
