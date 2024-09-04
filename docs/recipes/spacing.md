@@ -1,13 +1,21 @@
 # Spacing Recipes
 
-Unlike `BaseGridView`, `DpadRecyclerView` does not have a `setItemSpacing` method.
-However, you can achieve the same effect with one of the implementations of `ItemDecoration` provided by this library:
+You can achieve spacing between items with one of the implementations of `ItemDecoration` provided by this library:
 
 - `DpadLinearSpacingDecoration`: for columns and rows
 - `DpadGridSpacingDecoration`: for grids
 
+
 Both of them support vertical and horizontal orientations. Please check the examples below.
 
+Alternatively, the following APIs also work:
+
+```kotlin
+setItemSpacing()
+setItemEdgeSpacing()
+setItemMaxEdgeSpacing()
+setItemMinEdgeSpacing()
+```
 
 ## Linear spacings
 
@@ -31,6 +39,18 @@ fun setupSpacing(recyclerView: DpadRecyclerView) {
         )
     )
 }
+```
+
+XML variant:
+
+```xml linenums="1" hl_lines="6-7"
+<com.rubensousa.dpadrecyclerview.DpadRecyclerView 
+    android:id="@+id/recyclerView"
+    android:layout_height="match_parent" 
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    app:dpadRecyclerViewItemEdgeSpacing="@dimen/vertical_edge_spacing"
+    app:dpadRecyclerViewItemSpacing="@dimen/vertical_item_spacing" />
 ```
 
 !!! note
@@ -147,14 +167,14 @@ fun setupSpacing(recyclerView: DpadRecyclerView) {
 ```kotlin linenums="1"
 fun setupSpacing(recyclerView: DpadRecyclerView) {
     recyclerView.addItemDecoration(
-        DpadGridSpacingDecoration.createVertical(
-            horizontalItemSpacing = recyclerView.resources.getDimensionPixelOffset(
+        DpadGridSpacingDecoration.create(
+            itemSpacing = recyclerView.resources.getDimensionPixelOffset(
                 R.dimen.grid_horizontal_item_spacing
             ),
-            verticalItemSpacing = recyclerView.resources.getDimensionPixelOffset(
+            perpendicularItemSpacing = recyclerView.resources.getDimensionPixelOffset(
                 R.dimen.grid_horizontal_item_spacing
             ),
-            verticalEdgeSpacing = recyclerView.resources.getDimensionPixelOffset(
+            edgeSpacing = recyclerView.resources.getDimensionPixelOffset(
                 R.dimen.horizontal_edge_spacing
             )
         )

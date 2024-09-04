@@ -2,6 +2,22 @@
 
 ## Version 1.4.0
 
+### 1.4.0-alpha06
+
+2024-09-05
+
+#### New features
+
+- Added `setItemSpacing`, `setItemEdgeSpacing` and other spacing setters to `DpadRecyclerView` ([#263](https://github.com/rubensousa/DpadRecyclerView/pull/263))
+  Documentation available [here](recipes/spacing.md).
+
+- Added independent min and max edge spacings to `DpadLinearSpacingDecoration` and `DpadGridSpacingDecoration` ([#263](https://github.com/rubensousa/DpadRecyclerView/pull/263))
+
+#### API changes
+
+- Now `DpadDragHelper` exposes `fromUser` in `onDragStopped`, which allows distinguishing between user or programmatic stop requests ([#264](https://github.com/rubensousa/DpadRecyclerView/pull/264))
+
+
 ### 1.4.0-alpha05
 
 2024-08-30
