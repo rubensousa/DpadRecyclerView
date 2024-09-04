@@ -44,7 +44,7 @@ class DragHelperLinearTest {
     private lateinit var testAdapter: TestAdapter
     private val numberOfItems = 10
     private val dragStarted = mutableListOf<RecyclerView.ViewHolder>()
-    private var dragStopCount = 0
+    private val dragStopRequests = mutableListOf<DragStopRequest>()
 
     @Before
     fun setup() {
@@ -80,8 +80,8 @@ class DragHelperLinearTest {
                         dragStarted.add(viewHolder)
                     }
 
-                    override fun onDragStopped() {
-                        dragStopCount++
+                    override fun onDragStopped(fromUser: Boolean) {
+                        dragStopRequests.add(DragStopRequest(fromUser))
                     }
                 }
             )
@@ -100,7 +100,8 @@ class DragHelperLinearTest {
         }
 
         // then
-        assertThat(dragStopCount).isEqualTo(1)
+        assertThat(dragStopRequests).hasSize(1)
+        assertThat(dragStopRequests.first().fromUser).isFalse()
     }
 
     @Test
@@ -131,12 +132,11 @@ class DragHelperLinearTest {
     }
 
     @Test
-    fun testDragIsCanceledOnCertainKeyEvents() {
+    fun testDragStopsOnCertainKeyEvents() {
         // given
         val cancelKeyCodes = setOf(
             KeyEvent.KEYCODE_ENTER,
             KeyEvent.KEYCODE_DPAD_CENTER,
-            KeyEvent.KEYCODE_BACK,
         )
 
         // when
@@ -147,7 +147,10 @@ class DragHelperLinearTest {
         }
 
         // then
-        assertThat(dragStopCount).isEqualTo(cancelKeyCodes.size)
+        assertThat(dragStopRequests).hasSize(cancelKeyCodes.size)
+        dragStopRequests.forEach {
+            assertThat(it.fromUser).isTrue()
+        }
     }
 
     @Test

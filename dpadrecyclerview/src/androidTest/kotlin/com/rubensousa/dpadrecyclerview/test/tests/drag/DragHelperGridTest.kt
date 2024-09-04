@@ -42,7 +42,7 @@ class DragHelperGridTest {
     private val numberOfItems = 50
     private val spanCount = 5
     private val dragStarted = mutableListOf<RecyclerView.ViewHolder>()
-    private var dragStopCount = 0
+    private val dragStopRequests = mutableListOf<DragStopRequest>()
 
     @Before
     fun setup() {
@@ -78,8 +78,8 @@ class DragHelperGridTest {
                         dragStarted.add(viewHolder)
                     }
 
-                    override fun onDragStopped() {
-                        dragStopCount++
+                    override fun onDragStopped(fromUser: Boolean) {
+                        dragStopRequests.add(DragStopRequest(fromUser))
                     }
                 }
             )

@@ -18,12 +18,16 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.drag
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadDragHelper
@@ -32,6 +36,7 @@ import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenDragDropBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
 
@@ -49,17 +54,36 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
             override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
                 dragState.value = dragAdapter.getItem(viewHolder.bindingAdapterPosition)
             }
-            override fun onDragStopped() {
+
+            override fun onDragStopped(fromUser: Boolean) {
+                if (fromUser) {
+                    // User requested dragging to stop
+                } else {
+                    // Dragging was stopped manually
+                }
                 dragState.value = null
             }
         }
     )
+    private val backPressCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            dragHelper.stopDrag()
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setDragButtonContent()
         dragAdapter.submitList(List(20) { it }.toMutableList())
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressCallback)
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                dragState.collect { draggingItem ->
+                    backPressCallback.isEnabled = draggingItem != null
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
