@@ -35,7 +35,7 @@ private val dragHelper = DpadDragHelper(
         override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
             // ViewHolder is now being dragged
         }
-        override fun onDragStopped() {
+        override fun onDragStopped(fromUser: Boolean) {
             // Dragging was cancelled either by user or programmatically
         }
     }
@@ -71,4 +71,4 @@ dragHelper.stopDrag()
 
 !!! note
     Users can also stop dragging by pressing the following keys: `KeyEvent.KEYCODE_DPAD_CENTER`,
-    `KeyEvent.KEYCODE_ENTER`, `KeyEvent.KEYCODE_BACK`. These are customizable in the constructor of `DpadDragHelper`
+    `KeyEvent.KEYCODE_ENTER`. These are customizable in the constructor of `DpadDragHelper`
