@@ -1,5 +1,6 @@
 # XML Attributes
 
+
 ## Alignment
 
 ```xml linenums="1"
@@ -18,6 +19,14 @@
 <attr name="dpadRecyclerViewParentAlignmentPreferKeylineOverEdge" format="boolean" />
 ```
 
+## Spacings
+
+```xml linenums="1"
+<attr name="dpadRecyclerViewItemSpacing" format="dimension" />
+<attr name="dpadRecyclerViewItemEdgeSpacing" format="dimension" />
+<attr name="dpadRecyclerViewItemMinEdgeSpacing" format="dimension" />
+<attr name="dpadRecyclerViewItemMaxEdgeSpacing" format="dimension" />
+```
 
 ## Focus
 

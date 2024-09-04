@@ -20,12 +20,22 @@ You can combine `DpadRecyclerView` with `BaseGridView` as follows:
 Instead of using `VerticalGridView` or `HorizontalGridView`, use `DpadRecyclerView` and set the orientation either programmatically
 with `setOrientation` or with plain XML:
 
-```xml linenums="1" hl_lines="5"
+```xml linenums="1" hl_lines="6"
+<!-- This is the same as VerticalGridView -->
 <com.rubensousa.dpadrecyclerview.DpadRecyclerView 
     android:id="@+id/recyclerView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical|horizontal" 
+    android:orientation="vertical"/>
+```
+
+```xml linenums="1" hl_lines="6"
+<!-- This is the same as HorizontalGridView -->
+<com.rubensousa.dpadrecyclerview.DpadRecyclerView 
+    android:id="@+id/recyclerView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"/>
 ```
 
 ## Window Alignment
@@ -140,11 +150,7 @@ If you were using `FacetProviderAdapter` for anything else, just write your own 
 
 ## Item spacing
 
-There's no public API for item spacings at the layout level for `DpadRecyclerView` like `setItemSpacing` from `BaseGridView`.
-
-However, we can use the standard `RecyclerView.ItemDecoration` API for this. 
-
-`DpadRecyclerView` ships with `DpadLinearSpacingDecoration` and `DpadGridSpacingDecoration` to achieve the same effect.
+`DpadRecyclerView` ships with `DpadLinearSpacingDecoration` and `DpadGridSpacingDecoration` to achieve this, together with `setItemSpacing` and similar APIs.
 
 Please check the examples in the recipes at [Spacing](recipes/spacing.md).
 
