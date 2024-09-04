@@ -31,7 +31,6 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenDragDropBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
-import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class DragAndDropGridFragment : Fragment(R.layout.screen_drag_drop_grid) {
@@ -51,7 +50,7 @@ class DragAndDropGridFragment : Fragment(R.layout.screen_drag_drop_grid) {
             override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
                 dragState.value = dragAdapter.getItem(viewHolder.bindingAdapterPosition)
             }
-            override fun onDragStopped() {
+            override fun onDragStopped(fromUser: Boolean) {
                 dragState.value = null
             }
         }
@@ -72,12 +71,8 @@ class DragAndDropGridFragment : Fragment(R.layout.screen_drag_drop_grid) {
                 // For faster moves
                 moveDuration = 100
             }
-            addItemDecoration(
-                DpadGridSpacingDecoration.create(
-                    itemSpacing = dpToPx(16.dp),
-                    edgeSpacing = dpToPx(48.dp),
-                )
-            )
+            setItemSpacing(dpToPx(16.dp))
+            setItemEdgeSpacing(dpToPx(48.dp))
         }
     }
 

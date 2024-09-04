@@ -62,7 +62,7 @@ fun DraggableItem(
     }
     Box(
         modifier = modifier
-            .size(200.dp)
+            .size(100.dp)
             .then(
                 if (isDragging) {
                     Modifier.border(8.dp, Color.Blue, RoundedCornerShape(8.dp))

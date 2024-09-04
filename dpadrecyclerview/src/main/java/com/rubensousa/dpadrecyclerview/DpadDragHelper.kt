@@ -26,15 +26,18 @@ import java.util.Collections
  *
  * To use this, your adapter needs to implement [DpadDragHelper.DragAdapter]
  * and expose the mutable collection via [DpadDragHelper.DragAdapter.getMutableItems].
+ *
+ * @param adapter the adapter that backs the data that can be arranged
+ * @param callback the callback for notifying dragging state changes
+ * @param stopKeyCodes key codes that will be accepted to stop the dragging state
  */
 class DpadDragHelper<T>(
     private val adapter: DragAdapter<T>,
     private val callback: DragCallback,
-    private val cancelKeyCodes: Set<Int> = setOf(
+    private val stopKeyCodes: Set<Int> = setOf(
         KeyEvent.KEYCODE_DPAD_CENTER,
         KeyEvent.KEYCODE_ENTER,
-        KeyEvent.KEYCODE_BACK
-    )
+    ),
 ) {
 
     /**
@@ -50,8 +53,11 @@ class DpadDragHelper<T>(
             if (!isDragging) {
                 return false
             }
-            if (cancelKeyCodes.contains(event.keyCode)) {
-                stopDrag()
+            if (stopKeyCodes.contains(event.keyCode)) {
+                if (event.action == KeyEvent.ACTION_UP) {
+                    // Only stop dragging after the user releases the key
+                    stopDragging(fromUser = true)
+                }
                 return true
             }
             if (event.action == KeyEvent.ACTION_UP) {
@@ -120,7 +126,7 @@ class DpadDragHelper<T>(
 
     private fun startDrag(
         recyclerView: DpadRecyclerView,
-        viewHolder: RecyclerView.ViewHolder
+        viewHolder: RecyclerView.ViewHolder,
     ) {
         isDragging = true
         previousKeyInterceptListener = recyclerView.getOnKeyInterceptListener()
@@ -136,6 +142,10 @@ class DpadDragHelper<T>(
      * [DragCallback.onDragStopped] will be called after this method
      */
     fun stopDrag() {
+        stopDragging(fromUser = false)
+    }
+
+    private fun stopDragging(fromUser: Boolean) {
         if (!isDragging) {
             return
         }
@@ -145,7 +155,7 @@ class DpadDragHelper<T>(
             }
         }
         isDragging = false
-        callback.onDragStopped()
+        callback.onDragStopped(fromUser)
     }
 
     private fun onKeyEvent(event: KeyEvent): Boolean {
@@ -198,7 +208,7 @@ class DpadDragHelper<T>(
         adapter: RecyclerView.Adapter<*>,
         items: MutableList<T>,
         srcIndex: Int,
-        targetIndex: Int
+        targetIndex: Int,
     ) {
         Collections.swap(items, srcIndex, targetIndex)
         adapter.notifyItemMoved(srcIndex, targetIndex)
@@ -212,7 +222,7 @@ class DpadDragHelper<T>(
         adapter: RecyclerView.Adapter<*>,
         items: MutableList<T>,
         srcIndex: Int,
-        targetIndex: Int
+        targetIndex: Int,
     ) {
         val item = items.removeAt(srcIndex)
         items.add(targetIndex, item)
@@ -247,8 +257,10 @@ class DpadDragHelper<T>(
 
         /**
          * Indicates that the dragging action has stopped
+         * @param fromUser true if this was triggered by the user,
+         * or false if [stopDrag] was called manually by the app
          */
-        fun onDragStopped()
+        fun onDragStopped(fromUser: Boolean)
     }
 
 }
