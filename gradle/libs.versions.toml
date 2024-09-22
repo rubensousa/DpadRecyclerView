@@ -45,7 +45,7 @@ jacoco = { id = "org.jacoco.core", version.ref = "jacoco" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-carioca-allure = { id = "com.rubensousa.carioca.android.allure", version.ref = "carioca-allure" }
+carioca-allure = { id = "com.rubensousa.carioca.report.allure", version.ref = "carioca-allure" }
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
@@ -81,7 +81,7 @@ androidx-test-runner = { module = "androidx.test:runner", version.ref = "android
 androidx-test-services = { module = "androidx.test.services:test-services", version.ref = "androidx-test-services" }
 androidx-test-truth = { module = "androidx.test.ext:truth", version.ref = "androidx-test-espressoTruth" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
-carioca-report = { module = "com.rubensousa.carioca.android:report", version.ref = "carioca-report"}
+carioca-report = { module = "com.rubensousa.carioca:report-android", version.ref = "carioca-report"}
 decorator = { module = "com.rubensousa:decorator", version.ref = "decorator" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { module = "junit:junit", version.ref = "test-junit" }

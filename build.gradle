@@ -1,7 +1,6 @@
 buildscript {
     apply from: 'versions.gradle'
     repositories {
-        mavenLocal()
         google()
         mavenCentral()
         gradlePluginPortal()
