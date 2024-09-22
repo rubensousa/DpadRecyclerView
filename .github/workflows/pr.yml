@@ -130,5 +130,6 @@ jobs:
           path: |
             logs/**
             ./**/build/reports/androidTests/connected/**
+            ./**/build/outputs/allure-results
             ./**/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/**
         if: always()
