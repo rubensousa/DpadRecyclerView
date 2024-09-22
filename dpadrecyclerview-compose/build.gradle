@@ -17,7 +17,7 @@ android {
         minSdk versions.minSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
-        testInstrumentationRunnerArguments listener: 'com.rubensousa.carioca.android.report.CariocaInstrumentedListener'
+        testInstrumentationRunnerArguments listener: 'com.rubensousa.carioca.report.android.CariocaInstrumentedListener'
     }
 
     testOptions {
