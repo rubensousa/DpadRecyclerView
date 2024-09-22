@@ -33,9 +33,11 @@ class DpadClickableIntegrationTest {
     fun testPressingBackAfterClickingOnItemClearsFocus() {
         // given
         KeyEvents.click()
+        Espresso.onIdle()
 
         // when
         KeyEvents.back()
+        Espresso.onIdle()
 
         // then
         assertFocus(item = 0, isFocused = false)
@@ -54,6 +56,7 @@ class DpadClickableIntegrationTest {
 
         // when
         KeyEvents.click()
+        Espresso.onIdle()
 
         // then
         assertThat(clicks).isEqualTo(listOf(0))
