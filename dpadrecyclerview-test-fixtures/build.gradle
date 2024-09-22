@@ -27,6 +27,7 @@ android {
 
 dependencies {
     implementation project (':dpadrecyclerview')
+    implementation libs.carioca.report
     implementation libs.androidx.recyclerview
     implementation libs.androidx.collection
     implementation libs.junit

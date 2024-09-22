@@ -48,6 +48,7 @@ object KeyEvents {
                 SystemClock.sleep(actualDelay)
             }
         }
+        Espresso.onIdle()
     }
 
     @JvmStatic

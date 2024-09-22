@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.testing
+package com.rubensousa.dpadrecyclerview.testing.test
 
 import android.graphics.Rect
 import com.google.common.truth.Truth.assertThat

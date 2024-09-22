@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.testing
+package com.rubensousa.dpadrecyclerview.testing.test
 
 import androidx.test.espresso.Espresso
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule

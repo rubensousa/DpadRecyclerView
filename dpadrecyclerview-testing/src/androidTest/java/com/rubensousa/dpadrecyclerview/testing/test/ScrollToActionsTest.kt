@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.testing
+package com.rubensousa.dpadrecyclerview.testing.test
 
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.matcher.ViewMatchers.hasDescendant
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import com.rubensousa.dpadrecyclerview.testing.DpadGridFragment
+import com.rubensousa.dpadrecyclerview.testing.DpadVerticalFragment
+import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadRecyclerViewAssertions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule

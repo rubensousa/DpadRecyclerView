@@ -13,11 +13,8 @@ android {
 
     defaultConfig {
         minSdk versions.minSdkVersion
-        targetSdk versions.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
-        testInstrumentationRunnerArguments additionalTestOutputDir: 'storage/emulated/0/recordings/com.rubensousa.dpadrecyclerview.testing.test'
-        multiDexEnabled true
     }
 
     buildTypes {
@@ -41,6 +38,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    testOptions {
+        targetSdk versions.targetSdkVersion
+    }
+
 
     publishing {
         singleVariant('release') {
