@@ -241,19 +241,25 @@ class SelectionTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testViewHolderReceivesAlignmentCallbackAfterSmoothScrolling() {
-        launchFragment()
+    fun testViewHolderReceivesAlignmentCallbackAfterSmoothScrolling() = report {
+        Given("Launch Fragment") {
+            launchFragment()
+        }
 
-        selectPosition(20, smooth = true)
-        waitForIdleScrollState()
+        When("Smooth scroll to position 1") {
+            selectPosition(1, smooth = true)
+            waitForIdleScrollState()
+        }
 
-        Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
-            .check(
-                ViewHolderAlignmentCountAssertion(
-                    count = 1,
-                    position = 20
+        Then("ViewHolder at position 1 received alignment callback") {
+            Espresso.onView(ViewMatchers.withId(R.id.recyclerView))
+                .check(
+                    ViewHolderAlignmentCountAssertion(
+                        count = 1,
+                        position = 20
+                    )
                 )
-            )
+        }
     }
 
     @Test
