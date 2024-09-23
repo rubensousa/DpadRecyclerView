@@ -247,7 +247,7 @@ class SelectionTest : DpadRecyclerViewTest() {
         }
 
         When("Smooth scroll to position 1") {
-            selectPosition(1, smooth = true)
+            selectPosition(5, smooth = true)
             waitForIdleScrollState()
         }
 
@@ -256,7 +256,7 @@ class SelectionTest : DpadRecyclerViewTest() {
                 .check(
                     ViewHolderAlignmentCountAssertion(
                         count = 1,
-                        position = 20
+                        position = 5
                     )
                 )
         }
