@@ -29,12 +29,17 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.testfixtures.DefaultInstrumentedReportRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class DragHelperGridTest {
+
+    @get:Rule
+    val report = DefaultInstrumentedReportRule()
 
     private lateinit var fragmentScenario: FragmentScenario<RecyclerViewFragment>
     private lateinit var dragHelper: DpadDragHelper<Int>
@@ -45,67 +50,75 @@ class DragHelperGridTest {
     private val dragStopRequests = mutableListOf<DragStopRequest>()
 
     @Before
-    fun setup() {
-        fragmentScenario = launchFragment()
-        onRecyclerView("Setup RecyclerView ") { recyclerView ->
-            testAdapter = TestAdapter(
-                adapterConfiguration = TestAdapterConfiguration(
-                    itemLayoutId = R.layout.dpadrecyclerview_test_item_grid,
-                    numberOfItems = numberOfItems
-                ),
-                onViewHolderSelected = {
+    fun setup() = report.before {
+        step("Launch fragment") {
+            fragmentScenario = launchFragment()
+        }
+        step("Setup RecyclerView") {
+            onRecyclerView("Setup RecyclerView ") { recyclerView ->
+                testAdapter = TestAdapter(
+                    adapterConfiguration = TestAdapterConfiguration(
+                        itemLayoutId = R.layout.dpadrecyclerview_test_item_grid,
+                        numberOfItems = numberOfItems
+                    ),
+                    onViewHolderSelected = {
 
-                },
-                onViewHolderDeselected = {
+                    },
+                    onViewHolderDeselected = {
 
-                }
-            )
-            recyclerView.apply {
-                adapter = testAdapter
-                setSpanCount(spanCount)
-                addItemDecoration(
-                    DpadGridSpacingDecoration.create(
-                        itemSpacing = resources.getDimensionPixelSize(
-                            com.rubensousa.dpadrecyclerview.test.R.dimen.dpadrecyclerview_grid_spacing
+                    }
+                )
+                recyclerView.apply {
+                    adapter = testAdapter
+                    setSpanCount(spanCount)
+                    addItemDecoration(
+                        DpadGridSpacingDecoration.create(
+                            itemSpacing = resources.getDimensionPixelSize(
+                                com.rubensousa.dpadrecyclerview.test.R.dimen.dpadrecyclerview_grid_spacing
+                            )
                         )
                     )
-                )
-            }
-            dragHelper = DpadDragHelper(
-                adapter = testAdapter,
-                callback = object : DpadDragHelper.DragCallback {
-                    override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
-                        dragStarted.add(viewHolder)
-                    }
-
-                    override fun onDragStopped(fromUser: Boolean) {
-                        dragStopRequests.add(DragStopRequest(fromUser))
-                    }
                 }
-            )
-            dragHelper.attachToRecyclerView(recyclerView)
+                dragHelper = DpadDragHelper(
+                    adapter = testAdapter,
+                    callback = object : DpadDragHelper.DragCallback {
+                        override fun onDragStarted(viewHolder: RecyclerView.ViewHolder) {
+                            dragStarted.add(viewHolder)
+                        }
+
+                        override fun onDragStopped(fromUser: Boolean) {
+                            dragStopRequests.add(DragStopRequest(fromUser))
+                        }
+                    }
+                )
+                dragHelper.attachToRecyclerView(recyclerView)
+            }
         }
     }
 
     @Test
-    fun testDragStartRowToEndRow() {
-        // given
+    fun testDragStartRowToEndRow() = report {
         val endRowPosition = spanCount - 1
-        startDragging(position = 0)
+        Given("Start dragging at position 0") {
+            startDragging(position = 0)
+        }
 
-        // when
-        repeat(spanCount) {
-            KeyEvents.pressRight()
-            waitForIdleScrollState()
+        When("Scroll $spanCount times to the right") {
+            repeat(spanCount) {
+                KeyEvents.pressRight()
+                waitForIdleScrollState()
+            }
         }
 
         // then
-        assertFocusAndSelection(position = endRowPosition)
-        testAdapter.assertContents { index ->
-            when {
-                index < spanCount - 1 -> index + 1
-                index == spanCount - 1 -> 0
-                else -> index
+        Then("Focus is in the last column at $endRowPosition") {
+            assertFocusAndSelection(position = endRowPosition)
+            testAdapter.assertContents { index ->
+                when {
+                    index < spanCount - 1 -> index + 1
+                    index == spanCount - 1 -> 0
+                    else -> index
+                }
             }
         }
     }

@@ -32,12 +32,17 @@ import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.testfixtures.DefaultInstrumentedReportRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 
 class DragHelperLinearTest {
+
+    @get:Rule
+    val report = DefaultInstrumentedReportRule()
 
     private lateinit var fragmentScenario: FragmentScenario<RecyclerViewFragment>
     private lateinit var dragHelper: DpadDragHelper<Int>

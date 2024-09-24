@@ -117,6 +117,7 @@ jobs:
           emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
             ./gradlew uninstallAll
+            adb shell settings put global verifier_verify_adb_installs 0
             ./gradlew --build-cache dpadrecyclerview-compose:connectedDebugAndroidTest
             ./gradlew --build-cache sample:connectedDebugAndroidTest
             ./gradlew --build-cache dpadrecyclerview-testing:connectedDebugAndroidTest
@@ -129,5 +130,6 @@ jobs:
           path: |
             logs/**
             ./**/build/reports/androidTests/connected/**
+            ./**/build/outputs/allure-results
             ./**/build/outputs/connected_android_test_additional_output/debugAndroidTest/connected/**
         if: always()

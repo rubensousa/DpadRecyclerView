@@ -28,8 +28,8 @@ import com.rubensousa.dpadrecyclerview.test.TestNestedListFragment
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.testfixtures.DefaultInstrumentedReportRule
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
-import com.rubensousa.dpadrecyclerview.testfixtures.recording.ScreenRecorderRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
@@ -45,8 +45,8 @@ class NestedFocusListenerTest {
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
 
-    @get:Rule(order = Int.MIN_VALUE)
-    val recordingRule = ScreenRecorderRule()
+    @get:Rule
+    val report = DefaultInstrumentedReportRule()
 
     private lateinit var fragmentScenario: FragmentScenario<TestNestedListFragment>
 

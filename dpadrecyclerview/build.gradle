@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.carioca.allure)
     id 'org.jetbrains.dokka'
 }
 
@@ -13,11 +14,8 @@ android {
 
     defaultConfig {
         minSdk versions.minSdkVersion
-        targetSdk versions.targetSdkVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
-        testInstrumentationRunnerArguments additionalTestOutputDir: 'storage/emulated/0/recordings/com.rubensousa.dpadrecyclerview.test'
-        testInstrumentationRunnerArguments listener: 'com.rubensousa.dpadrecyclerview.testfixtures.recording.TestRecordingListener'
     }
 
     buildTypes {
@@ -35,6 +33,7 @@ android {
     }
 
     testOptions {
+        targetSdk versions.targetSdkVersion
         unitTests.returnDefaultValues = true
     }
 
@@ -69,6 +68,7 @@ dependencies {
     testImplementation project (':dpadrecyclerview-test-fixtures')
 
     androidTestImplementation libs.androidx.fragment.testing
+    androidTestImplementation libs.carioca.report
     androidTestImplementation project (':dpadrecyclerview-testing')
     androidTestImplementation project (':dpadrecyclerview-test-fixtures')
     androidTestUtil libs.androidx.test.services

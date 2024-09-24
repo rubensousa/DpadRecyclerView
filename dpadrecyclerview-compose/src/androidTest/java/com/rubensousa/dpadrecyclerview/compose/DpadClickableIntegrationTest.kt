@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.dpadrecyclerview.testfixtures.DefaultInstrumentedReportRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadViewAssertions
 import org.junit.Before
@@ -16,21 +17,27 @@ import org.junit.Test
 
 class DpadClickableIntegrationTest {
 
+    @get:Rule(order = -1)
+    val report = DefaultInstrumentedReportRule()
+
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()
 
     @Before
     fun setup() {
         composeTestRule.waitForIdle()
+        Espresso.onIdle()
     }
 
     @Test
     fun testPressingBackAfterClickingOnItemClearsFocus() {
         // given
         KeyEvents.click()
+        Espresso.onIdle()
 
         // when
         KeyEvents.back()
+        Espresso.onIdle()
 
         // then
         assertFocus(item = 0, isFocused = false)
@@ -49,6 +56,7 @@ class DpadClickableIntegrationTest {
 
         // when
         KeyEvents.click()
+        Espresso.onIdle()
 
         // then
         assertThat(clicks).isEqualTo(listOf(0))

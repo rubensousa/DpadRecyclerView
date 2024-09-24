@@ -23,9 +23,14 @@ import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 import com.rubensousa.dpadrecyclerview.test.R
+import com.rubensousa.dpadrecyclerview.testfixtures.DefaultInstrumentedReportRule
+import org.junit.Rule
 import org.junit.Test
 
 class PivotLayoutManagerTest {
+
+    @get:Rule(order = -1)
+    val report = DefaultInstrumentedReportRule(enableRecording = false)
 
     @Test
     fun testDefaultSpanCountIsSetThroughConstructor() {

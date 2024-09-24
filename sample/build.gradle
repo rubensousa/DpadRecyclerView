@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.carioca.allure)
 }
 
 android {
@@ -61,7 +62,7 @@ dependencies {
     implementation libs.androidx.lifecycle.runtime.compose
     debugImplementation libs.androidx.compose.ui.tooling
 
-
+    androidTestImplementation libs.carioca.report
     androidTestImplementation libs.androidx.fragment.testing
     androidTestImplementation project (':dpadrecyclerview-testing')
     androidTestImplementation libs.androidx.test.compose.ui.junit4

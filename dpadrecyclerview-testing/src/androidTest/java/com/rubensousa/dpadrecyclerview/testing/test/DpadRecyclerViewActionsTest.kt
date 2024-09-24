@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.testing
+package com.rubensousa.dpadrecyclerview.testing.test
 
 import android.graphics.Rect
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.actions.DpadRecyclerViewActions
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
@@ -199,9 +200,8 @@ class DpadRecyclerViewActionsTest : RecyclerViewTest() {
     fun testWaitingForIdleScroll() {
         launchGridFragment()
         val expectedScrollState = RecyclerView.SCROLL_STATE_IDLE
-        repeat(15) {
-            KeyEvents.pressDown()
-        }
+
+        KeyEvents.pressDown(times = 15)
 
         var actualScrollState = RecyclerView.SCROLL_STATE_SETTLING
 
