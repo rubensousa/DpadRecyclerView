@@ -155,7 +155,6 @@ class AlignmentLookupTest : DpadRecyclerViewTest() {
         val recyclerViewBounds = getRecyclerViewBounds()
 
         onRecyclerView("Set alignment") { recyclerView ->
-            recyclerView.setSmoothScrollMaxPendingMoves(1)
             recyclerView.setAlignmentLookup(object : AlignmentLookup {
                 override fun getParentAlignment(
                     viewHolder: RecyclerView.ViewHolder,
