@@ -112,7 +112,7 @@ jobs:
           ram-size: 4096M
           emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
-            ./scripts/install_test_apks.sh
+            ./scripts/uninstall_test_services.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
