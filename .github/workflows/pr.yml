@@ -116,7 +116,7 @@ jobs:
           ram-size: 4096M
           emulator-options: -no-window -no-snapshot-save -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           script: |
-            ./gradlew uninstallAll
+            ./scripts/uninstall_test_services.sh
             adb shell settings put global verifier_verify_adb_installs 0
             ./gradlew --build-cache dpadrecyclerview-compose:connectedDebugAndroidTest
             ./gradlew --build-cache sample:connectedDebugAndroidTest

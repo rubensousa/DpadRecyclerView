@@ -155,7 +155,6 @@ class AlignmentLookupTest : DpadRecyclerViewTest() {
         val recyclerViewBounds = getRecyclerViewBounds()
 
         onRecyclerView("Set alignment") { recyclerView ->
-            recyclerView.setSmoothScrollMaxPendingMoves(1)
             recyclerView.setAlignmentLookup(object : AlignmentLookup {
                 override fun getParentAlignment(
                     viewHolder: RecyclerView.ViewHolder,
@@ -185,6 +184,51 @@ class AlignmentLookupTest : DpadRecyclerViewTest() {
         // then
         val viewBounds = getItemViewBounds(position = 0)
         assertThat(viewBounds.bottom).isEqualTo(recyclerViewBounds.bottom)
+    }
+
+    @Test
+    fun testAlignmentLookupSmoothScrolling() = report {
+        Given("Launch Fragment with top alignment") {
+            launchFragment()
+        }
+
+        var scrolled = false
+        When("Set AlignmentLookup for 50% of screen height") {
+            onRecyclerView("Set alignment") { recyclerView ->
+                recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+                        if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                            scrolled = true
+                        }
+                    }
+                })
+                recyclerView.setAlignmentLookup(
+                    object : AlignmentLookup {
+                        override fun getParentAlignment(
+                            viewHolder: RecyclerView.ViewHolder,
+                        ): ParentAlignment {
+                            return ParentAlignment(fraction = 0.5f)
+                        }
+
+                        override fun getChildAlignment(
+                            viewHolder: RecyclerView.ViewHolder,
+                        ): ChildAlignment {
+                            return ChildAlignment(fraction = 0.5f)
+                        }
+                    },
+                    smooth = true
+                )
+            }
+        }
+
+        Then("RecyclerView scrolled to new position") {
+            waitForIdleScrollState()
+            val recyclerViewBounds = getRecyclerViewBounds()
+            val viewBounds = getItemViewBounds(position = 0)
+            assertThat(scrolled).isTrue()
+            assertThat(viewBounds.centerY()).isEqualTo(recyclerViewBounds.height() / 2)
+        }
     }
 
 }

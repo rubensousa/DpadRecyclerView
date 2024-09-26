@@ -43,6 +43,14 @@ internal class ParentAlignmentCalculator {
     private var endEdge = Int.MAX_VALUE
     private var startEdge = Int.MIN_VALUE
 
+    fun setScrollStartLimit(limit: Int) {
+        startScrollLimit = limit
+    }
+
+    fun setScrollEndLimit(limit: Int) {
+        endScrollLimit = limit
+    }
+
     fun updateLayoutInfo(
         layoutManager: LayoutManager,
         isVertical: Boolean,
