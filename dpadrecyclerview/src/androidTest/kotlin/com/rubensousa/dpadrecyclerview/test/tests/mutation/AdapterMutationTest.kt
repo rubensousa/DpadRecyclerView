@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.carioca.report.android.recording.TestRecording
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.ViewBounds
@@ -270,6 +271,7 @@ class AdapterMutationTest : DpadRecyclerViewTest() {
 
     }
 
+    @TestRecording(keepOnSuccess = true)
     @Test
     fun testRemovalOfLargeInterval() {
         // given
