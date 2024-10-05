@@ -3,10 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.carioca.allure)
+    alias(libs.plugins.maven.publish)
     id 'org.jetbrains.dokka'
 }
 
-apply from: "$rootProject.projectDir/gradle/publish.gradle"
 apply from: "$rootProject.projectDir/gradle/coverage.gradle"
 
 android {
@@ -39,13 +39,6 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
-    }
-
-    publishing {
-        singleVariant('release') {
-            withSourcesJar()
-            withJavadocJar()
-        }
     }
 
 }

@@ -12,8 +12,8 @@ plugins {
     alias libs.plugins.android.library apply false
     alias libs.plugins.kotlin.android apply false
     alias libs.plugins.kotlin.kover apply false
+    alias libs.plugins.maven.publish apply false
     alias libs.plugins.androidx.navigation.safeargs apply false
-    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
     id 'org.jetbrains.dokka' version '1.9.20'
     id 'org.jetbrains.kotlinx.binary-compatibility-validator' version "0.14.0"
 }
@@ -21,40 +21,4 @@ plugins {
 apiValidation {
     ignoredProjects += ["sample", "dpadrecyclerview-test-fixtures"]
     ignoredClasses += "com.rubensousa.dpadrecyclerview.BuildConfig"
-}
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            stagingProfileId = getSonatypeStagingId()
-            username = getSonatypeUsername()
-            password = getSonatypePassword()
-        }
-    }
-}
-
-String getSonatypeStagingId() {
-    if (hasProperty("ossrhStagingProfileId")) {
-        return ossrhStagingProfileId
-    } else {
-        return ""
-    }
-}
-
-String getSonatypeUsername() {
-    if (hasProperty("ossrhUsername")) {
-        return ossrhUsername
-    } else {
-        return ""
-    }
-}
-
-String getSonatypePassword() {
-    if (hasProperty("ossrhPassword")) {
-        return ossrhPassword
-    } else {
-        return ""
-    }
 }

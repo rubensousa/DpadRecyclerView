@@ -24,7 +24,7 @@ theme:
 
 extra:
   dpadrecyclerview:
-    version: '1.4.0-alpha06'
+    version: '1.4.0-beta01'
   social:
     - icon: 'fontawesome/brands/github'
       link: 'https://github.com/rubensousa/DpadRecyclerView'
