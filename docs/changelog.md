@@ -2,6 +2,14 @@
 
 ## Version 1.4.0
 
+### 1.4.0-beta01
+
+2024-10-05
+
+#### Bug fixes
+
+- Do not allow scrolling more than the layout size when `AlignmentLookup` is used: ([#270](https://github.com/rubensousa/DpadRecyclerView/pull/270))
+
 ### 1.4.0-alpha06
 
 2024-09-05
