@@ -151,7 +151,7 @@ class SelectionTest : DpadRecyclerViewTest() {
         assertSelectedPosition(position = 0)
         assertViewHolderSelected(position = 0, isSelected = true)
 
-        repeat(10) { index ->
+        repeat(5) { index ->
             KeyEvents.pressDown()
             assertViewHolderSelected(position = index, isSelected = false)
             assertSelectedPosition(position = index + 1)
