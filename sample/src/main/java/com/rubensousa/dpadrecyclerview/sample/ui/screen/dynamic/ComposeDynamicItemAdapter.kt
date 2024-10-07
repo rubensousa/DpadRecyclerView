@@ -18,13 +18,13 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.dynamic
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ComposableItem
+import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 
 class ComposeDynamicItemAdapter :
-    ListAdapter<ComposableItem, DpadComposeFocusViewHolder<ComposableItem>>(
-        object : DiffUtil.ItemCallback<ComposableItem?>() {
+    MutableListAdapter<ComposableItem, DpadComposeFocusViewHolder<ComposableItem>>(
+        object : DiffUtil.ItemCallback<ComposableItem>() {
             override fun areItemsTheSame(
                 oldItem: ComposableItem,
                 newItem: ComposableItem

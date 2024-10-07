@@ -75,7 +75,7 @@ class DragAndDropFragment : Fragment(R.layout.screen_drag_drop) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         setDragButtonContent()
-        dragAdapter.submitList(List(20) { it }.toMutableList())
+        dragAdapter.submitMutableList(List(20) { it }.toMutableList())
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressCallback)
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

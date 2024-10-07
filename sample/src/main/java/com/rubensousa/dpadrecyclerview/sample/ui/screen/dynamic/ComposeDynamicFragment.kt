@@ -18,24 +18,83 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.dynamic
 
 import android.os.Bundle
 import android.view.View
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.model.DelegateAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
+import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 
 class ComposeDynamicFragment : Fragment(R.layout.screen_recyclerview) {
 
     private val binding by viewBinding(ScreenRecyclerviewBinding::bind)
+    private val stateRegistry = DpadStateRegistry(this)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView(binding.recyclerView)
-        val adapter = DelegateAdapter()
-        adapter.submitList(mutableListOf())
+        val pool = UnboundViewPool()
+        val scrollState = stateRegistry.getScrollState()
+        val adapter = DelegateAdapter().apply {
+            addDelegate(
+                ShortListDelegate(
+                    viewPool = pool,
+                    scrollState = scrollState,
+                )
+            )
+            addDelegate(
+                MediumListDelegate(
+                    scrollState = scrollState,
+                    viewPool = pool
+                )
+            )
+        }
+        adapter.submitList(
+            listOf(
+                ShortList(
+                    title = "Short list example",
+                    items = List(20) {
+                        SmallCardItem(it)
+                    }
+                ),
+                MediumList(
+                    title = "Medium list example",
+                    items = List(20) {
+                        MediumCardItem(it)
+                    }
+                ),
+                ShortList(
+                    title = "Short list example 2",
+                    items = List(20) {
+                        SmallCardItem(it)
+                    }
+                ),
+                MediumList(
+                    title = "Medium list example 2",
+                    items = List(20) {
+                        MediumCardItem(it)
+                    }
+                ),
+                ShortList(
+                    title = "Short list example 3",
+                    items = List(20) {
+                        SmallCardItem(it)
+                    }
+                ),
+                MediumList(
+                    title = "Medium list example 3",
+                    items = List(20) {
+                        MediumCardItem(it)
+                    }
+                ),
+            )
+        )
         binding.recyclerView.apply {
             setAdapter(adapter)
             setSmoothScrollMaxPendingMoves(0)
@@ -48,7 +107,7 @@ class ComposeDynamicFragment : Fragment(R.layout.screen_recyclerview) {
             RecyclerViewLogger.logChildrenWhenIdle(this)
             addItemDecoration(
                 DpadLinearSpacingDecoration.create(
-                    itemSpacing = resources.getDimensionPixelOffset(R.dimen.vertical_item_spacing)
+                    itemSpacing = dpToPx(8.dp)
                 )
             )
         }

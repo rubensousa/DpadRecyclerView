@@ -20,13 +20,13 @@
         android:id="@+id/cardRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="220dp"
-        android:layout_marginTop="16dp"
         android:clipChildren="false"
         android:gravity="center"
         android:orientation="horizontal"
         app:dpadRecyclerViewChildAlignmentFraction="0.0"
-        app:dpadRecyclerViewParentAlignmentEdge="none"
-        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start"
-        app:dpadRecyclerViewParentAlignmentFraction="0.0" />
+        app:dpadRecyclerViewItemEdgeSpacing="@dimen/list_margin_start"
+        app:dpadRecyclerViewItemSpacing="@dimen/horizontal_item_spacing"
+        app:dpadRecyclerViewParentAlignmentFraction="0.0"
+        app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start" />
 
 </LinearLayout>
