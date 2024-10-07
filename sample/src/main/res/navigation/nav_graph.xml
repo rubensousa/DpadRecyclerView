@@ -104,6 +104,10 @@
             android:id="@+id/open_vertical_list"
             app:destination="@id/vertical_list_fragment" />
 
+        <action
+            android:id="@+id/open_dynamic_compose"
+            app:destination="@id/dynamic_compose_fragment" />
+
     </fragment>
 
     <fragment
@@ -241,5 +245,9 @@
     <fragment
         android:id="@+id/scrollable_layout_fragment"
         android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.layout.ScrollableLayoutFragment" />
+
+    <fragment
+        android:id="@+id/dynamic_compose_fragment"
+        android:name="com.rubensousa.dpadrecyclerview.sample.ui.screen.dynamic.ComposeDynamicFragment" />
 
 </navigation>

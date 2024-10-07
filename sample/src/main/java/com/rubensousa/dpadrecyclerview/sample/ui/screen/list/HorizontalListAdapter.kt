@@ -75,7 +75,7 @@ class HorizontalListAdapter(
 
     override fun onViewRecycled(holder: HorizontalListViewHolder) {
         holder.item?.let { item ->
-            scrollState.save(holder.recyclerView, item.diffId)
+            scrollState.save(holder.recyclerView, item.getDiffId())
         }
         holder.recycle()
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Rúben Sousa
+ * Copyright 2024 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,17 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListComposeBinding
-import com.rubensousa.dpadrecyclerview.sample.ui.model.ItemModel
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
-import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
-import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.model.RecyclerViewItem
+import com.rubensousa.dpadrecyclerview.sample.ui.model.ViewHolderDelegate
 import com.rubensousa.dpadrecyclerview.state.DpadScrollState
 
-class NestedComposeListAdapter(
+class NestedComposeListDelegate(
     private val scrollState: DpadScrollState,
-) : MutableListAdapter<ListModel, NestedComposeListViewHolder>(ItemModel.buildDiffCallback()) {
+    private val viewPool: UnboundViewPool,
+) : ViewHolderDelegate<ListModel, NestedComposeListViewHolder> {
 
-    private val viewPool = UnboundViewPool()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NestedComposeListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup): NestedComposeListViewHolder {
         return NestedComposeListViewHolder(
             AdapterListComposeBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
@@ -41,12 +39,9 @@ class NestedComposeListAdapter(
         )
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return ListTypes.LIST_START
-    }
+    override fun matches(item: RecyclerViewItem): Boolean = item is ListModel
 
-    override fun onBindViewHolder(holder: NestedComposeListViewHolder, position: Int) {
-        val item = getItem(position)
+    override fun onBindViewHolder(holder: NestedComposeListViewHolder, item: ListModel) {
         holder.bind(item)
         scrollState.restore(
             recyclerView = holder.getRecyclerView(),
@@ -57,12 +52,11 @@ class NestedComposeListAdapter(
 
     override fun onViewRecycled(holder: NestedComposeListViewHolder) {
         holder.item?.let {
-            scrollState.save(holder.getRecyclerView(), it.diffId)
+            scrollState.save(holder.getRecyclerView(), it.getDiffId())
         }
     }
 
-    override fun onViewDetachedFromWindow(holder: NestedComposeListViewHolder) {
-        super.onViewDetachedFromWindow(holder)
+    override fun onViewDetached(holder: NestedComposeListViewHolder) {
         holder.cancelAnimations()
     }
 
