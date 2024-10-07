@@ -28,7 +28,7 @@ class TestAdapter(
     private val adapterConfiguration: TestAdapterConfiguration,
     private val onViewHolderSelected: (position: Int) -> Unit,
     private val onViewHolderDeselected: (position: Int) -> Unit
-) : AbstractTestAdapter<TestAdapter.ItemViewHolder>(adapterConfiguration) {
+) : AbstractTestAdapter<TestAdapter.ItemViewHolder>(adapterConfiguration.numberOfItems) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
         return ItemViewHolder(
