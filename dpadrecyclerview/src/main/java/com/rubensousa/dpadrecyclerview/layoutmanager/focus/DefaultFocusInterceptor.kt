@@ -101,8 +101,9 @@ internal class DefaultFocusInterceptor(
     ): View? {
         var currentPosition = fromPosition
         while (currentPosition >= 0 && currentPosition < layoutInfo.getItemCount()) {
-            val view = layoutInfo.findViewByPosition(currentPosition)
-            if (view != null && layoutInfo.isViewFocusable(view)) {
+            // Exit early if we've exhausted the current layout structure
+            val view = layoutInfo.findViewByPosition(currentPosition) ?: return null
+            if (layoutInfo.isViewFocusable(view)) {
                 return view
             }
             currentPosition += positionIncrement
