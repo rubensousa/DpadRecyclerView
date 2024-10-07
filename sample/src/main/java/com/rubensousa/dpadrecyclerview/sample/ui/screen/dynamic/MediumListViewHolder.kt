@@ -18,13 +18,13 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.dynamic
 
 import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListComposeBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListMediumBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.model.DelegateViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ListAnimator
 
 class MediumListViewHolder(
     private val recycledViewPool: UnboundViewPool,
-    private val binding: AdapterListComposeBinding,
+    private val binding: AdapterListMediumBinding,
 ) : DelegateViewHolder<MediumList>(binding.root), DpadViewHolder {
 
     val recyclerView = binding.cardRecyclerView

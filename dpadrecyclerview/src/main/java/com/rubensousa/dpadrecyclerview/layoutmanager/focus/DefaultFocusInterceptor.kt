@@ -38,12 +38,67 @@ internal class DefaultFocusInterceptor(
         position: Int,
         direction: Int
     ): View? {
-        val absoluteDirection = FocusDirection.getAbsoluteDirection(
+        val focusAbsoluteDirection = FocusDirection.getAbsoluteDirection(
             direction = direction,
             isVertical = configuration.isVertical(),
             reverseLayout = layoutInfo.shouldReverseLayout()
         )
-        return focusFinder.findNextFocus(recyclerView, focusedView, absoluteDirection)
+        // Exit early if the focus finder can't find focus already
+        val nextFocusFinderView = focusFinder.findNextFocus(
+            recyclerView, focusedView, focusAbsoluteDirection
+        ) ?: return null
+        val currentViewHolder = layoutInfo.getChildViewHolder(focusedView)
+        val nextViewHolder = layoutInfo.getChildViewHolder(nextFocusFinderView)
+        /**
+         * Check if the focus finder has found another focusable view for the same ViewHolder
+         * This might happen when sub positions are used
+         */
+        if (nextViewHolder === currentViewHolder && nextFocusFinderView !== focusedView) {
+            return nextFocusFinderView
+        }
+        return if (configuration.spanCount == 1) {
+            val relativeFocusDirection = FocusDirection.from(
+                direction, isVertical = configuration.isVertical(),
+                reverseLayout = configuration.reverseLayout
+            ) ?: return nextFocusFinderView
+            findNextLinearChild(position, relativeFocusDirection)
+        } else {
+            return nextFocusFinderView
+        }
     }
 
+    private fun findNextLinearChild(position: Int, direction: FocusDirection): View? {
+        // We only support the main direction
+        if (direction.isSecondary()) {
+            return null
+        }
+        val positionIncrement = layoutInfo.getPositionIncrement(
+            goingForward = direction == FocusDirection.NEXT_ROW
+                    || direction == FocusDirection.NEXT_COLUMN
+        )
+        val nextPosition = position + positionIncrement
+        // Jump early if we're going out of bounds
+        if (nextPosition < 0 || nextPosition == layoutInfo.getItemCount()) {
+            return null
+        }
+        return findNextFocusableView(
+            fromPosition = nextPosition,
+            positionIncrement = positionIncrement
+        )
+    }
+
+    private fun findNextFocusableView(
+        fromPosition: Int,
+        positionIncrement: Int
+    ): View? {
+        var currentPosition = fromPosition
+        while (currentPosition >= 0 && currentPosition < layoutInfo.getItemCount()) {
+            val view = layoutInfo.findViewByPosition(currentPosition)
+            if (view != null && layoutInfo.isViewFocusable(view)) {
+                return view
+            }
+            currentPosition += positionIncrement
+        }
+        return null
+    }
 }

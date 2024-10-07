@@ -19,7 +19,7 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.dynamic
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
-import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListComposeBinding
+import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListMediumBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.model.RecyclerViewItem
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ViewHolderDelegate
 import com.rubensousa.dpadrecyclerview.state.DpadScrollState
@@ -32,7 +32,7 @@ class MediumListDelegate(
     override fun onCreateViewHolder(parent: ViewGroup): MediumListViewHolder {
         return MediumListViewHolder(
             viewPool,
-            AdapterListComposeBinding.inflate(
+            AdapterListMediumBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
         )
