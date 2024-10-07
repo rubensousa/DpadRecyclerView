@@ -54,6 +54,8 @@ class ShortListViewHolder(
 
     override fun bind(item: ShortList) {
         this.item = item
+        recyclerView.isFocusable = item.items.isNotEmpty()
+        recyclerView.isFocusableInTouchMode = recyclerView.isFocusable
         adapter.replaceList(item.items)
         binding.featureGroupTextView.text = item.title
     }

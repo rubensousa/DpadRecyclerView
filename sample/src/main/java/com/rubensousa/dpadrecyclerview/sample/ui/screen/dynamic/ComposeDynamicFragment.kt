@@ -82,10 +82,8 @@ class ComposeDynamicFragment : Fragment(R.layout.screen_recyclerview) {
                     }
                 ),
                 ShortList(
-                    title = "Short list example 3",
-                    items = List(20) {
-                        SmallCardItem(it)
-                    }
+                    title = "Short list empty example",
+                    items = emptyList()
                 ),
                 MediumList(
                     title = "Medium list example 3",
