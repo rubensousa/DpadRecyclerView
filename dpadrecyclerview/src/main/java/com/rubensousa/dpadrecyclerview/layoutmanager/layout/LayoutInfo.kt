@@ -19,8 +19,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager.layout
 import android.graphics.Rect
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.forEach
 import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
@@ -72,7 +70,7 @@ internal class LayoutInfo(
 
     fun getConfiguration() = configuration
 
-    fun isRTL() = layout.layoutDirection == ViewCompat.LAYOUT_DIRECTION_RTL
+    fun isRTL() = layout.layoutDirection == View.LAYOUT_DIRECTION_RTL
 
     fun isHorizontal() = configuration.isHorizontal()
 

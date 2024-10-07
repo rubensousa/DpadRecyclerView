@@ -56,11 +56,19 @@ internal class DefaultFocusInterceptor(
         if (nextViewHolder === currentViewHolder && nextFocusFinderView !== focusedView) {
             return nextFocusFinderView
         }
+
         return if (configuration.spanCount == 1) {
             val relativeFocusDirection = FocusDirection.from(
                 direction, isVertical = configuration.isVertical(),
                 reverseLayout = configuration.reverseLayout
             ) ?: return nextFocusFinderView
+            /**
+             * If the layout is looping, let the focus finder find the next focusable view
+             * if we're searching for focus in the layout direction
+             */
+            if (layoutInfo.isLoopingAllowed && relativeFocusDirection.isPrimary()) {
+                return nextFocusFinderView
+            }
             findNextLinearChild(position, relativeFocusDirection)
         } else {
             return nextFocusFinderView
