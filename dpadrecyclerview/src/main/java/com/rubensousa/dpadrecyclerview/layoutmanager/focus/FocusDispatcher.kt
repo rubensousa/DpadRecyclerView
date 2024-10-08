@@ -130,8 +130,10 @@ internal class FocusDispatcher(
     ): View? {
         val currentRecyclerView = recyclerView ?: return focused
 
-        if (!isFocusSearchEnabled(currentRecyclerView)) {
-            return focused
+        // If the parent RecyclerView does not allow focusing children,
+        // just delegate focus to its parent
+        if (currentRecyclerView.descendantFocusability == ViewGroup.FOCUS_BLOCK_DESCENDANTS) {
+            return currentRecyclerView.parent?.focusSearch(focused, direction)
         }
 
         // Get the new focus direction and exit early if none is valid
@@ -173,13 +175,6 @@ internal class FocusDispatcher(
                 scroller.addPendingAlignment(view)
                 return view
             }
-        }
-
-
-        // If the parent RecyclerView does not allow focusing children,
-        // just delegate focus to its parent
-        if (currentRecyclerView.descendantFocusability == ViewGroup.FOCUS_BLOCK_DESCENDANTS) {
-            return currentRecyclerView.parent?.focusSearch(focused, direction)
         }
 
         val isScrolling = currentRecyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE
