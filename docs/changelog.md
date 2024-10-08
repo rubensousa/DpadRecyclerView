@@ -2,6 +2,14 @@
 
 ## Version 1.4.0
 
+### 1.4.0-beta02
+
+2024-10-08
+
+#### Bug fixes
+
+- Fixed focus order not being consistent in some cases: ([#275](https://github.com/rubensousa/DpadRecyclerView/pull/275))
+
 ### 1.4.0-beta01
 
 2024-10-05
