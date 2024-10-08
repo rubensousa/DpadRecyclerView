@@ -90,7 +90,8 @@ internal class LayoutConfiguration(properties: Properties) {
     var isFocusSearchDisabled = false
         private set
 
-    private var isFocusSearchEnabledDuringAnimations = false
+    var isFocusSearchEnabledDuringAnimations = false
+        private set
 
     // Number of items to prefetch when first coming on screen with new data
     var initialPrefetchItemCount = 4

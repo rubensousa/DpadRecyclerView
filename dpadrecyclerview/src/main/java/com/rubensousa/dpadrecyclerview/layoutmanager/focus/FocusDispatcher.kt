@@ -136,6 +136,12 @@ internal class FocusDispatcher(
             return currentRecyclerView.parent?.focusSearch(focused, direction)
         }
 
+        if (!configuration.isFocusSearchEnabledDuringAnimations
+            && currentRecyclerView.isAnimating
+        ) {
+            return focused
+        }
+
         // Get the new focus direction and exit early if none is valid
         val focusDirection: FocusDirection = FocusDirection.from(
             direction = direction,
