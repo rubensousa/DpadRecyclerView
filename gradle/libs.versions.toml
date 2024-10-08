@@ -8,6 +8,7 @@ androidx-appcompat = "1.7.0"
 androidx-compose-ui = "1.7.0-rc01"
 androidx-test-espresso = '3.6.1'
 androidx-test-uiautomator = '2.3.0'
+androidx-compose-compiler = '1.5.15'
 # From sample
 androidx-compose-material3 = '1.2.1'
 androidx-constraintlayout = "2.1.4"
@@ -28,7 +29,7 @@ guava = "33.1.0-android"
 timber = "5.0.1"
 
 decorator = "2.1.0"
-kotlin = "2.0.0"
+kotlin = "1.9.25"
 kover = "0.7.6"
 jacoco = "0.8.11"
 test-junit = '4.13.2'
@@ -42,7 +43,6 @@ android-application = { id = "com.android.application", version.ref = "android-g
 android-library = { id = "com.android.library", version.ref = "android-gradle-plugin" }
 androidx-navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidx-navigation" }
 jacoco = { id = "org.jacoco.core", version.ref = "jacoco" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 carioca-allure = { id = "com.rubensousa.carioca.report.allure", version.ref = "carioca-allure" }

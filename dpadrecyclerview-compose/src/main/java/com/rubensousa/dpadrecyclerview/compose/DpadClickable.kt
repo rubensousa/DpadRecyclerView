@@ -63,6 +63,7 @@ import kotlinx.coroutines.launch
  * and triggers a sound effect on click.
  * Workaround for: https://issuetracker.google.com/issues/268268856
  */
+@Suppress("UnnecessaryVariable")
 @Composable
 fun Modifier.dpadClickable(
     enabled: Boolean = true,
@@ -70,6 +71,8 @@ fun Modifier.dpadClickable(
     onLongClick: (() -> Unit)? = null,
     onClick: (() -> Unit)?,
 ): Modifier {
+    val clickLambda = onClick
+    val longClickLambda = onLongClick
     val context = LocalContext.current
     val audioManager = remember { context.getSystemService(Context.AUDIO_SERVICE) as? AudioManager }
     return handleDpadCenter(
@@ -92,8 +95,8 @@ fun Modifier.dpadClickable(
         }
     ).focusable(interactionSource = interactionSource)
         .semantics(mergeDescendants = true) {
-            onClick {
-                onClick?.let { action ->
+            onClick(label = null) {
+                clickLambda?.let { action ->
                     audioManager?.playSoundEffect(AudioManager.FX_KEY_CLICK)
                     action()
                     return@onClick true
@@ -101,7 +104,7 @@ fun Modifier.dpadClickable(
                 false
             }
             onLongClick {
-                onLongClick?.let { action ->
+                longClickLambda?.let { action ->
                     action()
                     return@onLongClick true
                 }
