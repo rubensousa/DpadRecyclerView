@@ -22,6 +22,6 @@ data class ListModel(
     val centerAligned: Boolean,
     val isLeanback: Boolean,
     val enableLooping: Boolean = false
-) : ItemModel {
-    override val diffId: String = title
+) : RecyclerViewItem {
+    override fun getDiffId(): String = title
 }

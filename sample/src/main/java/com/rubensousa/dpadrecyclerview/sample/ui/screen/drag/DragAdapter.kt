@@ -33,7 +33,7 @@ class DragAdapter(
 ) : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK),
     DpadDragHelper.DragAdapter<Int> {
 
-    override fun getMutableItems(): MutableList<Int> = items
+    override fun getMutableItems(): MutableList<Int> = mutableList
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

@@ -79,7 +79,7 @@ class TestNestedListFragment : Fragment(R.layout.dpadrecyclerview_test_container
         private val configuration: TestAdapterConfiguration,
         private val onViewFocusedListener: OnViewFocusedListener,
         private val scrollState: DpadScrollState,
-    ) : AbstractTestAdapter<ListViewHolder>(configuration) {
+    ) : AbstractTestAdapter<ListViewHolder>(configuration.numberOfItems) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
             return ListViewHolder(

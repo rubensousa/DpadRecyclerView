@@ -22,12 +22,11 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DiffUtil.DiffResult
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadDragHelper
-import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
 import java.util.Collections
 import java.util.concurrent.Executors
 
 abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
-    adapterConfiguration: TestAdapterConfiguration,
+    numberOfItems: Int
 ) : RecyclerView.Adapter<VH>(), DpadDragHelper.DragAdapter<Int> {
 
     companion object {
@@ -40,7 +39,7 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
         override fun areItemsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
         override fun areContentsTheSame(oldItem: Int, newItem: Int) = oldItem == newItem
     }
-    private var items = MutableList(adapterConfiguration.numberOfItems) { it }
+    private var items = MutableList(numberOfItems) { it }
     private var currentVersion = 0
     private var id = items.size
 

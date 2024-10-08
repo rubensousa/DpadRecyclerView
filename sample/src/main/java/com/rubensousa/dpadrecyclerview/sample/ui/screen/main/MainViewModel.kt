@@ -169,6 +169,10 @@ class MainViewModel : ViewModel() {
                     title = "Nested lists"
                 ),
                 ScreenDestination(
+                    direction = MainFragmentDirections.openDynamicCompose(),
+                    title = "Dynamic compose layout"
+                ),
+                ScreenDestination(
                     direction = MainFragmentDirections.openComposeGrid(),
                     title = "Grid"
                 )

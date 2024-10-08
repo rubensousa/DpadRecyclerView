@@ -25,6 +25,7 @@ import com.rubensousa.dpadrecyclerview.OnViewFocusedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenMainBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.model.DelegateAdapter
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import com.rubensousa.dpadrecyclerview.state.DpadStateRegistry
 import timber.log.Timber
@@ -43,10 +44,14 @@ class MainFragment : Fragment(R.layout.screen_main) {
         super.onViewCreated(view, savedInstanceState)
         val binding = ScreenMainBinding.bind(view)
         val recyclerView = binding.recyclerView
-        val adapter = FeatureListAdapter(
-            scrollState = stateRegistry.getScrollState(),
-            recycledViewPool = UnboundViewPool()
-        )
+        val adapter = DelegateAdapter().apply {
+            addDelegate(
+                FeatureListDelegate(
+                    scrollState = stateRegistry.getScrollState(),
+                    recycledViewPool = UnboundViewPool()
+                )
+            )
+        }
         recyclerView.adapter = adapter
         recyclerView.requestFocus()
         recyclerView.addItemDecoration(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Rúben Sousa
+ * Copyright 2024 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
+package com.rubensousa.dpadrecyclerview.sample.ui.model
 
-import com.rubensousa.dpadrecyclerview.sample.ui.model.RecyclerViewItem
+import androidx.compose.runtime.Composable
 
-data class FeatureList(
-    val title: String,
-    val destinations: List<ScreenDestination>,
-) : RecyclerViewItem {
+interface ComposableItem : RecyclerViewItem {
 
-    override fun getDiffId(): String = title
+    @Composable
+    fun Content()
 
 }

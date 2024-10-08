@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Rúben Sousa
+ * Copyright 2024 Rúben Sousa
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.rubensousa.dpadrecyclerview.sample.ui.screen.main
+package com.rubensousa.dpadrecyclerview.sample.ui.screen.dynamic
 
 import com.rubensousa.dpadrecyclerview.sample.ui.model.RecyclerViewItem
 
-data class FeatureList(
+data class MediumList(
     val title: String,
-    val destinations: List<ScreenDestination>,
+    val items: List<MediumCardItem>
 ) : RecyclerViewItem {
-
     override fun getDiffId(): String = title
-
 }

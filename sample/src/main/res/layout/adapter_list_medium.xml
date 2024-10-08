@@ -22,11 +22,32 @@
         android:layout_height="220dp"
         android:clipChildren="false"
         android:gravity="center"
+        android:nextFocusDown="@id/mediumButtonAnchor"
         android:orientation="horizontal"
         app:dpadRecyclerViewChildAlignmentFraction="0.0"
         app:dpadRecyclerViewItemEdgeSpacing="@dimen/list_margin_start"
         app:dpadRecyclerViewItemSpacing="@dimen/horizontal_item_spacing"
         app:dpadRecyclerViewParentAlignmentFraction="0.0"
         app:dpadRecyclerViewParentAlignmentOffset="@dimen/list_margin_start" />
+
+    <FrameLayout
+        android:id="@+id/mediumButtonAnchor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="@dimen/list_margin_start"
+        android:background="@color/list_item_background"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:duplicateParentState="true"
+            android:padding="8dp"
+            android:text="Sub position"
+            android:textColor="@color/list_item_text" />
+
+    </FrameLayout>
 
 </LinearLayout>

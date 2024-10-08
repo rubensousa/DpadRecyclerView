@@ -35,8 +35,10 @@ import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
+import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.model.DelegateAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.screen.list.ListViewModel
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
@@ -74,10 +76,17 @@ class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
                 }
             }
         )
-        val itemAdapter = NestedComposeListAdapter(stateRegistry.getScrollState())
+        val itemAdapter = DelegateAdapter().apply {
+            addDelegate(
+                NestedComposeListDelegate(
+                    scrollState = stateRegistry.getScrollState(),
+                    viewPool = UnboundViewPool()
+                )
+            )
+        }
         val concatAdapter = ConcatAdapter(
             ConcatAdapter.Config.Builder()
-                .setIsolateViewTypes(false)
+                .setIsolateViewTypes(true)
                 .build()
         )
         concatAdapter.addAdapter(itemAdapter)
@@ -88,7 +97,7 @@ class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
         }
 
         viewModel.listState.observe(viewLifecycleOwner) { list ->
-            itemAdapter.submitList(list)
+            itemAdapter.submitList(list.toList())
         }
 
         binding.recyclerView.apply {

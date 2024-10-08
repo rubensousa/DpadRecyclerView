@@ -22,13 +22,14 @@ import com.rubensousa.dpadrecyclerview.DpadViewHolder
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.AdapterListComposeBinding
+import com.rubensousa.dpadrecyclerview.sample.ui.model.DelegateViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListModel
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.ListAnimator
 
 class NestedComposeListViewHolder(
     private val binding: AdapterListComposeBinding,
     viewPool: UnboundViewPool
-) : RecyclerView.ViewHolder(binding.root), DpadViewHolder {
+) : DelegateViewHolder<ListModel>(binding.root), DpadViewHolder {
 
     var item: ListModel? = null
         private set
@@ -62,7 +63,7 @@ class NestedComposeListViewHolder(
 
     fun getAdapter(): RecyclerView.Adapter<*> = adapter
 
-    fun bind(item: ListModel) {
+    override fun bind(item: ListModel) {
         this.item = item
         binding.cardListTextView.text = item.title
         adapter.replaceList(item.items)

@@ -34,37 +34,89 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
         private val MAIN_THREAD_HANDLER = Handler(Looper.getMainLooper())
     }
 
-    protected var items: MutableList<T> = Collections.emptyList()
+    private var currentList: List<T> = Collections.emptyList()
+    private var immutableList: List<T> = Collections.emptyList()
+    protected var mutableList: MutableList<T> = Collections.emptyList()
     private var currentVersion = 0
 
     @SuppressLint("NotifyDataSetChanged")
-    fun replaceList(items: MutableList<T>) {
-        this.items = items
+    fun replaceList(newList: List<T>) {
+        immutableList = newList
+        currentList = immutableList
+        mutableList.clear()
         currentVersion++
         notifyDataSetChanged()
     }
 
-    fun submitList(newList: MutableList<T>, commitCallback: Runnable? = null) {
+    @SuppressLint("NotifyDataSetChanged")
+    fun replaceMutableList(newList: MutableList<T>) {
+        immutableList = Collections.emptyList()
+        mutableList = newList
+        currentList = mutableList
+        currentVersion++
+        notifyDataSetChanged()
+    }
+
+    fun submitMutableList(newList: MutableList<T>, commitCallback: Runnable? = null) {
         val version = ++currentVersion
-        if (items === newList) {
+        if (mutableList === newList) {
             commitCallback?.run()
             return
         }
 
         if (newList.isEmpty()) {
-            val removed = items.size
-            items = Collections.emptyList()
+            val removed = mutableList.size
+            mutableList = Collections.emptyList()
+            immutableList = Collections.emptyList()
+            currentList = mutableList
             notifyItemRangeRemoved(0, removed)
             return
         }
 
-        if (items.isEmpty()) {
-            items = newList
+        if (mutableList.isEmpty()) {
+            mutableList = newList
+            immutableList = emptyList()
+            currentList = mutableList
             notifyItemRangeInserted(0, newList.size)
             return
         }
 
-        val oldList = items
+        val oldList = mutableList
+        BACKGROUND_EXECUTOR.execute {
+            val diffResult = calculateDiff(oldList, newList)
+            MAIN_THREAD_HANDLER.post {
+                if (version == currentVersion) {
+                    latchMutableList(newList, diffResult, commitCallback)
+                }
+            }
+        }
+    }
+
+    fun submitList(newList: List<T>, commitCallback: Runnable? = null) {
+        val version = ++currentVersion
+        if (immutableList === newList) {
+            commitCallback?.run()
+            return
+        }
+
+        if (newList.isEmpty()) {
+            val removed = immutableList.size
+            immutableList = Collections.emptyList()
+            mutableList = Collections.emptyList()
+            currentList = immutableList
+            notifyItemRangeRemoved(0, removed)
+            return
+        }
+
+        if (immutableList.isEmpty()) {
+            immutableList = newList
+            mutableList = Collections.emptyList()
+            currentList = immutableList
+            notifyItemRangeInserted(0, newList.size)
+            return
+        }
+
+        val oldList = immutableList
         BACKGROUND_EXECUTOR.execute {
             val diffResult = calculateDiff(oldList, newList)
             MAIN_THREAD_HANDLER.post {
@@ -110,31 +162,44 @@ abstract class MutableListAdapter<T, VH : RecyclerView.ViewHolder>(
     }
 
     private fun latchList(
+        newList: List<T>,
+        result: DiffUtil.DiffResult,
+        commitCallback: Runnable?
+    ) {
+        immutableList = newList
+        mutableList = Collections.emptyList()
+        currentList = immutableList
+        result.dispatchUpdatesTo(this)
+        commitCallback?.run()
+    }
+
+    private fun latchMutableList(
         newList: MutableList<T>,
         result: DiffUtil.DiffResult,
         commitCallback: Runnable?
     ) {
-        items = newList
+        immutableList = Collections.emptyList()
+        mutableList = newList
+        currentList = mutableList
         result.dispatchUpdatesTo(this)
         commitCallback?.run()
     }
 
     fun removeAt(index: Int) {
-        if (index >= 0 && index < items.size) {
+        if (index >= 0 && index < mutableList.size) {
             currentVersion++
-            items.removeAt(index)
+            mutableList.removeAt(index)
             notifyItemRemoved(index)
         }
-
     }
 
     fun addAt(index: Int, item: T) {
         currentVersion++
-        items.add(index, item)
+        mutableList.add(index, item)
         notifyItemInserted(index)
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int = currentList.size
 
-    fun getItem(position: Int) = items[position]
+    fun getItem(position: Int) = currentList[position]
 }

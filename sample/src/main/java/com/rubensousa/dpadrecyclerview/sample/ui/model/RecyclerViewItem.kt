@@ -16,25 +16,32 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui.model
 
-import android.annotation.SuppressLint
 import androidx.recyclerview.widget.DiffUtil
 
-interface ItemModel {
+interface RecyclerViewItem {
+
+    fun getDiffId(): String
+    fun isItemTheSame(other: RecyclerViewItem): Boolean = other.getDiffId() == getDiffId()
+    fun areContentsTheSame(other: RecyclerViewItem): Boolean = other == this
 
     companion object {
-        fun <T : ItemModel> buildDiffCallback(): DiffUtil.ItemCallback<T> {
-            return object : DiffUtil.ItemCallback<T>() {
-                override fun areItemsTheSame(oldItem: T, newItem: T): Boolean {
-                    return oldItem.diffId == newItem.diffId
-                }
 
-                @SuppressLint("DiffUtilEquals")
-                override fun areContentsTheSame(oldItem: T, newItem: T): Boolean {
-                    return oldItem == newItem
-                }
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<RecyclerViewItem>() {
+            override fun areItemsTheSame(
+                oldItem: RecyclerViewItem,
+                newItem: RecyclerViewItem
+            ): Boolean {
+                return oldItem.isItemTheSame(newItem)
+            }
+
+            override fun areContentsTheSame(
+                oldItem: RecyclerViewItem,
+                newItem: RecyclerViewItem
+            ): Boolean {
+                return oldItem.areContentsTheSame(newItem)
             }
         }
+
     }
 
-    val diffId: String
 }
