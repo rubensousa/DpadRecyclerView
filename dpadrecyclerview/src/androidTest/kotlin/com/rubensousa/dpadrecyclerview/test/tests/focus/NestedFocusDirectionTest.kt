@@ -107,6 +107,40 @@ class NestedFocusDirectionTest {
         }
     }
 
+    @Test
+    fun testFocusStillLeavesRecyclerViewWhenFocusSearchIsDisabled() = report {
+        step("Disable focus searches for the first recyclerview") {
+            Espresso.onView(
+                allOf(
+                    withId(
+                        com.rubensousa.dpadrecyclerview.test.R.id.nestedRecyclerView
+                    ),
+                    withTagValue(Matchers.`is`(0))
+                )
+            ).perform(DpadRecyclerViewActions.execute("Disable focus searches") { recyclerView ->
+                recyclerView.setFocusSearchDisabled(true)
+            })
+        }
+
+        step("Press down") {
+            KeyEvents.pressDown()
+            waitForIdleScrollState()
+        }
+
+        step("Focus should be in second list") {
+            Espresso.onView(
+                allOf(
+                    withId(
+                        com.rubensousa.dpadrecyclerview.test.R.id.nestedRecyclerView
+                    ),
+                    withTagValue(Matchers.`is`(1))
+                )
+            ).check(
+                DpadRecyclerViewAssertions.isFocused(position = 0)
+            )
+        }
+    }
+
     private fun launchFragment(): FragmentScenario<NestedFocusDirectionFragment> {
         return launchFragmentInContainer<NestedFocusDirectionFragment>(
             themeResId = R.style.DpadRecyclerViewTestTheme
