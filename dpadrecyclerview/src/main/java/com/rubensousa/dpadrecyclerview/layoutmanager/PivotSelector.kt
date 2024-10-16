@@ -213,6 +213,11 @@ internal class PivotSelector(
     }
 
     fun onLayoutCompleted() {
+        if (isSelectionUpdatePending) {
+            isSelectionUpdatePending = false
+            dispatchViewHolderSelected()
+            dispatchViewHolderSelectedAndAligned()
+        }
         /**
          * Always update the selected ViewHolder on every layout update
          */
@@ -222,11 +227,6 @@ internal class PivotSelector(
                     selectedViewHolder = it
                 }
             }
-        }
-        if (isSelectionUpdatePending) {
-            isSelectionUpdatePending = false
-            dispatchViewHolderSelected()
-            dispatchViewHolderSelectedAndAligned()
         }
     }
 
@@ -350,14 +350,12 @@ internal class PivotSelector(
                     listener.onViewHolderDeselected(recyclerView, viewHolder)
                 }
             }
-
             if (viewHolder is DpadViewHolder) {
-                selectedViewHolder = viewHolder
                 viewHolder.onViewHolderSelected()
-            } else {
-                selectedViewHolder = null
             }
         }
+
+        selectedViewHolder = viewHolder
 
         if (viewHolder != null) {
             selectionListeners.forEach { listener ->
