@@ -2,6 +2,17 @@
 
 ## Version 1.4.0
 
+### 1.4.0-beta03
+
+#### New features
+
+- Added `onViewHolderDeselected` to `OnViewHolderSelectedListener` ([#280](https://github.com/rubensousa/DpadRecyclerView/pull/280))
+
+#### API changes
+
+- Added `addOnChildLaidOutListener`, `removeOnChildLaidOutListener` and `clearOnChildLaidOutListeners` 
+to replace `setOnChildLaidOutListener` ([#280](https://github.com/rubensousa/DpadRecyclerView/pull/280))
+
 ### 1.4.0-beta02
 
 2024-10-08
