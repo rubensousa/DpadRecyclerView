@@ -28,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.UnboundViewPool
 import com.rubensousa.dpadrecyclerview.ViewHolderTask
 import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadDeselectionEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -59,6 +60,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     }
 
     private val selectionEvents = ArrayList<DpadSelectionEvent>()
+    private val deselectionEvents = ArrayList<DpadDeselectionEvent>()
     private val viewHolderSelections = ArrayList<Int>()
     private val viewHolderDeselections = ArrayList<Int>()
     private val tasks = ArrayList<DpadSelectionEvent>()
@@ -125,6 +127,10 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
             onViewHolderSelected = ::addViewHolderSelected,
             onViewHolderDeselected = ::addViewHolderDeselected
         )
+    }
+
+    override fun onViewHolderDeselected(parent: RecyclerView, child: RecyclerView.ViewHolder) {
+        deselectionEvents.add(DpadDeselectionEvent(child))
     }
 
     override fun onViewHolderSelected(
@@ -195,6 +201,8 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     fun getTasksExecuted(): List<DpadSelectionEvent> = tasks
 
     fun getSelectionEvents(): List<DpadSelectionEvent> = selectionEvents
+
+    fun getDeselectionEvents(): List<DpadDeselectionEvent> = deselectionEvents
 
     fun getViewHolderSelections(): List<Int> = viewHolderSelections
 

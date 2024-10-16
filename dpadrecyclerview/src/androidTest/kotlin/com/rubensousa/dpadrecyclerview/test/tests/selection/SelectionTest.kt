@@ -36,6 +36,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
+import com.rubensousa.dpadrecyclerview.testfixtures.DpadDeselectionEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -281,6 +282,24 @@ class SelectionTest : DpadRecyclerViewTest() {
         }
 
         assertFocusAndSelection(numberOfItems + 9)
+    }
+
+    @Test
+    fun testDeselectionEventIsSent() {
+        // given
+        launchFragment()
+
+        // when
+        KeyEvents.pressDown()
+        waitForIdleScrollState()
+
+        // then
+        var receivedEvents: List<DpadDeselectionEvent> = emptyList()
+        executeOnFragment { fragment ->
+            receivedEvents = fragment.getDeselectionEvents()
+        }
+        assertThat(receivedEvents.size).isEqualTo(1)
+        assertThat(receivedEvents.first().viewHolder.layoutPosition).isEqualTo(0)
     }
 
 }

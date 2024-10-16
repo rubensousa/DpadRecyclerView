@@ -345,11 +345,13 @@ public abstract interface class com/rubensousa/dpadrecyclerview/OnViewFocusedLis
 }
 
 public abstract interface class com/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener {
+	public abstract fun onViewHolderDeselected (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
 	public abstract fun onViewHolderSelected (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;II)V
 	public abstract fun onViewHolderSelectedAndAligned (Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;II)V
 }
 
 public final class com/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener$DefaultImpls {
+	public static fun onViewHolderDeselected (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;)V
 	public static fun onViewHolderSelected (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;II)V
 	public static fun onViewHolderSelectedAndAligned (Lcom/rubensousa/dpadrecyclerview/OnViewHolderSelectedListener;Landroidx/recyclerview/widget/RecyclerView;Landroidx/recyclerview/widget/RecyclerView$ViewHolder;II)V
 }
