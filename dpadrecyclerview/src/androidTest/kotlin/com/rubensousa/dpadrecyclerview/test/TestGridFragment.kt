@@ -83,7 +83,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         }
         recyclerView.addOnViewHolderSelectedListener(this)
         recyclerView.addOnViewFocusedListener(this)
-        recyclerView.setOnChildLaidOutListener(this)
+        recyclerView.addOnChildLaidOutListener(this)
 
         recyclerView.apply {
             setReverseLayout(layoutConfig.reverseLayout)

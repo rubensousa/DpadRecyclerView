@@ -213,6 +213,16 @@ internal class PivotSelector(
     }
 
     fun onLayoutCompleted() {
+        /**
+         * Always update the selected ViewHolder on every layout update
+         */
+        if (position >= 0 && position < layoutInfo.getItemCount()) {
+            layoutInfo.findViewByAdapterPosition(position)?.let { view ->
+                layoutInfo.getChildViewHolder(view)?.let {
+                    selectedViewHolder = it
+                }
+            }
+        }
         if (isSelectionUpdatePending) {
             isSelectionUpdatePending = false
             dispatchViewHolderSelected()
