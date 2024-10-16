@@ -706,8 +706,16 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         return layoutInfo.findLastCompletelyVisiblePosition()
     }
 
-    fun setOnChildLaidOutListener(listener: OnChildLaidOutListener?) {
-        pivotLayout.setOnChildLaidOutListener(listener)
+    fun addOnChildLaidOutListener(listener: OnChildLaidOutListener) {
+        pivotLayout.addOnChildLaidOutListener(listener)
+    }
+
+    fun removeOnChildLaidOutListener(listener: OnChildLaidOutListener) {
+        pivotLayout.removeOnChildLaidOutListener(listener)
+    }
+
+    fun clearOnChildLaidOutListeners() {
+        pivotLayout.clearOnChildLaidOutListeners()
     }
 
     fun addOnLayoutCompletedListener(

@@ -19,7 +19,6 @@ package com.rubensousa.dpadrecyclerview.layoutmanager
 import android.util.Log
 import android.view.View
 import android.view.ViewParent
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -65,7 +64,7 @@ internal class PivotSelector(
     private val requestLayoutRunnable = Runnable {
         layoutManager.requestLayout()
     }
-    private var selectedViewHolder: DpadViewHolder? = null
+    private var selectedViewHolder: ViewHolder? = null
     private var pendingChildFocus: View? = null
 
     fun update(newPosition: Int, newSubPosition: Int = 0): Boolean {
@@ -219,10 +218,21 @@ internal class PivotSelector(
             dispatchViewHolderSelected()
             dispatchViewHolderSelectedAndAligned()
         }
+        /**
+         * Always update the selected ViewHolder on every layout update
+         */
+        if (position >= 0 && position < layoutInfo.getItemCount()) {
+            layoutInfo.findViewByAdapterPosition(position)?.let { view ->
+                layoutInfo.getChildViewHolder(view)?.let {
+                    selectedViewHolder = it
+                }
+            }
+        }
     }
 
     fun getCurrentSubPositions(): Int {
-        return selectedViewHolder?.getSubPositionAlignments()?.size ?: 0
+        val dpadViewHolder = selectedViewHolder as? DpadViewHolder
+        return dpadViewHolder?.getSubPositionAlignments()?.size ?: 0
     }
 
     fun setSelectionUpdatePending() {
@@ -332,18 +342,20 @@ internal class PivotSelector(
         }
 
         if (viewHolder !== selectedViewHolder) {
-            selectedViewHolder?.onViewHolderDeselected()
+            selectedViewHolder?.let { viewHolder ->
+                if (viewHolder is DpadViewHolder) {
+                    viewHolder.onViewHolderDeselected()
+                }
+                selectionListeners.forEach { listener ->
+                    listener.onViewHolderDeselected(recyclerView, viewHolder)
+                }
+            }
             if (viewHolder is DpadViewHolder) {
-                selectedViewHolder = viewHolder
                 viewHolder.onViewHolderSelected()
-            } else {
-                selectedViewHolder = null
             }
         }
 
-        if (!hasSelectionListeners()) {
-            return
-        }
+        selectedViewHolder = viewHolder
 
         if (viewHolder != null) {
             selectionListeners.forEach { listener ->
@@ -391,10 +403,6 @@ internal class PivotSelector(
 
         if (viewHolder is DpadViewHolder) {
             viewHolder.onViewHolderSelectedAndAligned()
-        }
-
-        if (!hasSelectionListeners()) {
-            return
         }
 
         if (viewHolder != null) {
@@ -446,7 +454,16 @@ internal class PivotSelector(
             subPosition = 0
             positionOffset = 0
         }
-        selectedViewHolder?.onViewHolderDeselected()
+        selectedViewHolder?.let { viewHolder ->
+            if (viewHolder is DpadViewHolder) {
+                viewHolder.onViewHolderDeselected()
+            }
+            recyclerView?.let {
+                selectionListeners.forEach { listener ->
+                    listener.onViewHolderDeselected(it, viewHolder)
+                }
+            }
+        }
         selectedViewHolder = null
     }
 
@@ -456,9 +473,7 @@ internal class PivotSelector(
      * We might need to resize rows when wrap_content is used, so schedule a new layout request
      */
     private fun scheduleNewLayout(recyclerView: RecyclerView) {
-        ViewCompat.postOnAnimation(recyclerView, requestLayoutRunnable)
+        recyclerView.postOnAnimation(requestLayoutRunnable)
     }
-
-    private fun hasSelectionListeners(): Boolean = selectionListeners.isNotEmpty()
 
 }

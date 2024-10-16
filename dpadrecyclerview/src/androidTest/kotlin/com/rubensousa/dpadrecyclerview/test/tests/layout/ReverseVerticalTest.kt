@@ -100,12 +100,14 @@ class ReverseVerticalTest : DpadRecyclerViewTest() {
 
         repeat(5) {
             KeyEvents.pressDown()
+            waitForIdleScrollState()
             column.scrollDown()
             assertChildrenPositions(column)
         }
 
         repeat(5) {
             KeyEvents.pressUp()
+            waitForIdleScrollState()
             column.scrollUp()
             assertChildrenPositions(column)
         }

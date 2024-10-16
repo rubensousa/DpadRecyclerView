@@ -66,4 +66,14 @@ interface OnViewHolderSelectedListener {
     ) {
     }
 
+    /**
+     * @param parent      The RecyclerView where the deselection happened.
+     * @param child       The ViewHolder within the RecyclerView that was deselected
+     */
+    fun onViewHolderDeselected(
+        parent: RecyclerView,
+        child: RecyclerView.ViewHolder,
+    ) {
+    }
+
 }

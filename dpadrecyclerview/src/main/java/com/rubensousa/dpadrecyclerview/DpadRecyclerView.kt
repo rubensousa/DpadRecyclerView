@@ -1560,8 +1560,37 @@ open class DpadRecyclerView @JvmOverloads constructor(
      *
      * @param listener the listener to be invoked.
      */
+    @Deprecated("Use addOnChildLaidOutListener")
     fun setOnChildLaidOutListener(listener: OnChildLaidOutListener?) {
-        requireLayout().setOnChildLaidOutListener(listener)
+        requireLayout().clearOnLayoutCompletedListeners()
+        if (listener != null) {
+            requireLayout().addOnChildLaidOutListener(listener)
+        }
+    }
+
+    /**
+     * Registers a callback to be invoked when an item of this [DpadRecyclerView] has been laid out.
+     *
+     * @param listener the listener to be invoked.
+     */
+    fun addOnChildLaidOutListener(listener: OnChildLaidOutListener) {
+        requireLayout().addOnChildLaidOutListener(listener)
+    }
+
+    /**
+     * @see addOnChildLaidOutListener
+     *
+     * @param listener the listener to be removed.
+     */
+    fun removeOnChildLaidOutListener(listener: OnChildLaidOutListener) {
+        requireLayout().removeOnChildLaidOutListener(listener)
+    }
+
+    /**
+     * Clears all listeners added by [addOnChildLaidOutListener]
+     */
+    fun clearOnChildLaidOutListeners() {
+        requireLayout().clearOnChildLaidOutListeners()
     }
 
     /**
