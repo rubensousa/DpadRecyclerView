@@ -15,6 +15,10 @@
 - Added `addOnChildLaidOutListener`, `removeOnChildLaidOutListener` and `clearOnChildLaidOutListeners` 
 to replace `setOnChildLaidOutListener` ([#280](https://github.com/rubensousa/DpadRecyclerView/pull/280))
 
+#### Bug fixes
+
+- Fixed focus not leaving `DpadRecyclerView` in some cases: ([#278](https://github.com/rubensousa/DpadRecyclerView/pull/278))
+
 ### 1.4.0-beta02
 
 2024-10-08
