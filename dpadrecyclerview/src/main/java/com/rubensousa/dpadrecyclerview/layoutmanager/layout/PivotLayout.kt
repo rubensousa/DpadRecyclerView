@@ -67,11 +67,14 @@ internal class PivotLayout(
 
     fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         if (state.itemCount == 0) {
-            // Clear the selected position if there are no more items
-            if (pivotSelector.position != RecyclerView.NO_POSITION) {
-                pivotSelector.setSelectionUpdatePending()
+            // Clear the selected position if there are no items
+            // in the layout and the adapter
+            if (layoutInfo.getItemCount() == 0) {
+                if (pivotSelector.position != RecyclerView.NO_POSITION) {
+                    pivotSelector.setSelectionUpdatePending()
+                }
+                pivotSelector.reset()
             }
-            pivotSelector.reset()
         } else if (pivotSelector.position >= state.itemCount) {
             pivotSelector.update(newPosition = state.itemCount - 1)
             pivotSelector.setSelectionUpdatePending()
