@@ -34,8 +34,8 @@ jacoco = "0.8.11"
 test-junit = '4.13.2'
 test-truth = '1.4.1'
 test-mockk = '1.13.10'
-carioca-report = "1.0.0-alpha01"
-carioca-allure = "1.0.0-alpha01"
+carioca-report = "1.0.0-beta01"
+carioca-allure = "1.0.0-beta01"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
