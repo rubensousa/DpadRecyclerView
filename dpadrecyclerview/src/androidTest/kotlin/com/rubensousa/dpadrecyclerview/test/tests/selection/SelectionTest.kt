@@ -21,6 +21,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
@@ -35,6 +36,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForLayout
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadDeselectionEvent
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
@@ -300,6 +302,39 @@ class SelectionTest : DpadRecyclerViewTest() {
         }
         assertThat(receivedEvents.size).isEqualTo(1)
         assertThat(receivedEvents.first().viewHolder.layoutPosition).isEqualTo(0)
+    }
+
+    @Test
+    fun testSelectionIsPostponedUntilLayoutExists() = report {
+        val position = 4
+        Given("Setup clean layout") {
+            step("Launch fragment") {
+                launchFragment()
+            }
+            step("Clear layout") {
+                mutateAdapter { adapter ->
+                    adapter.setList(mutableListOf())
+                    adapter.notifyDataSetChanged()
+                }
+            }
+            step("Wait for layout completed") {
+                waitForLayout()
+            }
+        }
+        When("Set async adapter content, followed by position update") {
+            var currentRecyclerView: DpadRecyclerView? = null
+            onRecyclerView("Get recyclerView") { recyclerView ->
+                currentRecyclerView = recyclerView
+            }
+            mutateAdapter { adapter ->
+                adapter.addAll(listOf(0, 1, 2, 3, 4, 5))
+                currentRecyclerView?.setSelectedPosition(position)
+            }
+        }
+
+        Then("Assert position $position is selected") {
+            assertSelectedPosition(position)
+        }
     }
 
 }

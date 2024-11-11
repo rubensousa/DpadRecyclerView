@@ -149,6 +149,13 @@ abstract class AbstractTestAdapter<VH : RecyclerView.ViewHolder>(
         notifyItemInserted(items.size - 1)
     }
 
+    fun addAll(list: List<Int>) {
+        currentVersion++
+        val nextIndex = items.size
+        items.addAll(list)
+        notifyItemRangeInserted(nextIndex, list.size)
+    }
+
     override fun getItemCount(): Int = items.size
 
     fun getItem(position: Int) = items[position]
