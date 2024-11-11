@@ -2,6 +2,14 @@
 
 ## Version 1.4.0
 
+### 1.4.0-rc01
+
+2024-11-11
+
+#### Bug fixes
+
+- Fixed selection being reset if it's requested immediately after updating the adapter: ([#283](https://github.com/rubensousa/DpadRecyclerView/pull/283))
+
 ### 1.4.0-beta03
 
 2024-10-17
