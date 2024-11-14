@@ -48,7 +48,8 @@ internal class PivotLayout(
     private val childLayoutListener = ChildLayoutListener()
     private val childLaidOutListeners = mutableListOf<OnChildLaidOutListener>()
     private var structureEngineer = createStructureEngineer()
-    private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
+    private val layoutCompleteListeners =
+        mutableListOf<DpadRecyclerView.OnLayoutCompletedListener>()
     private var anchor: Int? = null
     private var initialSelectionPending = false
 
@@ -194,8 +195,8 @@ internal class PivotLayout(
             updateInitialSelection()
         }
         layoutInfo.onLayoutCompleted()
-        layoutCompleteListeners.forEach { listener ->
-            listener.onLayoutCompleted(state)
+        for (i in layoutCompleteListeners.size - 1 downTo 0) {
+            layoutCompleteListeners[i].onLayoutCompleted(state)
         }
     }
 
@@ -234,7 +235,7 @@ internal class PivotLayout(
     }
 
     fun removeOnChildLaidOutListener(listener: OnChildLaidOutListener) {
-        childLaidOutListeners.add(listener)
+        childLaidOutListeners.remove(listener)
     }
 
     fun clearOnChildLaidOutListeners() {
@@ -381,8 +382,8 @@ internal class PivotLayout(
             val recyclerView = layoutInfo.getRecyclerView() ?: return
             val viewHolder = layoutInfo.getChildViewHolder(view) ?: return
 
-            childLaidOutListeners.forEach { listener ->
-                listener.onChildLaidOut(recyclerView, viewHolder)
+            for (i in childLaidOutListeners.size - 1 downTo 0) {
+                childLaidOutListeners[i].onChildLaidOut(recyclerView, viewHolder)
             }
         }
 
