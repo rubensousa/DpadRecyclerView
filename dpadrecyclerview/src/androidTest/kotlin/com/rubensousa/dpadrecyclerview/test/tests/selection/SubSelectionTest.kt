@@ -39,9 +39,12 @@ import com.rubensousa.dpadrecyclerview.test.TestViewHolder
 import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderAlignmentCountAssertion
 import com.rubensousa.dpadrecyclerview.test.assertions.ViewHolderSelectionCountAssertion
 import com.rubensousa.dpadrecyclerview.test.helpers.assertFocusAndSelection
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
+import com.rubensousa.dpadrecyclerview.test.helpers.runOnMainThread
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.selectSubPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForLayout
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadSelectionEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
@@ -175,6 +178,32 @@ class SubSelectionTest : DpadRecyclerViewTest() {
         )
     }
 
+    @Test
+    fun testSubSelectionIsAppliedForNextLayout() = report {
+        val position = 10
+        val subPosition = 1
+        param("position", position.toString())
+        param("subPosition", subPosition.toString())
+
+        var recyclerView: DpadRecyclerView? = null
+        Given("Launch fragment") {
+            launchSubPositionFragment()
+            onRecyclerView("Retrieve recyclerView instance") {
+                recyclerView = it
+            }
+        }
+
+        When("Select target positions") {
+            runOnMainThread {
+                recyclerView?.setSelectedSubPosition(position, subPosition)
+            }
+            waitForLayout()
+        }
+
+        Then("Assert selection is at position $position and sub position $subPosition") {
+            assertFocusAndSelection(position, subPosition)
+        }
+    }
 
     private fun getSelectionsFromTasks(): List<DpadSelectionEvent> {
         var events = listOf<DpadSelectionEvent>()
