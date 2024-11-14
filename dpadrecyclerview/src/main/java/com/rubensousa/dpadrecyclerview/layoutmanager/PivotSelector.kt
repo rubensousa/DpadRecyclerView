@@ -132,7 +132,7 @@ internal class PivotSelector(
             }
         }
         val focusedViewHolder = currentRecyclerView.findContainingViewHolder(view) ?: return
-        focusListeners.forEach { listener ->
+        focusListeners.forEachReversed { listener ->
             listener.onViewFocused(
                 parent = focusedViewHolder,
                 child = view,
@@ -152,7 +152,7 @@ internal class PivotSelector(
             pendingChildFocus = view
             return
         }
-        focusListeners.forEach { listener ->
+        focusListeners.forEachReversed { listener ->
             listener.onViewFocused(
                 parent = parentViewHolder,
                 child = view
@@ -346,7 +346,7 @@ internal class PivotSelector(
                 if (viewHolder is DpadViewHolder) {
                     viewHolder.onViewHolderDeselected()
                 }
-                selectionListeners.forEach { listener ->
+                selectionListeners.forEachReversed { listener ->
                     listener.onViewHolderDeselected(recyclerView, viewHolder)
                 }
             }
@@ -358,13 +358,13 @@ internal class PivotSelector(
         selectedViewHolder = viewHolder
 
         if (viewHolder != null) {
-            selectionListeners.forEach { listener ->
+            selectionListeners.forEachReversed { listener ->
                 listener.onViewHolderSelected(
                     recyclerView, viewHolder, position, subPosition
                 )
             }
         } else {
-            selectionListeners.forEach { listener ->
+            selectionListeners.forEachReversed { listener ->
                 listener.onViewHolderSelected(
                     recyclerView, null, RecyclerView.NO_POSITION, 0
                 )
@@ -406,13 +406,13 @@ internal class PivotSelector(
         }
 
         if (viewHolder != null) {
-            selectionListeners.forEach { listener ->
+            selectionListeners.forEachReversed { listener ->
                 listener.onViewHolderSelectedAndAligned(
                     recyclerView, viewHolder, position, subPosition
                 )
             }
         } else {
-            selectionListeners.forEach { listener ->
+            selectionListeners.forEachReversed { listener ->
                 listener.onViewHolderSelectedAndAligned(
                     recyclerView, null, RecyclerView.NO_POSITION, 0
                 )
@@ -459,7 +459,7 @@ internal class PivotSelector(
                 viewHolder.onViewHolderDeselected()
             }
             recyclerView?.let {
-                selectionListeners.forEach { listener ->
+                selectionListeners.forEachReversed { listener ->
                     listener.onViewHolderDeselected(it, viewHolder)
                 }
             }

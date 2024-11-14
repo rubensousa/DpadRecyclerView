@@ -30,6 +30,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
+import com.rubensousa.dpadrecyclerview.test.helpers.waitForLayout
 import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
@@ -254,6 +255,33 @@ class FocusListenerTest : DpadRecyclerViewTest() {
 
         // then
         assertThat(events).isEqualTo(0)
+    }
+
+    @Test
+    fun testFocusListenerThatRemovesItself() = report {
+        val listeners = 5
+        var events = 0
+        Given("Attach listeners") {
+            launchFragment()
+            onRecyclerView("Get recyclerView") { recyclerView ->
+                repeat(listeners) {
+                    recyclerView.addOnViewFocusedListener(object : OnViewFocusedListener {
+                        override fun onViewFocused(parent: RecyclerView.ViewHolder, child: View) {
+                            events++
+                            recyclerView.removeOnViewFocusedListener(this)
+                        }
+                    })
+                }
+            }
+        }
+        When("Select another position") {
+            selectPosition(2)
+            waitForLayout()
+        }
+
+        Then("Events are received") {
+            assertThat(events).isEqualTo(listeners)
+        }
     }
 
 }

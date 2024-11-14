@@ -28,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.forEachReversed
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid.GridLayoutEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
@@ -195,8 +196,8 @@ internal class PivotLayout(
             updateInitialSelection()
         }
         layoutInfo.onLayoutCompleted()
-        for (i in layoutCompleteListeners.size - 1 downTo 0) {
-            layoutCompleteListeners[i].onLayoutCompleted(state)
+        layoutCompleteListeners.forEachReversed { listener ->
+            listener.onLayoutCompleted(state)
         }
     }
 
@@ -381,9 +382,8 @@ internal class PivotLayout(
             }
             val recyclerView = layoutInfo.getRecyclerView() ?: return
             val viewHolder = layoutInfo.getChildViewHolder(view) ?: return
-
-            for (i in childLaidOutListeners.size - 1 downTo 0) {
-                childLaidOutListeners[i].onChildLaidOut(recyclerView, viewHolder)
+            childLaidOutListeners.forEachReversed { listener ->
+                listener.onChildLaidOut(recyclerView, viewHolder)
             }
         }
 
