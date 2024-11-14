@@ -22,6 +22,7 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
+import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
@@ -334,6 +335,40 @@ class SelectionTest : DpadRecyclerViewTest() {
 
         Then("Assert position $position is selected") {
             assertSelectedPosition(position)
+        }
+    }
+
+    @Test
+    fun testSelectionListenerThatRemovesItself() = report {
+        val listeners = 5
+        var events = 0
+        Given("Attach listeners") {
+            launchFragment()
+            onRecyclerView("Get recyclerView") { recyclerView ->
+                repeat(listeners) {
+                    recyclerView.addOnViewHolderSelectedListener(object :
+                        OnViewHolderSelectedListener {
+                        override fun onViewHolderSelected(
+                            parent: RecyclerView,
+                            child: RecyclerView.ViewHolder?,
+                            position: Int,
+                            subPosition: Int
+                        ) {
+                            super.onViewHolderSelected(parent, child, position, subPosition)
+                            recyclerView.removeOnViewHolderSelectedListener(this)
+                            events++
+                        }
+                    })
+                }
+            }
+        }
+        When("Select another position") {
+            selectPosition(10)
+            waitForLayout()
+        }
+
+        Then("Events are received") {
+            assertThat(events).isEqualTo(listeners)
         }
     }
 

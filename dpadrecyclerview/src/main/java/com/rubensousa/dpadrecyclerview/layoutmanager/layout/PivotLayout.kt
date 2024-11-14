@@ -28,6 +28,7 @@ import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotSelector
 import com.rubensousa.dpadrecyclerview.layoutmanager.alignment.LayoutAlignment
+import com.rubensousa.dpadrecyclerview.layoutmanager.forEachReversed
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.grid.GridLayoutEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.layout.linear.LinearLayoutEngineer
 import com.rubensousa.dpadrecyclerview.layoutmanager.scroll.LayoutScroller
@@ -48,7 +49,8 @@ internal class PivotLayout(
     private val childLayoutListener = ChildLayoutListener()
     private val childLaidOutListeners = mutableListOf<OnChildLaidOutListener>()
     private var structureEngineer = createStructureEngineer()
-    private val layoutCompleteListeners = ArrayList<DpadRecyclerView.OnLayoutCompletedListener>()
+    private val layoutCompleteListeners =
+        mutableListOf<DpadRecyclerView.OnLayoutCompletedListener>()
     private var anchor: Int? = null
     private var initialSelectionPending = false
 
@@ -194,7 +196,7 @@ internal class PivotLayout(
             updateInitialSelection()
         }
         layoutInfo.onLayoutCompleted()
-        layoutCompleteListeners.forEach { listener ->
+        layoutCompleteListeners.forEachReversed { listener ->
             listener.onLayoutCompleted(state)
         }
     }
@@ -234,7 +236,7 @@ internal class PivotLayout(
     }
 
     fun removeOnChildLaidOutListener(listener: OnChildLaidOutListener) {
-        childLaidOutListeners.add(listener)
+        childLaidOutListeners.remove(listener)
     }
 
     fun clearOnChildLaidOutListeners() {
@@ -380,8 +382,7 @@ internal class PivotLayout(
             }
             val recyclerView = layoutInfo.getRecyclerView() ?: return
             val viewHolder = layoutInfo.getChildViewHolder(view) ?: return
-
-            childLaidOutListeners.forEach { listener ->
+            childLaidOutListeners.forEachReversed { listener ->
                 listener.onChildLaidOut(recyclerView, viewHolder)
             }
         }

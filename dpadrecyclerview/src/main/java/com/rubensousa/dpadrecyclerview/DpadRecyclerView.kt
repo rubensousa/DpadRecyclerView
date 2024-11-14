@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.rubensousa.dpadrecyclerview.layoutmanager.PivotLayoutManager
 import com.rubensousa.dpadrecyclerview.layoutmanager.focus.GlobalFocusChangeListener
+import com.rubensousa.dpadrecyclerview.layoutmanager.forEachReversed
 import com.rubensousa.dpadrecyclerview.spacing.DpadGridSpacingDecoration
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
 import com.rubensousa.dpadrecyclerview.spacing.DpadSpacingDecoration
@@ -88,7 +89,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
     private val globalFocusChangeListener by lazy {
         GlobalFocusChangeListener(this) {
-            focusLossListeners.forEach { listener ->
+            focusLossListeners.forEachReversed { listener ->
                 listener.onFocusLost(this)
             }
         }
