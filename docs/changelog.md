@@ -2,6 +2,15 @@
 
 ## Version 1.4.0
 
+### 1.4.0-rc02
+
+2024-11-15
+
+#### Bug fixes
+
+- Fixed concurrent modification exception when some listeners remove themselves: ([#285](https://github.com/rubensousa/DpadRecyclerView/pull/285))
+- Fixed child layout listener not being removed: ([#285](https://github.com/rubensousa/DpadRecyclerView/pull/285))
+
 ### 1.4.0-rc01
 
 2024-11-11
