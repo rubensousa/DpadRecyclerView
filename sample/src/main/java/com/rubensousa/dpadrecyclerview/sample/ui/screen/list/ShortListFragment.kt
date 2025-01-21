@@ -26,14 +26,16 @@ class ShortListFragment : Fragment(R.layout.screen_recyclerview) {
         binding.recyclerView.apply {
             setParentAlignment(
                 ParentAlignment(
-                    edge = ParentAlignment.Edge.NONE,
-                    fraction = 0.5f
+                    edge = ParentAlignment.Edge.MIN,
+                    offset = 0,
+                    fraction = 0.5f,
+                    isFractionEnabled = true,
+                    preferKeylineOverEdge = false
                 )
             )
-            setFocusableDirection(FocusableDirection.CIRCULAR)
             setItemSpacing(dpToPx(16.dp))
             adapter = Adapter(
-                items = List(4) { i ->
+                items = List(8) { i ->
                     "Item $i"
                 }
             )

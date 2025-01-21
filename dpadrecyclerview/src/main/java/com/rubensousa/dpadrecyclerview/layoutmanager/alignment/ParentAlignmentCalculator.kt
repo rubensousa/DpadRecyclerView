@@ -225,7 +225,9 @@ internal class ParentAlignmentCalculator {
         if (isLayoutComplete()) {
             return viewAnchor + getLayoutAbsoluteStart() <= startEdge + keyline
         }
-        return isLayoutStartKnown() && !preferKeylineOverEdge(alignment)
+        return isLayoutStartKnown()
+                && !preferKeylineOverEdge(alignment)
+                && viewAnchor < keyline
     }
 
     private fun shouldAlignViewToEnd(
@@ -239,7 +241,9 @@ internal class ParentAlignmentCalculator {
         if (isLayoutComplete()) {
             return viewAnchor + getLayoutAbsoluteEnd() >= endEdge + keyline
         }
-        return isLayoutStartKnown() && !preferKeylineOverEdge(alignment)
+        return isLayoutStartKnown()
+                && !preferKeylineOverEdge(alignment)
+                && viewAnchor > keyline
     }
 
     private fun calculateScrollOffsetToKeyline(anchor: Int, keyline: Int): Int {
