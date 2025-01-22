@@ -31,7 +31,6 @@ class ParentAlignmentCalculatorTest {
     private val width = 1920
     private val height = 1080
     private val verticalCenterKeyline = height / 2
-    private val horizontalCenterKeyline = width / 2
     private val verticalViewWidth = width
     private val verticalViewHeight = 400
     private val horizontalViewWidth = 400

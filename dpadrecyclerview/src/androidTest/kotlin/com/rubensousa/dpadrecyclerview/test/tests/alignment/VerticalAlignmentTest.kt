@@ -370,6 +370,33 @@ class VerticalAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    fun testShortListAlignmentWithMinEdgeStillAlignsToKeyline() {
+        // given
+        val parentAlignment = ParentAlignment(
+            edge = Edge.MIN,
+            offset = 0,
+            fraction = 0.5f,
+            isFractionEnabled = true,
+            preferKeylineOverEdge = false
+        )
+
+        launchFragment(
+            getDefaultLayoutConfiguration().copy(parentAlignment = parentAlignment),
+            getDefaultAdapterConfiguration().copy(numberOfItems = 6)
+        )
+
+        // when
+        repeat(4) {
+            KeyEvents.pressDown(times = 1)
+            waitForIdleScrollState()
+        }
+
+        // then
+        assertThat(getItemViewBounds(position = 4).centerY())
+            .isEqualTo(getRecyclerViewBounds().centerY())
+    }
+
+    @Test
     fun testLayoutAlignsToKeylineWhenThereAreNotManyItemsAndEdgeMaxIsUsed() {
         val parentAlignment = ParentAlignment(
             edge = Edge.MAX,
