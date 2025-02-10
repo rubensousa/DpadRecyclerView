@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 1.4.1
+
+2025-02-11
+
+#### Bug fixes
+
+- Fixed layout inconsistency when scrolling if `Edge.Min` is used for parent alignment. ([#291](https://github.com/rubensousa/DpadRecyclerView/pull/291))
+
+#### API changes
+
+- Breaking change: Now DpadRecyclerView is passed in `OnViewHolderSelectedListener` and `OnChildLaidOutListener` instead of plain `RecyclerView`.
+
 ## Version 1.4.0
 
 ### 1.4.0
@@ -7,6 +19,16 @@
 2024-12-18
 
 - No changes since `1.4.0-rc02`
+
+#### Important changes since 1.3.0
+
+- Added `setItemSpacing`, `setItemEdgeSpacing` and other spacing setters to `DpadRecyclerView`. Documentation available [here](recipes/spacing.md).
+- Added `onViewHolderDeselected` to `OnViewHolderSelectedListener`
+- Added `OnFocusLostListener` to observe focus losses of `DpadRecyclerView`
+- Added `DpadRecyclerView.setAlignmentLookup` to customize the alignment for individual positions and bypassing the default alignment configurations
+- Improved `Modifier.dpadClickable` to support long clicks
+- New `DpadScrollableLayout` for screens that need a scrollable header at the same level as a `DpadRecyclerView`
+- Testing: Added `KeyEvents.longClick` to trigger long clicks from tests
 
 ### 1.4.0-rc02
 
