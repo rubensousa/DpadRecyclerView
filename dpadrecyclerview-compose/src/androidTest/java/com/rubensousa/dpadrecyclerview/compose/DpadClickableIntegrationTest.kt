@@ -8,7 +8,6 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.google.common.truth.Truth.assertThat
-import com.rubensousa.dpadrecyclerview.testfixtures.DefaultInstrumentedReportRule
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.assertions.DpadViewAssertions
 import org.junit.Before
@@ -16,9 +15,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class DpadClickableIntegrationTest {
-
-    @get:Rule(order = -1)
-    val report = DefaultInstrumentedReportRule()
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()

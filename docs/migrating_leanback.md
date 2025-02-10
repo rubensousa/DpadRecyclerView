@@ -127,14 +127,14 @@ The child alignment APIs from `BaseGridView` can now be found in the `ChildAlign
     ```kotlin linenums="1"
     recyclerView.addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
         override fun onViewHolderSelected(
-            parent: RecyclerView,
+            parent: DpadRecyclerView,
             child: RecyclerView.ViewHolder?,
             position: Int,
             subPosition: Int
         ) {}
     
         override fun onViewHolderSelectedAndAligned(
-            parent: RecyclerView,
+            parent: DpadRecyclerView,
             child: RecyclerView.ViewHolder?,
             position: Int,
             subPosition: Int

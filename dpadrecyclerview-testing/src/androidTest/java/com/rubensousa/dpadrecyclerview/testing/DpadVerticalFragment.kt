@@ -45,7 +45,7 @@ class DpadVerticalFragment : Fragment(R.layout.dpadrecyclerview_test_container),
     }
 
     override fun onViewHolderSelected(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int

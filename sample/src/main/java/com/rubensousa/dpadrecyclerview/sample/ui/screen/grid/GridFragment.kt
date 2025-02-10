@@ -82,7 +82,7 @@ class GridFragment : Fragment(R.layout.screen_recyclerview) {
             setReverseLayout(args.reverseLayout)
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
                 override fun onViewHolderSelected(
-                    parent: RecyclerView,
+                    parent: DpadRecyclerView,
                     child: RecyclerView.ViewHolder?,
                     position: Int,
                     subPosition: Int,

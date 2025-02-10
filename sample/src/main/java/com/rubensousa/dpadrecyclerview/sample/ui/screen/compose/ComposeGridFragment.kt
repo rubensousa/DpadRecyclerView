@@ -80,7 +80,7 @@ class ComposeGridFragment : Fragment(R.layout.screen_recyclerview) {
             )
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
                 override fun onViewHolderSelected(
-                    parent: RecyclerView,
+                    parent: DpadRecyclerView,
                     child: RecyclerView.ViewHolder?,
                     position: Int,
                     subPosition: Int

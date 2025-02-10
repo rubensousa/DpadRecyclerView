@@ -52,14 +52,14 @@ You can observe selection changes using the following:
 ```kotlin linenums="1"
 recyclerView.addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
     override fun onViewHolderSelected(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int
     ) {}
 
     override fun onViewHolderSelectedAndAligned(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int
