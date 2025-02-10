@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
 import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
@@ -40,7 +41,7 @@ class PredictiveAnimationFragment : Fragment(R.layout.screen_recyclerview) {
             adapter = itemAdapter
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
                 override fun onViewHolderSelected(
-                    parent: RecyclerView,
+                    parent: DpadRecyclerView,
                     child: RecyclerView.ViewHolder?,
                     position: Int,
                     subPosition: Int,

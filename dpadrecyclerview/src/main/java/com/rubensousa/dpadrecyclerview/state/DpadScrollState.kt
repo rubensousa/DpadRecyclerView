@@ -33,7 +33,7 @@ class DpadScrollState internal constructor() {
     private val states = mutableMapOf<String, Parcelable>()
     private val selectionListener = object : OnViewHolderSelectedListener {
         override fun onViewHolderSelectedAndAligned(
-            parent: RecyclerView,
+            parent: DpadRecyclerView,
             child: RecyclerView.ViewHolder?,
             position: Int,
             subPosition: Int

@@ -37,7 +37,7 @@ internal class ViewHolderTaskExecutor : OnViewHolderSelectedListener {
     }
 
     override fun onViewHolderSelected(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int
@@ -52,7 +52,7 @@ internal class ViewHolderTaskExecutor : OnViewHolderSelectedListener {
     }
 
     override fun onViewHolderSelectedAndAligned(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int

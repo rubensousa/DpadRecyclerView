@@ -57,7 +57,7 @@ internal class PivotSelector(
      * Set to [OFFSET_DISABLED] means we should stop adding it to [position] until the next layout.
      */
     private var positionOffset = 0
-    private var recyclerView: RecyclerView? = null
+    private var recyclerView: DpadRecyclerView? = null
     private var isSelectionUpdatePending = false
     private val selectionListeners = ArrayList<OnViewHolderSelectedListener>()
     private val focusListeners = ArrayList<OnViewFocusedListener>()
@@ -444,7 +444,7 @@ internal class PivotSelector(
         focusListeners.clear()
     }
 
-    fun setRecyclerView(recyclerView: RecyclerView?) {
+    fun setRecyclerView(recyclerView: DpadRecyclerView?) {
         this.recyclerView = recyclerView
     }
 

@@ -349,7 +349,7 @@ class SelectionTest : DpadRecyclerViewTest() {
                     recyclerView.addOnViewHolderSelectedListener(object :
                         OnViewHolderSelectedListener {
                         override fun onViewHolderSelected(
-                            parent: RecyclerView,
+                            parent: DpadRecyclerView,
                             child: RecyclerView.ViewHolder?,
                             position: Int,
                             subPosition: Int

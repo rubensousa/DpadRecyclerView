@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.OrientationHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.layoutmanager.DpadLayoutParams
 import com.rubensousa.dpadrecyclerview.layoutmanager.LayoutConfiguration
 
@@ -66,7 +67,7 @@ internal class LayoutInfo(
     var isLoopingStart = false
         private set
 
-    private var recyclerView: RecyclerView? = null
+    private var recyclerView: DpadRecyclerView? = null
 
     fun getConfiguration() = configuration
 
@@ -76,7 +77,7 @@ internal class LayoutInfo(
 
     fun isVertical() = configuration.isVertical()
 
-    fun getRecyclerView(): RecyclerView? = recyclerView
+    fun getRecyclerView(): DpadRecyclerView? = recyclerView
 
     fun updateOrientation() {
         orientationHelper = OrientationHelper.createOrientationHelper(
@@ -113,7 +114,7 @@ internal class LayoutInfo(
         this.isLoopingAllowed = isLoopingAllowed
     }
 
-    fun setRecyclerView(recyclerView: RecyclerView?) {
+    fun setRecyclerView(recyclerView: DpadRecyclerView?) {
         this.recyclerView = recyclerView
     }
 

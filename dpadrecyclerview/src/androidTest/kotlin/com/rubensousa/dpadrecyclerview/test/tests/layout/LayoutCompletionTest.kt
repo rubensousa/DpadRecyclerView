@@ -105,7 +105,7 @@ class LayoutCompletionTest : DpadRecyclerViewTest() {
                 repeat(listeners) {
                     currentRecyclerView!!.addOnChildLaidOutListener(object : OnChildLaidOutListener {
                         override fun onChildLaidOut(
-                            parent: RecyclerView,
+                            parent: DpadRecyclerView,
                             child: RecyclerView.ViewHolder
                         ) {
                             currentRecyclerView.removeOnChildLaidOutListener(this)

@@ -25,7 +25,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.AlignmentLookup
-import com.rubensousa.dpadrecyclerview.BuildConfig
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
@@ -167,7 +166,7 @@ class ListFragment : Fragment(R.layout.screen_recyclerview) {
             }
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
                 override fun onViewHolderSelected(
-                    parent: RecyclerView,
+                    parent: DpadRecyclerView,
                     child: RecyclerView.ViewHolder?,
                     position: Int,
                     subPosition: Int

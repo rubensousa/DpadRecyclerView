@@ -40,7 +40,7 @@ interface OnViewHolderSelectedListener {
      * or 0 if there is no custom alignment
      */
     fun onViewHolderSelected(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int
@@ -59,7 +59,7 @@ interface OnViewHolderSelectedListener {
      * or 0 if there is no custom alignment
      */
     fun onViewHolderSelectedAndAligned(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int
@@ -71,7 +71,7 @@ interface OnViewHolderSelectedListener {
      * @param child       The ViewHolder within the RecyclerView that was deselected
      */
     fun onViewHolderDeselected(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder,
     ) {
     }

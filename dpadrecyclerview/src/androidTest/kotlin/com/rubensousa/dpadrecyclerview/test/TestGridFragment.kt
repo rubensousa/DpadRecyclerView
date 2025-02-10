@@ -129,12 +129,12 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         )
     }
 
-    override fun onViewHolderDeselected(parent: RecyclerView, child: RecyclerView.ViewHolder) {
+    override fun onViewHolderDeselected(parent: DpadRecyclerView, child: RecyclerView.ViewHolder) {
         deselectionEvents.add(DpadDeselectionEvent(child))
     }
 
     override fun onViewHolderSelected(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int
@@ -143,7 +143,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
     }
 
     override fun onViewHolderSelectedAndAligned(
-        parent: RecyclerView,
+        parent: DpadRecyclerView,
         child: RecyclerView.ViewHolder?,
         position: Int,
         subPosition: Int
@@ -218,7 +218,7 @@ open class TestGridFragment : Fragment(R.layout.dpadrecyclerview_test_container)
         focusEvents.add(DpadFocusEvent(parent, child, parent.layoutPosition))
     }
 
-    override fun onChildLaidOut(parent: RecyclerView, child: RecyclerView.ViewHolder) {
+    override fun onChildLaidOut(parent: DpadRecyclerView, child: RecyclerView.ViewHolder) {
         layoutEvents.add(child)
     }
 

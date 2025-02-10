@@ -153,7 +153,7 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
             )
             addOnViewHolderSelectedListener(object : OnViewHolderSelectedListener {
                 override fun onViewHolderSelected(
-                    parent: RecyclerView,
+                    parent: DpadRecyclerView,
                     child: RecyclerView.ViewHolder?,
                     position: Int,
                     subPosition: Int
@@ -163,7 +163,7 @@ class StandardGridFragment : Fragment(R.layout.screen_standard_grid) {
                 }
 
                 override fun onViewHolderSelectedAndAligned(
-                    parent: RecyclerView,
+                    parent: DpadRecyclerView,
                     child: RecyclerView.ViewHolder?,
                     position: Int,
                     subPosition: Int

@@ -28,5 +28,5 @@ interface OnChildLaidOutListener {
      * @param parent the [RecyclerView] that contains this child
      * @param child the [RecyclerView.ViewHolder] that was laid out
      */
-    fun onChildLaidOut(parent: RecyclerView, child: RecyclerView.ViewHolder)
+    fun onChildLaidOut(parent: DpadRecyclerView, child: RecyclerView.ViewHolder)
 }
