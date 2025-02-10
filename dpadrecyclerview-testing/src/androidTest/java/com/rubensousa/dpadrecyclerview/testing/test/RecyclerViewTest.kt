@@ -24,16 +24,11 @@ import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
-import com.rubensousa.dpadrecyclerview.testfixtures.DefaultInstrumentedReportRule
 import com.rubensousa.dpadrecyclerview.testing.DpadGridFragment
 import com.rubensousa.dpadrecyclerview.testing.DpadSubPositionFragment
 import com.rubensousa.dpadrecyclerview.testing.R
-import org.junit.Rule
 
 abstract class RecyclerViewTest {
-
-    @get:Rule(order = -1)
-    val report = DefaultInstrumentedReportRule()
 
     private lateinit var subPositionFragment: FragmentScenario<DpadSubPositionFragment>
     private lateinit var gridFragment: FragmentScenario<DpadGridFragment>

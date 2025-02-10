@@ -30,7 +30,6 @@ import androidx.test.espresso.matcher.ViewMatchers
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
-import com.rubensousa.dpadrecyclerview.testfixtures.DefaultInstrumentedReportRule
 import com.rubensousa.dpadrecyclerview.testfixtures.DpadFocusEvent
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
@@ -41,9 +40,6 @@ import org.junit.Rule
 import org.junit.Test
 
 class DpadComposeFocusViewHolderTest {
-
-    @get:Rule(order = -1)
-    val report = DefaultInstrumentedReportRule()
 
     @get:Rule
     val composeTestRule = createAndroidComposeRule<ComposeFocusTestActivity>()
