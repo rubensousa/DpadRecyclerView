@@ -149,11 +149,6 @@ internal class LayoutInfo(
         )
     }
 
-    fun getAdapterPositionOfChildAt(index: Int): Int {
-        val child = layout.getChildAt(index) ?: return RecyclerView.NO_POSITION
-        return getAdapterPositionOf(child)
-    }
-
     fun getAdapterPositionOf(view: View): Int {
         return getLayoutParams(view).absoluteAdapterPosition
     }
