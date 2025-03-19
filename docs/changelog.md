@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 1.4.2
+
+2025-03-19
+
+#### Bug fixes
+
+- Fixed -1 being sent to `DpadSpanSizeLookup.getSpanSize` when views are removed from the adapter: ([#298](https://github.com/rubensousa/DpadRecyclerView/pull/298))
+
 ## Version 1.4.1
 
 2025-02-11
