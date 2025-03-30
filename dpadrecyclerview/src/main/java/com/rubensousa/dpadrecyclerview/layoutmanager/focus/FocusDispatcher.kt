@@ -398,29 +398,32 @@ internal class FocusDispatcher(
                 break
             }
             val position = layoutInfo.getAdapterPositionOf(child)
-            val spanIndex = layoutInfo.getStartSpanIndex(position)
-            if (request.focusDirection == FocusDirection.NEXT_ROW) {
-                child.addFocusables(views, direction, focusableMode)
-            } else if (request.focusDirection == FocusDirection.PREVIOUS_ROW) {
-                child.addFocusables(views, direction, focusableMode)
-            } else if (request.focusDirection == FocusDirection.NEXT_COLUMN) {
-                // Add all focusable items after this item whose row index is bigger
-                if (spanIndex == request.focusedSpanIndex) {
-                    index += increment
-                    continue
-                } else if (spanIndex < request.focusedSpanIndex) {
-                    break
+            // View can be outdated at this point, so ignore if position is invalid
+            if (position >= 0) {
+                val spanIndex = layoutInfo.getStartSpanIndex(position)
+                if (request.focusDirection == FocusDirection.NEXT_ROW) {
+                    child.addFocusables(views, direction, focusableMode)
+                } else if (request.focusDirection == FocusDirection.PREVIOUS_ROW) {
+                    child.addFocusables(views, direction, focusableMode)
+                } else if (request.focusDirection == FocusDirection.NEXT_COLUMN) {
+                    // Add all focusable items after this item whose row index is bigger
+                    if (spanIndex == request.focusedSpanIndex) {
+                        index += increment
+                        continue
+                    } else if (spanIndex < request.focusedSpanIndex) {
+                        break
+                    }
+                    child.addFocusables(views, direction, focusableMode)
+                } else if (request.focusDirection == FocusDirection.PREVIOUS_COLUMN) {
+                    // Add all focusable items before this item whose column index is smaller
+                    if (spanIndex == request.focusedSpanIndex) {
+                        index += increment
+                        continue
+                    } else if (spanIndex > request.focusedSpanIndex) {
+                        break
+                    }
+                    child.addFocusables(views, direction, focusableMode)
                 }
-                child.addFocusables(views, direction, focusableMode)
-            } else if (request.focusDirection == FocusDirection.PREVIOUS_COLUMN) {
-                // Add all focusable items before this item whose column index is smaller
-                if (spanIndex == request.focusedSpanIndex) {
-                    index += increment
-                    continue
-                } else if (spanIndex > request.focusedSpanIndex) {
-                    break
-                }
-                child.addFocusables(views, direction, focusableMode)
             }
             index += increment
         }
