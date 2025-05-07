@@ -4,7 +4,7 @@ import com.rubensousa.carioca.report.android.InstrumentedReportRule
 import com.rubensousa.carioca.report.android.recording.RecordingOptions
 
 class DefaultInstrumentedReportRule(
-    enableRecording: Boolean = true,
+    enableRecording: Boolean = false,
 ) : InstrumentedReportRule(
     recordingOptions = RecordingOptions(
         enabled = enableRecording,

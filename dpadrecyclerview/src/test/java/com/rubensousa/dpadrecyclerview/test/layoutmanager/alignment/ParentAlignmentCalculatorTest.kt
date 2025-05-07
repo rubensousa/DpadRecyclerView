@@ -148,7 +148,7 @@ class ParentAlignmentCalculatorTest {
             startViewAnchor = verticalViewHeight / 2,
             endViewAnchor = height + verticalViewHeight / 2,
             startAlignment = centerParentAlignment,
-            endAlignment =  centerParentAlignment
+            endAlignment = centerParentAlignment
         )
         assertThat(
             alignmentCalculator.calculateScrollOffset(
@@ -169,7 +169,7 @@ class ParentAlignmentCalculatorTest {
             startViewAnchor = verticalViewHeight / 2,
             endViewAnchor = verticalViewHeight / 2,
             startAlignment = centerParentAlignment,
-            endAlignment =  centerParentAlignment
+            endAlignment = centerParentAlignment
         )
 
         assertThat(
@@ -190,7 +190,7 @@ class ParentAlignmentCalculatorTest {
             startViewAnchor = verticalViewHeight / 2,
             endViewAnchor = verticalViewHeight / 2,
             startAlignment = centerParentAlignment,
-            endAlignment =  centerParentAlignment
+            endAlignment = centerParentAlignment
         )
 
         assertThat(alignmentCalculator.endScrollLimit)
@@ -386,6 +386,62 @@ class ParentAlignmentCalculatorTest {
         )
 
         assertThat(alignmentCalculator.startScrollLimit).isEqualTo(-verticalViewHeight / 2)
+    }
+
+    @Test
+    fun `layout is considered complete if end is not unknown`() {
+        // given
+        setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MIN,
+            offset = 0,
+            fraction = 0.5f,
+        )
+
+        val keyline = verticalCenterKeyline
+
+        // when
+        alignmentCalculator.updateScrollLimits(
+            startEdge = 0,
+            startViewAnchor = verticalViewHeight / 2,
+            endEdge = keyline,
+            endViewAnchor = keyline + verticalViewHeight / 2,
+            startAlignment = alignment,
+            endAlignment = alignment
+        )
+
+        // then
+        assertThat(alignmentCalculator.isLayoutComplete()).isEqualTo(true)
+    }
+
+    @Test
+    fun `should align view to keyline if layout is complete for min edge`() {
+        // given
+        setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MIN,
+            offset = 0,
+            fraction = 0.5f,
+        )
+        val keyline = verticalCenterKeyline
+        alignmentCalculator.updateScrollLimits(
+            startEdge = 0,
+            startViewAnchor = verticalViewHeight / 2,
+            endEdge = keyline,
+            endViewAnchor = keyline + verticalViewHeight / 2,
+            startAlignment = alignment,
+            endAlignment = alignment
+        )
+
+        // when
+        val scrollOffset = alignmentCalculator.calculateScrollOffset(
+            viewAnchor = keyline,
+            alignment = alignment
+        )
+
+        // then
+        assertThat(scrollOffset).isEqualTo(0)
     }
 
     private fun setLayoutProperties(orientation: Int, reverseLayout: Boolean) {

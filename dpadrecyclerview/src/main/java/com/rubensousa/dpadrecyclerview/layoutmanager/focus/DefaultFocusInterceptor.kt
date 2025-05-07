@@ -80,18 +80,21 @@ internal class DefaultFocusInterceptor(
         if (direction.isSecondary()) {
             return null
         }
-        val positionIncrement = layoutInfo.getPositionIncrement(
-            goingForward = direction == FocusDirection.NEXT_ROW
-                    || direction == FocusDirection.NEXT_COLUMN
-        )
-        val nextPosition = position + positionIncrement
+        val absolutePositionIncrement = if (direction == FocusDirection.NEXT_ROW
+            || direction == FocusDirection.NEXT_COLUMN
+        ) {
+            1
+        } else {
+            -1
+        }
+        val nextPosition = position + absolutePositionIncrement
         // Jump early if we're going out of bounds
         if (nextPosition < 0 || nextPosition == layoutInfo.getItemCount()) {
             return null
         }
         return findNextFocusableView(
             fromPosition = nextPosition,
-            positionIncrement = positionIncrement
+            positionIncrement = absolutePositionIncrement
         )
     }
 
