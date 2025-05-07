@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 1.4.3
+
+2025-05-07
+
+#### Bug fixes
+
+- Fixed grids not aligning to min edge: ([#302](https://github.com/rubensousa/DpadRecyclerView/pull/302))
+
 ## Version 1.4.2
 
 2025-03-30

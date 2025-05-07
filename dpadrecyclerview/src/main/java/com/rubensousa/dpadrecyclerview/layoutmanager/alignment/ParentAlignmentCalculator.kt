@@ -232,7 +232,7 @@ internal class ParentAlignmentCalculator {
                 viewAnchor + getLayoutAbsoluteStart() <= startEdge + keyline
             }
         }
-        return viewAnchor <= keyline
+        return viewAnchor < keyline
     }
 
     internal fun shouldAlignViewToEnd(
@@ -253,7 +253,7 @@ internal class ParentAlignmentCalculator {
                 viewAnchor + getLayoutAbsoluteEnd() >= endEdge + keyline
             }
         }
-        return viewAnchor >= keyline
+        return viewAnchor > keyline
     }
 
     private fun calculateScrollOffsetToKeyline(anchor: Int, keyline: Int): Int {

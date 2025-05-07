@@ -2,7 +2,7 @@
 # From library
 android-gradle-plugin = "8.6.0"
 androidx-collection = "1.4.3"
-androidx-recyclerview = "1.4.0-beta01"
+androidx-recyclerview = "1.4.0"
 androidx-poolingcontainer = "1.0.0"
 androidx-appcompat = "1.7.0"
 androidx-compose-ui = "1.7.0-rc01"
