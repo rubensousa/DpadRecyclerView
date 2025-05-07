@@ -214,7 +214,7 @@ internal class ParentAlignmentCalculator {
         return keyLine
     }
 
-    private fun shouldAlignViewToStart(
+    internal fun shouldAlignViewToStart(
         viewAnchor: Int,
         keyline: Int,
         alignment: ParentAlignment,
@@ -222,15 +222,20 @@ internal class ParentAlignmentCalculator {
         if (isStartUnknown || !shouldAlignToStartEdge(alignment.edge)) {
             return false
         }
-        if (isLayoutComplete()) {
-            return viewAnchor + getLayoutAbsoluteStart() <= startEdge + keyline
+        if (alignment.edge == Edge.NONE) {
+            return false
         }
-        return isLayoutStartKnown()
-                && !preferKeylineOverEdge(alignment)
-                && (viewAnchor <= keyline && !reverseLayout || viewAnchor >= keyline && reverseLayout)
+        if (isLayoutComplete()) {
+            return if (alignment.preferKeylineOverEdge) {
+                false
+            } else {
+                viewAnchor + getLayoutAbsoluteStart() <= startEdge + keyline
+            }
+        }
+        return viewAnchor <= keyline
     }
 
-    private fun shouldAlignViewToEnd(
+    internal fun shouldAlignViewToEnd(
         viewAnchor: Int,
         keyline: Int,
         alignment: ParentAlignment,
@@ -238,12 +243,17 @@ internal class ParentAlignmentCalculator {
         if (isEndUnknown || !shouldAlignToEndEdge(alignment.edge)) {
             return false
         }
-        if (isLayoutComplete()) {
-            return viewAnchor + getLayoutAbsoluteEnd() >= endEdge + keyline
+        if (alignment.edge == Edge.NONE) {
+            return false
         }
-        return isLayoutStartKnown()
-                && !preferKeylineOverEdge(alignment)
-                && (viewAnchor >= keyline && !reverseLayout || viewAnchor <= keyline && reverseLayout)
+        if (isLayoutComplete()) {
+            return if (alignment.preferKeylineOverEdge) {
+                false
+            } else {
+                viewAnchor + getLayoutAbsoluteEnd() >= endEdge + keyline
+            }
+        }
+        return viewAnchor >= keyline
     }
 
     private fun calculateScrollOffsetToKeyline(anchor: Int, keyline: Int): Int {
@@ -258,29 +268,24 @@ internal class ParentAlignmentCalculator {
         return paddingStart
     }
 
-    private fun isLayoutComplete(): Boolean {
-        if (isEndUnknown && isStartUnknown) {
-            return true
-        }
-        return if (!reverseLayout) {
-            (startEdge <= getLayoutAbsoluteStart()
-                    && (endEdge >= getLayoutAbsoluteEnd() || isEndUnknown))
-        } else {
-            (endEdge >= getLayoutAbsoluteEnd()
-                    && (startEdge <= getLayoutAbsoluteStart() || isStartUnknown))
-        }
+    internal fun isLayoutComplete(): Boolean {
+        return isStartLayoutComplete() && isEndLayoutComplete()
+    }
+
+    private fun isStartLayoutComplete(): Boolean {
+        return !isStartUnknown
+    }
+
+    private fun isEndLayoutComplete(): Boolean {
+        return !isEndUnknown
+    }
+
+    private fun isKeylinePreferred(alignment: ParentAlignment): Boolean {
+        return alignment.preferKeylineOverEdge && isLayoutComplete()
     }
 
     private fun preferKeylineOverEdge(alignment: ParentAlignment): Boolean {
-        return alignment.preferKeylineOverEdge || alignment.edge == Edge.NONE
-    }
-
-    private fun isLayoutStartKnown(): Boolean {
-        return if (!reverseLayout) {
-            !isStartUnknown
-        } else {
-            !isEndUnknown
-        }
+        return isKeylinePreferred(alignment) || alignment.edge == Edge.NONE
     }
 
     private fun isStartEdge(edge: Edge): Boolean {

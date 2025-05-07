@@ -183,7 +183,7 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
             ParentAlignment(
                 edge = Edge.MAX,
                 offset = 0,
-                fraction = 0.5f
+                fraction = 0.5f,
             )
         )
         val lastPosition = selectLastPosition()
