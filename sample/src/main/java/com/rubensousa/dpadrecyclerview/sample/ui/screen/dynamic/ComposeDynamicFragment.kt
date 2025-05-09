@@ -26,6 +26,7 @@ import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
 import com.rubensousa.dpadrecyclerview.sample.ui.model.DelegateAdapter
+import com.rubensousa.dpadrecyclerview.sample.ui.screen.compose.setSlowScrollBehavior
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.RecyclerViewLogger
 import com.rubensousa.dpadrecyclerview.spacing.DpadLinearSpacingDecoration
@@ -94,8 +95,8 @@ class ComposeDynamicFragment : Fragment(R.layout.screen_recyclerview) {
             )
         )
         binding.recyclerView.apply {
+            setSlowScrollBehavior()
             setAdapter(adapter)
-            setSmoothScrollMaxPendingMoves(0)
             requestFocus()
         }
     }

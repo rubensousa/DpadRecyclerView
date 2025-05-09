@@ -42,7 +42,7 @@ class NestedComposeListViewHolder(
         recyclerView.setRecycledViewPool(viewPool)
         // Compose animations trigger a full layout-pass,
         // so disable layout changes while scrolling
-        recyclerView.setLayoutWhileScrollingEnabled(false)
+        recyclerView.setSlowScrollBehavior()
         recyclerView.setItemSpacing(
             itemView.resources.getDimensionPixelOffset(
                 R.dimen.horizontal_item_spacing
