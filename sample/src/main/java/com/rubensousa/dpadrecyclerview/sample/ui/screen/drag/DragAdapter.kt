@@ -20,7 +20,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadDragHelper
-import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
+import com.rubensousa.dpadrecyclerview.compose.ComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
@@ -30,7 +30,7 @@ class DragAdapter(
     private val dragState: StateFlow<Int?>,
     private val onDragStart: (viewHolder: RecyclerView.ViewHolder) -> Unit,
     private val gridLayout: Boolean = false
-) : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK),
+) : MutableListAdapter<Int, ComposeViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK),
     DpadDragHelper.DragAdapter<Int> {
 
     override fun getMutableItems(): MutableList<Int> = mutableList
@@ -38,8 +38,8 @@ class DragAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DpadComposeFocusViewHolder<Int> {
-        val viewHolder = DpadComposeFocusViewHolder<Int>(parent)
+    ): ComposeViewHolder<Int> {
+        val viewHolder = ComposeViewHolder<Int>(parent)
         viewHolder.setContent { item ->
             if (gridLayout) {
                 DraggableGridItem(
@@ -62,7 +62,7 @@ class DragAdapter(
         return viewHolder
     }
 
-    override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
+    override fun onBindViewHolder(holder: ComposeViewHolder<Int>, position: Int) {
         val item = getItem(position)
         holder.setItemState(item)
         holder.itemView.contentDescription = item.toString()

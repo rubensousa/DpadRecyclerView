@@ -19,13 +19,13 @@ package com.rubensousa.dpadrecyclerview.sample.ui.widgets.common
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.dpadrecyclerview.compose.DpadComposeViewHolder
+import com.rubensousa.dpadrecyclerview.compose.ComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 
 class ComposePlaceholderAdapter(
     private val items: Int = 1,
     private val composable: @Composable () -> Unit
-) : RecyclerView.Adapter<DpadComposeViewHolder<Boolean>>() {
+) : RecyclerView.Adapter<ComposeViewHolder<Boolean>>() {
 
     companion object {
 
@@ -42,20 +42,20 @@ class ComposePlaceholderAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DpadComposeViewHolder<Boolean> {
-        return DpadComposeViewHolder(
+    ): ComposeViewHolder<Boolean> {
+        return ComposeViewHolder(
             parent = parent,
             isFocusable = false
-        ) { _, _, ->
+        ) { _ ->
             composable()
         }
     }
 
-    override fun onBindViewHolder(holder: DpadComposeViewHolder<Boolean>, position: Int) {
+    override fun onBindViewHolder(holder: ComposeViewHolder<Boolean>, position: Int) {
         holder.setItemState(true)
     }
 
-    override fun onViewRecycled(holder: DpadComposeViewHolder<Boolean>) {
+    override fun onViewRecycled(holder: ComposeViewHolder<Boolean>) {
         holder.setItemState(null)
     }
 

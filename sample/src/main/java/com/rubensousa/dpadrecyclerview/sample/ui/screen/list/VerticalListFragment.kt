@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
-import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
+import com.rubensousa.dpadrecyclerview.compose.ComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.viewBinding
@@ -54,12 +54,12 @@ class VerticalListFragment : Fragment(R.layout.screen_recyclerview) {
 
     private class Adapter(
         private val items: List<Int>,
-    ) : RecyclerView.Adapter<DpadComposeFocusViewHolder<Int>>() {
+    ) : RecyclerView.Adapter<ComposeViewHolder<Int>>() {
 
         override fun onCreateViewHolder(
             parent: ViewGroup, viewType: Int
-        ): DpadComposeFocusViewHolder<Int> {
-            return DpadComposeFocusViewHolder(parent) { item ->
+        ): ComposeViewHolder<Int> {
+            return ComposeViewHolder(parent) { item ->
                 ItemComposable(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -74,11 +74,11 @@ class VerticalListFragment : Fragment(R.layout.screen_recyclerview) {
 
         override fun getItemCount(): Int = items.size
 
-        override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
+        override fun onBindViewHolder(holder: ComposeViewHolder<Int>, position: Int) {
             holder.setItemState(items[position])
         }
 
-        override fun onViewRecycled(holder: DpadComposeFocusViewHolder<Int>) {
+        override fun onViewRecycled(holder: ComposeViewHolder<Int>) {
             super.onViewRecycled(holder)
             holder.setItemState(null)
         }

@@ -20,18 +20,15 @@ import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
 
 /**
- * Similar to [DpadComposeViewHolder], but sends the focus down to composables
- *
  * This allows inline definition of ViewHolders in `onCreateViewHolder`:
  *
  * ```kotlin
  * override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DpadComposeFocusViewHolder<Int> {
- *     return DpadComposeFocusViewHolder(parent) { item, isSelected ->
- *          ItemComposable(item, isSelected)
+ *     return DpadComposeFocusViewHolder(parent) { item ->
+ *          ItemComposable(item)
  *     }
  * }
  * ```
@@ -43,11 +40,10 @@ import androidx.recyclerview.widget.RecyclerView
  * }
  * ```
  */
-class DpadComposeFocusViewHolder<T>(
+class ComposeViewHolder<T>(
     parent: ViewGroup,
-    compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
     isFocusable: Boolean = true,
-    private val content: @Composable (item: T) -> Unit = {},
+    private val content: (@Composable (item: T) -> Unit)? = null,
 ) : RecyclerView.ViewHolder(ComposeView(parent.context)) {
 
     private val itemState = mutableStateOf<T?>(null)
@@ -55,12 +51,16 @@ class DpadComposeFocusViewHolder<T>(
 
     init {
         composeView.apply {
-            this@DpadComposeFocusViewHolder.setFocusable(isFocusable)
-            setViewCompositionStrategy(compositionStrategy)
-            setContent(content)
+            this@ComposeViewHolder.setFocusable(isFocusable)
+            content?.let {
+                setContent(content)
+            }
         }
     }
 
+    /**
+     * Sets the content of the internal [ComposeView]
+     */
     fun setContent(content: @Composable (item: T) -> Unit) {
         composeView.setContent {
             itemState.value?.let { item ->
@@ -69,6 +69,10 @@ class DpadComposeFocusViewHolder<T>(
         }
     }
 
+    /**
+     * Marks the internal [ComposeView] has [focusable] or not.
+     * If false, this will prevent child nodes from being focusable
+     */
     fun setFocusable(focusable: Boolean) {
         composeView.apply {
             if (!isFocusable) {
@@ -83,9 +87,17 @@ class DpadComposeFocusViewHolder<T>(
         }
     }
 
+    /**
+     * Updates the current item so that the composition is updated with the new value
+     * in [content]
+     */
     fun setItemState(item: T?) {
         itemState.value = item
     }
 
+    /**
+     * @return the current item used for [content]
+     */
     fun getItem(): T? = itemState.value
+
 }

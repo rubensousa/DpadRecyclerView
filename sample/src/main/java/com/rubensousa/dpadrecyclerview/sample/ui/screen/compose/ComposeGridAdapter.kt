@@ -17,22 +17,22 @@
 package com.rubensousa.dpadrecyclerview.sample.ui.screen.compose
 
 import android.view.ViewGroup
-import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
+import com.rubensousa.dpadrecyclerview.compose.ComposeViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.GridItemComposable
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
 import timber.log.Timber
 
-class ComposeGridAdapter : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(
+class ComposeGridAdapter : MutableListAdapter<Int, ComposeViewHolder<Int>>(
     MutableGridAdapter.DIFF_CALLBACK
 ) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): DpadComposeFocusViewHolder<Int> {
-        return DpadComposeFocusViewHolder(parent) { item ->
+    ): ComposeViewHolder<Int> {
+        return ComposeViewHolder(parent) { item ->
             GridItemComposable(
                 item = item,
                 onClick = {
@@ -42,7 +42,7 @@ class ComposeGridAdapter : MutableListAdapter<Int, DpadComposeFocusViewHolder<In
         }
     }
 
-    override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
+    override fun onBindViewHolder(holder: ComposeViewHolder<Int>, position: Int) {
         holder.setItemState(getItem(position))
     }
 

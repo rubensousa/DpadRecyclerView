@@ -17,7 +17,6 @@
 package com.rubensousa.dpadrecyclerview.compose
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
@@ -45,43 +44,6 @@ object TestComposable {
 
 @Composable
 fun TestComposable(
-    modifier: Modifier = Modifier,
-    item: Int,
-    isFocused: Boolean,
-    onDispose: () -> Unit = {},
-) {
-    val backgroundColor = if (isFocused) {
-        Color.White
-    } else {
-        Color.Black
-    }
-    Box(
-        modifier = modifier
-            .background(backgroundColor),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            modifier = Modifier.semantics {
-                set(TestComposable.focusedKey, isFocused)
-            },
-            text = item.toString(),
-            style = MaterialTheme.typography.headlineLarge,
-            color = if (isFocused) {
-                Color.Black
-            } else {
-                Color.White
-            }
-        )
-    }
-    DisposableEffect(key1 = item) {
-        onDispose {
-            onDispose()
-        }
-    }
-}
-
-@Composable
-fun TestComposableFocus(
     modifier: Modifier = Modifier,
     item: Int,
     onClick: () -> Unit,
@@ -134,7 +96,7 @@ fun TestComposableFocus(
 @Preview(widthDp = 300, heightDp = 300)
 @Composable
 fun TestComposablePreviewNormal() {
-    TestComposableFocus(
+    TestComposable(
         item = 0,
         onClick = {},
         onLongClick = {}
@@ -145,7 +107,7 @@ fun TestComposablePreviewNormal() {
 @Composable
 fun TestComposablePreviewFocused() {
     val focusRequester = remember { FocusRequester() }
-    TestComposableFocus(
+    TestComposable(
         item = 0,
         modifier = Modifier.focusRequester(focusRequester),
         onClick = {},
