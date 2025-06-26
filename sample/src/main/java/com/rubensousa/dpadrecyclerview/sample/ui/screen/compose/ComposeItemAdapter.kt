@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import com.rubensousa.dpadrecyclerview.compose.ComposeViewHolder
+import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
@@ -31,13 +31,13 @@ import com.rubensousa.dpadrecyclerview.sample.ui.widgets.item.MutableGridAdapter
 
 class ComposeItemAdapter(
     private val onItemClick: (Int) -> Unit = {}
-) : MutableListAdapter<Int, ComposeViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK) {
+) : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ComposeViewHolder<Int> {
-        return ComposeViewHolder(parent) { item ->
+    ): DpadComposeFocusViewHolder<Int> {
+        return DpadComposeFocusViewHolder(parent) { item ->
             ItemComposable(
                 modifier = Modifier
                     .width(dimensionResource(id = R.dimen.list_item_width))
@@ -50,7 +50,7 @@ class ComposeItemAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: ComposeViewHolder<Int>, position: Int) {
+    override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
         val item = getItem(position)
         holder.setItemState(item)
         holder.itemView.contentDescription = item.toString()

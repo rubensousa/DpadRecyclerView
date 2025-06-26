@@ -102,13 +102,13 @@ class ComposeFocusTestActivity : AppCompatActivity() {
     inner class Adapter(
         private val items: List<Int>,
         private val onDispose: (item: Int) -> Unit,
-    ) : RecyclerView.Adapter<ComposeViewHolder<Int>>() {
+    ) : RecyclerView.Adapter<DpadComposeFocusViewHolder<Int>>() {
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int,
-        ): ComposeViewHolder<Int> {
-            return ComposeViewHolder(parent) { item ->
+        ): DpadComposeFocusViewHolder<Int> {
+            return DpadComposeFocusViewHolder(parent) { item ->
                 TestComposable(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -129,11 +129,11 @@ class ComposeFocusTestActivity : AppCompatActivity() {
 
         override fun getItemCount(): Int = items.size
 
-        override fun onBindViewHolder(holder: ComposeViewHolder<Int>, position: Int) {
+        override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
             holder.setItemState(items[position])
         }
 
-        override fun onViewRecycled(holder: ComposeViewHolder<Int>) {
+        override fun onViewRecycled(holder: DpadComposeFocusViewHolder<Int>) {
             holder.setItemState(null)
         }
 

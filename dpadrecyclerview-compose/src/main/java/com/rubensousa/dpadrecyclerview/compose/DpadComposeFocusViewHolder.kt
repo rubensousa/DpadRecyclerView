@@ -40,7 +40,7 @@ import androidx.recyclerview.widget.RecyclerView
  * }
  * ```
  */
-class ComposeViewHolder<T>(
+class DpadComposeFocusViewHolder<T>(
     parent: ViewGroup,
     isFocusable: Boolean = true,
     private val content: (@Composable (item: T) -> Unit)? = null,
@@ -51,7 +51,7 @@ class ComposeViewHolder<T>(
 
     init {
         composeView.apply {
-            this@ComposeViewHolder.setFocusable(isFocusable)
+            this@DpadComposeFocusViewHolder.setFocusable(isFocusable)
             content?.let {
                 setContent(content)
             }

@@ -16,7 +16,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.RecyclerView
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.OnViewHolderSelectedListener
-import com.rubensousa.dpadrecyclerview.compose.ComposeViewHolder
+import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ListTypes
@@ -57,15 +57,15 @@ class PredictiveAnimationFragment : Fragment(R.layout.screen_recyclerview) {
     }
 
     class PredictiveItemAdapter(
-    ) : MutableListAdapter<Int, ComposeViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK) {
+    ) : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(MutableGridAdapter.DIFF_CALLBACK) {
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int,
-        ): ComposeViewHolder<Int> {
+        ): DpadComposeFocusViewHolder<Int> {
             return when (viewType) {
                 ListTypes.ITEM -> {
-                    ComposeViewHolder(parent) { item ->
+                    DpadComposeFocusViewHolder(parent) { item ->
                         ItemComposable(
                             modifier = Modifier.fillMaxWidth().height(200.dp),
                             item = item,
@@ -74,7 +74,7 @@ class PredictiveAnimationFragment : Fragment(R.layout.screen_recyclerview) {
                 }
 
                 else -> {
-                    ComposeViewHolder(
+                    DpadComposeFocusViewHolder(
                         parent,
                         isFocusable = false
                     ) {
@@ -86,7 +86,7 @@ class PredictiveAnimationFragment : Fragment(R.layout.screen_recyclerview) {
             }
         }
 
-        override fun onBindViewHolder(holder: ComposeViewHolder<Int>, position: Int) {
+        override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
             val item = getItem(position)
             holder.setItemState(item)
             holder.itemView.contentDescription = item.toString()

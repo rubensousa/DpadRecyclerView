@@ -54,7 +54,7 @@ import com.rubensousa.dpadrecyclerview.compose.internal.DpadComposeView
  * }
  * ```
  */
-@Deprecated("Use ComposeViewHolder instead")
+@Deprecated("Use DpadComposeFocusViewHolder instead")
 class DpadComposeViewHolder<T>(
     parent: ViewGroup,
     onClick: ((item: T) -> Unit)? = null,

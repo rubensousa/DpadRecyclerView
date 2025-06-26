@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import com.rubensousa.dpadrecyclerview.DpadSpanSizeLookup
-import com.rubensousa.dpadrecyclerview.compose.ComposeViewHolder
+import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
 import com.rubensousa.dpadrecyclerview.sample.R
 import com.rubensousa.dpadrecyclerview.sample.databinding.ScreenRecyclerviewBinding
 import com.rubensousa.dpadrecyclerview.sample.ui.dpToPx
@@ -82,17 +82,17 @@ class GridSpanHeaderFragment : Fragment(R.layout.screen_recyclerview) {
 
     }
 
-    class SpanGridAdapter : MutableListAdapter<Int, ComposeViewHolder<Int>>(
+    class SpanGridAdapter : MutableListAdapter<Int, DpadComposeFocusViewHolder<Int>>(
         MutableGridAdapter.DIFF_CALLBACK
     ) {
 
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): ComposeViewHolder<Int> {
+        ): DpadComposeFocusViewHolder<Int> {
             return when (viewType) {
                 ListTypes.ITEM -> {
-                    ComposeViewHolder(parent) { item ->
+                    DpadComposeFocusViewHolder(parent) { item ->
                         GridItemComposable(
                             item = item,
                             onClick = {
@@ -103,7 +103,7 @@ class GridSpanHeaderFragment : Fragment(R.layout.screen_recyclerview) {
                 }
 
                 else -> {
-                    ComposeViewHolder(
+                    DpadComposeFocusViewHolder(
                         parent,
                         isFocusable = false
                     ) { _ ->
@@ -121,7 +121,7 @@ class GridSpanHeaderFragment : Fragment(R.layout.screen_recyclerview) {
             }
         }
 
-        override fun onBindViewHolder(holder: ComposeViewHolder<Int>, position: Int) {
+        override fun onBindViewHolder(holder: DpadComposeFocusViewHolder<Int>, position: Int) {
             holder.setItemState(getItem(position))
         }
 

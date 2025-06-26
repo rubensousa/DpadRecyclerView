@@ -18,12 +18,12 @@ package com.rubensousa.dpadrecyclerview.sample.ui.screen.dynamic
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
-import com.rubensousa.dpadrecyclerview.compose.ComposeViewHolder
+import com.rubensousa.dpadrecyclerview.compose.DpadComposeFocusViewHolder
 import com.rubensousa.dpadrecyclerview.sample.ui.model.ComposableItem
 import com.rubensousa.dpadrecyclerview.sample.ui.widgets.common.MutableListAdapter
 
 class ComposeDynamicItemAdapter :
-    MutableListAdapter<ComposableItem, ComposeViewHolder<ComposableItem>>(
+    MutableListAdapter<ComposableItem, DpadComposeFocusViewHolder<ComposableItem>>(
         object : DiffUtil.ItemCallback<ComposableItem>() {
             override fun areItemsTheSame(
                 oldItem: ComposableItem,
@@ -44,14 +44,14 @@ class ComposeDynamicItemAdapter :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ComposeViewHolder<ComposableItem> {
-        return ComposeViewHolder(parent) { item ->
+    ): DpadComposeFocusViewHolder<ComposableItem> {
+        return DpadComposeFocusViewHolder(parent) { item ->
             item.Content()
         }
     }
 
     override fun onBindViewHolder(
-        holder: ComposeViewHolder<ComposableItem>,
+        holder: DpadComposeFocusViewHolder<ComposableItem>,
         position: Int
     ) {
         holder.setItemState(getItem(position))
