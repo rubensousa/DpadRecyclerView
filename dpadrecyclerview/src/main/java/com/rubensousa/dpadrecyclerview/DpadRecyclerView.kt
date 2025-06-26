@@ -799,6 +799,24 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
+     * Use this to ignore fast key events while scrolling.
+     * By default, this is null, which means there is no debouncing.
+     *
+     * @param debounceMs the value in milliseconds to wait between two consecutive key events
+     * or null to deactivate debouncing
+     */
+    fun setFocusSearchDebounceMs(debounceMs: Int?) {
+        requireLayout().setFocusSearchDebounceMs(debounceMs)
+    }
+
+    /**
+     * @return the value set in [setFocusSearchDebounceMs] or null if debouncing is disabled
+     */
+    fun getFocusSearchDebounceMs(): Int? {
+        return requireLayout().getFocusSearchDebounceMs()
+    }
+
+    /**
      * Sets whether focus can move out from the front and/or back of the RecyclerView.
      *
      * @param throughFront For the vertical orientation, this controls whether focus can move out
@@ -1170,6 +1188,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
      *
      * @param max Maximum number of pending alignment changes
      */
+    @Deprecated("Use setFocusSearchDebounceMs instead since this pattern does not work in all cases")
     fun setSmoothScrollMaxPendingAlignments(max: Int) {
         requireLayout().setMaxPendingAlignments(max)
     }
@@ -1177,6 +1196,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     /**
      * See [setSmoothScrollMaxPendingAlignments]
      */
+    @Deprecated("Use setFocusSearchDebounceMs instead since this pattern does not work in all cases")
     fun getSmoothScrollMaxPendingAlignments(): Int {
         return requireLayout().getMaxPendingAlignments()
     }

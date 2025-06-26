@@ -49,6 +49,8 @@ internal class FocusDispatcher(
     )
     private var focusInterceptor: FocusInterceptor = defaultFocusInterceptor
     private var parentRecyclerView: RecyclerView? = null
+    private var lastFocusRequestTimestamp: Long = 0L
+    private var focusSearchDebounceMs: Int? = null
 
     fun updateParentRecyclerView(childRecyclerView: RecyclerView) {
         var parent: ViewParent? = childRecyclerView.parent
@@ -72,6 +74,15 @@ internal class FocusDispatcher(
             FocusableDirection.STANDARD -> defaultFocusInterceptor
         }
     }
+
+    fun updateFocusSearchDebounceMs(debounceMs: Int?) {
+        focusSearchDebounceMs = debounceMs
+    }
+
+    fun getFocusSearchDebounceMs(): Int? {
+        return focusSearchDebounceMs
+    }
+
 
     /**
      * When [RecyclerView.requestFocus] is called, we need to focus the first focusable child
@@ -149,9 +160,7 @@ internal class FocusDispatcher(
             reverseLayout = layoutInfo.shouldReverseLayout()
         ) ?: return focused
 
-        if (configuration.hasMaxPendingAlignments()
-            && scroller.hasReachedPendingAlignmentLimit(focusDirection)
-        ) {
+        if (isLimitedByFocusSearchDebounce()) {
             return focused
         }
 
@@ -170,6 +179,7 @@ internal class FocusDispatcher(
             ) {
                 return focused
             }
+            lastFocusRequestTimestamp = System.currentTimeMillis()
             return newFocusedView
         }
 
@@ -179,6 +189,7 @@ internal class FocusDispatcher(
                 recyclerView, focused, pivotSelector.position, direction
             )?.let { view ->
                 scroller.addPendingAlignment(view)
+                lastFocusRequestTimestamp = System.currentTimeMillis()
                 return view
             }
         }
@@ -221,11 +232,18 @@ internal class FocusDispatcher(
                 }
             }
         }
+        lastFocusRequestTimestamp = System.currentTimeMillis()
         if (newFocusedView != null) {
             return newFocusedView
         }
         newFocusedView = currentRecyclerView.parent?.focusSearch(focused, direction)
         return newFocusedView ?: focused
+    }
+
+    private fun isLimitedByFocusSearchDebounce(): Boolean {
+        val currentDebounceValue = focusSearchDebounceMs ?: return false
+        val currentTime = System.currentTimeMillis()
+        return currentTime - lastFocusRequestTimestamp < currentDebounceValue
     }
 
     private fun isFocusSearchEnabled(recyclerView: RecyclerView): Boolean {

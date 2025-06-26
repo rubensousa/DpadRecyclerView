@@ -55,7 +55,7 @@ class ListViewModel : ViewModel() {
         val itemCount = if (enableLooping) {
             8
         } else {
-            50
+            20
         }
         repeat(itemCount) {
             items.add(it)

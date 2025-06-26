@@ -97,6 +97,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun focusSearch (I)Landroid/view/View;
 	public final fun getChildAlignment ()Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
 	public final fun getCurrentSubPositions ()I
+	public final fun getFocusSearchDebounceMs ()Ljava/lang/Integer;
 	public final fun getFocusableDirection ()Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
 	public final fun getInitialPrefetchItemCount ()I
 	public final fun getLoopDirection ()Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
@@ -154,6 +155,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setFocusDrawingOrderEnabled (Z)V
 	public final fun setFocusOutAllowed (ZZ)V
 	public final fun setFocusOutSideAllowed (ZZ)V
+	public final fun setFocusSearchDebounceMs (Ljava/lang/Integer;)V
 	public final fun setFocusSearchDisabled (Z)V
 	public final fun setFocusSearchEnabledDuringAnimations (Z)V
 	public final fun setFocusableDirection (Lcom/rubensousa/dpadrecyclerview/FocusableDirection;)V
@@ -520,6 +522,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public final fun getChildAlignment ()Lcom/rubensousa/dpadrecyclerview/ChildAlignment;
 	public fun getColumnCountForAccessibility (Landroidx/recyclerview/widget/RecyclerView$Recycler;Landroidx/recyclerview/widget/RecyclerView$State;)I
 	public final fun getCurrentSubPositions ()I
+	public final fun getFocusSearchDebounceMs ()Ljava/lang/Integer;
 	public final fun getFocusableDirection ()Lcom/rubensousa/dpadrecyclerview/FocusableDirection;
 	public final fun getLoopDirection ()Lcom/rubensousa/dpadrecyclerview/DpadLoopDirection;
 	public final fun getMaxPendingAlignments ()I
@@ -571,6 +574,7 @@ public final class com/rubensousa/dpadrecyclerview/layoutmanager/PivotLayoutMana
 	public final fun setExtraLayoutSpaceStrategy (Lcom/rubensousa/dpadrecyclerview/ExtraLayoutSpaceStrategy;)V
 	public final fun setFocusOutAllowed (ZZ)V
 	public final fun setFocusOutSideAllowed (ZZ)V
+	public final fun setFocusSearchDebounceMs (Ljava/lang/Integer;)V
 	public final fun setFocusSearchDisabled (Z)V
 	public final fun setFocusSearchEnabledDuringAnimations (Z)V
 	public final fun setFocusableDirection (Lcom/rubensousa/dpadrecyclerview/FocusableDirection;)V
