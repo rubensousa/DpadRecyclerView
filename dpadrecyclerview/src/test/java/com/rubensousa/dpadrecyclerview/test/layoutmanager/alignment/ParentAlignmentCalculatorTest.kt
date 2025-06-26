@@ -444,6 +444,35 @@ class ParentAlignmentCalculatorTest {
         assertThat(scrollOffset).isEqualTo(0)
     }
 
+    @Test
+    fun `should not align view to start if anchor is at keyline already`() {
+        // given
+        setLayoutProperties(orientation = RecyclerView.VERTICAL, reverseLayout = false)
+        val alignment = ParentAlignment(
+            edge = ParentAlignment.Edge.MIN,
+            offset = 0,
+            fraction = 0.5f,
+        )
+        val keyline = verticalCenterKeyline
+        alignmentCalculator.updateScrollLimits(
+            startEdge = -verticalViewHeight / 2,
+            startViewAnchor = verticalViewHeight / 2,
+            endEdge = Int.MAX_VALUE,
+            endViewAnchor = height - verticalViewHeight / 2,
+            startAlignment = alignment,
+            endAlignment = alignment
+        )
+
+        // when
+        val scrollOffset = alignmentCalculator.calculateScrollOffset(
+            viewAnchor = keyline,
+            alignment = alignment
+        )
+
+        // then
+        assertThat(scrollOffset).isEqualTo(0)
+    }
+
     private fun setLayoutProperties(orientation: Int, reverseLayout: Boolean) {
         if (orientation == RecyclerView.VERTICAL) {
             alignmentCalculator.updateLayoutInfo(
