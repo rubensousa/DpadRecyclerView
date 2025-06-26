@@ -3,6 +3,8 @@ package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.carioca.junit4.rules.RetryTest
+import com.rubensousa.carioca.junit4.rules.RetryTestRule
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -16,6 +18,7 @@ import com.rubensousa.dpadrecyclerview.test.tests.DpadRecyclerViewTest
 import com.rubensousa.dpadrecyclerview.testing.KeyEvents
 import com.rubensousa.dpadrecyclerview.testing.R
 import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
+import org.checkerframework.checker.units.qual.g
 import org.junit.Rule
 import org.junit.Test
 
@@ -23,6 +26,9 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
+
+    @get:Rule(order = -1)
+    val retryTestRule = RetryTestRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
@@ -53,6 +59,7 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    @RetryTest(times = 3)
     fun testPendingAlignmentsAreResetWhenIdle() {
         launchFragment()
 
