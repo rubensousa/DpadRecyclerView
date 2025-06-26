@@ -19,8 +19,8 @@ import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.recyclerview.widget.RecyclerView
+import com.rubensousa.dpadrecyclerview.compose.internal.DpadComposeView
 
 /**
  * A basic ViewHolder that forwards [content] to a [ComposeView]
@@ -54,12 +54,12 @@ import androidx.recyclerview.widget.RecyclerView
  * }
  * ```
  */
+@Deprecated("Use DpadComposeFocusViewHolder instead")
 class DpadComposeViewHolder<T>(
     parent: ViewGroup,
     onClick: ((item: T) -> Unit)? = null,
     onLongClick: ((item: T) -> Boolean)? = null,
     isFocusable: Boolean = true,
-    compositionStrategy: ViewCompositionStrategy = RecyclerViewCompositionStrategy.DisposeOnRecycled,
     private val content: @Composable (item: T, isFocused: Boolean) -> Unit = { _, _ -> }
 ) : RecyclerView.ViewHolder(DpadComposeView(parent.context)) {
 
@@ -76,7 +76,6 @@ class DpadComposeViewHolder<T>(
             setOnFocusChangeListener { _, hasFocus ->
                 focusState.value = hasFocus
             }
-            setViewCompositionStrategy(compositionStrategy)
             setContent {
                 itemState.value?.let { item ->
                     content(item, focusState.value)

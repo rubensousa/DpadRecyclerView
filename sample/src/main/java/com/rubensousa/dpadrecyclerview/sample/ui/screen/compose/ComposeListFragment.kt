@@ -101,6 +101,7 @@ class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
         }
 
         binding.recyclerView.apply {
+            setSlowScrollBehavior()
             setParentAlignment(
                 alignment = ParentAlignment(
                     fraction = 0.15f,
@@ -108,7 +109,6 @@ class ComposeListFragment : Fragment(R.layout.screen_recyclerview) {
                 )
             )
             setChildAlignment(alignment = ChildAlignment(fraction = 0.0f))
-            setSmoothScrollMaxPendingMoves(0)
             adapter = concatAdapter
             requestFocus()
         }

@@ -109,7 +109,7 @@ class ComposeFocusTestActivity : AppCompatActivity() {
             viewType: Int,
         ): DpadComposeFocusViewHolder<Int> {
             return DpadComposeFocusViewHolder(parent) { item ->
-                TestComposableFocus(
+                TestComposable(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.dp),
