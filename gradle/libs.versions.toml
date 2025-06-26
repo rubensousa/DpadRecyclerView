@@ -34,8 +34,9 @@ jacoco = "0.8.11"
 test-junit = '4.13.2'
 test-truth = '1.4.1'
 test-mockk = '1.13.10'
-carioca-report = "1.0.0-beta01"
-carioca-allure = "1.0.0-beta01"
+carioca-report = "1.0.1"
+carioca-allure = "1.0.1"
+carioca-rules = "1.0.0"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -83,6 +84,7 @@ androidx-test-services = { module = "androidx.test.services:test-services", vers
 androidx-test-truth = { module = "androidx.test.ext:truth", version.ref = "androidx-test-espressoTruth" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "androidx-test-uiautomator" }
 carioca-report = { module = "com.rubensousa.carioca:report-android", version.ref = "carioca-report"}
+carioca-rules = { module = "com.rubensousa.carioca:junit4-rules", version.ref = "carioca-rules"}
 decorator = { module = "com.rubensousa:decorator", version.ref = "decorator" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit = { module = "junit:junit", version.ref = "test-junit" }
