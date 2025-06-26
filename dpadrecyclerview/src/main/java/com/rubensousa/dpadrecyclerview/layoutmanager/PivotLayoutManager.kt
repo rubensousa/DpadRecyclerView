@@ -586,6 +586,14 @@ class PivotLayoutManager(properties: Properties) : RecyclerView.LayoutManager(),
         configuration.setMaxPendingAlignments(max)
     }
 
+    fun setFocusSearchDebounceMs(debounceMs: Int?) {
+        focusDispatcher.updateFocusSearchDebounceMs(debounceMs)
+    }
+
+    fun getFocusSearchDebounceMs(): Int? {
+        return focusDispatcher.getFocusSearchDebounceMs()
+    }
+
     fun getMaxPendingAlignments(): Int {
         return configuration.maxPendingAlignments
     }

@@ -130,7 +130,7 @@ class HorizontalListViewHolder(
 
     private fun setupSlowScrollingBehavior() {
         LimitedScrollBehavior().setup(
-            recyclerView = recyclerView,
+            dpadRecyclerView = recyclerView,
             extraLayoutSpaceStart = { recyclerView.width / 2 }
         )
     }
