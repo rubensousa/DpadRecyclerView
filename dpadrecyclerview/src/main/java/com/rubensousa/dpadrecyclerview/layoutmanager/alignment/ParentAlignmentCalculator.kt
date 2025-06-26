@@ -225,7 +225,7 @@ internal class ParentAlignmentCalculator {
         if (alignment.edge == Edge.NONE) {
             return false
         }
-        if (isLayoutComplete()) {
+        if (isStartLayoutComplete()) {
             return if (alignment.preferKeylineOverEdge) {
                 false
             } else {
@@ -246,7 +246,7 @@ internal class ParentAlignmentCalculator {
         if (alignment.edge == Edge.NONE) {
             return false
         }
-        if (isLayoutComplete()) {
+        if (isEndLayoutComplete()) {
             return if (alignment.preferKeylineOverEdge) {
                 false
             } else {
