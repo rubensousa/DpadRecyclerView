@@ -1,5 +1,26 @@
 # Changelog
 
+## Version 1.5.0
+
+### 1.5.0-alpha01
+
+2025-06-27
+
+#### Bug fixes
+
+- Fixed scrolling issue when extra layout space is used
+
+#### New features
+
+- The new `setFocusSearchDebounceMs` allows throttling focus searches based on the time elapsed between different key events
+
+#### API changes
+
+- Deprecated `setSmoothScrollMaxPendingAlignments` in favor of the new `setFocusSearchDebounceMs` 
+since there was an issue with controlling the scroll speed near the edges of the list.
+- Deprecated `DpadComposeViewHolder` in favor of `DpadComposeFocusViewHolder` to always hold focus inside Compose.
+- Removed `RecyclerViewCompositionStrategy` since it wasn't needed since a few releases ago due to changes in `RecyclerView`.
+
 ## Version 1.4.3
 
 2025-05-07
