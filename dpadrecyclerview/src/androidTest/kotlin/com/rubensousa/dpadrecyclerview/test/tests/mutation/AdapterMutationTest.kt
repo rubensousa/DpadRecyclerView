@@ -21,7 +21,6 @@ import androidx.test.espresso.Espresso
 import androidx.test.platform.app.InstrumentationRegistry
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.carioca.junit4.rules.RetryTest
-import com.rubensousa.carioca.junit4.rules.RetryTestRule
 import com.rubensousa.carioca.report.android.recording.TestRecording
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -50,9 +49,6 @@ class AdapterMutationTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
-
-    @get:Rule(order = -1)
-    val retryTestRule = RetryTestRule()
 
     override fun getDefaultLayoutConfiguration(): TestLayoutConfiguration {
         return TestLayoutConfiguration(
