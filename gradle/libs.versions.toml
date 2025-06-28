@@ -1,11 +1,11 @@
 [versions]
 # From library
-android-gradle-plugin = "8.6.0"
+android-gradle-plugin = "8.9.2"
 androidx-collection = "1.4.3"
-androidx-recyclerview = "1.4.0-beta01"
+androidx-recyclerview = "1.4.0"
 androidx-poolingcontainer = "1.0.0"
 androidx-appcompat = "1.7.0"
-androidx-compose-ui = "1.7.0-rc01"
+androidx-compose-ui = "1.8.0"
 androidx-test-espresso = '3.6.1'
 androidx-test-uiautomator = '2.3.0'
 # From sample
@@ -13,7 +13,7 @@ androidx-compose-material3 = '1.2.1'
 androidx-constraintlayout = "2.1.4"
 androidx-fragment = "1.8.2"
 androidx-interpolator = "1.0.0"
-androidx-leanback = "1.0.0-alpha03"
+androidx-leanback = "1.0.0"
 androidx-lifecycle = "2.8.4"
 androidx-navigation = "2.7.7"
 androidx-paging = "3.3.2"
@@ -34,8 +34,8 @@ jacoco = "0.8.11"
 test-junit = '4.13.2'
 test-truth = '1.4.1'
 test-mockk = '1.13.10'
-carioca-report = "1.0.0-beta01"
-carioca-allure = "1.0.0-beta01"
+carioca-report = "1.0.1"
+carioca-allure = "1.0.1"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-gradle-plugin" }
@@ -46,7 +46,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 carioca-allure = { id = "com.rubensousa.carioca.report.allure", version.ref = "carioca-allure" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.29.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.31.0" }
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
