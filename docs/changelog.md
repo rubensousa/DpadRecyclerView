@@ -8,11 +8,11 @@
 
 #### Bug fixes
 
-- Fixed scrolling issue when extra layout space is used
+- Fixed scrolling issue when extra layout space is used ([#309](https://github.com/rubensousa/DpadRecyclerView/pull/309))
 
 #### New features
 
-- The new `setFocusSearchDebounceMs` allows throttling focus searches based on the time elapsed between different key events
+- The new `setFocusSearchDebounceMs` allows throttling focus searches based on the time elapsed between different key events ([#308](https://github.com/rubensousa/DpadRecyclerView/pull/308))
 
 #### API changes
 
