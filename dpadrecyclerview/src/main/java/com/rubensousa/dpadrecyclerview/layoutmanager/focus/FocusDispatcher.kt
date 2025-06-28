@@ -164,6 +164,10 @@ internal class FocusDispatcher(
             return focused
         }
 
+        if (scroller.hasReachedPendingAlignmentLimit(focusDirection)) {
+            return focused
+        }
+
         var newFocusedView: View? = focusInterceptor.findFocus(
             recyclerView = recyclerView,
             focusedView = focused,

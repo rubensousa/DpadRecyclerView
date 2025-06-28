@@ -3,7 +3,7 @@ package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.carioca.junit4.rules.RetryTest
+import com.rubensousa.carioca.junit4.rules.RepeatTest
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -54,19 +54,18 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    @RetryTest(times = 3)
     fun testPendingAlignmentsAreResetWhenIdle() {
         launchFragment()
 
         setupRecyclerView(maxPendingAlignments = 2)
 
-        KeyEvents.pressRight(times = 5)
+        KeyEvents.pressRight(times = 5, delay = 0L)
 
         assertFocusAndSelection(position = 2)
 
         waitForIdleScrollState()
 
-        KeyEvents.pressRight(times = 5)
+        KeyEvents.pressRight(times = 5, delay = 0L)
 
         assertFocusAndSelection(position = 4)
     }

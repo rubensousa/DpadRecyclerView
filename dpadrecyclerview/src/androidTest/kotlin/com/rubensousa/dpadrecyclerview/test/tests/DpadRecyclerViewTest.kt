@@ -21,6 +21,7 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.carioca.junit4.rules.RepeatTestRule
 import com.rubensousa.carioca.junit4.rules.RetryTestRule
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -50,6 +51,9 @@ abstract class DpadRecyclerViewTest {
 
     @get:Rule(order = 100)
     val retryTestRule = RetryTestRule()
+
+    @get:Rule(order = 101)
+    val repeatTestRule = RepeatTestRule()
 
     abstract fun getDefaultLayoutConfiguration(): TestLayoutConfiguration
 
