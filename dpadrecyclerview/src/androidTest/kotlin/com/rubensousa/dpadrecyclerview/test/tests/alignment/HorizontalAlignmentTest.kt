@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
+import com.rubensousa.dpadrecyclerview.ExtraLayoutSpaceStrategy
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment.Edge
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
@@ -30,6 +31,7 @@ import com.rubensousa.dpadrecyclerview.test.helpers.getItemViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.getRecyclerViewBounds
 import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.selectLastPosition
+import com.rubensousa.dpadrecyclerview.test.helpers.selectPosition
 import com.rubensousa.dpadrecyclerview.test.helpers.updateChildAlignment
 import com.rubensousa.dpadrecyclerview.test.helpers.updateParentAlignment
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
@@ -444,4 +446,42 @@ class HorizontalAlignmentTest : DpadRecyclerViewTest() {
         waitForIdleScrollState()
         assertThat(getItemViewBounds(position = 0)).isEqualTo(childBounds)
     }
+
+    @Test
+    fun testAlignmentIsCorrectWithStartExtraSpace() = report {
+        val offset = 100
+        Given("Launch fragment with extra layout space and aligned to start") {
+            launchFragment(
+                parentAlignment = ParentAlignment(
+                    edge = Edge.MIN_MAX,
+                    offset = offset,
+                    fraction = 0f,
+                ),
+                childAlignment = ChildAlignment(
+                    offset = 0,
+                    fraction = 0f
+                )
+            )
+            onRecyclerView("Set extra layout space") { recyclerView ->
+                recyclerView.setExtraLayoutSpaceStrategy(object : ExtraLayoutSpaceStrategy {
+                    override fun calculateStartExtraLayoutSpace(state: RecyclerView.State): Int {
+                        return recyclerView.width
+                    }
+                })
+            }
+        }
+        When("Scroll to position 4 and then press left") {
+            repeat(4) {
+                KeyEvents.pressRight()
+                waitForIdleScrollState()
+            }
+            KeyEvents.pressLeft()
+            waitForIdleScrollState()
+        }
+        Then("Assert item at position 3 is aligned to the left") {
+            assertThat(getItemViewBounds(position = 3).left)
+                .isEqualTo(offset)
+        }
+    }
+
 }
