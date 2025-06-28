@@ -3,7 +3,6 @@ package com.rubensousa.dpadrecyclerview.test.tests.scrolling
 import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
 import androidx.recyclerview.widget.RecyclerView
-import com.rubensousa.carioca.junit4.rules.RepeatTest
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -20,7 +19,7 @@ import com.rubensousa.dpadrecyclerview.testing.rules.DisableIdleTimeoutRule
 import org.junit.Rule
 import org.junit.Test
 
-class PendingAlignmentTest : DpadRecyclerViewTest() {
+class FocusDebounceTest : DpadRecyclerViewTest() {
 
     @get:Rule
     val idleTimeoutRule = DisableIdleTimeoutRule()
@@ -43,64 +42,43 @@ class PendingAlignmentTest : DpadRecyclerViewTest() {
     }
 
     @Test
-    fun testFocusDoesNotMoveIfPendingAlignmentLimitIsReached() {
-        launchFragment()
-
-        setupRecyclerView(maxPendingAlignments = 1)
-
-        KeyEvents.pressRight(times = 5)
-
-        assertFocusAndSelection(position = 1)
+    fun testFocusDoesNotMoveWithinDebounceValue() = report {
+        val debounceMs = 1000
+        Given("Launch fragment with debounce configured") {
+            launchFragment()
+            setupRecyclerView(debounceMs = debounceMs)
+        }
+        When("Press 2 keys within $debounceMs ms") {
+            KeyEvents.pressRight(times = 2, 0L)
+            waitForIdleScrollState()
+        }
+        Then("Position 1 is selected") {
+            assertFocusAndSelection(1)
+        }
     }
 
     @Test
-    fun testPendingAlignmentsAreResetWhenIdle() {
-        launchFragment()
-
-        setupRecyclerView(maxPendingAlignments = 2)
-
-        KeyEvents.pressRight(times = 5, delay = 0L)
-
-        assertFocusAndSelection(position = 2)
-
-        waitForIdleScrollState()
-
-        KeyEvents.pressRight(times = 5, delay = 0L)
-
-        assertFocusAndSelection(position = 4)
-    }
-
-    @Test
-    fun testPendingAlignmentInOppositeDirectionIsIgnored() {
-        launchFragment()
-
-        setupRecyclerView(maxPendingAlignments = 1)
-
-        KeyEvents.pressRight()
-        KeyEvents.pressLeft()
-
-        assertFocusAndSelection(position = 0)
-    }
-
-    @Test
-    fun testFocusMovesIfPendingAlignmentLimitIsNotReached() {
-        launchFragment()
-
-        setupRecyclerView(maxPendingAlignments = 3)
-
-        KeyEvents.pressRight(times = 3)
-
-        assertFocusAndSelection(position = 3)
+    fun testFocusMovesAfterDebounce() = report {
+        val debounceMs = 1000
+        Given("Launch fragment with debounce configured") {
+            launchFragment()
+            setupRecyclerView(debounceMs = debounceMs)
+        }
+        When("Press 2 keys spaced by more than $debounceMs") {
+            KeyEvents.pressRight(times = 2, debounceMs + 500L)
+            waitForIdleScrollState()
+        }
+        Then("Position 2 is selected") {
+            assertFocusAndSelection(2)
+        }
     }
 
     private fun setupRecyclerView(
-        maxPendingAlignments: Int,
-        maxPendingMoves: Int = 10,
+        debounceMs: Int?,
         scrollDuration: Int = 2000
     ) {
         onRecyclerView("Setup") { recyclerView ->
-            recyclerView.setSmoothScrollMaxPendingMoves(maxPendingMoves)
-            recyclerView.setSmoothScrollMaxPendingAlignments(maxPendingAlignments)
+            recyclerView.setFocusSearchDebounceMs(debounceMs)
             recyclerView.setSmoothScrollBehavior(object : DpadRecyclerView.SmoothScrollByBehavior {
                 override fun configSmoothScrollByDuration(dx: Int, dy: Int): Int {
                     return scrollDuration

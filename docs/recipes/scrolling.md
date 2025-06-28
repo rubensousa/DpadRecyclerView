@@ -55,20 +55,15 @@ recyclerView.setSmoothScrollSpeedFactor(2f)
 
 The code above will make smooth scrolling twice slower.
 
-## Limiting number of pending alignments
+## Limiting number of pending focus requests
 
 Sometimes you might want to prevent the user from scrolling past too many items.
-You can specify the number of max pending alignments with: `setSmoothScrollMaxPendingAlignments`:
+You can control this with: `setFocusSearchDebounceMs`:
 
 ```kotlin
-recyclerView.setSmoothScrollMaxPendingAlignments(2)
+// Will ignore key events faster than 200ms 
+recyclerView.setFocusSearchDebounceMs(200)
 ```
-
-The code above translates to this behavior:
-
-![Max pending alignments](../img/max_pending_alignments.png)
-
-In the right scenario, there's just one next focusable view since the focused view still isn't aligned to the keyline.
 
 ## Enabling layout during scrolling events
 
