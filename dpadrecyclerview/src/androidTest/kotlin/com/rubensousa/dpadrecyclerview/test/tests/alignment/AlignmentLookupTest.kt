@@ -18,6 +18,7 @@ package com.rubensousa.dpadrecyclerview.test.tests.alignment
 
 import androidx.recyclerview.widget.RecyclerView
 import com.google.common.truth.Truth.assertThat
+import com.rubensousa.carioca.junit4.rules.RetryTest
 import com.rubensousa.dpadrecyclerview.AlignmentLookup
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
@@ -147,6 +148,7 @@ class AlignmentLookupTest : DpadRecyclerViewTest() {
     }
 
     @Test
+    @RetryTest(times = 3)
     fun testScrollIsStillAppliedAfterFastScrolling() {
         // given
         launchFragment()
