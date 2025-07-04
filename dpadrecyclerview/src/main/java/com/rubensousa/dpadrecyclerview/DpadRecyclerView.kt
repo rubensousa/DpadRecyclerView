@@ -750,23 +750,41 @@ open class DpadRecyclerView @JvmOverloads constructor(
     }
 
     /**
-     * Disables or enables focus search.
-     * @param disabled True to disable focus search, false to enable.
+     * Enables or disables focus search with key presses. By default this is true.
+     * Disabling this will prevent `DpadRecyclerView` from intercepting key events to switch focus
+     * 
+     * @param enabled True to enable focus search, false to disable.
      */
-    fun setFocusSearchDisabled(disabled: Boolean) {
-        descendantFocusability = if (disabled) {
-            FOCUS_BLOCK_DESCENDANTS
-        } else {
+    fun setFocusSearchEnabled(enabled: Boolean) {
+        descendantFocusability = if (enabled) {
             FOCUS_AFTER_DESCENDANTS
+        } else {
+            FOCUS_BLOCK_DESCENDANTS
         }
-        requireLayout().setFocusSearchDisabled(disabled)
+        requireLayout().setFocusSearchDisabled(!enabled)
     }
 
     /**
-     * @return True if focus search is disabled.
+     * @return True if focus search is enabled.
      */
-    fun isFocusSearchDisabled(): Boolean {
+    fun isFocusSearchEnabled(): Boolean {
         return requireLayout().isFocusSearchDisabled()
+    }
+
+    /**
+     * Deprecated: use [setFocusSearchEnabled] instead
+     */
+    @Deprecated("Use setFocusSearchEnabled instead", ReplaceWith("setFocusSearchEnabled(!disabled)"))
+    fun setFocusSearchDisabled(disabled: Boolean) {
+        setFocusSearchEnabled(!disabled)
+    }
+
+    /**
+     * Deprecated: use [isFocusSearchEnabled] instead
+     */
+    @Deprecated("Use isFocusSearchEnabled instead", ReplaceWith("!isFocusSearchEnabled()"))
+    fun isFocusSearchDisabled(): Boolean {
+        return !isFocusSearchEnabled()
     }
 
     /**
@@ -1253,7 +1271,7 @@ open class DpadRecyclerView @JvmOverloads constructor(
     /**
      * Enables or disables scrolling.
      * When this is disabled, [DpadRecyclerView] can still change focus on DPAD events
-     * unless [setFocusSearchDisabled] is also set.
+     * unless [setFocusSearchEnabled] is also set to true.
      *
      * @param enabled true if scrolling should be enabled, false otherwise
      */

@@ -28,9 +28,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withTagValue
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.DpadRecyclerView
 import com.rubensousa.dpadrecyclerview.test.TestAdapter
 import com.rubensousa.dpadrecyclerview.test.TestAdapterConfiguration
+import com.rubensousa.dpadrecyclerview.test.helpers.onRecyclerView
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForCondition
 import com.rubensousa.dpadrecyclerview.test.helpers.waitForIdleScrollState
 import com.rubensousa.dpadrecyclerview.test.tests.AbstractTestAdapter
@@ -109,7 +111,7 @@ class NestedFocusDirectionTest {
 
     @Test
     fun testFocusStillLeavesRecyclerViewWhenFocusSearchIsDisabled() = report {
-        step("Disable focus searches for the first recyclerview") {
+        Given("Disable focus searches for the first recyclerview") {
             Espresso.onView(
                 allOf(
                     withId(
@@ -118,16 +120,19 @@ class NestedFocusDirectionTest {
                     withTagValue(Matchers.`is`(0))
                 )
             ).perform(DpadRecyclerViewActions.execute("Disable focus searches") { recyclerView ->
-                recyclerView.setFocusSearchDisabled(true)
+                recyclerView.setFocusSearchEnabled(false)
             })
         }
 
-        step("Press down") {
+        When("Press down") {
             KeyEvents.pressDown()
             waitForIdleScrollState()
         }
 
-        step("Focus should be in second list") {
+        Then("Focus should be in second list") {
+            onRecyclerView("Assert focus search disabled") { recyclerView ->
+                assertThat(recyclerView.isFocusSearchEnabled()).isFalse()
+            }
             Espresso.onView(
                 allOf(
                     withId(

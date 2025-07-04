@@ -16,7 +16,9 @@
 
 package com.rubensousa.dpadrecyclerview.test.tests.focus
 
+import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.common.truth.Truth.assertThat
 import com.rubensousa.dpadrecyclerview.ChildAlignment
 import com.rubensousa.dpadrecyclerview.ParentAlignment
 import com.rubensousa.dpadrecyclerview.test.TestLayoutConfiguration
@@ -176,6 +178,57 @@ class VerticalFocusTest : DpadRecyclerViewTest() {
         }
         pressDown()
         assertFocusAndSelection(position = 1)
+    }
+
+    @Test
+    fun testFocusDoesNotMoveIfUserDisablesFocusSearch() = report {
+        Given("Launch fragment and disable focus search") {
+            launchFragment()
+            onRecyclerView("Disable focus search") { recyclerView ->
+                recyclerView.setFocusSearchEnabled(false)
+            }
+        }
+        When("Press key down") {
+            pressDown()
+        }
+        Then("Focus is still in first position") {
+            assertFocusAndSelection(0)
+        }
+    }
+
+    @Test
+    fun testFocusMovesAfterEnablingFocusSearch() = report {
+        Given("Launch fragment and disable focus search") {
+            launchFragment()
+            onRecyclerView("Disable and enable focus search") { recyclerView ->
+                recyclerView.setFocusSearchEnabled(false)
+                recyclerView.setFocusSearchEnabled(true)
+            }
+        }
+        When("Press key down") {
+            pressDown()
+        }
+        Then("Focus is second position") {
+            assertFocusAndSelection(1)
+        }
+    }
+
+    @Test
+    fun testDescendantFocusabilityWhenFocusSearchIsDisabled() = report {
+        Given("Launch fragment and disable focus search") {
+            launchFragment()
+            onRecyclerView("Disable focus search") { recyclerView ->
+                recyclerView.setFocusSearchEnabled(false)
+            }
+        }
+        When("Press key down") {
+            pressDown()
+        }
+        Then("Focus is still in first position") {
+            onRecyclerView("Assert descendant focusability") { recyclerView ->
+                assertThat(recyclerView.descendantFocusability).isEqualTo(ViewGroup.FOCUS_BLOCK_DESCENDANTS)
+            }
+        }
     }
 
 }
