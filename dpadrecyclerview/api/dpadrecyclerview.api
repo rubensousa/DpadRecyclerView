@@ -121,6 +121,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun hasOverlappingRendering ()Z
 	public final fun isFocusDrawingOrderEnabled ()Z
 	public final fun isFocusSearchDisabled ()Z
+	public final fun isFocusSearchEnabled ()Z
 	public final fun isItemPrefetchEnabled ()Z
 	public final fun isLayoutEnabled ()Z
 	public final fun isLayoutReversed ()Z
@@ -157,6 +158,7 @@ public class com/rubensousa/dpadrecyclerview/DpadRecyclerView : androidx/recycle
 	public final fun setFocusOutSideAllowed (ZZ)V
 	public final fun setFocusSearchDebounceMs (Ljava/lang/Integer;)V
 	public final fun setFocusSearchDisabled (Z)V
+	public final fun setFocusSearchEnabled (Z)V
 	public final fun setFocusSearchEnabledDuringAnimations (Z)V
 	public final fun setFocusableDirection (Lcom/rubensousa/dpadrecyclerview/FocusableDirection;)V
 	public final fun setGravity (I)V
