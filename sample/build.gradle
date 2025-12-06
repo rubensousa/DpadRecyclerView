@@ -14,9 +14,20 @@ android {
         minSdk versions.minSdkVersion
         targetSdk versions.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments useTestStorageService: 'true'
+    }
+
+    signingConfigs {
+        release {
+            if (project.hasProperty("oss_keystore_path")) {
+                storeFile(file(project.property("oss_keystore_path")))
+                storePassword(project.property("oss_keystore_pw"))
+                keyAlias(project.property("oss_keystore_key_alias"))
+                keyPassword(project.property("oss_keystore_key_pw"))
+            }
+        }
     }
 
     buildTypes {
@@ -24,7 +35,7 @@ android {
 
         }
         release {
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -43,8 +54,8 @@ android {
 }
 
 dependencies {
-    implementation project (":dpadrecyclerview")
-    implementation project (":dpadrecyclerview-compose")
+    implementation project(":dpadrecyclerview")
+    implementation project(":dpadrecyclerview-compose")
     implementation libs.androidx.appcompat
     implementation libs.androidx.leanback.grid
     implementation libs.androidx.constraintlayout
@@ -64,7 +75,7 @@ dependencies {
 
     androidTestImplementation libs.carioca.report
     androidTestImplementation libs.androidx.fragment.testing
-    androidTestImplementation project (':dpadrecyclerview-testing')
+    androidTestImplementation project(':dpadrecyclerview-testing')
     androidTestImplementation libs.androidx.test.compose.ui.junit4
     androidTestUtil libs.androidx.test.services
 }
