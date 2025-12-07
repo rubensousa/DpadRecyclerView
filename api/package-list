@@ -1,0 +1,17 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:dpadrecyclerview
+com.rubensousa.dpadrecyclerview
+com.rubensousa.dpadrecyclerview.layoutmanager
+com.rubensousa.dpadrecyclerview.layoutmanager.layout
+com.rubensousa.dpadrecyclerview.spacing
+com.rubensousa.dpadrecyclerview.state
+module:dpadrecyclerview-compose
+com.rubensousa.dpadrecyclerview.compose
+module:dpadrecyclerview-testing
+com.rubensousa.dpadrecyclerview.testing
+com.rubensousa.dpadrecyclerview.testing.actions
+com.rubensousa.dpadrecyclerview.testing.assertions
+com.rubensousa.dpadrecyclerview.testing.matchers
+com.rubensousa.dpadrecyclerview.testing.rules

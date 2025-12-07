@@ -1,0 +1,363 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>DpadComposeFocusViewHolder</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">    <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js","js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+    if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    } else {
+        const savedDarkMode = JSON.parse(storage)
+        if(savedDarkMode === true) {
+            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+    }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/clipboard.js" async></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer></script></head>
+<body>
+    <div class="root">
+<nav class="navigation" id="navigation-wrapper">
+    <div class="navigation--inner">
+        <div class="navigation-title">
+            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+            <div class="library-name">
+<a class="library-name--link" href="../../../index.html">
+                            DpadRecyclerView
+                    </a>            </div>
+            <div class="library-version">
+            </div>
+        </div>
+        <div class="filter-section" id="filter-section">
+                <button class="platform-tag platform-selector jvm-like" data-active="" data-filter=":dpadrecyclerview-compose:dokkaHtmlPartial/release">androidJvm</button>
+        </div>
+    </div>
+    <div class="navigation-controls">
+        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+    </div>
+</nav>
+        <div id="container">
+            <div class="sidebar" id="leftColumn">
+                <div class="sidebar--inner" id="sideMenu"></div>
+            </div>
+            <div id="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="dpadrecyclerview-compose::com.rubensousa.dpadrecyclerview.compose/DpadComposeFocusViewHolder///PointingToDeclaration//2134622843">
+  <div class="breadcrumbs"><a href="../../index.html">dpadrecyclerview-compose</a><span class="delimiter">/</span><a href="../index.html">com.rubensousa.dpadrecyclerview.compose</a><span class="delimiter">/</span><span class="current">DpadComposeFocusViewHolder</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Dpad</span><wbr><span>Compose</span><wbr><span>Focus</span><wbr><span>View</span><wbr><span><span>Holder</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">DpadComposeFocusViewHolder</a><span class="token operator">&lt;</span><a href="index.html">T</a><span class="token operator">&gt;</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">parent<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewGroup.html">ViewGroup</a><span class="token punctuation">, </span></span><span class="parameter ">isFocusable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">content<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a>&nbsp;</span><span class="token punctuation">(</span>item<span class="token operator">: </span><a href="index.html">T</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span> : <a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.ViewHolder.html">RecyclerView.ViewHolder</a></div><p class="paragraph">This allows inline definition of ViewHolders in <code class="lang-kotlin">onCreateViewHolder</code>:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DpadComposeFocusViewHolder&lt;Int&gt; {<br>    return DpadComposeFocusViewHolder(parent) { item -&gt;<br>         ItemComposable(item)<br>    }<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div><p class="paragraph">To update the current item, override <code class="lang-kotlin">onBindViewHolder</code> and call <a href="set-item-state.html">setItemState</a>:</p><div class="sample-container"><pre><code class="block lang-kotlin" theme="idea">override fun onBindViewHolder(holder: DpadComposeFocusViewHolder&lt;Int&gt;, position: Int) {<br>     holder.setItemState(getItem(position))<br>}</code></pre><span class="top-right-position"><span class="copy-icon"></span><div class="copy-popup-wrapper popup-to-left"><span class="copy-popup-icon"></span><span>Content copied to clipboard</span></div></span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="">Constructors</h2>
+        <div class="table"><a data-name="-536492301%2FConstructors%2F2134622843" anchor-label="DpadComposeFocusViewHolder" id="-536492301%2FConstructors%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-dpad-compose-focus-view-holder.html"><span>Dpad</span><wbr><span>Compose</span><wbr><span>Focus</span><wbr><span>View</span><wbr><span><span>Holder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-536492301%2FConstructors%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">parent<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/ViewGroup.html">ViewGroup</a><span class="token punctuation">, </span></span><span class="parameter ">isFocusable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">content<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a>&nbsp;</span><span class="token punctuation">(</span>item<span class="token operator">: </span><a href="index.html">T</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="29975211%2FProperties%2F2134622843" anchor-label="itemView" id="29975211%2FProperties%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#29975211%2FProperties%2F2134622843"><span>item</span><wbr><span><span>View</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="29975211%2FProperties%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/NonNull.html"><span class="token annotation builtin">NonNull</span></a></div></div><span class="token keyword">val </span><a href="../-dpad-compose-view-holder/index.html#29975211%2FProperties%2F2134622843">itemView</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/view/View.html">View</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="358648312%2FFunctions%2F2134622843" anchor-label="getAbsoluteAdapterPosition" id="358648312%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#358648312%2FFunctions%2F2134622843"><span>get</span><wbr><span>Absolute</span><wbr><span>Adapter</span><wbr><span><span>Position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="358648312%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#358648312%2FFunctions%2F2134622843"><span class="token function">getAbsoluteAdapterPosition</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="644519777%2FFunctions%2F2134622843" anchor-label="getAdapterPosition" id="644519777%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#644519777%2FFunctions%2F2134622843"><span>get</span><wbr><span>Adapter</span><wbr><span><span>Position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="644519777%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#644519777%2FFunctions%2F2134622843"><span class="token function"><strike>getAdapterPosition</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-646392777%2FFunctions%2F2134622843" anchor-label="getBindingAdapter" id="-646392777%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#-646392777%2FFunctions%2F2134622843"><span>get</span><wbr><span>Binding</span><wbr><span><span>Adapter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-646392777%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/annotation/Nullable.html"><span class="token annotation builtin">Nullable</span></a></div></div><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#-646392777%2FFunctions%2F2134622843"><span class="token function">getBindingAdapter</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.Adapter.html">RecyclerView.Adapter</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://developer.android.com/reference/kotlin/androidx/recyclerview/widget/RecyclerView.ViewHolder.html">RecyclerView.ViewHolder</a><span class="token operator">&gt;</span><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1427640590%2FFunctions%2F2134622843" anchor-label="getBindingAdapterPosition" id="1427640590%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#1427640590%2FFunctions%2F2134622843"><span>get</span><wbr><span>Binding</span><wbr><span>Adapter</span><wbr><span><span>Position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1427640590%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#1427640590%2FFunctions%2F2134622843"><span class="token function">getBindingAdapterPosition</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-967470361%2FFunctions%2F2134622843" anchor-label="getItem" id="-967470361%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-item.html"><span>get</span><wbr><span><span>Item</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-967470361%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="get-item.html"><span class="token function">getItem</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="index.html">T</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1378485811%2FFunctions%2F2134622843" anchor-label="getItemId" id="1378485811%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#1378485811%2FFunctions%2F2134622843"><span>get</span><wbr><span>Item</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1378485811%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#1378485811%2FFunctions%2F2134622843"><span class="token function">getItemId</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-long/index.html">Long</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1649344625%2FFunctions%2F2134622843" anchor-label="getItemViewType" id="-1649344625%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#-1649344625%2FFunctions%2F2134622843"><span>get</span><wbr><span>Item</span><wbr><span>View</span><wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1649344625%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#-1649344625%2FFunctions%2F2134622843"><span class="token function">getItemViewType</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1407255826%2FFunctions%2F2134622843" anchor-label="getLayoutPosition" id="-1407255826%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#-1407255826%2FFunctions%2F2134622843"><span>get</span><wbr><span>Layout</span><wbr><span><span>Position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1407255826%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#-1407255826%2FFunctions%2F2134622843"><span class="token function">getLayoutPosition</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1203059319%2FFunctions%2F2134622843" anchor-label="getOldPosition" id="-1203059319%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#-1203059319%2FFunctions%2F2134622843"><span>get</span><wbr><span>Old</span><wbr><span><span>Position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1203059319%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#-1203059319%2FFunctions%2F2134622843"><span class="token function">getOldPosition</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1155470344%2FFunctions%2F2134622843" anchor-label="getPosition" id="-1155470344%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#-1155470344%2FFunctions%2F2134622843"><span>get</span><wbr><span><span>Position</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1155470344%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#-1155470344%2FFunctions%2F2134622843"><span class="token function"><strike>getPosition</strike></span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1703443315%2FFunctions%2F2134622843" anchor-label="isRecyclable" id="-1703443315%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#-1703443315%2FFunctions%2F2134622843"><span>is</span><wbr><span><span>Recyclable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1703443315%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#-1703443315%2FFunctions%2F2134622843"><span class="token function">isRecyclable</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1245483980%2FFunctions%2F2134622843" anchor-label="setContent" id="1245483980%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-content.html"><span>set</span><wbr><span><span>Content</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1245483980%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-content.html"><span class="token function">setContent</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">content<span class="token operator">: </span><span><span class="token annotation builtin">@</span><a href="https://developer.android.com/reference/kotlin/androidx/compose/runtime/Composable.html"><span class="token annotation builtin">Composable</span></a>&nbsp;</span><span class="token punctuation">(</span>item<span class="token operator">: </span><a href="index.html">T</a><span class="token punctuation">)</span><span class="token operator"> -&gt; </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-unit/index.html">Unit</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Sets the content of the internal <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ComposeView.html">ComposeView</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-164421409%2FFunctions%2F2134622843" anchor-label="setFocusable" id="-164421409%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-focusable.html"><span>set</span><wbr><span><span>Focusable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-164421409%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-focusable.html"><span class="token function">setFocusable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">focusable<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Marks the internal <a href="https://developer.android.com/reference/kotlin/androidx/compose/ui/platform/ComposeView.html">ComposeView</a> has <a href="set-focusable.html">focusable</a> or not. If false, this will prevent child nodes from being focusable</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1860912636%2FFunctions%2F2134622843" anchor-label="setIsRecyclable" id="-1860912636%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#-1860912636%2FFunctions%2F2134622843"><span>set</span><wbr><span>Is</span><wbr><span><span>Recyclable</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1860912636%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#-1860912636%2FFunctions%2F2134622843"><span class="token function">setIsRecyclable</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p0<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1324423629%2FFunctions%2F2134622843" anchor-label="setItemState" id="-1324423629%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-item-state.html"><span>set</span><wbr><span>Item</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1324423629%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="set-item-state.html"><span class="token function">setItemState</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">item<span class="token operator">: </span><a href="index.html">T</a><span class="token operator">?</span></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Updates the current item so that the composition is updated with the new value in <a href="../../../dpadrecyclerview-compose/com.rubensousa.dpadrecyclerview.compose/-dpad-compose-focus-view-holder/content.html">content</a></p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1200015593%2FFunctions%2F2134622843" anchor-label="toString" id="-1200015593%2FFunctions%2F2134622843" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release"></a>
+          <div class="table-row" data-filterable-current=":dpadrecyclerview-compose:dokkaHtmlPartial/release" data-filterable-set=":dpadrecyclerview-compose:dokkaHtmlPartial/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="../-dpad-compose-view-holder/index.html#-1200015593%2FFunctions%2F2134622843"><span>to</span><wbr><span><span>String</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1200015593%2FFunctions%2F2134622843"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":dpadrecyclerview-compose:dokkaHtmlPartial/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">override </span><span class="token keyword">fun </span><a href="../-dpad-compose-view-holder/index.html#-1200015593%2FFunctions%2F2134622843"><span class="token function">toString</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      <div class="footer">
+        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span class="pull-right"><span>Generated by </span><a href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
+      </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
