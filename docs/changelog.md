@@ -2,6 +2,15 @@
 
 ## Version 1.5.0
 
+### 1.5.0-alpha02
+
+2025-12-07
+
+#### API changes
+
+- Deprecate `setFocusSearchDisabled` in favor of the new `setFocusSearchEnabled`: ([#310](https://github.com/rubensousa/DpadRecyclerView/pull/310))
+- Added new `updateSelectionOnScrollChanges` to `DpadSelectionSnapHelper` to allow disabling selection on scroll changes: : ([#317](https://github.com/rubensousa/DpadRecyclerView/pull/317))
+
 ### 1.5.0-alpha01
 
 2025-06-28

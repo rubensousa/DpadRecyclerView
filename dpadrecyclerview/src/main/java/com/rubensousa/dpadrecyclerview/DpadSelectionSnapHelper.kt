@@ -33,8 +33,12 @@ import kotlin.math.min
  * and performs selections automatically.
  * Use this only if you need to support touch event handling,
  * as [DpadRecyclerView] by default does not handle selection on touch events.
+ * @param updateSelectionOnScrollChanges true if selection should change based
+ * on the scrolling target view, false otherwise
  */
-class DpadSelectionSnapHelper : LinearSnapHelper() {
+class DpadSelectionSnapHelper(
+    private val updateSelectionOnScrollChanges: Boolean = true
+) : LinearSnapHelper() {
 
     private val maxScrollOnFlingDurationMs = 500
     private val millisecondsPerInch = 100f
@@ -60,7 +64,9 @@ class DpadSelectionSnapHelper : LinearSnapHelper() {
             return distance
         }
         val scrollOffset = layoutManager.getScrollOffset(targetView)
-        layoutManager.select(targetView)
+        if (updateSelectionOnScrollChanges) {
+            layoutManager.select(targetView)
+        }
         if (layoutManager.isHorizontal()) {
             distance[0] = scrollOffset
         } else {
