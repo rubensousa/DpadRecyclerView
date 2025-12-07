@@ -288,6 +288,8 @@ public abstract interface class com/rubensousa/dpadrecyclerview/DpadScroller$Scr
 
 public final class com/rubensousa/dpadrecyclerview/DpadSelectionSnapHelper : androidx/recyclerview/widget/LinearSnapHelper {
 	public fun <init> ()V
+	public fun <init> (Z)V
+	public synthetic fun <init> (ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public fun attachToRecyclerView (Landroidx/recyclerview/widget/RecyclerView;)V
 	public fun calculateDistanceToFinalSnap (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;Landroid/view/View;)[I
 	public fun findSnapView (Landroidx/recyclerview/widget/RecyclerView$LayoutManager;)Landroid/view/View;
