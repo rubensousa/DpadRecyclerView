@@ -4,6 +4,8 @@ A RecyclerView built for Android TV as a replacement for [Leanback's](https://de
 
 See the project website for more information: https://rubensousa.github.io/DpadRecyclerView
 
+Sample available on Google Play: https://play.google.com/store/apps/details?id=com.rubensousa.dpadrecyclerview.sample
+
 Why should you use this library?
 
 1. Leanback hasn't received any significant update for years
