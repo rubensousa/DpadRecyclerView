@@ -16,14 +16,26 @@
 
 package com.rubensousa.dpadrecyclerview.sample.ui
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.rubensousa.dpadrecyclerview.sample.R
+
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_LEANBACK)) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("App only available for Android TV")
+                .setMessage("This app should be installed on Android TV instead, since it showcases a programming library for that platform")
+                .setCancelable(false)
+                .setPositiveButton("OK, I UNDERSTAND") { _, _ -> finish() }
+                .show()
+            return
+        }
         setContentView(R.layout.activity_main)
     }
 }
