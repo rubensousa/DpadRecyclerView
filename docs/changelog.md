@@ -2,6 +2,20 @@
 
 ## Version 1.5.0
 
+### Next minor release: 1.5.0
+
+#### Important changes since 1.4.0
+
+- The new `setFocusSearchDebounceMs` allows throttling focus searches based on the time elapsed between different key events ([#308](https://github.com/rubensousa/DpadRecyclerView/pull/308))
+- Deprecate `setFocusSearchDisabled` in favor of the new `setFocusSearchEnabled`: ([#310](https://github.com/rubensousa/DpadRecyclerView/pull/310))
+- Fixed scrolling issue when extra layout space is used ([#309](https://github.com/rubensousa/DpadRecyclerView/pull/309))
+
+### 1.5.0-beta01
+
+2026-02-19
+
+- No changes since 1.5.0-alpha02
+
 ### 1.5.0-alpha02
 
 2025-12-07
