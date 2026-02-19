@@ -4,7 +4,7 @@ site_author: 'Rúben Sousa'
 site_url: 'https://rubensousa.github.io/dpadrecyclerview/'
 remote_branch: gh-pages
 edit_uri: ""
-copyright: 'Copyright &copy; 2024 Rúben Sousa'
+copyright: 'Copyright &copy; 2026 Rúben Sousa'
 
 repo_name: 'DpadRecyclerView'
 repo_url: 'https://github.com/rubensousa/DpadRecyclerView'
@@ -24,7 +24,7 @@ theme:
 
 extra:
   dpadrecyclerview:
-    version: '1.5.0-alpha02'
+    version: '1.5.0-beta01'
   social:
     - icon: 'fontawesome/brands/github'
       link: 'https://github.com/rubensousa/DpadRecyclerView'

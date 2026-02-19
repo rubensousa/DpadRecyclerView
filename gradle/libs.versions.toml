@@ -1,6 +1,6 @@
 [versions]
 # From library
-android-gradle-plugin = "8.9.2"
+android-gradle-plugin = "8.13.2"
 androidx-collection = "1.4.3"
 androidx-recyclerview = "1.4.0"
 androidx-poolingcontainer = "1.0.0"
@@ -47,7 +47,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 carioca-allure = { id = "com.rubensousa.carioca.report.allure", version.ref = "carioca-allure" }
-maven-publish = { id = "com.vanniktech.maven.publish", version = "0.31.0" }
+maven-publish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
