@@ -48,6 +48,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 carioca-allure = { id = "com.rubensousa.carioca.report.allure", version.ref = "carioca-allure" }
 maven-publish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
+kotlin-dokka = { id = "org.jetbrains.dokka", version = "2.1.0" }
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
