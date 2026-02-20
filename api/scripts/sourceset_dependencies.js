@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":dpadrecyclerview/debug":[],":dpadrecyclerview/main":[],":dpadrecyclerview/release":[],":dpadrecyclerview-testing/debug":[],":dpadrecyclerview-testing/main":[],":dpadrecyclerview-testing/release":[],":dpadrecyclerview-compose/debug":[],":dpadrecyclerview-compose/main":[],":dpadrecyclerview-compose/release":[]}'
