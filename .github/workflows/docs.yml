@@ -31,8 +31,8 @@ jobs:
 
       - name: Build docs
         run: |
-          ./gradlew dokkaHtmlMultiModule
-          mv ./build/dokka/htmlMultiModule docs/api
+          ./gradlew dokkaGeneratePublicationHtml
+          mv ./build/dokka/html docs/api
 
       - name: Install dependencies
         run: |
