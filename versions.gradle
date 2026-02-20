@@ -1,6 +1,0 @@
-def versions = [:]
-versions.minSdkVersion = 21
-versions.targetSdkVersion = 36
-versions.compileSdkVersion = 36
-
-ext.versions = versions

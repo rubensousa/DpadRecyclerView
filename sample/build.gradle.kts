@@ -1,0 +1,87 @@
+plugins {
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.androidx.navigation.safeargs)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.carioca.allure)
+}
+
+val versions = rootProject.extra["versions"] as Map<String, Int>
+
+android {
+    namespace = "com.rubensousa.dpadrecyclerview.sample"
+    compileSdk = versions["compileSdkVersion"]
+    defaultConfig {
+        applicationId = "com.rubensousa.dpadrecyclerview.sample"
+        minSdk = versions["minSdkVersion"]
+        targetSdk = versions["targetSdkVersion"]
+        versionCode = 3
+        versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["useTestStorageService"] = "true"
+    }
+
+    signingConfigs {
+        create("release") {
+            if (project.hasProperty("oss_keystore_path")) {
+                storeFile = file(project.property("oss_keystore_path") as String)
+                storePassword = project.property("oss_keystore_pw") as String
+                keyAlias = project.property("oss_keystore_key_alias") as String
+                keyPassword = project.property("oss_keystore_key_pw") as String
+            }
+        }
+    }
+
+    buildTypes {
+        getByName("debug") {
+
+        }
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation(project(":dpadrecyclerview"))
+    implementation(project(":dpadrecyclerview-compose"))
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.leanback.grid)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.lifecycle.livedata)
+    implementation(libs.androidx.lifecycle.viewmodel)
+    implementation(libs.androidx.customview.poolingcontainer)
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.interpolator)
+    implementation(libs.decorator)
+    implementation(libs.timber)
+    implementation(libs.androidx.navigation.fragment)
+    implementation(libs.androidx.navigation.ui)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+
+    androidTestImplementation(libs.carioca.report)
+    androidTestImplementation(libs.androidx.fragment.testing)
+    androidTestImplementation(project(":dpadrecyclerview-testing"))
+    androidTestImplementation(libs.androidx.test.compose.ui.junit4)
+    androidTestUtil(libs.androidx.test.services)
+}
+

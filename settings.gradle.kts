@@ -5,7 +5,7 @@ pluginManagement {
         google()
         mavenCentral()
         maven {
-            url "https://s01.oss.sonatype.org/content/repositories/releases/"
+            url = uri("https://s01.oss.sonatype.org/content/repositories/releases/")
         }
     }
 }
@@ -18,8 +18,8 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "DpadRecyclerView"
-include ':sample'
-include ':dpadrecyclerview'
-include ':dpadrecyclerview-testing'
-include ':dpadrecyclerview-test-fixtures'
-include ':dpadrecyclerview-compose'
+include(":sample")
+include(":dpadrecyclerview")
+include(":dpadrecyclerview-testing")
+include(":dpadrecyclerview-test-fixtures")
+include(":dpadrecyclerview-compose")
