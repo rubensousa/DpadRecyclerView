@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.kover) apply false
     alias(libs.plugins.maven.publish) apply false
     alias(libs.plugins.androidx.navigation.safeargs) apply false
-    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.14.0"
+    id("org.jetbrains.kotlinx.binary-compatibility-validator") version "0.18.1"
 }
 
 val versions = mapOf(
